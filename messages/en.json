@@ -1,0 +1,15 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "contact": "Contact"
+  },
+  "home": {
+    "title": "Welcome to Kurgemx",
+    "description": "This is a multilingual web application built with Next.js.",
+    "getStarted": "Get Started"
+  },
+  "language": {
+    "switchTo": "Türkçeye geç"
+  }
+}
