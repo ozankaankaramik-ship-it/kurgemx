@@ -11,5 +11,53 @@
   },
   "language": {
     "switchTo": "Türkçeye geç"
+  },
+  "auth": {
+    "girisYap": "Sign In",
+    "kayitOl": "Sign Up",
+    "cikisYap": "Sign Out",
+    "giris": {
+      "baslik": "Sign In",
+      "altBaslik": "Sign in to your account",
+      "email": "Email",
+      "emailPlaceholder": "example@email.com",
+      "sifre": "Password",
+      "sifrePlaceholder": "••••••••",
+      "girisBtn": "Sign In",
+      "googleBtn": "Sign in with Google",
+      "ayirici": "or",
+      "hesapYok": "Don't have an account?",
+      "kayitLink": "Sign up",
+      "hatalar": {
+        "invalid_credentials": "Invalid email or password.",
+        "email_not_confirmed": "Your email is not confirmed yet. Please check your inbox.",
+        "genel": "An error occurred while signing in. Please try again."
+      }
+    },
+    "kayit": {
+      "baslik": "Create Account",
+      "altBaslik": "Create your free account",
+      "ad": "First Name",
+      "adPlaceholder": "Your first name",
+      "soyad": "Last Name",
+      "soyadPlaceholder": "Your last name",
+      "email": "Email",
+      "emailPlaceholder": "example@email.com",
+      "sifre": "Password",
+      "sifrePlaceholder": "At least 8 characters",
+      "kvkk": "I have read the KVKK (Personal Data Protection) disclosure text and consent to the processing of my personal data.",
+      "kvkkZorunlu": "You must accept the KVKK terms to register.",
+      "kayitBtn": "Sign Up",
+      "googleBtn": "Sign up with Google",
+      "ayirici": "or",
+      "hesapVar": "Already have an account?",
+      "girisLink": "Sign in",
+      "emailGonderildi": "Verification email sent! Please check your inbox and activate your account.",
+      "hatalar": {
+        "kvkk_required": "You must accept the KVKK terms to register.",
+        "user_exists": "This email is already registered. Try signing in.",
+        "genel": "An error occurred while signing up. Please try again."
+      }
+    }
   }
 }

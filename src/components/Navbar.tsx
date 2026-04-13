@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { usePathname, useRouter, Link } from "@/i18n/navigation";
 import { useLocale } from "next-intl";
+import KullaniciMenu from "./KullaniciMenu";
 
 export default function Navbar() {
   const t = useTranslations();
@@ -42,12 +43,16 @@ export default function Navbar() {
             {t("nav.contact")}
           </Link>
         </div>
-        <button
-          onClick={switchLanguage}
-          className="text-sm border border-gray-300 dark:border-gray-700 px-3 py-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-        >
-          {t("language.switchTo")}
-        </button>
+
+        <div className="flex items-center gap-3">
+          <button
+            onClick={switchLanguage}
+            className="text-sm border border-gray-300 dark:border-gray-700 px-3 py-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          >
+            {t("language.switchTo")}
+          </button>
+          <KullaniciMenu />
+        </div>
       </div>
     </nav>
   );

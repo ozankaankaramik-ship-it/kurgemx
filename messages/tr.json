@@ -11,5 +11,53 @@
   },
   "language": {
     "switchTo": "Switch to English"
+  },
+  "auth": {
+    "girisYap": "Giriş Yap",
+    "kayitOl": "Kayıt Ol",
+    "cikisYap": "Çıkış Yap",
+    "giris": {
+      "baslik": "Giriş Yap",
+      "altBaslik": "Hesabınıza giriş yapın",
+      "email": "E-posta",
+      "emailPlaceholder": "ornek@email.com",
+      "sifre": "Şifre",
+      "sifrePlaceholder": "••••••••",
+      "girisBtn": "Giriş Yap",
+      "googleBtn": "Google ile Giriş Yap",
+      "ayirici": "veya",
+      "hesapYok": "Hesabınız yok mu?",
+      "kayitLink": "Kayıt olun",
+      "hatalar": {
+        "invalid_credentials": "E-posta veya şifre hatalı.",
+        "email_not_confirmed": "E-postanız henüz doğrulanmamış. Lütfen gelen kutunuzu kontrol edin.",
+        "genel": "Giriş yapılırken bir hata oluştu. Lütfen tekrar deneyin."
+      }
+    },
+    "kayit": {
+      "baslik": "Hesap Oluştur",
+      "altBaslik": "Ücretsiz hesabınızı oluşturun",
+      "ad": "Ad",
+      "adPlaceholder": "Adınız",
+      "soyad": "Soyad",
+      "soyadPlaceholder": "Soyadınız",
+      "email": "E-posta",
+      "emailPlaceholder": "ornek@email.com",
+      "sifre": "Şifre",
+      "sifrePlaceholder": "En az 8 karakter",
+      "kvkk": "KVKK Aydınlatma Metnini okudum ve kişisel verilerimin işlenmesini kabul ediyorum.",
+      "kvkkZorunlu": "Kayıt olabilmek için KVKK metnini kabul etmelisiniz.",
+      "kayitBtn": "Kayıt Ol",
+      "googleBtn": "Google ile Kayıt Ol",
+      "ayirici": "veya",
+      "hesapVar": "Zaten hesabınız var mı?",
+      "girisLink": "Giriş yapın",
+      "emailGonderildi": "Doğrulama e-postası gönderildi! Lütfen gelen kutunuzu kontrol edin ve hesabınızı etkinleştirin.",
+      "hatalar": {
+        "kvkk_required": "Kayıt olabilmek için KVKK metnini kabul etmelisiniz.",
+        "user_exists": "Bu e-posta adresi zaten kayıtlı. Giriş yapmayı deneyin.",
+        "genel": "Kayıt olurken bir hata oluştu. Lütfen tekrar deneyin."
+      }
+    }
   }
 }
