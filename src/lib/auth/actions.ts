@@ -110,6 +110,28 @@ export async function googleIleGiris(formData: FormData): Promise<void> {
   redirect(data.url)
 }
 
+// Şifre sıfırlama e-postası gönder
+export async function sifreSifirla(
+  prevState: AuthState,
+  formData: FormData
+): Promise<AuthState> {
+  const email = formData.get('email') as string
+  const locale = (formData.get('locale') as string) || 'tr'
+
+  const supabase = await createClient()
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
+
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${siteUrl}/api/auth/callback?next=/${locale}/sifre-guncelle`,
+  })
+
+  if (error) {
+    return { error: 'genel' }
+  }
+
+  return { success: 'basariMesaji' }
+}
+
 // Çıkış
 export async function cikisYap(formData: FormData): Promise<void> {
   const locale = (formData.get('locale') as string) || 'tr'

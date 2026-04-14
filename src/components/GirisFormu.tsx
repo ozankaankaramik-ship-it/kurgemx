@@ -64,9 +64,17 @@ export default function GirisFormu() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1.5" htmlFor="password">
-              {t('sifre')}
-            </label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-sm font-medium" htmlFor="password">
+                {t('sifre')}
+              </label>
+              <Link
+                href="/sifre-sifirlama"
+                className="text-xs text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors"
+              >
+                {t('sifremiUnuttum')}
+              </Link>
+            </div>
             <input
               id="password"
               name="password"

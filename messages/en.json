@@ -26,12 +26,26 @@
       "girisBtn": "Sign In",
       "googleBtn": "Sign in with Google",
       "ayirici": "or",
+      "sifremiUnuttum": "Forgot password",
       "hesapYok": "Don't have an account?",
       "kayitLink": "Sign up",
       "hatalar": {
         "invalid_credentials": "Invalid email or password.",
         "email_not_confirmed": "Your email is not confirmed yet. Please check your inbox.",
         "genel": "An error occurred while signing in. Please try again."
+      }
+    },
+    "sifreSifirlama": {
+      "baslik": "Forgot Password",
+      "altBaslik": "Enter your email and we'll send you a reset link.",
+      "email": "Email",
+      "emailPlaceholder": "example@email.com",
+      "gonderBtn": "Send Reset Link",
+      "geriDon": "Back to sign in",
+      "basariMesaji": "Reset link sent! Please check your email.",
+      "hatalar": {
+        "user_not_found": "No account found with this email address.",
+        "genel": "An error occurred. Please try again."
       }
     },
     "kayit": {

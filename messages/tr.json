@@ -26,12 +26,26 @@
       "girisBtn": "Giriş Yap",
       "googleBtn": "Google ile Giriş Yap",
       "ayirici": "veya",
+      "sifremiUnuttum": "Şifremi unuttum",
       "hesapYok": "Hesabınız yok mu?",
       "kayitLink": "Kayıt olun",
       "hatalar": {
         "invalid_credentials": "E-posta veya şifre hatalı.",
         "email_not_confirmed": "E-postanız henüz doğrulanmamış. Lütfen gelen kutunuzu kontrol edin.",
         "genel": "Giriş yapılırken bir hata oluştu. Lütfen tekrar deneyin."
+      }
+    },
+    "sifreSifirlama": {
+      "baslik": "Şifremi Unuttum",
+      "altBaslik": "E-posta adresinizi girin, size sıfırlama bağlantısı gönderelim.",
+      "email": "E-posta",
+      "emailPlaceholder": "ornek@email.com",
+      "gonderBtn": "Sıfırlama Bağlantısı Gönder",
+      "geriDon": "Giriş sayfasına dön",
+      "basariMesaji": "Sıfırlama bağlantısı gönderildi! Lütfen e-postanızı kontrol edin.",
+      "hatalar": {
+        "user_not_found": "Bu e-posta adresiyle kayıtlı bir hesap bulunamadı.",
+        "genel": "Bir hata oluştu. Lütfen tekrar deneyin."
       }
     },
     "kayit": {
