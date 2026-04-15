@@ -64,17 +64,9 @@ export default function GirisFormu() {
           </div>
 
           <div>
-            <div className="flex items-center justify-between mb-1.5">
-              <label className="block text-sm font-medium" htmlFor="password">
-                {t('sifre')}
-              </label>
-              <Link
-                href="/sifre-sifirlama"
-                className="text-xs text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors"
-              >
-                {t('sifremiUnuttum')}
-              </Link>
-            </div>
+            <label className="block text-sm font-medium mb-1.5" htmlFor="password">
+              {t('sifre')}
+            </label>
             <input
               id="password"
               name="password"
@@ -83,6 +75,14 @@ export default function GirisFormu() {
               required
               className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-transparent px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-black dark:focus:ring-white transition"
             />
+            <div className="mt-2 text-right">
+              <Link
+                href="/sifre-sifirlama"
+                className="text-sm text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors underline underline-offset-2"
+              >
+                {t('sifremiUnuttum')}
+              </Link>
+            </div>
           </div>
 
           {errorMsg && (
