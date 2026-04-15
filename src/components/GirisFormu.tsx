@@ -75,14 +75,15 @@ export default function GirisFormu() {
               required
               className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-transparent px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-black dark:focus:ring-white transition"
             />
-            <div className="mt-2 text-right">
-              <Link
-                href="/sifre-sifirlama"
-                className="text-sm text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors underline underline-offset-2"
-              >
-                {t('sifremiUnuttum')}
-              </Link>
-            </div>
+          </div>
+
+          <div className="flex justify-end">
+            <Link
+              href="/sifre-sifirlama"
+              className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              {t('sifremiUnuttum')}
+            </Link>
           </div>
 
           {errorMsg && (

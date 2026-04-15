@@ -104,7 +104,8 @@ export async function googleIleGiris(formData: FormData): Promise<void> {
   })
 
   if (error || !data.url) {
-    redirect(`/${locale}/giris?error=oauth`)
+    const loginPath = locale === 'en' ? 'login' : 'giris'
+    redirect(`/${locale}/${loginPath}?error=oauth`)
   }
 
   redirect(data.url)
