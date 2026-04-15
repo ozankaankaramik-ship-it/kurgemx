@@ -78,12 +78,12 @@ export default function GirisFormu() {
           </div>
 
           <div className="flex justify-end">
-            <Link
-              href="/sifre-sifirlama"
+            <a
+              href={locale === 'en' ? '/en/forgot-password' : '/tr/sifre-sifirlama'}
               className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
             >
               {t('sifremiUnuttum')}
-            </Link>
+            </a>
           </div>
 
           {errorMsg && (
