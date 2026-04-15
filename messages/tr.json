@@ -48,6 +48,23 @@
         "genel": "Bir hata oluştu. Lütfen tekrar deneyin."
       }
     },
+    "sifreGuncelle": {
+      "baslik": "Yeni Şifre Belirle",
+      "altBaslik": "Lütfen yeni şifrenizi girin.",
+      "sifre": "Yeni Şifre",
+      "sifrePlaceholder": "En az 8 karakter",
+      "sifreTekrar": "Şifre Tekrar",
+      "sifreTekrarPlaceholder": "Şifrenizi tekrar girin",
+      "kaydetBtn": "Şifremi Güncelle",
+      "basariMesaji": "Şifreniz güncellendi! Giriş yapabilirsiniz.",
+      "girisLink": "Giriş sayfasına git",
+      "hatalar": {
+        "sifre_eslesmiyor": "Şifreler eşleşmiyor.",
+        "sifre_kisa": "Şifre en az 8 karakter olmalıdır.",
+        "oturum_yok": "Oturum bulunamadı. Lütfen şifre sıfırlama bağlantısını tekrar kullanın.",
+        "genel": "Bir hata oluştu. Lütfen tekrar deneyin."
+      }
+    },
     "kayit": {
       "baslik": "Hesap Oluştur",
       "altBaslik": "Ücretsiz hesabınızı oluşturun",

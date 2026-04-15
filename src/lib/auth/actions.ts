@@ -123,10 +123,38 @@ export async function sifreSifirla(
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${siteUrl}/api/auth/callback?next=/${locale}/sifre-guncelle`,
+    redirectTo: `${siteUrl}/api/auth/callback?next=/${locale}/sifre-guncelle&type=recovery`,
   })
 
   if (error) {
+    return { error: 'genel' }
+  }
+
+  return { success: 'basariMesaji' }
+}
+
+// Yeni şifre belirleme (reset e-postasından gelindikten sonra)
+export async function sifreGuncelle(
+  prevState: AuthState,
+  formData: FormData
+): Promise<AuthState> {
+  const password = formData.get('password') as string
+  const passwordConfirm = formData.get('passwordConfirm') as string
+
+  if (password.length < 8) {
+    return { error: 'sifre_kisa' }
+  }
+  if (password !== passwordConfirm) {
+    return { error: 'sifre_eslesmiyor' }
+  }
+
+  const supabase = await createClient()
+  const { error } = await supabase.auth.updateUser({ password })
+
+  if (error) {
+    if (error.message.includes('session')) {
+      return { error: 'oturum_yok' }
+    }
     return { error: 'genel' }
   }
 

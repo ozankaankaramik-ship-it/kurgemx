@@ -48,6 +48,23 @@
         "genel": "An error occurred. Please try again."
       }
     },
+    "sifreGuncelle": {
+      "baslik": "Set New Password",
+      "altBaslik": "Please enter your new password.",
+      "sifre": "New Password",
+      "sifrePlaceholder": "At least 8 characters",
+      "sifreTekrar": "Confirm Password",
+      "sifreTekrarPlaceholder": "Re-enter your password",
+      "kaydetBtn": "Update Password",
+      "basariMesaji": "Password updated! You can now sign in.",
+      "girisLink": "Go to sign in",
+      "hatalar": {
+        "sifre_eslesmiyor": "Passwords do not match.",
+        "sifre_kisa": "Password must be at least 8 characters.",
+        "oturum_yok": "Session not found. Please use the password reset link again.",
+        "genel": "An error occurred. Please try again."
+      }
+    },
     "kayit": {
       "baslik": "Create Account",
       "altBaslik": "Create your free account",

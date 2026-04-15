@@ -4,11 +4,11 @@ import { createServerClient } from '@supabase/ssr'
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
   const code = searchParams.get('code')
-  const next = searchParams.get('next') ?? '/tr'
+  const next = searchParams.get('next') ?? '/en'
   const kvkk = searchParams.get('kvkk') === 'true'
 
   if (!code) {
-    return NextResponse.redirect(new URL('/tr/giris', request.url))
+    return NextResponse.redirect(new URL('/en/login', request.url))
   }
 
   // Redirect response'u önceden oluştur; Supabase oturum cookie'leri buna yazılacak
