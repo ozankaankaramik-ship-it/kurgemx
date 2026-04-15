@@ -19,5 +19,9 @@ export const routing = defineRouting({
       tr: "/sifre-sifirlama",
       en: "/forgot-password",
     },
+    "/sifre-guncelle": {
+      tr: "/sifre-guncelle",
+      en: "/reset-password",
+    },
   },
 });

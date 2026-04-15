@@ -1,14 +1,68 @@
 'use client'
 
-import { useActionState } from 'react'
+import { useEffect, useState, useActionState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { useTranslations, useLocale } from 'next-intl'
+import { createClient } from '@/lib/supabase/client'
 import { sifreGuncelle } from '@/lib/auth/actions'
 
 export default function SifreGuncelleFormu() {
   const t = useTranslations('auth.sifreGuncelle')
   const locale = useLocale()
+  const searchParams = useSearchParams()
+  const code = searchParams.get('code')
+
+  const [sessionReady, setSessionReady] = useState(false)
+  const [sessionError, setSessionError] = useState(false)
 
   const [state, action, isPending] = useActionState(sifreGuncelle, null)
+
+  useEffect(() => {
+    if (!code) {
+      // Direkt oturumla gelinmiş olabilir (callback üzerinden)
+      setSessionReady(true)
+      return
+    }
+
+    const supabase = createClient()
+    supabase.auth.exchangeCodeForSession(code).then(({ error }) => {
+      if (error) {
+        setSessionError(true)
+      } else {
+        setSessionReady(true)
+        // code parametresini URL'den temizle
+        window.history.replaceState({}, '', window.location.pathname)
+      }
+    })
+  }, [code])
+
+  if (sessionError) {
+    return (
+      <div className="w-full max-w-md mx-auto">
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-8 shadow-sm text-center">
+          <p className="text-sm text-red-600 dark:text-red-400 mb-4">
+            {t('hatalar.oturum_yok')}
+          </p>
+          <a
+            href={locale === 'en' ? '/en/forgot-password' : '/tr/sifre-sifirlama'}
+            className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
+          >
+            {locale === 'en' ? 'Request a new reset link' : 'Yeni sıfırlama bağlantısı iste'}
+          </a>
+        </div>
+      </div>
+    )
+  }
+
+  if (!sessionReady) {
+    return (
+      <div className="w-full max-w-md mx-auto">
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-8 shadow-sm text-center">
+          <p className="text-sm text-gray-500">...</p>
+        </div>
+      </div>
+    )
+  }
 
   if (state?.success) {
     return (

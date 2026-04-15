@@ -123,7 +123,7 @@ export async function sifreSifirla(
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${siteUrl}/api/auth/callback?next=/${locale}/sifre-guncelle&type=recovery`,
+    redirectTo: `${siteUrl}/${locale}/${locale === 'en' ? 'reset-password' : 'sifre-guncelle'}`,
   })
 
   if (error) {
