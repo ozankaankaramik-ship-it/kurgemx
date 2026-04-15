@@ -33,7 +33,7 @@ export default async function proxy(request: NextRequest) {
     );
 
     const { data: { user } } = await supabase.auth.getUser();
-    const destination = user ? "/tr/projeler" : "/tr/giris";
+    const destination = user ? "/en" : "/en/login";
     return NextResponse.redirect(new URL(destination, request.url));
   }
 

@@ -5,7 +5,32 @@
       "Bash(npm install:*)",
       "Bash(npm run:*)",
       "Bash(gh auth:*)",
-      "Bash(git:*)"
+      "Bash(git:*)",
+      "Bash(gh api:*)",
+      "Bash(/c/Program Files/GitHub CLI/gh.exe api:*)",
+      "Bash('/c/Program Files/GitHub CLI/gh.exe' api user --jq .login)",
+      "Bash('/c/Program Files/GitHub CLI/gh.exe' api user --jq '.email // empty')",
+      "Bash(/c/Program Files/GitHub CLI/gh.exe repo:*)",
+      "Bash(npx vercel:*)",
+      "Read(//c/Users/ozank/AppData/Local/com.vercel.cli/**)",
+      "Read(//c/Users/ozank/AppData/Roaming/com.vercel.cli/**)",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(list\\(d.keys\\(\\)\\)\\)\")",
+      "Bash(node:*)",
+      "Bash(supabase --version)",
+      "Bash(npx supabase:*)",
+      "Bash(ls /c/Users/ozank/Documents/İşAnaliziAjan/kurgemx/.env*)",
+      "Bash(npx tsc:*)",
+      "Bash(curl:*)",
+      "Read(//c/Users/ozank/.supabase/**)",
+      "Read(//c/Users/ozank/AppData/Roaming/supabase/**)",
+      "Bash(powershell:*)",
+      "Bash(\"C:/Users/ozank/AppData/Local/npm-cache/_npx/aa8e5c70f9d8d161/node_modules/supabase/bin/supabase.exe\" projects:*)",
+      "Bash(\"C:/Users/ozank/AppData/Local/npm-cache/_npx/aa8e5c70f9d8d161/node_modules/supabase/bin/supabase.exe\" --debug projects list)",
+      "Bash(\"C:/Users/ozank/AppData/Local/npm-cache/_npx/aa8e5c70f9d8d161/node_modules/supabase/bin/supabase.exe\" config:*)",
+      "Bash(\"C:/Users/ozank/AppData/Local/npm-cache/_npx/aa8e5c70f9d8d161/node_modules/supabase/bin/supabase.exe\" --debug config push --project-ref tkttgnlnamrtilhbqxhc)",
+      "Bash(\"C:/Users/ozank/AppData/Local/npm-cache/_npx/aa8e5c70f9d8d161/node_modules/supabase/bin/supabase.exe\" init:*)",
+      "Bash(python -m json.tool)",
+      "Bash(grep -v \"^--$\")"
     ]
   }
 }
