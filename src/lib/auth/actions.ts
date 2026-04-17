@@ -120,10 +120,9 @@ export async function sifreSifirla(
   const locale = (formData.get('locale') as string) || 'tr'
 
   const supabase = await createClient()
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${siteUrl}/${locale}/${locale === 'en' ? 'reset-password' : 'sifre-guncelle'}`,
+    redirectTo: 'https://kurgemx.com/en/reset-password',
   })
 
   if (error) {
