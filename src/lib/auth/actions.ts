@@ -122,7 +122,7 @@ export async function sifreSifirla(
   const supabase = await createClient()
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: 'https://kurgemx.com/en/reset-password',
+    redirectTo: 'https://kurgemx.com/en/auth/callback',
   })
 
   if (error) {
