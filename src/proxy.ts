@@ -10,6 +10,11 @@ const HOME_PATHS = new Set(["/", "/tr", "/en"]);
 export default async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // Auth callback ve reset-password rotaları intl middleware'den muaf tutulur
+  if (pathname.includes('/auth/callback') || pathname.endsWith('/reset-password')) {
+    return NextResponse.next();
+  }
+
   // Ana sayfa isteklerinde kullanıcı durumuna göre yönlendir
   if (HOME_PATHS.has(pathname)) {
     // Cookie'leri okumak için geçici bir response oluştur
