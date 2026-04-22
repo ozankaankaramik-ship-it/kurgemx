@@ -5,7 +5,7 @@ import { routing } from "./i18n/routing";
 
 const intlMiddleware = createIntlMiddleware(routing);
 
-const HOME_PATHS = new Set(["/", "/tr", "/en"]);
+const HOME_PATHS = new Set(["/"]);
 
 export default async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
