@@ -94,7 +94,9 @@ export async function googleIleGiris(formData: FormData): Promise<void> {
 
   const supabase = await createClient()
   const headersList = await headers()
-  const origin = headersList.get('origin') || process.env.NEXT_PUBLIC_SITE_URL
+  const host = headersList.get('x-forwarded-host') || headersList.get('host') || 'kurgemx.com'
+  const proto = headersList.get('x-forwarded-proto') || 'https'
+  const origin = headersList.get('origin') || `${proto}://${host}`
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
