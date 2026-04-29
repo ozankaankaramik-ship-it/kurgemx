@@ -1,13 +1,13 @@
 {
   "nav": {
     "home": "Ana Sayfa",
-    "about": "Hakkında",
-    "contact": "İletişim"
+    "projeler": "Projelerim"
   },
   "home": {
     "title": "Kurgemx'e Hoş Geldiniz",
     "description": "Bu, Next.js ile oluşturulmuş çok dilli bir web uygulamasıdır.",
-    "getStarted": "Başlayın"
+    "getStarted": "Başlayın",
+    "sonProje": "Son proje"
   },
   "language": {
     "switchTo": "Switch to English"
@@ -90,5 +90,53 @@
         "genel": "Kayıt olurken bir hata oluştu. Lütfen tekrar deneyin."
       }
     }
+  },
+  "yeniProje": {
+    "baslik": "Yeni Proje",
+    "ad": "Proje Adı",
+    "adPlaceholder": "Projenizin adını girin",
+    "aciklama": "Açıklama",
+    "aciklamaPlaceholder": "Projenizi kısaca açıklayın...",
+    "aciklamaYardim": "AI bu açıklamadan proje özeti üretecektir.",
+    "dil": "Proje Dili",
+    "kaynak": "Kaynak Doküman (İsteğe Bağlı)",
+    "kaynakYardim": "PDF, Word, Excel veya PowerPoint. Maks. 10MB.",
+    "olusturBtn": "Proje Oluştur",
+    "iptal": "İptal",
+    "karakter": "karakter",
+    "hatalar": {
+      "ad_zorunlu": "Proje adı zorunludur.",
+      "ad_uzun": "Proje adı en fazla 100 karakter olabilir.",
+      "dosya_buyuk": "Dosya 10MB'tan büyük olamaz.",
+      "dosya_format": "Sadece PDF, Word, Excel, PowerPoint dosyaları yüklenebilir.",
+      "dosya_yuklenemedi": "Dosya yüklenirken bir hata oluştu.",
+      "yetkisiz": "Oturum açılmamış.",
+      "genel": "Proje oluşturulurken bir hata oluştu. Lütfen tekrar deneyin."
+    },
+    "mujkerrer": {
+      "mesaj": "Bu adda bir projeniz zaten var.",
+      "devam": "Yine de Devam Et",
+      "degistir": "İsmi değiştirmek için yukarıdaki alana yazın."
+    }
+  },
+  "projeDetay": {
+    "baslik": "Proje Detayı",
+    "geri": "Projelerime Dön",
+    "olusturmaTarihi": "Oluşturma Tarihi",
+    "sonGuncelleme": "Son Güncelleme"
+  },
+  "projeler": {
+    "baslik": "Projelerim",
+    "yeniProje": "Yeni Proje",
+    "bosHal": {
+      "baslik": "Henüz projeniz yok.",
+      "aciklama": "İlk projenizi oluşturun!",
+      "btn": "Yeni Proje Oluştur"
+    },
+    "kart": {
+      "hikayeSayisi": "hikaye",
+      "dokumanSayisi": "doküman"
+    },
+    "daha": "Daha Fazla Göster"
   }
 }

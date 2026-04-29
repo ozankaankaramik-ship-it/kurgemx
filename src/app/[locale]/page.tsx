@@ -1,6 +1,7 @@
 import { redirect } from "@/i18n/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
+import SonProjeKisayol from "@/components/SonProjeKisayol";
 import type { Metadata } from "next";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -28,6 +29,7 @@ export default async function HomePage() {
       <p className="text-lg text-gray-600 dark:text-gray-400 max-w-xl">
         {t("description")}
       </p>
+      <SonProjeKisayol />
     </main>
   );
 }

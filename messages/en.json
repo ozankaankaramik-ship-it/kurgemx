@@ -1,13 +1,13 @@
 {
   "nav": {
     "home": "Home",
-    "about": "About",
-    "contact": "Contact"
+    "projeler": "My Projects"
   },
   "home": {
     "title": "Welcome to Kurgemx",
     "description": "This is a multilingual web application built with Next.js.",
-    "getStarted": "Get Started"
+    "getStarted": "Get Started",
+    "sonProje": "Last project"
   },
   "language": {
     "switchTo": "Türkçeye geç"
@@ -90,5 +90,53 @@
         "genel": "An error occurred while signing up. Please try again."
       }
     }
+  },
+  "yeniProje": {
+    "baslik": "New Project",
+    "ad": "Project Name",
+    "adPlaceholder": "Enter your project name",
+    "aciklama": "Description",
+    "aciklamaPlaceholder": "Briefly describe your project...",
+    "aciklamaYardim": "AI will generate a project summary from this description.",
+    "dil": "Project Language",
+    "kaynak": "Source Document (Optional)",
+    "kaynakYardim": "PDF, Word, Excel, or PowerPoint. Max 10MB.",
+    "olusturBtn": "Create Project",
+    "iptal": "Cancel",
+    "karakter": "characters",
+    "hatalar": {
+      "ad_zorunlu": "Project name is required.",
+      "ad_uzun": "Project name cannot exceed 100 characters.",
+      "dosya_buyuk": "File cannot exceed 10MB.",
+      "dosya_format": "Only PDF, Word, Excel, or PowerPoint files are accepted.",
+      "dosya_yuklenemedi": "An error occurred while uploading the file.",
+      "yetkisiz": "Not authenticated.",
+      "genel": "An error occurred while creating the project. Please try again."
+    },
+    "mujkerrer": {
+      "mesaj": "You already have a project with this name.",
+      "devam": "Continue Anyway",
+      "degistir": "Edit the name above to use a different one."
+    }
+  },
+  "projeDetay": {
+    "baslik": "Project Details",
+    "geri": "Back to My Projects",
+    "olusturmaTarihi": "Created",
+    "sonGuncelleme": "Last Updated"
+  },
+  "projeler": {
+    "baslik": "My Projects",
+    "yeniProje": "New Project",
+    "bosHal": {
+      "baslik": "No projects yet.",
+      "aciklama": "Create your first project!",
+      "btn": "Create New Project"
+    },
+    "kart": {
+      "hikayeSayisi": "stories",
+      "dokumanSayisi": "documents"
+    },
+    "daha": "Load More"
   }
 }

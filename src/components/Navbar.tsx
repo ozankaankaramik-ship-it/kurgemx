@@ -14,7 +14,10 @@ export default function Navbar() {
   const otherLocale = locale === "tr" ? "en" : "tr";
 
   const switchLanguage = () => {
-    router.replace(pathname, { locale: otherLocale });
+    // next-intl typed router.replace requires params for dynamic routes, but
+    // usePathname() returns the resolved path — cast to bypass the template literal check.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    router.replace(pathname as any, { locale: otherLocale });
   };
 
   return (
@@ -31,16 +34,10 @@ export default function Navbar() {
             {t("nav.home")}
           </Link>
           <Link
-            href="/about"
+            href="/projeler"
             className="text-sm text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors"
           >
-            {t("nav.about")}
-          </Link>
-          <Link
-            href="/contact"
-            className="text-sm text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors"
-          >
-            {t("nav.contact")}
+            {t("nav.projeler")}
           </Link>
         </div>
 
