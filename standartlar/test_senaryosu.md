@@ -78,6 +78,21 @@ Durum:        bekliyor
 
 ---
 
+## Çıktı Formatı
+
+- Test senaryosu dokümanı Excel (.xlsx) formatında üretilir
+- Her test case bir satır olarak gösterilir
+- Sütunlar: Test Case No | Başlık | Tip | Hikaye | Ön Koşul | Adımlar | Beklenen Sonuç | Durum
+- Tip sütununa göre renk kodlaması uygulanır:
+  - Olumlu (pozitif): Yeşil
+  - Olumsuz (negatif): Kırmızı
+  - Performans: Turuncu
+  - Güvenlik: Mor
+- Durum sütunu: bekliyor / gecti / basarisiz / bloke
+- Her hikaye grubu için ayrı sekme (sheet) oluşturulur
+
+---
+
 ## Veritabanı Yapısı
 
 Test senaryoları `dokumanlar` tablosunda `test_senaryosu` tipiyle saklanır.
