@@ -155,6 +155,7 @@
       "yzPlaceholder": "AI-generated description will appear here...",
       "olustur": "Create Project",
       "olusturuluyor": "Creating...",
+      "yzOlusturuluyor": "Enhancing description...",
       "olusturTooltip": "Please enhance your description with AI before creating the project",
       "hatalar": {
         "ad_zorunlu": "Project name is required.",
@@ -187,11 +188,13 @@
       "ozetSutun3": "Sprint Range",
       "ozetSutun4": "Sprint Count",
       "ozetSutun5": "Duration",
-      "exportExcel": "Export to Excel"
+      "exportExcel": "Export to Excel",
+      "olusturuluyor": "Generating story map..."
     },
     "adim3": {
       "baslik": "Business Analysis Documents",
       "uret": "Generate Documents",
+      "olusturuluyor": "Generating documents...",
       "r1": "R1 — MVP",
       "r2": "R2 — Enhancement",
       "r3": "R3 — Advanced",
@@ -200,11 +203,13 @@
     "adim4": {
       "baslik": "Prototype",
       "uret": "Generate Prototype",
+      "olusturuluyor": "Generating prototype...",
       "cerceveBos": "Prototype preview will appear here."
     },
     "adim5": {
       "baslik": "Test Scenarios",
       "uret": "Generate Test Scenarios (.xlsx)",
+      "olusturuluyor": "Generating test scenarios...",
       "sutun1": "Scenario",
       "sutun2": "Steps",
       "sutun3": "Expected Result",
@@ -224,7 +229,10 @@
       "kapsam": "Scope Document",
       "mimari": "Architecture Document",
       "uret": "Generate",
-      "durum": "Pending"
-    }
+      "durum": "Pending",
+      "kapsamOlusturuluyor": "Generating scope document...",
+      "mimariOlusturuluyor": "Generating architecture document..."
+    },
+    "yenidenOlustur": "Regenerate"
   }
 }

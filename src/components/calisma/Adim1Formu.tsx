@@ -4,6 +4,7 @@ import { useActionState, useEffect, useRef, useState } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
 import { projeOlusturVeDon } from '@/lib/projects/create'
 import { useProje } from './ProjeContext'
+import { ProgressBar } from './GenerateButton'
 
 function SparkleIcon() {
   return (
@@ -42,6 +43,7 @@ function stripMarkdown(raw: string): string {
 
 export default function Adim1Formu() {
   const t = useTranslations('calismaEkrani.adim1')
+  const tc = useTranslations('calismaEkrani')
   const locale = useLocale()
   const ctx = useProje()
   const [state, formAction, isPending] = useActionState(projeOlusturVeDon, null)
@@ -154,24 +156,33 @@ export default function Adim1Formu() {
           className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#2E75B6] transition resize-none"
         />
 
-        <button
-          type="button"
-          onClick={handleYz}
-          disabled={yzYukleniyor}
-          className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-[#1F3864] px-3 py-1.5 text-sm font-medium text-[#1F3864] hover:bg-[#EEF4FB] disabled:opacity-50 transition"
-        >
-          {yzYukleniyor ? (
-            <>
-              <Spinner />
-              <span>{t('yzDetaylandir')}</span>
-            </>
-          ) : (
-            <>
-              <SparkleIcon />
-              <span>{t('yzDetaylandir')}</span>
-            </>
-          )}
-        </button>
+        <div className="mt-2 space-y-2">
+          <button
+            type="button"
+            onClick={handleYz}
+            disabled={yzYukleniyor}
+            className={`inline-flex items-center gap-1.5 rounded-md h-[34px] px-3.5 text-xs font-medium transition border-[0.5px] ${
+              yzYukleniyor
+                ? 'bg-[#1F3864] text-white border-transparent cursor-wait'
+                : yzCikti !== null
+                ? 'bg-white border-[#2E75B6]/50 text-[#1F3864] hover:bg-[#EEF4FB]'
+                : 'border-[#1F3864] text-[#1F3864] hover:bg-[#EEF4FB]'
+            }`}
+          >
+            {yzYukleniyor ? (
+              <>
+                <Spinner />
+                <span>{t('yzOlusturuluyor')}</span>
+              </>
+            ) : (
+              <>
+                <SparkleIcon />
+                <span>{yzCikti !== null ? tc('yenidenOlustur') : t('yzDetaylandir')}</span>
+              </>
+            )}
+          </button>
+          {yzYukleniyor && <ProgressBar />}
+        </div>
 
         {(yzCikti !== null || yzHata) && (
           <div className="mt-3 rounded-lg border border-[#2E75B6]/25 bg-blue-50 p-4">

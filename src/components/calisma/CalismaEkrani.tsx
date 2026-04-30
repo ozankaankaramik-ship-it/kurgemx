@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl'
 import DilDegistirici from './DilDegistirici'
 import Adim1Formu from './Adim1Formu'
 import { ProjeProvider, useProje } from './ProjeContext'
+import GenerateButton, { ProgressBar } from './GenerateButton'
 
 interface HikayeItem {
   no: string
@@ -81,11 +82,6 @@ async function exportToExcel(data: StoryMapData, projeAdi: string) {
   XLSX.writeFile(wb, dosyaAdi)
 }
 
-function ButtonSpinner() {
-  return (
-    <span className="inline-block w-3.5 h-3.5 rounded-full border-2 border-white/30 border-t-white animate-spin shrink-0" />
-  )
-}
 
 // Dış bileşen: ProjeProvider sağlar
 export default function CalismaEkrani() {
@@ -103,6 +99,16 @@ function EkranIci() {
   const { projeId, ad, shortDesc, detailedDesc } = ctx
   const [adim2Yukleniyor, setAdim2Yukleniyor] = useState(false)
   const [adim2Hata, setAdim2Hata] = useState(false)
+  const [adim3Yukleniyor, setAdim3Yukleniyor] = useState(false)
+  const [adim3Hata, setAdim3Hata] = useState(false)
+  const [adim4Yukleniyor, setAdim4Yukleniyor] = useState(false)
+  const [adim4Hata, setAdim4Hata] = useState(false)
+  const [adim5Yukleniyor, setAdim5Yukleniyor] = useState(false)
+  const [adim5Hata, setAdim5Hata] = useState(false)
+  const [kapsamYukleniyor, setKapsamYukleniyor] = useState(false)
+  const [kapsamHata, setKapsamHata] = useState(false)
+  const [mimariYukleniyor, setMimariYukleniyor] = useState(false)
+  const [mimariHata, setMimariHata] = useState(false)
 
   const storyMapData: StoryMapData | null = ctx.dokuman.storyMap
     ? (JSON.parse(ctx.dokuman.storyMap) as StoryMapData)
@@ -145,6 +151,71 @@ function EkranIci() {
       setAdim2Hata(true)
     } finally {
       setAdim2Yukleniyor(false)
+    }
+  }
+
+  async function generateDocuments() {
+    setAdim3Yukleniyor(true)
+    setAdim3Hata(false)
+    try {
+      // TODO: /api/ai/is-analizi endpoint'i eklendiğinde buraya gelecek
+      await new Promise(r => setTimeout(r, 500))
+    } catch {
+      setAdim3Hata(true)
+    } finally {
+      setAdim3Yukleniyor(false)
+    }
+  }
+
+  async function generatePrototype() {
+    setAdim4Yukleniyor(true)
+    setAdim4Hata(false)
+    try {
+      // TODO: /api/ai/prototip endpoint'i eklendiğinde buraya gelecek
+      await new Promise(r => setTimeout(r, 500))
+    } catch {
+      setAdim4Hata(true)
+    } finally {
+      setAdim4Yukleniyor(false)
+    }
+  }
+
+  async function generateTestScenarios() {
+    setAdim5Yukleniyor(true)
+    setAdim5Hata(false)
+    try {
+      // TODO: /api/ai/test-senaryosu endpoint'i eklendiğinde buraya gelecek
+      await new Promise(r => setTimeout(r, 500))
+    } catch {
+      setAdim5Hata(true)
+    } finally {
+      setAdim5Yukleniyor(false)
+    }
+  }
+
+  async function generateKapsam() {
+    setKapsamYukleniyor(true)
+    setKapsamHata(false)
+    try {
+      // TODO: /api/ai/kapsam endpoint'i eklendiğinde buraya gelecek
+      await new Promise(r => setTimeout(r, 500))
+    } catch {
+      setKapsamHata(true)
+    } finally {
+      setKapsamYukleniyor(false)
+    }
+  }
+
+  async function generateMimari() {
+    setMimariYukleniyor(true)
+    setMimariHata(false)
+    try {
+      // TODO: /api/ai/mimari endpoint'i eklendiğinde buraya gelecek
+      await new Promise(r => setTimeout(r, 500))
+    } catch {
+      setMimariHata(true)
+    } finally {
+      setMimariYukleniyor(false)
     }
   }
 
@@ -212,23 +283,21 @@ function EkranIci() {
               </h2>
               <div className={`rounded-xl p-6 space-y-6 ${adim2Aktif ? 'bg-[#EEF4FB] border border-blue-100' : 'bg-white border border-gray-100'}`}>
                 {/* Generate butonu */}
-                <div className="flex items-center gap-3">
-                  <button
-                    disabled={!adim2Aktif || adim2Yukleniyor}
-                    onClick={generateStoryMap}
-                    className={`inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition ${
-                      adim2Aktif && !adim2Yukleniyor
-                        ? 'bg-[#1F3864] text-white hover:bg-[#2E75B6]'
-                        : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                    }`}
-                  >
-                    {adim2Yukleniyor && <ButtonSpinner />}
-                    {t('adim2.uret')}
-                  </button>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3">
+                    <GenerateButton
+                      label={t('adim2.uret')}
+                      loadingLabel={t('adim2.olusturuluyor')}
+                      regenerateLabel={t('yenidenOlustur')}
+                      disabled={!adim2Aktif}
+                      loading={adim2Yukleniyor}
+                      hasContent={storyMapData !== null}
+                      onClick={generateStoryMap}
+                    />
                   {storyMapData && (
                     <button
                       onClick={() => exportToExcel(storyMapData, ad)}
-                      className="inline-flex items-center gap-1.5 rounded-lg border border-[#1F3864] px-3 py-1.5 text-sm font-medium text-[#1F3864] hover:bg-[#EEF4FB] transition"
+                      className="inline-flex items-center gap-1.5 rounded-md h-[34px] px-3.5 text-xs font-medium border-[0.5px] border-[#2E75B6]/50 text-[#1F3864] hover:bg-[#EEF4FB] transition"
                     >
                       <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                         <path d="M8 1v9M4 7l4 4 4-4M2 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -236,8 +305,10 @@ function EkranIci() {
                       {t('adim2.exportExcel')}
                     </button>
                   )}
+                  </div>
+                  {adim2Yukleniyor && <ProgressBar />}
+                  {adim2Hata && <p className="text-xs text-red-500">{t('adim1.hatalar.genel')}</p>}
                 </div>
-                {adim2Hata && <p className="text-xs text-red-500">{t('adim1.hatalar.genel')}</p>}
 
                 {/* ── Tablo 1: Hikaye Haritası ── */}
                 <div className="rounded-lg border border-gray-200 overflow-hidden overflow-x-auto bg-white">
@@ -376,9 +447,19 @@ function EkranIci() {
             <div className="flex-1 pb-10">
               <h2 className={`text-base font-semibold mb-4 ${adim3Aktif ? 'text-[#1F3864]' : 'text-gray-400'}`}>{t('adim3.baslik')}</h2>
               <div className={`rounded-xl p-6 ${adim3Aktif ? 'bg-[#EEF4FB] border border-blue-100' : 'bg-white border border-gray-100'}`}>
-                <button disabled className={`rounded-lg px-4 py-2 text-sm font-medium mb-5 ${adim3Aktif ? 'bg-[#1F3864] text-white hover:bg-[#2E75B6] cursor-not-allowed' : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}>
-                  {t('adim3.uret')}
-                </button>
+                <div className="space-y-2 mb-5">
+                  <GenerateButton
+                    label={t('adim3.uret')}
+                    loadingLabel={t('adim3.olusturuluyor')}
+                    regenerateLabel={t('yenidenOlustur')}
+                    disabled={!adim3Aktif}
+                    loading={adim3Yukleniyor}
+                    hasContent={false}
+                    onClick={generateDocuments}
+                  />
+                  {adim3Yukleniyor && <ProgressBar />}
+                  {adim3Hata && <p className="text-xs text-red-500">{t('adim1.hatalar.genel')}</p>}
+                </div>
                 <div className="grid grid-cols-3 gap-4">
                   {([t('adim3.r1'), t('adim3.r2'), t('adim3.r3')] as string[]).map((r) => (
                     <div key={r} className="rounded-lg border border-gray-100 p-4 flex flex-col gap-3">
@@ -402,9 +483,19 @@ function EkranIci() {
             <div className="flex-1 pb-10">
               <h2 className="text-base font-semibold text-gray-400 mb-4">{t('adim4.baslik')}</h2>
               <div className="bg-white border border-gray-100 rounded-xl p-6">
-                <button disabled className="rounded-lg px-4 py-2 text-sm font-medium bg-gray-100 text-gray-400 cursor-not-allowed mb-5">
-                  {t('adim4.uret')}
-                </button>
+                <div className="space-y-2 mb-5">
+                  <GenerateButton
+                    label={t('adim4.uret')}
+                    loadingLabel={t('adim4.olusturuluyor')}
+                    regenerateLabel={t('yenidenOlustur')}
+                    disabled={!adim3Aktif}
+                    loading={adim4Yukleniyor}
+                    hasContent={false}
+                    onClick={generatePrototype}
+                  />
+                  {adim4Yukleniyor && <ProgressBar />}
+                  {adim4Hata && <p className="text-xs text-red-500">{t('adim1.hatalar.genel')}</p>}
+                </div>
                 <div className="rounded-lg border-2 border-gray-100 overflow-hidden">
                   <div className="bg-gray-50 px-4 py-2.5 flex items-center gap-2.5 border-b border-gray-100">
                     <div className="flex gap-1.5">
@@ -430,9 +521,19 @@ function EkranIci() {
             <div className="flex-1 pb-10">
               <h2 className="text-base font-semibold text-gray-400 mb-4">{t('adim5.baslik')}</h2>
               <div className="bg-white border border-gray-100 rounded-xl p-6">
-                <button disabled className="rounded-lg px-4 py-2 text-sm font-medium bg-gray-100 text-gray-400 cursor-not-allowed mb-5">
-                  {t('adim5.uret')}
-                </button>
+                <div className="space-y-2 mb-5">
+                  <GenerateButton
+                    label={t('adim5.uret')}
+                    loadingLabel={t('adim5.olusturuluyor')}
+                    regenerateLabel={t('yenidenOlustur')}
+                    disabled={!adim3Aktif}
+                    loading={adim5Yukleniyor}
+                    hasContent={false}
+                    onClick={generateTestScenarios}
+                  />
+                  {adim5Yukleniyor && <ProgressBar />}
+                  {adim5Hata && <p className="text-xs text-red-500">{t('adim1.hatalar.genel')}</p>}
+                </div>
                 <div className="rounded-lg border border-gray-100 overflow-hidden">
                   <table className="w-full text-sm text-left">
                     <thead className="bg-gray-50">
@@ -474,19 +575,48 @@ function EkranIci() {
               </span>
             </div>
             <div className="grid grid-cols-2 gap-4">
-              {([t('tamamlayici.kapsam'), t('tamamlayici.mimari')] as string[]).map((doc) => (
-                <div key={doc} className="rounded-xl border border-gray-100 bg-white p-5 flex items-center justify-between">
+              <div className="rounded-xl border border-gray-100 bg-white p-5">
+                <div className="flex items-center justify-between mb-2">
                   <div>
-                    <p className="text-sm font-medium text-gray-300 mb-1.5">{doc}</p>
-                    <span className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs text-gray-400">
+                    <p className="text-sm font-medium text-gray-600 mb-1">{t('tamamlayici.kapsam')}</p>
+                    <span className="rounded-full bg-[#F1EFE8] px-2.5 py-0.5 text-xs text-[#444441]">
                       {t('tamamlayici.durum')}
                     </span>
                   </div>
-                  <button disabled className="rounded-lg px-3 py-1.5 text-sm font-medium bg-gray-100 text-gray-400 cursor-not-allowed">
-                    {t('tamamlayici.uret')}
-                  </button>
+                  <GenerateButton
+                    label={t('tamamlayici.uret')}
+                    loadingLabel={t('tamamlayici.kapsamOlusturuluyor')}
+                    regenerateLabel={t('yenidenOlustur')}
+                    disabled={!adim2Aktif}
+                    loading={kapsamYukleniyor}
+                    hasContent={false}
+                    onClick={generateKapsam}
+                  />
                 </div>
-              ))}
+                {kapsamYukleniyor && <ProgressBar />}
+                {kapsamHata && <p className="text-xs text-red-500 mt-1">{t('adim1.hatalar.genel')}</p>}
+              </div>
+              <div className="rounded-xl border border-gray-100 bg-white p-5">
+                <div className="flex items-center justify-between mb-2">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600 mb-1">{t('tamamlayici.mimari')}</p>
+                    <span className="rounded-full bg-[#F1EFE8] px-2.5 py-0.5 text-xs text-[#444441]">
+                      {t('tamamlayici.durum')}
+                    </span>
+                  </div>
+                  <GenerateButton
+                    label={t('tamamlayici.uret')}
+                    loadingLabel={t('tamamlayici.mimariOlusturuluyor')}
+                    regenerateLabel={t('yenidenOlustur')}
+                    disabled={!adim2Aktif}
+                    loading={mimariYukleniyor}
+                    hasContent={false}
+                    onClick={generateMimari}
+                  />
+                </div>
+                {mimariYukleniyor && <ProgressBar />}
+                {mimariHata && <p className="text-xs text-red-500 mt-1">{t('adim1.hatalar.genel')}</p>}
+              </div>
             </div>
           </div>
 

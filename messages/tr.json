@@ -155,6 +155,7 @@
       "yzPlaceholder": "YZ tarafından oluşturulan açıklama burada görünecek...",
       "olustur": "Proje Oluştur",
       "olusturuluyor": "Oluşturuluyor...",
+      "yzOlusturuluyor": "Açıklama detaylandırılıyor...",
       "olusturTooltip": "Projeyi oluşturmadan önce lütfen açıklamanızı YZ ile detaylandırın",
       "hatalar": {
         "ad_zorunlu": "Proje adı zorunludur.",
@@ -187,11 +188,13 @@
       "ozetSutun3": "Sprint Aralığı",
       "ozetSutun4": "Sprint Sayısı",
       "ozetSutun5": "Süre",
-      "exportExcel": "Excel'e Aktar"
+      "exportExcel": "Excel'e Aktar",
+      "olusturuluyor": "Hikaye haritası oluşturuluyor..."
     },
     "adim3": {
       "baslik": "İş Analizi Dokümanları",
       "uret": "Doküman Oluştur",
+      "olusturuluyor": "Dokümanlar oluşturuluyor...",
       "r1": "R1 — MVP",
       "r2": "R2 — Geliştirme",
       "r3": "R3 — İleri Düzey",
@@ -200,11 +203,13 @@
     "adim4": {
       "baslik": "Prototip",
       "uret": "Prototip Oluştur",
+      "olusturuluyor": "Prototip oluşturuluyor...",
       "cerceveBos": "Prototip önizlemesi burada görünecek."
     },
     "adim5": {
       "baslik": "Test Senaryosu",
       "uret": "Test Senaryosu Oluştur (.xlsx)",
+      "olusturuluyor": "Test senaryoları oluşturuluyor...",
       "sutun1": "Senaryo",
       "sutun2": "Adımlar",
       "sutun3": "Beklenen Sonuç",
@@ -224,7 +229,10 @@
       "kapsam": "Kapsam Dokümanı",
       "mimari": "Mimari Doküman",
       "uret": "Oluştur",
-      "durum": "Beklemede"
-    }
+      "durum": "Beklemede",
+      "kapsamOlusturuluyor": "Kapsam dokümanı oluşturuluyor...",
+      "mimariOlusturuluyor": "Mimari doküman oluşturuluyor..."
+    },
+    "yenidenOlustur": "Yeniden Oluştur"
   }
 }
