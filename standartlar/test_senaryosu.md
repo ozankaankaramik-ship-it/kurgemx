@@ -16,7 +16,7 @@ Bu dosyayı okumadan önce `genel.md` dosyasını oku ve oradaki kuralları da u
 ## Yapısal Tanımlar
 
 - **Test Senaryosu:** Hikaye gruplarına karşılık gelen test case topluluğu
-  - Örn: "H6+H7+H8 Proje Yönetimi Test Senaryosu"
+  - Örn: "ST6+ST7+ST8 Proje Yönetimi Test Senaryosu"
 - **Test Case:** Tek bir hikayeye karşılık gelen test adımı
   - Bir senaryonun altında birden fazla test case olabilir
 
@@ -33,10 +33,10 @@ Bu dosyayı okumadan önce `genel.md` dosyasını oku ve oradaki kuralları da u
 
 | Tip | Kod | Açıklama |
 |-----|-----|---------|
-| Olumlu | pozitif | Başarılı akış testi |
-| Olumsuz | negatif | Hata durumu testi |
-| Performans | performans | Yanıt süresi, yük testi |
-| Güvenlik | guvenlik | Yetkilendirme, veri güvenliği |
+| Olumlu | positive | Başarılı akış testi |
+| Olumsuz | negative | Hata durumu testi |
+| Performans | performance | Yanıt süresi, yük testi |
+| Güvenlik | security | Yetkilendirme, veri güvenliği |
 
 ---
 
@@ -53,27 +53,27 @@ Bu dosyayı okumadan önce `genel.md` dosyasını oku ve oradaki kuralları da u
 
 ## Durum Değerleri
 
-- `bekliyor` — henüz çalıştırılmadı
-- `gecti` — test başarılı
-- `basarisiz` — test başarısız
-- `bloke` — bağımlılık nedeniyle çalıştırılamıyor
+- `pending` — henüz çalıştırılmadı
+- `passed` — test başarılı
+- `failed` — test başarısız
+- `blocked` — bağımlılık nedeniyle çalıştırılamıyor
 
 ---
 
 ## Test Case Formatı
 
 ```
-Test Case No: TC-[HikayeNo]-[SıraNo]  örn: TC-H6-01
+Test Case No: TC-[HikayeNo]-[SıraNo]  örn: TC-ST6-01
 Başlık:       [Kısa açıklama]
-Tip:          pozitif / negatif / performans / guvenlik
-Hikaye:       H[No]
+Tip:          positive / negative / performance / security
+Hikaye:       ST[No]
 Ön Koşul:     [Başlangıç durumu]
 Adımlar:
   1. [Adım]
   2. [Adım]
   ...
 Beklenen Sonuç: [Ne olması gerektiği]
-Durum:        bekliyor
+Durum:        pending
 ```
 
 ---
@@ -84,11 +84,11 @@ Durum:        bekliyor
 - Her test case bir satır olarak gösterilir
 - Sütunlar: Test Case No | Başlık | Tip | Hikaye | Ön Koşul | Adımlar | Beklenen Sonuç | Durum
 - Tip sütununa göre renk kodlaması uygulanır:
-  - Olumlu (pozitif): Yeşil
-  - Olumsuz (negatif): Kırmızı
-  - Performans: Turuncu
-  - Güvenlik: Mor
-- Durum sütunu: bekliyor / gecti / basarisiz / bloke
+  - Olumlu (positive): Yeşil
+  - Olumsuz (negative): Kırmızı
+  - Performans (performance): Turuncu
+  - Güvenlik (security): Mor
+- Durum sütunu: pending / passed / failed / blocked
 - Her hikaye grubu için ayrı sekme (sheet) oluşturulur
 
 ---
@@ -100,17 +100,30 @@ Test case'leri dokümanın `icerik` alanında JSON formatında tutulur.
 
 ```json
 {
-  "test_caseleri": [
+  "test_cases": [
     {
-      "no": "TC-H6-01",
-      "baslik": "...",
-      "tip": "pozitif",
-      "hikaye_id": "H6",
-      "on_kosul": "...",
-      "adimlar": ["...", "..."],
-      "beklenen_sonuc": "...",
-      "durum": "bekliyor"
+      "no": "TC-ST6-01",
+      "title": "...",
+      "type": "positive",
+      "story_id": "ST6",
+      "precondition": "...",
+      "steps": ["...", "..."],
+      "expected_result": "...",
+      "status": "pending"
     }
   ]
 }
 ```
+
+---
+
+## Referans: Evrensel Kısaltmalar
+
+| Kısaltma | Açılım | Örnek |
+|----------|--------|-------|
+| ST | Story (Hikaye) | ST1, ST2 |
+| SP | Sprint | SP1, SP2 |
+| R | Release | R1, R2, R3 |
+| AC | Acceptance Criteria (Kabul Kriteri) | AC-001 |
+| BR | Business Rule (İş Kuralı) | BR-001 |
+| TC | Test Case | TC-ST1-01 |

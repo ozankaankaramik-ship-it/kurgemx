@@ -7,8 +7,9 @@ Doküman tipine özgü kurallar için ilgili dosyaya bakınız.
 
 ## Dil ve Ton
 
-- Tüm dokümanlar Türkçe yazılır
-- Teknik terimler parantez içinde İngilizce verilebilir: örn. "kabul kriteri (acceptance criteria)"
+- Dil: Kullanıcının platformda seçtiği dilde üretilir
+  - Tüm metin, başlık, tablo ve açıklamalar seçilen dilde yazılır
+  - Teknik terimler gerektiğinde parantez içinde İngilizce verilebilir
 - Ton: profesyonel, net, açık
 - Detay seviyesi: iş birimi uygulama yapmadan anlayabilmeli
 - Tüm bölümlerde aynı terminoloji kullanılır
@@ -19,21 +20,51 @@ Doküman tipine özgü kurallar için ilgili dosyaya bakınız.
 ## Platform Adı
 
 - Platform adı: **KurgemX**
-- Ayrı bir ürün adı kullanılmaz, her şey için KurgemX denir
-- Doküman başlıklarında: "KurgemX — [Doküman Adı]" formatı kullanılır
+- KurgemX yalnızca şu yerlerde görünür: kapak sayfası, header ve footer
+- Doküman içeriğinde (hikaye, kabul kriteri, iş kuralı, tablo vb.) KurgemX adı geçmez
+- Header formatı: "KurgemX  |  [Proje Adı]  |  [Doküman Adı]"
+
+---
+
+## Evrensel Kısaltmalar
+
+Dil seçiminden bağımsız, tüm dillerde aynı kısaltmalar kullanılır:
+
+| Kısaltma | Açılım | Örnek |
+|----------|--------|-------|
+| ST | Story (Hikaye) | ST1, ST2, ST3 |
+| SP | Sprint | SP1, SP2, SP3 |
+| R | Release | R1, R2, R3 |
+| AC | Acceptance Criteria (Kabul Kriteri) | AC-001, AC-002 |
+| BR | Business Rule (İş Kuralı) | BR-001, BR-002 |
+| TC | Test Case | TC-ST1-01 |
 
 ---
 
 ## Terminoloji
 
-| Türkçe | Kullanım |
-|--------|---------|
+| Türkçe | İngilizce |
+|--------|-----------|
 | Destan | Epic |
-| Hikaye | User Story |
+| Hikaye | Story |
 | Sürüm | Release |
 | Hikaye Haritası | Story Map |
 | Kabul Kriteri | Acceptance Criteria |
 | İş Kuralı | Business Rule |
+
+---
+
+## Doküman Üretim Modeli
+
+Analiz dokümanları **release bazında** üretilir — her release için en fazla bir analiz dokümanı:
+
+| Release | Doküman |
+|---------|---------|
+| R1 — MVP | R1 İş Analizi Dokümanı |
+| R2 — İyileştirme | R2 İş Analizi Dokümanı |
+| R3 — Gelişmiş | R3 İş Analizi Dokümanı |
+
+Her release dokümanı o release'e ait tüm hikayeleri, sistem gereksinimlerini ve geçiş gereksinimlerini kapsar.
 
 ---
 
@@ -62,15 +93,32 @@ Doküman tipine özgü kurallar için ilgili dosyaya bakınız.
 
 ### Ekran Görüntüleri
 - Maksimum genişlik: 580px (Word sayfasına sığacak şekilde)
-- EMU değeri: genişlik 5486400, yükseklik orantılı
+- EMU değeri: genişlik 5486400, yükseklik orantılı (`EMU_h = piksel_h * 914400 / 96`)
 - Her görüntünün altına italik açıklama yazısı eklenir: "Şekil N — [Açıklama]"
-- Tel çatı (wireframe) kullanılmaz; bunun yerine gerçekçi mockup görüntüleri kullanılır
+- Tel çatı (wireframe) kullanılmaz; bunun yerine gerçekçi mockup görüntüleri kullanılır (HTML → PNG, wkhtmltoimage)
+- Zorunlu alanlar mockup'ta `*` ile işaretlenir
 - Görüntüler sayfada ortalanır
 
 ### Header ve Footer
 - Header: "KurgemX  |  [Proje Adı]  |  [Doküman Adı]"
 - Footer sol: "Gizli — Dahili Kullanım  |  Sürüm X.X  |  [Tarih]"
 - Footer sağ: "Sayfa [N]"
+
+---
+
+## Referans: Evrensel Kısaltmalar (Word Dokümanı Sonu)
+
+Her Word dokümanının son sayfasına aşağıdaki kısaltma tablosu eklenir.
+Kullanıcı okuma sırasında referans olarak kullanabilir.
+
+| Kısaltma | Açılım | Örnek |
+|----------|--------|-------|
+| ST | Story (Hikaye) | ST1, ST2 |
+| SP | Sprint | SP1, SP2 |
+| R | Release | R1, R2, R3 |
+| AC | Acceptance Criteria (Kabul Kriteri) | AC-001 |
+| BR | Business Rule (İş Kuralı) | BR-001 |
+| TC | Test Case | TC-ST1-01 |
 
 ---
 

@@ -24,6 +24,21 @@ Bu dosyayı okumadan önce `genel.md` dosyasını oku ve oradaki kuralları da u
 
 ---
 
+## Evrensel Kısaltmalar
+
+Tüm dillerde aynı kısaltmalar kullanılır:
+
+| Kısaltma | Açılım | Örnek |
+|----------|--------|-------|
+| ST | Story (Hikaye) | ST1, ST2, ST3 |
+| SP | Sprint | SP1, SP2, SP3 |
+| R | Release | R1, R2, R3 |
+| AC | Acceptance Criteria (Kabul Kriteri) | AC-001, AC-002 |
+| BR | Business Rule (İş Kuralı) | BR-001, BR-002 |
+| TC | Test Case | TC-ST1-01 |
+
+---
+
 ## Tablo Yapısı
 
 - **Sütunlar:** Destanlar (Epic'ler)
@@ -31,17 +46,7 @@ Bu dosyayı okumadan önce `genel.md` dosyasını oku ve oradaki kuralları da u
 - Hikayeler ilgili destan sütunu altında, ilgili sürüm satırında gösterilir
 - Her hücrede birden fazla hikaye yer alabilir (yatay düzende)
 - Markdown tablo formatında hazırlanır
-
----
-
-## Sabit Destanlar (Her Projede Zorunlu)
-
-Son iki destan her hikaye haritasında bulunur ve kullanıcı tarafından silinemez:
-
-1. **Fonksiyonel Olmayan Gereksinimler (Epic)** — her zaman sondan ikinci
-2. **Geçiş Gereksinimleri (Epic)** — her zaman son
-
-Diğer destanlar projenin ihtiyaçlarına göre kullanıcı tarafından belirlenir.
+- Destanlar projenin ihtiyaçlarına göre kullanıcı tarafından belirlenir; zorunlu sabit destan yoktur
 
 ---
 
@@ -49,8 +54,8 @@ Diğer destanlar projenin ihtiyaçlarına göre kullanıcı tarafından belirlen
 
 - Hikaye haritasında özet format: `...yapabilme`
   - Örn: "Giriş yapabilme", "Proje oluşturabilme"
-- Hikaye numaraları: H1, H2, H3 ... (metin, integer değil)
-- Tabloda kısa format: `H6 · Yeni proje oluşturabilme (S2)`
+- Hikaye numaraları: ST1, ST2, ST3 ... (metin, integer değil)
+- Tabloda kısa format: `ST6 · Yeni proje oluşturabilme (SP2)`
 - Durum bilgisi: Başlamadı / Çalışılıyor / Tamamlandı / Bloke
 
 ---
@@ -72,9 +77,9 @@ Her hikaye şu kriterleri karşılamalıdır:
 ## Sprint Planlaması
 
 - Her sprint 2 haftadır
-- Sprint numaraları: S1, S2, S3 ...
-- Her sprint'teki önerilen hikaye sayısı: 5-9
-- Sprint odak alanı belirtilir: örn. "S2 — Proje yönetimi + hikaye haritalama"
+- Sprint numaraları: SP1, SP2, SP3 ...
+- Sprint odak alanı belirtilir: örn. "SP2 — Proje yönetimi + hikaye haritalama"
+- Hikaye sayısı projenin kapsamına göre AI tarafından belirlenir; yapay bir üst/alt sınır uygulanmaz
 
 ### Altyapı Önce Prensibi
 Sprint planlaması geliştirici bakış açısıyla yapılır: **altyapı önce, özellik sonra.**
@@ -86,36 +91,15 @@ Sprint planlaması geliştirici bakış açısıyla yapılır: **altyapı önce,
 
 ## Sürüm Planlaması
 
-| Sürüm | Kod | Hikaye Sayısı | Açıklama |
-|-------|-----|---------------|---------|
-| R1 | MVP | 7-10 hikaye | Temel işlevler, piyasaya çıkış |
-| R2 | İyileştirme | 8-12 hikaye | Kullanıcı geri bildirimleri, ek özellikler |
-| R3 | Gelişmiş | 10-15 hikaye | İleri özellikler, entegrasyonlar |
+| Sürüm | Kod | Açıklama |
+|-------|-----|---------|
+| R1 | MVP | Temel işlevler, piyasaya çıkış |
+| R2 | İyileştirme | Kullanıcı geri bildirimleri, ek özellikler |
+| R3 | Gelişmiş | İleri özellikler, entegrasyonlar |
 
 **KVKK ve güvenlik hikayeleri her zaman R1 — MVP'de, tercihen ilk sprint'te ele alınmalıdır.**
 
----
-
-## Fonksiyonel Olmayan Gereksinimler Destanı — Zorunlu Hikayeler
-
-Bu destanda mutlaka şu konular ele alınmalıdır:
-
-- **Performans** — yanıt süresi, eş zamanlı kullanıcı kapasitesi
-- **Responsive / Mobil uyumlu tasarım** — tüm cihazlarda çalışma
-- **Uptime / Sistem güvenilirliği** — kesintisiz çalışma süresi
-- **Erişilebilirlik** — WCAG standartları (R2'de ele alınabilir)
-- **Loglama ve izlenebilirlik** — günlükleme, izleme, ölçümler
-
----
-
-## Geçiş Gereksinimleri Destanı — Değerlendirilecek Hikayeler
-
-Bu destanda şu konular değerlendirilmeli, ilgili olmayanlar boş bırakılabilir:
-
-- Kullanıcı eğitimi ve onboarding
-- Mevcut verinin / dokümanın sisteme aktarımı
-- Geri dönüş (rollback) planı
-- İletişim planı
+**Fonksiyonel olmayan gereksinimler ve geçiş gereksinimleri hikaye haritasında ayrı destan olarak yer almaz; release bazında üretilen analiz dokümanının "Sistem Gereksinimleri" bölümünde ele alınır.**
 
 ---
 
@@ -124,11 +108,11 @@ Bu destanda şu konular değerlendirilmeli, ilgili olmayanlar boş bırakılabil
 ### 1. Hikaye Haritası Tablosu
 
 ```
-| Release | [Destan 1] | ... | Fonksiyonel Olmayan Gereksinimler | Geçiş Gereksinimleri |
-|---------|------------|-----|-----------------------------------|----------------------|
-| R1 — MVP | H1 · ... (S1) | | H_x · ... (S2) | H_x · ... (S_x) |
-| R2 — İyileştirme | H_x · ... (S6) | | H_x · ... (S6) | |
-| R3 — Gelişmiş | H_x · ... (S9) | | | |
+| Release | [Destan 1] | [Destan 2] | ... |
+|---------|------------|------------|-----|
+| R1 — MVP | ST1 · ... (SP1) | ST6 · ... (SP2) | |
+| R2 — İyileştirme | ST_x · ... (SP6) | | |
+| R3 — Gelişmiş | ST_x · ... (SP9) | | |
 ```
 
 ### 2. Sprint Planı Özeti
@@ -136,8 +120,8 @@ Bu destanda şu konular değerlendirilmeli, ilgili olmayanlar boş bırakılabil
 ```
 | Sprint | Odak Alanı | Hikayeler | Hikaye Sayısı | Süre |
 |--------|------------|-----------|---------------|------|
-| S1 | Temel altyapı | H1, H2, H3 | x | 2 hafta |
-| S2 | ... | ... | x | 2 hafta |
+| SP1 | Temel altyapı | ST1, ST2, ST3 | x | 2 hafta |
+| SP2 | ... | ... | x | 2 hafta |
 ```
 
 ### 3. Genel Özet Tablosu
@@ -145,7 +129,7 @@ Bu destanda şu konular değerlendirilmeli, ilgili olmayanlar boş bırakılabil
 ```
 | Sürüm | Hikaye Sayısı | Sprint Aralığı | Sprint Sayısı | Süre |
 |-------|---------------|----------------|---------------|------|
-| R1 — MVP | | S1 → S_x | | |
+| R1 — MVP | | SP1 → SP_x | | |
 | R2 — İyileştirme | | | | |
 | R3 — Gelişmiş | | | | |
 | Toplam | | | | |
@@ -155,9 +139,24 @@ Bu destanda şu konular değerlendirilmeli, ilgili olmayanlar boş bırakılabil
 
 ## Yazım İlkeleri
 
-- Dil: Kullanıcının tercih ettiği dilde üretilir (Türkçe veya İngilizce)
-  - Kullanıcı Türkçe seçtiyse: Tamamen Türkçe. Teknik terimler parantez içinde İngilizce verilebilir. Terminoloji: Destan (Epic), Hikaye (Story), Sürüm (Release), Sprint
-  - Kullanıcı İngilizce seçtiyse: Standart uluslararası terimler kullanılır (Epic, Story, Release, Sprint)
+- Dil: Kullanıcının platformda seçtiği dilde üretilir
+  - Tüm metin, başlık, tablo ve açıklamalar seçilen dilde yazılır
+  - Kullanıcı Türkçe seçtiyse terminoloji: Destan (Epic), Hikaye (Story), Sürüm (Release), Sprint
+  - Diğer dillerde standart uluslararası terimler kullanılır: Epic, Story, Release, Sprint
+  - Kısaltmalar dil seçiminden bağımsız her zaman evrensel formatta kullanılır: ST, SP, R, AC, BR, TC
 - Geliştirici bakışı: Sprint sıralaması teknik önceliğe göre yapılmalı, altyapı her zaman önce gelir
 - KVKK / Güvenlik: Her zaman R1 — MVP'de, tercihen ilk sprint'te ele alınmalı
 - INVEST: Her hikaye bağımsız, değerli, tahmin edilebilir ve test edilebilir olmalı
+
+---
+
+## Referans: Evrensel Kısaltmalar
+
+| Kısaltma | Açılım | Örnek |
+|----------|--------|-------|
+| ST | Story (Hikaye) | ST1, ST2 |
+| SP | Sprint | SP1, SP2 |
+| R | Release | R1, R2, R3 |
+| AC | Acceptance Criteria (Kabul Kriteri) | AC-001 |
+| BR | Business Rule (İş Kuralı) | BR-001 |
+| TC | Test Case | TC-ST1-01 |
