@@ -31,6 +31,7 @@ export default async function ProjelerPage() {
   const { count } = await supabase
     .from('projeler')
     .select('id', { count: 'exact', head: true })
+    .eq('kullanici_id', user!.id)
 
   const toplamSayiVar = (count ?? 0) > 10
 

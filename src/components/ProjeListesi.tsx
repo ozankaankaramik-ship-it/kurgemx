@@ -74,7 +74,7 @@ export default function ProjeListesi({ initialProjeler, toplamSayiVar }: Props) 
             key={proje.id}
             proje={proje}
             href={projeHref(proje.id)}
-            sonGuncellemeMesaj={formatTarih(proje.guncelleme_tarihi)}
+            olusturmaTarihi={formatTarih(proje.olusturma_tarihi)}
             hikayeEtiketi={t('kart.hikayeSayisi')}
             dokumanEtiketi={t('kart.dokumanSayisi')}
             dilEtiketi={dilEtiketi(proje.dil)}
