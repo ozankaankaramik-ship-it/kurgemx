@@ -1,18 +1,10 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { NextResponse } from 'next/server'
-import fs from 'fs'
-import path from 'path'
+import { genel, hikayeHaritasi } from '@/lib/standartlar'
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
-const STANDARTLAR = (() => {
-  const genel = fs.readFileSync(path.join(process.cwd(), 'standartlar/genel.md'), 'utf-8')
-  const hikayeHaritasi = fs.readFileSync(
-    path.join(process.cwd(), 'standartlar/hikaye_haritasi.md'),
-    'utf-8'
-  )
-  return `${genel}\n\n---\n\n${hikayeHaritasi}\n\n---\n\nYanıtını SADECE geçerli JSON olarak ver. JSON öncesinde veya sonrasında hiçbir açıklama, markdown kod bloğu (\`\`\`json gibi) veya ek metin yazma.`
-})()
+const SISTEM = `${genel}\n\n${hikayeHaritasi}`
 
 export async function POST(req: Request) {
   let body: { projeAdi?: string; detayliAciklama?: string }
@@ -41,35 +33,27 @@ Detaylı Açıklama: ${detayliAciklama}
 Yalnızca aşağıdaki JSON yapısını döndür. Markdown kod bloğu, ön yazı veya ek açıklama ekleme — sadece JSON:
 {
   "hikayeHaritasi": {
-    "destanlar": ["Destan 1", "Destan 2", "Fonksiyonel Olmayan Gereksinimler", "Geçiş Gereksinimleri"],
+    "destanlar": ["Destan 1", "Destan 2"],
     "hikayeler": [
-      { "no": "H1", "ad": "hikaye adı ...yapabilme", "destan": "Destan 1", "surum": "R1", "sprint": "S1" }
+      { "no": "ST1", "ad": "hikaye adı ...yapabilme", "destan": "Destan 1", "surum": "R1", "sprint": "SP1" }
     ]
   },
   "sprintPlani": [
-    { "sprint": "S1", "odakAlani": "Temel altyapı", "hikayeler": "H1, H2, H3", "hikayeSayisi": 3, "sure": "2 hafta" }
+    { "sprint": "SP1", "odakAlani": "Temel altyapı", "hikayeler": "ST1, ST2, ST3", "hikayeSayisi": 3, "sure": "2 hafta" }
   ],
   "genelOzet": [
-    { "surum": "R1 — MVP", "hikayeSayisi": 7, "sprintAraligi": "S1 → S2", "sprintSayisi": 2, "sure": "4 hafta" },
-    { "surum": "R2 — İyileştirme", "hikayeSayisi": 8, "sprintAraligi": "S3 → S5", "sprintSayisi": 3, "sure": "6 hafta" },
-    { "surum": "R3 — Gelişmiş", "hikayeSayisi": 10, "sprintAraligi": "S6 → S8", "sprintSayisi": 3, "sure": "6 hafta" },
-    { "surum": "Toplam", "hikayeSayisi": 25, "sprintAraligi": "S1 → S8", "sprintSayisi": 8, "sure": "16 hafta" }
+    { "surum": "R1 — MVP", "hikayeSayisi": 7, "sprintAraligi": "SP1 → SP2", "sprintSayisi": 2, "sure": "4 hafta" },
+    { "surum": "R2 — İyileştirme", "hikayeSayisi": 8, "sprintAraligi": "SP3 → SP5", "sprintSayisi": 3, "sure": "6 hafta" },
+    { "surum": "R3 — Gelişmiş", "hikayeSayisi": 10, "sprintAraligi": "SP6 → SP8", "sprintSayisi": 3, "sure": "6 hafta" },
+    { "surum": "Toplam", "hikayeSayisi": 25, "sprintAraligi": "SP1 → SP8", "sprintSayisi": 8, "sure": "16 hafta" }
   ]
-}
-
-Kurallar:
-- "hikayeHaritasi.destanlar" listesinin son iki elemanı her zaman "Fonksiyonel Olmayan Gereksinimler" ve "Geçiş Gereksinimleri" olmalı
-- "hikayeler"deki her "destan" değeri "destanlar" listesindeki bir adla birebir eşleşmeli
-- "surum": yalnızca "R1", "R2" veya "R3"
-- "sprint": "S1", "S2" vb.
-- "sprintPlani": standartlardaki Sprint Planı Özeti formatında, her sprint için bir satır
-- "genelOzet": standartlardaki Genel Özet Tablosu formatında, R1/R2/R3 ve Toplam satırı`
+}`
 
   try {
     const yanit = await client.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 4096,
-      system: [{ type: 'text', text: STANDARTLAR, cache_control: { type: 'ephemeral' } }],
+      system: [{ type: 'text', text: SISTEM, cache_control: { type: 'ephemeral' } }],
       messages: [{ role: 'user', content: kullaniciPrompt }],
     })
 
@@ -78,7 +62,6 @@ Kurallar:
 
     console.error('[hikaye-haritasi] raw response:', rawText)
 
-    // İlk { ile son } arasındaki kısmı al
     const first = rawText.indexOf('{')
     const last = rawText.lastIndexOf('}')
     if (first === -1 || last === -1 || last <= first) {
