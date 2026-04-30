@@ -35,7 +35,7 @@ Bu kurallar yalnızca analiz dokümanları için geçerlidir.
 
 ---
 
-## Bölüm Yapısı (5 Bölüm — Değiştirilemez)
+## Bölüm Yapısı (4 Bölüm — Değiştirilemez)
 
 ### Bölüm 1: Doküman Genel Bilgileri
 - Proje adı
@@ -51,29 +51,25 @@ Bu kurallar yalnızca analiz dokümanları için geçerlidir.
 - Sonraki güncelleme
 
 ### Bölüm 2: Hikaye Bazında Kapsam ve Kabul Kriterleri
-Her hikaye için:
-- Kullanıcı hikayesi (AKTÖR / İHTİYAÇ / FAYDA formatında)
-- İş gereksinimi
-- Kapsam içinde ✅ / Kapsam dışında ❌
-- Kabul kriterleri (hibrit format — aşağıya bakın)
-- İş kuralları (İK-XXX — ilgili kriterin hemen altında)
+Her hikaye için şu sırayla:
+1. Kullanıcı hikayesi (AKTÖR / İHTİYAÇ / FAYDA formatında)
+2. Kapsam tablosu (içinde ✅ / dışında ❌)
+3. **Ekran mockup'ı** (kabul kriterlerinin hemen üstünde)
+4. Kabul kriterleri (sadeleştirilmiş format — aşağıya bakın)
+5. İş kuralları (İK-XXX — ilgili kriterin hemen altında)
 
 ### Bölüm 3: Etki Analizi
 - Bloke olan hikayeler tablosu
 - Etkilenen iş süreçleri
 - Riskler tablosu (Risk, Olasılık, Etki, Azaltım Stratejisi)
 
-### Bölüm 4: Ekran Görüntüleri
-- Her ekran için başlık ve kısa açıklama
-- Mockup görüntüsü (genel.md'deki görüntü standartlarına uygun)
-- Şekil numarası ve açıklama yazısı
-- Duyarlı tasarım notu: Mobil / Tablet / Masaüstü
-
-### Bölüm 5: Teknik Detaylar ve Entegrasyonlar *(yalnızca teknik ekip)*
+### Bölüm 4: Teknik Detaylar ve Entegrasyonlar *(yalnızca teknik ekip)*
 - API uç noktaları (istek/yanıt örnekleri JSON formatında)
 - Veritabanı şeması (tablo yapıları, RLS politikaları)
 - Güvenlik uygulaması
 - Entegrasyon noktaları tablosu
+
+> **Not:** Ekran Görüntüleri artık ayrı bir bölüm değildir. Her ekran, ilgili hikayenin kabul kriterlerinin hemen üstünde yer alır.
 
 ---
 
@@ -92,7 +88,7 @@ FAYDA:   Böylece [sonuç/değer] gerçekleştirebilirim
 
 ---
 
-## Kabul Kriteri Formatı (Hibrit)
+## Kabul Kriteri Formatı (Sadeleştirilmiş)
 
 "Senaryo" kelimesi kullanılmaz — test senaryolarıyla karışmaması için "kriter" denir.
 
@@ -115,16 +111,9 @@ FAYDA:   Böylece [sonuç/değer] gerçekleştirebilirim
 ```
 KR-001 — [Kriter Başlığı] [Tip Etiketi]
 
-[Düz cümle: Koşul + eylem + beklenen sonuç. Teknik olmayan
-kişilerin anlayabileceği dilde. Teknik terim kullanılırsa
-parantez içinde açıkla.]
-
-KOŞUL:  [Başlangıç durumu — sistem ve kullanıcı durumu]
-EYLEM:  [Kullanıcının yaptığı işlem]
-SONUÇ:
-  • [Beklenen sonuç 1]
-  • [Beklenen sonuç 2]
-  • [Beklenen sonuç 3]
+[Tek düz cümle: koşul + eylem + beklenen sonuç.
+Teknik olmayan kişilerin anlayabileceği dilde yazılır.
+KOŞUL / EYLEM / SONUÇ blokları kullanılmaz.]
 
 İK-001 · [İş Kuralı Başlığı]  ← sadece bu kritere ait iş kuralı varsa
 [Kural detayı, koşullar, istisnalar. Somut örneklerle açıkla.]
@@ -135,16 +124,9 @@ SONUÇ:
 ```
 KR-001 — Başarılı Proje Oluşturma [Başarılı]
 
-Kullanıcı oturum açmış durumdayken proje adı ve açıklama
-girerek "Oluştur" butonuna tıkladığında proje başarıyla
-oluşturulur ve proje detay ekranına yönlendirilir.
-
-KOŞUL:  Kullanıcı oturum açmış; Yeni Proje formu açık
-EYLEM:  Geçerli proje adı ve açıklama girilir; Oluştur'a tıklanır
-SONUÇ:
-  • Proje veritabanına kaydedilir
-  • Kullanıcı proje detay ekranına yönlendirilir
-  • Başarı bildirimi gösterilir
+Kullanıcı zorunlu alanları doldurup "Proje Oluştur" butonuna tıkladığında
+proje veritabanına kaydedilir, proje detay ekranına yönlendirilir ve
+başarı bildirimi gösterilir.
 
 İK-001 · Proje adı zorunluluğu
 Proje adı boş veya yalnızca boşluktan oluşan değer kabul edilmez.
@@ -161,21 +143,9 @@ Maksimum 100 karakter.
 | Perspektif | İş perspektifi | Teknik perspektif |
 | Odak | Onay odaklı | Uygulama odaklı |
 | Kimin için | İş birimi + Teknik ekip | Test ekibi |
-| Format | Hibrit (düz cümle + tablo) | Adım adım teknik |
+| Format | Düz açıklama cümlesi | Adım adım teknik |
 
 Kabul kriteri **ne** olacağını söyler, test case **nasıl** doğrulanacağını.
-
-```
-Kabul Kriteri SONUÇ:
-  • Proje veritabanına kaydedilir
-
-Test Case Adımları:
-  1. Tarayıcıda /projects/new adresine git
-  2. "Ad" alanına "Test Projesi" yaz
-  3. "Oluştur" butonuna tıkla
-  4. Supabase'de projects tablosunu kontrol et
-  5. Yeni kaydın oluştuğunu doğrula
-```
 
 ---
 
@@ -207,11 +177,14 @@ Kapsam dışındaki her madde için hangi hikayede ele alındığı mutlaka beli
 ## Ekran Görüntüsü Kuralları
 
 - Tel çatı (ASCII wireframe) kullanılmaz
-- Gerçekçi mockup görüntüleri kullanılır (HTML → PNG)
-- Görüntü boyutu: genişlik max 580px, EMU: 5486400
-- Her görüntünün altında: "Şekil N — [Ekran adı ve kısa açıklama]" (italik, ortalı)
-- Her ekranın hangi kabul kriteriyle ilişkili olduğu belirtilir
-- Duyarlı tasarım notu: Mobil / Tablet / Masaüstü
+- Gerçekçi mockup görüntüleri kullanılır (HTML → PNG, wkhtmltoimage)
+- Görüntü boyutu: genişlik 580px (Word'de), EMU genişlik: 5486400
+- Yükseklik orantılı olarak hesaplanır: `EMU_h = piksel_h * 914400 / 96`
+- Her görüntünün altında: `Şekil N — [Ekran adı ve kısa açıklama]` (italik, ortalı)
+- **Zorunlu alanlar mockup'ta `*` ile işaretlenir**
+- Ekran, ilgili hikayenin kabul kriterlerinin hemen üstünde gösterilir
+- Referans satırı: `İlgili kriterler: KR-XXX, KR-YYY | Tasarım: Masaüstü · Tablet · Mobil`
+- Duyarlı tasarım notu: Masaüstü / Tablet / Mobil
 
 ---
 
@@ -248,11 +221,11 @@ Her tablo için SELECT, INSERT, UPDATE, DELETE politikaları ayrı ayrı belirti
 ## Doküman Kullanım Notu
 
 **İş Birimi (Ürün Sahibi, İş Analisti) için:**
-- Bölüm 1, 2, 3 ve 4 iş birimi onayı için hazırlanmıştır
-- Bölüm 5 teknik ekip içindir, atlanabilir
+- Bölüm 1, 2 ve 3 iş birimi onayı için hazırlanmıştır
+- Bölüm 4 teknik ekip içindir, atlanabilir
 - Kabul kriterleri ve iş kuralları iş birimi tarafından onaylanmalıdır
 
 **Teknik Ekip için:**
 - Tüm bölümler okunmalıdır
-- Bölüm 5 uygulama için kritiktir
+- Bölüm 4 uygulama için kritiktir
 - Kabul kriterleri test case'lerinin temelini oluşturur
