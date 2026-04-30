@@ -21,31 +21,49 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'empty_input' }, { status: 400 })
   }
 
-  const apiKey = process.env.ANTHROPIC_API_KEY
-  if (!apiKey) {
+  if (!process.env.ANTHROPIC_API_KEY) {
     return NextResponse.json({ error: 'api_key_missing' }, { status: 500 })
   }
 
-  try {
-    const mesaj = [
-      projeAdi && `Proje adı: ${projeAdi}`,
-      aciklama && `Açıklama: ${aciklama}`,
-    ]
-      .filter(Boolean)
-      .join('\n')
+  const mesaj = [
+    projeAdi && `Proje adı: ${projeAdi}`,
+    aciklama && `Açıklama: ${aciklama}`,
+  ]
+    .filter(Boolean)
+    .join('\n')
 
-    const yanit = await client.messages.create({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 1024,
-      system: [{ type: 'text', text: SISTEM, cache_control: { type: 'ephemeral' } }],
-      messages: [{ role: 'user', content: mesaj }],
-    })
+  const encoder = new TextEncoder()
 
-    const ilkBlok = yanit.content[0]
-    const detay = ilkBlok.type === 'text' ? ilkBlok.text : ''
+  const readable = new ReadableStream({
+    async start(controller) {
+      try {
+        const stream = await client.messages.create({
+          model: 'claude-sonnet-4-6',
+          max_tokens: 2000,
+          stream: true,
+          system: [{ type: 'text', text: SISTEM, cache_control: { type: 'ephemeral' } }],
+          messages: [{ role: 'user', content: mesaj }],
+        })
 
-    return NextResponse.json({ detay })
-  } catch {
-    return NextResponse.json({ error: 'api_error' }, { status: 500 })
-  }
+        for await (const event of stream) {
+          if (
+            event.type === 'content_block_delta' &&
+            event.delta.type === 'text_delta'
+          ) {
+            controller.enqueue(encoder.encode(event.delta.text))
+          }
+        }
+      } finally {
+        controller.close()
+      }
+    },
+  })
+
+  return new Response(readable, {
+    headers: {
+      'Content-Type': 'text/plain; charset=utf-8',
+      'Cache-Control': 'no-cache',
+      'X-Content-Type-Options': 'nosniff',
+    },
+  })
 }

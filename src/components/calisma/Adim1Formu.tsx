@@ -27,6 +27,19 @@ function Spinner() {
   )
 }
 
+function stripMarkdown(raw: string): string {
+  return raw
+    .replace(/#{1,6}\s+/g, '')
+    .replace(/\*\*([\s\S]+?)\*\*/g, '$1')
+    .replace(/\*([\s\S]+?)\*/g, '$1')
+    .replace(/^\s*[-*+]\s+/gm, '')
+    .replace(/^\s*\d+\.\s+/gm, '')
+    .replace(/`{1,3}([^`]+)`{1,3}/g, '$1')
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim()
+}
+
 export default function Adim1Formu() {
   const t = useTranslations('calismaEkrani.adim1')
   const locale = useLocale()
@@ -41,7 +54,8 @@ export default function Adim1Formu() {
   const adRef = useRef<HTMLInputElement>(null)
   const aciklamaRef = useRef<HTMLTextAreaElement>(null)
 
-  const canSubmit = !isPending && adValue.trim().length > 0 && yzCikti !== null
+  // Streaming sırasında buton disabled — hem yzYukleniyor hem yzCikti kontrol edilir
+  const canSubmit = !isPending && !yzYukleniyor && adValue.trim().length > 0 && yzCikti !== null
 
   useEffect(() => {
     if (state?.id && yzCikti) {
@@ -61,21 +75,32 @@ export default function Adim1Formu() {
 
     setYzYukleniyor(true)
     setYzHata(false)
-    setYzCikti(null)
+    setYzCikti('')  // Kutuyu hemen aç (boş), chunks gelince dolacak
 
+    let raw = ''
     try {
       const res = await fetch('/api/ai/detaylandir', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ projeAdi, aciklama }),
       })
-      const json = await res.json()
-      if (!res.ok || !json.detay) throw new Error()
-      setYzCikti(json.detay as string)
+      if (!res.ok || !res.body) throw new Error()
+
+      const reader = res.body.getReader()
+      const decoder = new TextDecoder()
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        raw += decoder.decode(value, { stream: true })
+        setYzCikti(stripMarkdown(raw))
+      }
     } catch {
+      setYzCikti(null)
       setYzHata(true)
     } finally {
       setYzYukleniyor(false)
+      if (raw) setYzCikti(stripMarkdown(raw))  // Son temizleme
     }
   }
 
@@ -148,13 +173,18 @@ export default function Adim1Formu() {
           )}
         </button>
 
-        {(yzCikti || yzHata) && (
+        {(yzCikti !== null || yzHata) && (
           <div className="mt-3 rounded-lg border border-[#2E75B6]/25 bg-blue-50 p-4">
             <p className="text-xs font-semibold text-[#2E75B6] mb-1.5">{t('yzCikti')}</p>
             {yzHata ? (
               <p className="text-sm text-red-500">{t('hatalar.genel')}</p>
             ) : (
-              <p className="text-sm text-gray-700 whitespace-pre-wrap">{yzCikti}</p>
+              <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
+                {yzCikti}
+                {yzYukleniyor && (
+                  <span className="inline-block w-0.5 h-4 bg-[#2E75B6] ml-0.5 align-middle animate-pulse" />
+                )}
+              </p>
             )}
           </div>
         )}
