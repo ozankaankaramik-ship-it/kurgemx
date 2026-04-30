@@ -118,7 +118,7 @@ Sprint planlaması geliştirici bakış açısıyla yapılır: **altyapı önce,
 ### 2. Sprint Planı Özeti
 
 ```
-| Sprint | Odak Alanı | Hikayeler | Hikaye Sayısı | Süre |
+| Sprint | Focus | Stories | Number of Stories | Duration |
 |--------|------------|-----------|---------------|------|
 | SP1 | Temel altyapı | ST1, ST2, ST3 | x | 2 hafta |
 | SP2 | ... | ... | x | 2 hafta |
@@ -127,7 +127,7 @@ Sprint planlaması geliştirici bakış açısıyla yapılır: **altyapı önce,
 ### 3. Genel Özet Tablosu
 
 ```
-| Sürüm | Hikaye Sayısı | Sprint Aralığı | Sprint Sayısı | Süre |
+| Release | Number of Stories | Sprints | Number od Sprints | Duration |
 |-------|---------------|----------------|---------------|------|
 | R1 — MVP | | SP1 → SP_x | | |
 | R2 — İyileştirme | | | | |
