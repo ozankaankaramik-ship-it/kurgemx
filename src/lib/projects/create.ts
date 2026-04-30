@@ -107,6 +107,46 @@ export async function projeOlustur(
   redirect(`/${locale}/projeler/${projeId}`)
 }
 
+export type ProjeOlusturVeDonState = {
+  error?: string
+  id?: string
+} | null
+
+export async function projeOlusturVeDon(
+  _prev: ProjeOlusturVeDonState,
+  formData: FormData
+): Promise<ProjeOlusturVeDonState> {
+  const ad = ((formData.get('ad') as string) ?? '').trim()
+  const aciklama = ((formData.get('aciklama') as string) ?? '').trim().slice(0, 500)
+  const dil = (formData.get('dil') as string) || 'EN'
+
+  if (!ad) return { error: 'ad_zorunlu' }
+  if (ad.length > 100) return { error: 'ad_uzun' }
+
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) return { error: 'yetkisiz' }
+
+  const projeId = crypto.randomUUID()
+
+  const { error: insertError } = await supabase
+    .from('projeler')
+    .insert({
+      id: projeId,
+      kullanici_id: user.id,
+      ad,
+      aciklama: aciklama || null,
+      dil,
+      durum: 'aktif',
+    })
+
+  if (insertError) return { error: 'genel' }
+
+  return { id: projeId }
+}
+
 async function aiOzetUret(
   aciklama: string,
   pdfBuffer: ArrayBuffer | null,

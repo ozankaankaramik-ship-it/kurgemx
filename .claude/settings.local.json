@@ -30,7 +30,12 @@
       "Bash(\"C:/Users/ozank/AppData/Local/npm-cache/_npx/aa8e5c70f9d8d161/node_modules/supabase/bin/supabase.exe\" --debug config push --project-ref tkttgnlnamrtilhbqxhc)",
       "Bash(\"C:/Users/ozank/AppData/Local/npm-cache/_npx/aa8e5c70f9d8d161/node_modules/supabase/bin/supabase.exe\" init:*)",
       "Bash(python -m json.tool)",
-      "Bash(grep -v \"^--$\")"
+      "Bash(grep -v \"^--$\")",
+      "Bash(xargs cat *)",
+      "Bash(py --version)",
+      "Bash(grep -v \"^$\")",
+      "Bash(python3 -c ' *)",
+      "Bash(xargs grep *)"
     ]
   }
 }

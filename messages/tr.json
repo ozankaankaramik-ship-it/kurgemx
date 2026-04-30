@@ -138,5 +138,73 @@
       "dokumanSayisi": "doküman"
     },
     "daha": "Daha Fazla Göster"
+  },
+  "calismaEkrani": {
+    "dilDegistir": "English",
+    "saltOkunurBanner": "Salt okunur — bu proje arşivlendi.",
+    "pasifAdimNot": "Bu bölümü açmak için önceki adımı tamamlayın.",
+    "adim1": {
+      "baslik": "Proje Bilgileri",
+      "projeAdi": "Proje Adı",
+      "projeAdiPlaceholder": "Proje adını girin",
+      "aciklama": "Açıklama",
+      "aciklamaPlaceholder": "Projenizi kısaca açıklayın...",
+      "yzDetaylandir": "YZ ile Detaylandır",
+      "yzCikti": "YZ Önerisi",
+      "yzPlaceholder": "YZ tarafından oluşturulan açıklama burada görünecek...",
+      "olustur": "Proje Oluştur",
+      "olusturuluyor": "Oluşturuluyor...",
+      "hatalar": {
+        "ad_zorunlu": "Proje adı zorunludur.",
+        "ad_uzun": "Proje adı en fazla 100 karakter olabilir.",
+        "yetkisiz": "Oturum açılmamış.",
+        "genel": "Bir hata oluştu. Lütfen tekrar deneyin."
+      }
+    },
+    "adim2": {
+      "baslik": "Hikaye Haritası",
+      "uret": "Hikaye Haritası Oluştur",
+      "tabloBos": "Hikaye haritası oluşturulunca burada görünecek.",
+      "sutun1": "Epik",
+      "sutun2": "Kullanıcı Hikayesi",
+      "sutun3": "Öncelik"
+    },
+    "adim3": {
+      "baslik": "İş Analizi Dokümanları",
+      "uret": "Doküman Oluştur",
+      "r1": "R1 — MVP",
+      "r2": "R2 — Geliştirme",
+      "r3": "R3 — İleri Düzey",
+      "beklemede": "Beklemede"
+    },
+    "adim4": {
+      "baslik": "Prototip",
+      "uret": "Prototip Oluştur",
+      "cerceveBos": "Prototip önizlemesi burada görünecek."
+    },
+    "adim5": {
+      "baslik": "Test Senaryosu",
+      "uret": "Test Senaryosu Oluştur (.xlsx)",
+      "sutun1": "Senaryo",
+      "sutun2": "Adımlar",
+      "sutun3": "Beklenen Sonuç",
+      "ornekS1": "Başarılı Giriş",
+      "ornekA1": "Giriş sayfasına git → Bilgileri gir → Giriş Yap'a tıkla",
+      "ornekB1": "Kontrol paneline yönlendirilir",
+      "ornekS2": "Başarısız Giriş",
+      "ornekA2": "Yanlış şifre gir → Giriş Yap'a tıkla",
+      "ornekB2": "Hata mesajı gösterilir",
+      "ornekS3": "Şifremi Unuttum",
+      "ornekA3": "Şifremi Unuttum'a tıkla → E-posta gir → Gönder",
+      "ornekB3": "Sıfırlama e-postası gönderildi"
+    },
+    "tamamlayici": {
+      "baslik": "Tamamlayıcı Dokümanlar",
+      "etiket": "İsteğe Bağlı",
+      "kapsam": "Kapsam Dokümanı",
+      "mimari": "Mimari Doküman",
+      "uret": "Oluştur",
+      "durum": "Beklemede"
+    }
   }
 }

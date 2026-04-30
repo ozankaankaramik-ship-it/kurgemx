@@ -138,5 +138,73 @@
       "dokumanSayisi": "documents"
     },
     "daha": "Load More"
+  },
+  "calismaEkrani": {
+    "dilDegistir": "Türkçe",
+    "saltOkunurBanner": "Read-only — this project has been archived.",
+    "pasifAdimNot": "Complete the previous step to unlock.",
+    "adim1": {
+      "baslik": "Project Information",
+      "projeAdi": "Project Name",
+      "projeAdiPlaceholder": "Enter project name",
+      "aciklama": "Description",
+      "aciklamaPlaceholder": "Briefly describe your project...",
+      "yzDetaylandir": "Enhance with AI",
+      "yzCikti": "AI Suggestion",
+      "yzPlaceholder": "AI-generated description will appear here...",
+      "olustur": "Create Project",
+      "olusturuluyor": "Creating...",
+      "hatalar": {
+        "ad_zorunlu": "Project name is required.",
+        "ad_uzun": "Project name cannot exceed 100 characters.",
+        "yetkisiz": "Not authenticated.",
+        "genel": "An error occurred. Please try again."
+      }
+    },
+    "adim2": {
+      "baslik": "Story Map",
+      "uret": "Generate Story Map",
+      "tabloBos": "Story map will appear here once generated.",
+      "sutun1": "Epic",
+      "sutun2": "User Story",
+      "sutun3": "Priority"
+    },
+    "adim3": {
+      "baslik": "Business Analysis Documents",
+      "uret": "Generate Documents",
+      "r1": "R1 — MVP",
+      "r2": "R2 — Enhancement",
+      "r3": "R3 — Advanced",
+      "beklemede": "Pending"
+    },
+    "adim4": {
+      "baslik": "Prototype",
+      "uret": "Generate Prototype",
+      "cerceveBos": "Prototype preview will appear here."
+    },
+    "adim5": {
+      "baslik": "Test Scenarios",
+      "uret": "Generate Test Scenarios (.xlsx)",
+      "sutun1": "Scenario",
+      "sutun2": "Steps",
+      "sutun3": "Expected Result",
+      "ornekS1": "Successful Login",
+      "ornekA1": "Navigate to login → Enter credentials → Click Sign In",
+      "ornekB1": "Redirect to dashboard",
+      "ornekS2": "Failed Login",
+      "ornekA2": "Enter wrong password → Click Sign In",
+      "ornekB2": "Error message shown",
+      "ornekS3": "Forgot Password",
+      "ornekA3": "Click Forgot Password → Enter email → Submit",
+      "ornekB3": "Reset email sent to inbox"
+    },
+    "tamamlayici": {
+      "baslik": "Optional Documents",
+      "etiket": "Optional",
+      "kapsam": "Scope Document",
+      "mimari": "Architecture Document",
+      "uret": "Generate",
+      "durum": "Pending"
+    }
   }
 }
