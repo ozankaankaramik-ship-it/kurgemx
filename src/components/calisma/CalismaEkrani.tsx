@@ -44,13 +44,15 @@ async function exportToExcel(data: StoryMapData, projeAdi: string) {
   const XLSX = await import('xlsx')
   const wb = XLSX.utils.book_new()
   const { destanlar, hikayeler } = data.hikayeHaritasi
-  const surumLabels: Record<string, string> = { R1: 'R1 — MVP', R2: 'R2 — Enhancement', R3: 'R3 — Advanced' }
 
-  // Sheet 1: Hikaye Haritası
+  // Sheet 1: Hikaye Haritası — satırları veriden türet
+  const mevcutSurumler = (['R1', 'R2', 'R3'] as const).filter(s =>
+    hikayeler.some(h => h.surum === s)
+  )
   const hmRows = [
-    ['Sürüm / Version', ...destanlar],
-    ...(['R1', 'R2', 'R3'] as const).map(s => [
-      surumLabels[s],
+    ['Sürüm', ...destanlar],
+    ...mevcutSurumler.map(s => [
+      s,
       ...destanlar.map(d =>
         hikayeler
           .filter(h => h.surum === s && h.destan === d)
@@ -61,19 +63,19 @@ async function exportToExcel(data: StoryMapData, projeAdi: string) {
   ]
   XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(hmRows), 'Hikaye Haritası')
 
-  // Sheet 2: Sprint Planı
-  const spRows = [
-    ['Sprint', 'Odak Alanı', 'Hikayeler', 'Hikaye Sayısı', 'Süre'],
-    ...data.sprintPlani.map(r => [r.sprint, r.odakAlani, r.hikayeler, r.hikayeSayisi, r.sure]),
-  ]
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(spRows), 'Sprint Planı')
+  // Sheet 2: Sprint Planı — başlıklar data'dan
+  if (data.sprintPlani.length > 0) {
+    const spHeaders = Object.keys(data.sprintPlani[0])
+    const spRows = [spHeaders, ...data.sprintPlani.map(r => Object.values(r).map(v => v ?? ''))]
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(spRows), 'Sprint Planı')
+  }
 
-  // Sheet 3: Genel Özet
-  const goRows = [
-    ['Sürüm', 'Hikaye Sayısı', 'Sprint Aralığı', 'Sprint Sayısı', 'Süre'],
-    ...data.genelOzet.map(r => [r.surum, r.hikayeSayisi, r.sprintAraligi, r.sprintSayisi, r.sure]),
-  ]
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(goRows), 'Genel Özet')
+  // Sheet 3: Genel Özet — başlıklar data'dan
+  if (data.genelOzet.length > 0) {
+    const goHeaders = Object.keys(data.genelOzet[0])
+    const goRows = [goHeaders, ...data.genelOzet.map(r => Object.values(r).map(v => v ?? ''))]
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(goRows), 'Genel Özet')
+  }
 
   const dosyaAdi = `hikaye-haritasi-${projeAdi.toLowerCase().replace(/\s+/g, '-')}.xlsx`
   XLSX.writeFile(wb, dosyaAdi)
@@ -119,10 +121,27 @@ function EkranIci() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ projeAdi: ad, detayliAciklama: detailedDesc }),
       })
-      const data = await res.json()
-      if (!res.ok || !data.destanlar) throw new Error()
-      ctx.setDokuman('storyMap', JSON.stringify(data))
-    } catch {
+      const raw = await res.json()
+      if (!res.ok) {
+        console.error('[generateStoryMap] API hata yanıtı:', raw)
+        throw new Error(`HTTP ${res.status}`)
+      }
+      const { hikayeHaritasi, sprintPlani, genelOzet } = raw
+      if (!hikayeHaritasi) {
+        console.error('[generateStoryMap] hikayeHaritasi alanı eksik:', raw)
+        throw new Error('hikayeHaritasi missing')
+      }
+      const veri: StoryMapData = {
+        hikayeHaritasi: {
+          destanlar: hikayeHaritasi.destanlar ?? [],
+          hikayeler: hikayeHaritasi.hikayeler ?? [],
+        },
+        sprintPlani: sprintPlani ?? [],
+        genelOzet: genelOzet ?? [],
+      }
+      ctx.setDokuman('storyMap', JSON.stringify(veri))
+    } catch (err) {
+      console.error('[generateStoryMap] hata:', err)
       setAdim2Hata(true)
     } finally {
       setAdim2Yukleniyor(false)
@@ -240,27 +259,28 @@ function EkranIci() {
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-100">
-                        {(['R1', 'R2', 'R3'] as const).map((surumKey, idx) => {
-                          const surumLabel = { R1: t('adim2.r1'), R2: t('adim2.r2'), R3: t('adim2.r3') }[surumKey]
-                          return (
-                            <tr key={surumKey} className={idx % 2 === 1 ? 'bg-gray-50/50' : ''}>
-                              <td className="px-4 py-3 text-xs font-semibold text-gray-600 border-r border-gray-100 align-top w-36 whitespace-nowrap">
-                                {surumLabel}
-                              </td>
-                              {storyMapData.hikayeHaritasi.destanlar.map(destan => (
-                                <td key={destan} className="px-4 py-3 border-r border-gray-100 align-top min-w-[180px] last:border-r-0">
-                                  {hikayelerFiltrele(storyMapData, surumKey, destan).map(h => (
-                                    <div key={h.no} className="mb-1 text-xs text-gray-700 leading-relaxed">
-                                      <span className="font-semibold text-[#2E75B6]">{h.no}</span>
-                                      {' · '}{h.ad}{' '}
-                                      <span className="text-gray-400">({h.sprint})</span>
-                                    </div>
-                                  ))}
+                        {// Satırları veriden türet — R1→R2→R3 sırasını koru
+                          (['R1', 'R2', 'R3'] as const)
+                            .filter(s => storyMapData.hikayeHaritasi.hikayeler.some(h => h.surum === s))
+                            .map((surumKey, idx) => (
+                              <tr key={surumKey} className={idx % 2 === 1 ? 'bg-gray-50/50' : ''}>
+                                <td className="px-4 py-3 text-xs font-semibold text-gray-600 border-r border-gray-100 align-top w-36 whitespace-nowrap">
+                                  {surumKey}
                                 </td>
-                              ))}
-                            </tr>
-                          )
-                        })}
+                                {storyMapData.hikayeHaritasi.destanlar.map(destan => (
+                                  <td key={destan} className="px-4 py-3 border-r border-gray-100 align-top min-w-[180px] last:border-r-0">
+                                    {hikayelerFiltrele(storyMapData, surumKey, destan).map(h => (
+                                      <div key={h.no} className="mb-1 text-xs text-gray-700 leading-relaxed">
+                                        <span className="font-semibold text-[#2E75B6]">{h.no}</span>
+                                        {' · '}{h.ad}{' '}
+                                        <span className="text-gray-400">({h.sprint})</span>
+                                      </div>
+                                    ))}
+                                  </td>
+                                ))}
+                              </tr>
+                            ))
+                        }
                       </tbody>
                     </table>
                   ) : (
@@ -269,69 +289,80 @@ function EkranIci() {
                 </div>
 
                 {/* ── Tablo 2: Sprint Planı Özeti ── */}
-                {storyMapData && storyMapData.sprintPlani.length > 0 && (
-                  <div>
-                    <h3 className="text-sm font-semibold text-[#1F3864] mb-2">{t('adim2.sprintPlanBaslik')}</h3>
-                    <div className="rounded-lg border border-gray-200 overflow-hidden bg-white">
-                      <table className="w-full text-sm text-left">
-                        <thead className="bg-[#1F3864]">
-                          <tr>
-                            {([t('adim2.sprintSutun1'), t('adim2.sprintSutun2'), t('adim2.sprintSutun3'), t('adim2.sprintSutun4'), t('adim2.sprintSutun5')] as string[]).map(h => (
-                              <th key={h} className="px-4 py-2.5 text-xs font-semibold text-white uppercase tracking-wide border-r border-white/20 last:border-r-0">
-                                {h}
-                              </th>
-                            ))}
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-100">
-                          {storyMapData.sprintPlani.map((row, idx) => (
-                            <tr key={idx} className={idx % 2 === 1 ? 'bg-gray-50/50' : ''}>
-                              <td className="px-4 py-2.5 text-xs font-semibold text-[#2E75B6] border-r border-gray-100 whitespace-nowrap">{row.sprint}</td>
-                              <td className="px-4 py-2.5 text-xs text-gray-700 border-r border-gray-100">{row.odakAlani}</td>
-                              <td className="px-4 py-2.5 text-xs text-gray-600 border-r border-gray-100">{row.hikayeler}</td>
-                              <td className="px-4 py-2.5 text-xs text-gray-700 border-r border-gray-100 text-center">{row.hikayeSayisi}</td>
-                              <td className="px-4 py-2.5 text-xs text-gray-700 whitespace-nowrap">{row.sure}</td>
+                {storyMapData && storyMapData.sprintPlani.length > 0 && (() => {
+                  const keys = Object.keys(storyMapData.sprintPlani[0])
+                  return (
+                    <div>
+                      <h3 className="text-sm font-semibold text-[#1F3864] mb-2">{t('adim2.sprintPlanBaslik')}</h3>
+                      <div className="rounded-lg border border-gray-200 overflow-hidden overflow-x-auto bg-white">
+                        <table className="w-full text-sm text-left">
+                          <thead className="bg-[#1F3864]">
+                            <tr>
+                              {keys.map(k => (
+                                <th key={k} className="px-4 py-2.5 text-xs font-semibold text-white uppercase tracking-wide border-r border-white/20 last:border-r-0 whitespace-nowrap">
+                                  {k}
+                                </th>
+                              ))}
                             </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                          </thead>
+                          <tbody className="divide-y divide-gray-100">
+                            {storyMapData.sprintPlani.map((row, idx) => {
+                              const vals = Object.values(row)
+                              return (
+                                <tr key={idx} className={idx % 2 === 1 ? 'bg-gray-50/50' : ''}>
+                                  {vals.map((val, i) => (
+                                    <td key={i} className="px-4 py-2.5 text-xs text-gray-700 border-r border-gray-100 last:border-r-0">
+                                      {String(val ?? '')}
+                                    </td>
+                                  ))}
+                                </tr>
+                              )
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )
+                })()}
 
                 {/* ── Tablo 3: Genel Özet ── */}
-                {storyMapData && storyMapData.genelOzet.length > 0 && (
-                  <div>
-                    <h3 className="text-sm font-semibold text-[#1F3864] mb-2">{t('adim2.genelOzetBaslik')}</h3>
-                    <div className="rounded-lg border border-gray-200 overflow-hidden bg-white">
-                      <table className="w-full text-sm text-left">
-                        <thead className="bg-[#1F3864]">
-                          <tr>
-                            {([t('adim2.ozetSutun1'), t('adim2.ozetSutun2'), t('adim2.ozetSutun3'), t('adim2.ozetSutun4'), t('adim2.ozetSutun5')] as string[]).map(h => (
-                              <th key={h} className="px-4 py-2.5 text-xs font-semibold text-white uppercase tracking-wide border-r border-white/20 last:border-r-0">
-                                {h}
-                              </th>
-                            ))}
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-100">
-                          {storyMapData.genelOzet.map((row, idx) => {
-                            const isToplam = row.surum.toLowerCase() === 'toplam' || row.surum.toLowerCase() === 'total'
-                            return (
-                              <tr key={idx} className={isToplam ? 'bg-gray-50 font-semibold' : idx % 2 === 1 ? 'bg-gray-50/50' : ''}>
-                                <td className="px-4 py-2.5 text-xs text-gray-700 border-r border-gray-100 font-medium whitespace-nowrap">{row.surum}</td>
-                                <td className="px-4 py-2.5 text-xs text-gray-700 border-r border-gray-100 text-center">{row.hikayeSayisi}</td>
-                                <td className="px-4 py-2.5 text-xs text-gray-700 border-r border-gray-100">{row.sprintAraligi}</td>
-                                <td className="px-4 py-2.5 text-xs text-gray-700 border-r border-gray-100 text-center">{row.sprintSayisi}</td>
-                                <td className="px-4 py-2.5 text-xs text-gray-700 whitespace-nowrap">{row.sure}</td>
-                              </tr>
-                            )
-                          })}
-                        </tbody>
-                      </table>
+                {storyMapData && storyMapData.genelOzet.length > 0 && (() => {
+                  const keys = Object.keys(storyMapData.genelOzet[0])
+                  return (
+                    <div>
+                      <h3 className="text-sm font-semibold text-[#1F3864] mb-2">{t('adim2.genelOzetBaslik')}</h3>
+                      <div className="rounded-lg border border-gray-200 overflow-hidden bg-white">
+                        <table className="w-full text-sm text-left">
+                          <thead className="bg-[#1F3864]">
+                            <tr>
+                              {keys.map(k => (
+                                <th key={k} className="px-4 py-2.5 text-xs font-semibold text-white uppercase tracking-wide border-r border-white/20 last:border-r-0 whitespace-nowrap">
+                                  {k}
+                                </th>
+                              ))}
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-gray-100">
+                            {storyMapData.genelOzet.map((row, idx) => {
+                              const vals = Object.values(row)
+                              const ilkDeger = String(vals[0] ?? '').toLowerCase()
+                              const isToplam = ilkDeger.includes('toplam') || ilkDeger.includes('total')
+                              return (
+                                <tr key={idx} className={isToplam ? 'bg-gray-50 font-semibold' : idx % 2 === 1 ? 'bg-gray-50/50' : ''}>
+                                  {vals.map((val, i) => (
+                                    <td key={i} className="px-4 py-2.5 text-xs text-gray-700 border-r border-gray-100 last:border-r-0 whitespace-nowrap">
+                                      {String(val ?? '')}
+                                    </td>
+                                  ))}
+                                </tr>
+                              )
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )
+                })()}
               </div>
             </div>
           </div>
