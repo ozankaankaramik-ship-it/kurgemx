@@ -42,44 +42,218 @@ function hikayelerFiltrele(data: StoryMapData, surum: string, destanAdi: string)
 }
 
 async function exportToExcel(data: StoryMapData, projeAdi: string) {
-  const XLSX = await import('xlsx')
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const XLSX = (await import('xlsx-js-style')) as any
   const wb = XLSX.utils.book_new()
-  const { destanlar, hikayeler } = data.hikayeHaritasi
 
-  // Sheet 1: Hikaye Haritası — satırları veriden türet
-  const mevcutSurumler = (['R1', 'R2', 'R3'] as const).filter(s =>
-    hikayeler.some(h => h.surum === s)
-  )
-  const hmRows = [
-    ['Sürüm', ...destanlar],
-    ...mevcutSurumler.map(s => [
-      s,
-      ...destanlar.map(d =>
-        hikayeler
-          .filter(h => h.surum === s && h.destan === d)
-          .map(h => `${h.no} · ${h.ad} (${h.sprint})`)
-          .join('\n') || ''
+  // ── Sabitler ──────────────────────────────────────────────
+  const DARK_BLUE = '1F3864'
+  const LIGHT_BLUE = 'D6E4F0'
+  const WHITE = 'FFFFFF'
+  const SPRINT_PALETTE = ['EEF4FB', 'EAF3DE', 'FFFDE7', 'FFF3E0', 'EDE7F6']
+
+  const THIN_BORDER = {
+    top:    { style: 'thin', color: { rgb: 'D1D5DB' } },
+    bottom: { style: 'thin', color: { rgb: 'D1D5DB' } },
+    left:   { style: 'thin', color: { rgb: 'D1D5DB' } },
+    right:  { style: 'thin', color: { rgb: 'D1D5DB' } },
+  }
+
+  // Sprint → renk haritası (sprintPlani sırasına göre)
+  const sprintColorMap = new Map<string, string>()
+  data.sprintPlani.forEach(row => {
+    const sprint = String(Object.values(row)[0] ?? '')
+    if (!sprintColorMap.has(sprint)) {
+      sprintColorMap.set(sprint, SPRINT_PALETTE[sprintColorMap.size % SPRINT_PALETTE.length])
+    }
+  })
+
+  // Yardımcılar
+  function c(v: string | number, s: Record<string, unknown> = {}) {
+    return { v, t: typeof v === 'number' ? 'n' : 's', s: { border: THIN_BORDER, ...s } }
+  }
+  function hdr(v: string) {
+    return c(v, {
+      font: { bold: true, sz: 10, color: { rgb: WHITE } },
+      fill: { patternType: 'solid', fgColor: { rgb: DARK_BLUE } },
+      alignment: { horizontal: 'center', vertical: 'center', wrapText: true },
+    })
+  }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  function isToplam(row: any) {
+    const v = String(Object.values(row as Record<string, unknown>)[0] ?? '').toLowerCase()
+    return v.includes('toplam') || v.includes('total')
+  }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  function autoW(keys: string[], rows: any[]) {
+    return keys.map((k, ci) => ({
+      wch: Math.min(
+        Math.ceil(
+          Math.max(k.length, ...rows.map(r => String(Object.values(r)[ci] ?? '').length)) * 1.2
+        ),
+        55
       ),
-    ]),
-  ]
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(hmRows), 'Hikaye Haritası')
+    }))
+  }
+  function enc(r: number, c: number) { return XLSX.utils.encode_cell({ r, c }) }
 
-  // Sheet 2: Sprint Planı — başlıklar data'dan
+  // ── SHEET 1: Story Map ─────────────────────────────────────
+  const { destanlar, hikayeler } = data.hikayeHaritasi
+  const surumler = (['R1', 'R2', 'R3'] as const).filter(s => hikayeler.some(h => h.surum === s))
+  const numCols = destanlar.length + 1
+
+  const toplamRow = data.genelOzet.find(isToplam)
+  const summaryText = toplamRow ? Object.values(toplamRow).slice(1).join(' · ') : ''
+
+  const ws1: Record<string, unknown> = {}
+  const m1: unknown[] = []
+  const rows1: { hpx: number }[] = []
+
+  // Satır 1: proje adı
+  ws1[enc(0, 0)] = c(projeAdi, {
+    font: { bold: true, sz: 14, color: { rgb: WHITE } },
+    fill: { patternType: 'solid', fgColor: { rgb: DARK_BLUE } },
+    alignment: { horizontal: 'center', vertical: 'center' },
+  })
+  for (let i = 1; i < numCols; i++) ws1[enc(0, i)] = c('', { fill: { patternType: 'solid', fgColor: { rgb: DARK_BLUE } } })
+  m1.push({ s: { r: 0, c: 0 }, e: { r: 0, c: numCols - 1 } })
+  rows1.push({ hpx: 40 })
+
+  // Satır 2: özet
+  ws1[enc(1, 0)] = c(summaryText, {
+    font: { italic: true, sz: 10, color: { rgb: DARK_BLUE } },
+    fill: { patternType: 'solid', fgColor: { rgb: LIGHT_BLUE } },
+    alignment: { horizontal: 'center', vertical: 'center' },
+  })
+  for (let i = 1; i < numCols; i++) ws1[enc(1, i)] = c('', { fill: { patternType: 'solid', fgColor: { rgb: LIGHT_BLUE } } })
+  m1.push({ s: { r: 1, c: 0 }, e: { r: 1, c: numCols - 1 } })
+  rows1.push({ hpx: 24 })
+
+  // Satır 3: başlıklar
+  ws1[enc(2, 0)] = hdr('Version')
+  destanlar.forEach((d, i) => { ws1[enc(2, i + 1)] = hdr(d) })
+  rows1.push({ hpx: 36 })
+
+  // Veri satırları
+  surumler.forEach((surum, si) => {
+    const row = 3 + si
+    const maxCount = Math.max(1, ...destanlar.map(d =>
+      hikayeler.filter(h => h.surum === surum && h.destan === d).length
+    ))
+    ws1[enc(row, 0)] = c(surum, {
+      font: { bold: true, sz: 10, color: { rgb: DARK_BLUE } },
+      fill: { patternType: 'solid', fgColor: { rgb: LIGHT_BLUE } },
+      alignment: { horizontal: 'center', vertical: 'center' },
+    })
+    destanlar.forEach((destan, di) => {
+      const stories = hikayeler.filter(h => h.surum === surum && h.destan === destan)
+      const text = stories.map(h => `${h.no} · ${h.ad} (${h.sprint})`).join('\n')
+      const bg = stories.length > 0 ? (sprintColorMap.get(stories[0].sprint) ?? WHITE) : WHITE
+      ws1[enc(row, di + 1)] = c(text, {
+        font: { sz: 9, color: { rgb: '374151' } },
+        fill: { patternType: 'solid', fgColor: { rgb: bg } },
+        alignment: { vertical: 'top', wrapText: true },
+      })
+    })
+    rows1.push({ hpx: Math.max(30, maxCount * 18) })
+  })
+
+  ws1['!ref']    = XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: 2 + surumler.length, c: numCols - 1 } })
+  ws1['!merges'] = m1
+  ws1['!cols']   = [{ wch: 12 }, ...destanlar.map(() => ({ wch: 28 }))]
+  ws1['!rows']   = rows1
+  ws1['!views']  = [{ state: 'frozen', ySplit: 3 }]
+  XLSX.utils.book_append_sheet(wb, ws1, 'Story Map')
+
+  // ── SHEET 2: Sprint Plan ───────────────────────────────────
   if (data.sprintPlani.length > 0) {
-    const spHeaders = Object.keys(data.sprintPlani[0])
-    const spRows = [spHeaders, ...data.sprintPlani.map(r => Object.values(r).map(v => v ?? ''))]
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(spRows), 'Sprint Planı')
+    const sp = data.sprintPlani
+    const spKeys = Object.keys(sp[0])
+    const nSp = spKeys.length
+    const ws2: Record<string, unknown> = {}
+    const m2: unknown[] = []
+    const rows2: { hpx: number }[] = [{ hpx: 32 }, { hpx: 32 }]
+
+    ws2[enc(0, 0)] = c('Sprint Plan', {
+      font: { bold: true, sz: 12, color: { rgb: WHITE } },
+      fill: { patternType: 'solid', fgColor: { rgb: DARK_BLUE } },
+      alignment: { horizontal: 'center', vertical: 'center' },
+    })
+    for (let i = 1; i < nSp; i++) ws2[enc(0, i)] = c('', { fill: { patternType: 'solid', fgColor: { rgb: DARK_BLUE } } })
+    m2.push({ s: { r: 0, c: 0 }, e: { r: 0, c: nSp - 1 } })
+
+    spKeys.forEach((k, i) => { ws2[enc(1, i)] = hdr(k) })
+
+    sp.forEach((row, ri) => {
+      const r = 2 + ri
+      const vals = Object.values(row)
+      const sprint = String(vals[0] ?? '')
+      const isTotal = isToplam(row)
+      const bg = sprintColorMap.get(sprint) ?? WHITE
+      vals.forEach((v, ci) => {
+        ws2[enc(r, ci)] = c(String(v ?? ''), isTotal
+          ? { font: { bold: true, sz: 10, color: { rgb: DARK_BLUE } }, fill: { patternType: 'solid', fgColor: { rgb: LIGHT_BLUE } } }
+          : {
+              font: { sz: 10, color: { rgb: '374151' } },
+              fill: { patternType: 'solid', fgColor: { rgb: ci === 0 ? bg : WHITE } },
+              alignment: { vertical: 'top', wrapText: ci === 1 || ci === 2 },
+            })
+      })
+      rows2.push({ hpx: 24 })
+    })
+
+    ws2['!ref']    = XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: 1 + sp.length, c: nSp - 1 } })
+    ws2['!merges'] = m2
+    ws2['!cols']   = autoW(spKeys, sp as unknown as Record<string, unknown>[])
+    ws2['!rows']   = rows2
+    ws2['!views']  = [{ state: 'frozen', ySplit: 2 }]
+    XLSX.utils.book_append_sheet(wb, ws2, 'Sprint Plan')
   }
 
-  // Sheet 3: Genel Özet — başlıklar data'dan
+  // ── SHEET 3: General Summary ───────────────────────────────
   if (data.genelOzet.length > 0) {
-    const goHeaders = Object.keys(data.genelOzet[0])
-    const goRows = [goHeaders, ...data.genelOzet.map(r => Object.values(r).map(v => v ?? ''))]
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(goRows), 'Genel Özet')
+    const go = data.genelOzet
+    const goKeys = Object.keys(go[0])
+    const nGo = goKeys.length
+    const ws3: Record<string, unknown> = {}
+    const m3: unknown[] = []
+    const rows3: { hpx: number }[] = [{ hpx: 32 }, { hpx: 32 }]
+
+    ws3[enc(0, 0)] = c('General Summary', {
+      font: { bold: true, sz: 12, color: { rgb: WHITE } },
+      fill: { patternType: 'solid', fgColor: { rgb: DARK_BLUE } },
+      alignment: { horizontal: 'center', vertical: 'center' },
+    })
+    for (let i = 1; i < nGo; i++) ws3[enc(0, i)] = c('', { fill: { patternType: 'solid', fgColor: { rgb: DARK_BLUE } } })
+    m3.push({ s: { r: 0, c: 0 }, e: { r: 0, c: nGo - 1 } })
+
+    goKeys.forEach((k, i) => { ws3[enc(1, i)] = hdr(k) })
+
+    go.forEach((row, ri) => {
+      const r = 2 + ri
+      const vals = Object.values(row)
+      const isTotal = isToplam(row)
+      vals.forEach((v, ci) => {
+        ws3[enc(r, ci)] = c(String(v ?? ''), isTotal
+          ? { font: { bold: true, sz: 10, color: { rgb: DARK_BLUE } }, fill: { patternType: 'solid', fgColor: { rgb: LIGHT_BLUE } } }
+          : {
+              font: { sz: 10, color: { rgb: '374151' } },
+              fill: { patternType: 'solid', fgColor: { rgb: WHITE } },
+              alignment: { horizontal: ci > 0 ? 'center' : 'left', vertical: 'center' },
+            })
+      })
+      rows3.push({ hpx: 24 })
+    })
+
+    ws3['!ref']    = XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: 1 + go.length, c: nGo - 1 } })
+    ws3['!merges'] = m3
+    ws3['!cols']   = autoW(goKeys, go as unknown as Record<string, unknown>[])
+    ws3['!rows']   = rows3
+    ws3['!views']  = [{ state: 'frozen', ySplit: 2 }]
+    XLSX.utils.book_append_sheet(wb, ws3, 'General Summary')
   }
 
-  const dosyaAdi = `hikaye-haritasi-${projeAdi.toLowerCase().replace(/\s+/g, '-')}.xlsx`
-  XLSX.writeFile(wb, dosyaAdi)
+  XLSX.writeFile(wb, `story-map-${projeAdi.toLowerCase().replace(/\s+/g, '-')}.xlsx`)
 }
 
 
