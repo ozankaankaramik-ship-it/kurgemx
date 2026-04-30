@@ -174,7 +174,20 @@
       "transition": "Transition Requirements",
       "r1": "R1 — MVP",
       "r2": "R2 — Enhancement",
-      "r3": "R3 — Advanced"
+      "r3": "R3 — Advanced",
+      "sprintPlanBaslik": "Sprint Plan Summary",
+      "sprintSutun1": "Sprint",
+      "sprintSutun2": "Focus Area",
+      "sprintSutun3": "Stories",
+      "sprintSutun4": "Story Count",
+      "sprintSutun5": "Duration",
+      "genelOzetBaslik": "General Summary",
+      "ozetSutun1": "Version",
+      "ozetSutun2": "Story Count",
+      "ozetSutun3": "Sprint Range",
+      "ozetSutun4": "Sprint Count",
+      "ozetSutun5": "Duration",
+      "exportExcel": "Export to Excel"
     },
     "adim3": {
       "baslik": "Business Analysis Documents",

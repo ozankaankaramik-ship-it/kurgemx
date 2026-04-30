@@ -14,13 +14,69 @@ interface HikayeItem {
   sprint: string
 }
 
-interface StoryMapData {
-  destanlar: string[]
-  hikayeler: HikayeItem[]
+interface SprintPlaniRow {
+  sprint: string
+  odakAlani: string
+  hikayeler: string
+  hikayeSayisi: number | string
+  sure: string
 }
 
-function hikayelerFiltrele(data: StoryMapData, surum: string, destanKey: string): HikayeItem[] {
-  return data.hikayeler.filter(h => h.surum === surum && h.destan === destanKey)
+interface GenelOzetRow {
+  surum: string
+  hikayeSayisi: number | string
+  sprintAraligi: string
+  sprintSayisi: number | string
+  sure: string
+}
+
+interface StoryMapData {
+  hikayeHaritasi: { destanlar: string[]; hikayeler: HikayeItem[] }
+  sprintPlani: SprintPlaniRow[]
+  genelOzet: GenelOzetRow[]
+}
+
+function hikayelerFiltrele(data: StoryMapData, surum: string, destanAdi: string): HikayeItem[] {
+  return data.hikayeHaritasi.hikayeler.filter(h => h.surum === surum && h.destan === destanAdi)
+}
+
+async function exportToExcel(data: StoryMapData, projeAdi: string) {
+  const XLSX = await import('xlsx')
+  const wb = XLSX.utils.book_new()
+  const { destanlar, hikayeler } = data.hikayeHaritasi
+  const surumLabels: Record<string, string> = { R1: 'R1 — MVP', R2: 'R2 — Enhancement', R3: 'R3 — Advanced' }
+
+  // Sheet 1: Hikaye Haritası
+  const hmRows = [
+    ['Sürüm / Version', ...destanlar],
+    ...(['R1', 'R2', 'R3'] as const).map(s => [
+      surumLabels[s],
+      ...destanlar.map(d =>
+        hikayeler
+          .filter(h => h.surum === s && h.destan === d)
+          .map(h => `${h.no} · ${h.ad} (${h.sprint})`)
+          .join('\n') || ''
+      ),
+    ]),
+  ]
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(hmRows), 'Hikaye Haritası')
+
+  // Sheet 2: Sprint Planı
+  const spRows = [
+    ['Sprint', 'Odak Alanı', 'Hikayeler', 'Hikaye Sayısı', 'Süre'],
+    ...data.sprintPlani.map(r => [r.sprint, r.odakAlani, r.hikayeler, r.hikayeSayisi, r.sure]),
+  ]
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(spRows), 'Sprint Planı')
+
+  // Sheet 3: Genel Özet
+  const goRows = [
+    ['Sürüm', 'Hikaye Sayısı', 'Sprint Aralığı', 'Sprint Sayısı', 'Süre'],
+    ...data.genelOzet.map(r => [r.surum, r.hikayeSayisi, r.sprintAraligi, r.sprintSayisi, r.sure]),
+  ]
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(goRows), 'Genel Özet')
+
+  const dosyaAdi = `hikaye-haritasi-${projeAdi.toLowerCase().replace(/\s+/g, '-')}.xlsx`
+  XLSX.writeFile(wb, dosyaAdi)
 }
 
 function ButtonSpinner() {
@@ -135,131 +191,147 @@ function EkranIci() {
               <h2 className={`text-base font-semibold mb-4 ${adim2Aktif ? 'text-[#1F3864]' : 'text-gray-400'}`}>
                 {t('adim2.baslik')}
               </h2>
-              <div className={`rounded-xl p-6 ${adim2Aktif ? 'bg-[#EEF4FB] border border-blue-100' : 'bg-white border border-gray-100'}`}>
-                <button
-                  disabled={!adim2Aktif || adim2Yukleniyor}
-                  onClick={generateStoryMap}
-                  className={`inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition ${
-                    adim2Aktif && !adim2Yukleniyor
-                      ? 'bg-[#1F3864] text-white hover:bg-[#2E75B6]'
-                      : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                  }`}
-                >
-                  {adim2Yukleniyor && <ButtonSpinner />}
-                  {t('adim2.uret')}
-                </button>
+              <div className={`rounded-xl p-6 space-y-6 ${adim2Aktif ? 'bg-[#EEF4FB] border border-blue-100' : 'bg-white border border-gray-100'}`}>
+                {/* Generate butonu */}
+                <div className="flex items-center gap-3">
+                  <button
+                    disabled={!adim2Aktif || adim2Yukleniyor}
+                    onClick={generateStoryMap}
+                    className={`inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition ${
+                      adim2Aktif && !adim2Yukleniyor
+                        ? 'bg-[#1F3864] text-white hover:bg-[#2E75B6]'
+                        : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                    }`}
+                  >
+                    {adim2Yukleniyor && <ButtonSpinner />}
+                    {t('adim2.uret')}
+                  </button>
+                  {storyMapData && (
+                    <button
+                      onClick={() => exportToExcel(storyMapData, ad)}
+                      className="inline-flex items-center gap-1.5 rounded-lg border border-[#1F3864] px-3 py-1.5 text-sm font-medium text-[#1F3864] hover:bg-[#EEF4FB] transition"
+                    >
+                      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                        <path d="M8 1v9M4 7l4 4 4-4M2 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                      {t('adim2.exportExcel')}
+                    </button>
+                  )}
+                </div>
+                {adim2Hata && <p className="text-xs text-red-500">{t('adim1.hatalar.genel')}</p>}
 
-                {adim2Hata && (
-                  <p className="mt-2 text-xs text-red-500">{t('adim1.hatalar.genel')}</p>
-                )}
-
-                {/* Story Map tablosu */}
-                <div className="mt-5 rounded-lg border border-gray-100 overflow-hidden overflow-x-auto">
+                {/* ── Tablo 1: Hikaye Haritası ── */}
+                <div className="rounded-lg border border-gray-200 overflow-hidden overflow-x-auto bg-white">
                   {storyMapData ? (
-                    // Gerçek veri tablosu
                     <table
                       className="text-sm text-left"
-                      style={{ minWidth: `${(storyMapData.destanlar.length + 3) * 200}px`, width: '100%' }}
+                      style={{ minWidth: `${(storyMapData.hikayeHaritasi.destanlar.length + 1) * 200}px`, width: '100%' }}
                     >
-                      <thead className="bg-gray-50">
+                      <thead className="bg-[#1F3864]">
                         <tr>
-                          <th className="px-4 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wide w-36 border-r border-gray-100">
+                          <th className="px-4 py-2.5 text-xs font-semibold text-white uppercase tracking-wide w-36 border-r border-white/20">
                             {t('adim2.surum')}
                           </th>
-                          {storyMapData.destanlar.map(d => (
-                            <th key={d} className="px-4 py-2.5 text-xs font-semibold text-[#1F3864] uppercase tracking-wide border-r border-gray-100">
+                          {storyMapData.hikayeHaritasi.destanlar.map(d => (
+                            <th key={d} className="px-4 py-2.5 text-xs font-semibold text-white uppercase tracking-wide border-r border-white/20 last:border-r-0">
                               {d}
                             </th>
                           ))}
-                          <th className="px-4 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wide bg-gray-50/80 border-r border-gray-100">
-                            {t('adim2.nonFunctional')}
-                          </th>
-                          <th className="px-4 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wide bg-gray-50/80">
-                            {t('adim2.transition')}
-                          </th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-100">
-                        {(['R1', 'R2', 'R3'] as const).map(surumKey => {
+                        {(['R1', 'R2', 'R3'] as const).map((surumKey, idx) => {
                           const surumLabel = { R1: t('adim2.r1'), R2: t('adim2.r2'), R3: t('adim2.r3') }[surumKey]
                           return (
-                            <tr key={surumKey}>
-                              <td className="px-4 py-3 text-xs font-semibold text-gray-500 border-r border-gray-100 align-top w-36">
+                            <tr key={surumKey} className={idx % 2 === 1 ? 'bg-gray-50/50' : ''}>
+                              <td className="px-4 py-3 text-xs font-semibold text-gray-600 border-r border-gray-100 align-top w-36 whitespace-nowrap">
                                 {surumLabel}
                               </td>
-                              {storyMapData.destanlar.map(destan => (
-                                <td key={destan} className="px-4 py-3 border-r border-gray-100 align-top min-w-[180px]">
+                              {storyMapData.hikayeHaritasi.destanlar.map(destan => (
+                                <td key={destan} className="px-4 py-3 border-r border-gray-100 align-top min-w-[180px] last:border-r-0">
                                   {hikayelerFiltrele(storyMapData, surumKey, destan).map(h => (
                                     <div key={h.no} className="mb-1 text-xs text-gray-700 leading-relaxed">
-                                      <span className="font-medium text-[#2E75B6]">{h.no}</span>
+                                      <span className="font-semibold text-[#2E75B6]">{h.no}</span>
                                       {' · '}{h.ad}{' '}
                                       <span className="text-gray-400">({h.sprint})</span>
                                     </div>
                                   ))}
                                 </td>
                               ))}
-                              <td className="px-4 py-3 bg-gray-50/40 border-r border-gray-100 align-top min-w-[180px]">
-                                {hikayelerFiltrele(storyMapData, surumKey, 'non_functional').map(h => (
-                                  <div key={h.no} className="mb-1 text-xs text-gray-700 leading-relaxed">
-                                    <span className="font-medium text-[#2E75B6]">{h.no}</span>
-                                    {' · '}{h.ad}{' '}
-                                    <span className="text-gray-400">({h.sprint})</span>
-                                  </div>
-                                ))}
-                              </td>
-                              <td className="px-4 py-3 bg-gray-50/40 align-top min-w-[180px]">
-                                {hikayelerFiltrele(storyMapData, surumKey, 'transition').map(h => (
-                                  <div key={h.no} className="mb-1 text-xs text-gray-700 leading-relaxed">
-                                    <span className="font-medium text-[#2E75B6]">{h.no}</span>
-                                    {' · '}{h.ad}{' '}
-                                    <span className="text-gray-400">({h.sprint})</span>
-                                  </div>
-                                ))}
-                              </td>
                             </tr>
                           )
                         })}
                       </tbody>
                     </table>
                   ) : (
-                    // Placeholder tablosu
-                    <table className="text-sm text-left" style={{ minWidth: '700px', width: '100%' }}>
-                      <thead className="bg-gray-50">
-                        <tr>
-                          <th className="px-4 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wide w-36 border-r border-gray-100">
-                            {t('adim2.surum')}
-                          </th>
-                          <th className="px-4 py-2.5 text-xs font-semibold text-gray-300 uppercase tracking-wide border-r border-gray-100">
-                            {t('adim2.destanPlaceholder1')}
-                          </th>
-                          <th className="px-4 py-2.5 text-xs font-semibold text-gray-300 uppercase tracking-wide border-r border-gray-100">
-                            {t('adim2.destanPlaceholder2')}
-                          </th>
-                          <th className="px-4 py-2.5 text-xs font-semibold text-gray-400 uppercase tracking-wide bg-gray-50 border-r border-gray-100">
-                            {t('adim2.nonFunctional')}
-                          </th>
-                          <th className="px-4 py-2.5 text-xs font-semibold text-gray-400 uppercase tracking-wide bg-gray-50">
-                            {t('adim2.transition')}
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-50">
-                        {(['R1', 'R2', 'R3'] as const).map(surumKey => {
-                          const surumLabel = { R1: t('adim2.r1'), R2: t('adim2.r2'), R3: t('adim2.r3') }[surumKey]
-                          return (
-                            <tr key={surumKey}>
-                              <td className="px-4 py-3 text-xs font-semibold text-gray-400 border-r border-gray-50 align-top">{surumLabel}</td>
-                              <td className="px-4 py-3 text-gray-200 border-r border-gray-50 align-top min-w-[180px]">—</td>
-                              <td className="px-4 py-3 text-gray-200 border-r border-gray-50 align-top min-w-[180px]">—</td>
-                              <td className="px-4 py-3 text-gray-200 bg-gray-50/40 border-r border-gray-50 align-top min-w-[180px]">—</td>
-                              <td className="px-4 py-3 text-gray-200 bg-gray-50/40 align-top min-w-[180px]">—</td>
-                            </tr>
-                          )
-                        })}
-                      </tbody>
-                    </table>
+                    <div className="py-10 text-center text-sm text-gray-300">{t('adim2.tabloBos')}</div>
                   )}
                 </div>
+
+                {/* ── Tablo 2: Sprint Planı Özeti ── */}
+                {storyMapData && storyMapData.sprintPlani.length > 0 && (
+                  <div>
+                    <h3 className="text-sm font-semibold text-[#1F3864] mb-2">{t('adim2.sprintPlanBaslik')}</h3>
+                    <div className="rounded-lg border border-gray-200 overflow-hidden bg-white">
+                      <table className="w-full text-sm text-left">
+                        <thead className="bg-[#1F3864]">
+                          <tr>
+                            {([t('adim2.sprintSutun1'), t('adim2.sprintSutun2'), t('adim2.sprintSutun3'), t('adim2.sprintSutun4'), t('adim2.sprintSutun5')] as string[]).map(h => (
+                              <th key={h} className="px-4 py-2.5 text-xs font-semibold text-white uppercase tracking-wide border-r border-white/20 last:border-r-0">
+                                {h}
+                              </th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                          {storyMapData.sprintPlani.map((row, idx) => (
+                            <tr key={idx} className={idx % 2 === 1 ? 'bg-gray-50/50' : ''}>
+                              <td className="px-4 py-2.5 text-xs font-semibold text-[#2E75B6] border-r border-gray-100 whitespace-nowrap">{row.sprint}</td>
+                              <td className="px-4 py-2.5 text-xs text-gray-700 border-r border-gray-100">{row.odakAlani}</td>
+                              <td className="px-4 py-2.5 text-xs text-gray-600 border-r border-gray-100">{row.hikayeler}</td>
+                              <td className="px-4 py-2.5 text-xs text-gray-700 border-r border-gray-100 text-center">{row.hikayeSayisi}</td>
+                              <td className="px-4 py-2.5 text-xs text-gray-700 whitespace-nowrap">{row.sure}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+
+                {/* ── Tablo 3: Genel Özet ── */}
+                {storyMapData && storyMapData.genelOzet.length > 0 && (
+                  <div>
+                    <h3 className="text-sm font-semibold text-[#1F3864] mb-2">{t('adim2.genelOzetBaslik')}</h3>
+                    <div className="rounded-lg border border-gray-200 overflow-hidden bg-white">
+                      <table className="w-full text-sm text-left">
+                        <thead className="bg-[#1F3864]">
+                          <tr>
+                            {([t('adim2.ozetSutun1'), t('adim2.ozetSutun2'), t('adim2.ozetSutun3'), t('adim2.ozetSutun4'), t('adim2.ozetSutun5')] as string[]).map(h => (
+                              <th key={h} className="px-4 py-2.5 text-xs font-semibold text-white uppercase tracking-wide border-r border-white/20 last:border-r-0">
+                                {h}
+                              </th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                          {storyMapData.genelOzet.map((row, idx) => {
+                            const isToplam = row.surum.toLowerCase() === 'toplam' || row.surum.toLowerCase() === 'total'
+                            return (
+                              <tr key={idx} className={isToplam ? 'bg-gray-50 font-semibold' : idx % 2 === 1 ? 'bg-gray-50/50' : ''}>
+                                <td className="px-4 py-2.5 text-xs text-gray-700 border-r border-gray-100 font-medium whitespace-nowrap">{row.surum}</td>
+                                <td className="px-4 py-2.5 text-xs text-gray-700 border-r border-gray-100 text-center">{row.hikayeSayisi}</td>
+                                <td className="px-4 py-2.5 text-xs text-gray-700 border-r border-gray-100">{row.sprintAraligi}</td>
+                                <td className="px-4 py-2.5 text-xs text-gray-700 border-r border-gray-100 text-center">{row.sprintSayisi}</td>
+                                <td className="px-4 py-2.5 text-xs text-gray-700 whitespace-nowrap">{row.sure}</td>
+                              </tr>
+                            )
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>

@@ -174,7 +174,20 @@
       "transition": "Geçiş Gereksinimleri",
       "r1": "R1 — MVP",
       "r2": "R2 — Geliştirme",
-      "r3": "R3 — İleri Düzey"
+      "r3": "R3 — İleri Düzey",
+      "sprintPlanBaslik": "Sprint Planı Özeti",
+      "sprintSutun1": "Sprint",
+      "sprintSutun2": "Odak Alanı",
+      "sprintSutun3": "Hikayeler",
+      "sprintSutun4": "Hikaye Sayısı",
+      "sprintSutun5": "Süre",
+      "genelOzetBaslik": "Genel Özet",
+      "ozetSutun1": "Sürüm",
+      "ozetSutun2": "Hikaye Sayısı",
+      "ozetSutun3": "Sprint Aralığı",
+      "ozetSutun4": "Sprint Sayısı",
+      "ozetSutun5": "Süre",
+      "exportExcel": "Excel'e Aktar"
     },
     "adim3": {
       "baslik": "İş Analizi Dokümanları",
