@@ -11,7 +11,7 @@ const STANDARTLAR = (() => {
     path.join(process.cwd(), 'standartlar/hikaye_haritasi.md'),
     'utf-8'
   )
-  return `${genel}\n\n---\n\n${hikayeHaritasi}`
+  return `${genel}\n\n---\n\n${hikayeHaritasi}\n\n---\n\nYanıtını SADECE geçerli JSON olarak ver. JSON öncesinde veya sonrasında hiçbir açıklama, markdown kod bloğu (\`\`\`json gibi) veya ek metin yazma.`
 })()
 
 export async function POST(req: Request) {
@@ -74,14 +74,21 @@ Kurallar:
     })
 
     const ilkBlok = yanit.content[0]
-    const text = ilkBlok.type === 'text' ? ilkBlok.text : ''
+    const rawText = ilkBlok.type === 'text' ? ilkBlok.text : ''
 
-    const match = text.match(/\{[\s\S]*\}/)
-    if (!match) {
-      return NextResponse.json({ error: 'invalid_response' }, { status: 500 })
+    console.error('[hikaye-haritasi] raw response:', rawText)
+
+    // İlk { ile son } arasındaki kısmı al
+    const first = rawText.indexOf('{')
+    const last = rawText.lastIndexOf('}')
+    if (first === -1 || last === -1 || last <= first) {
+      console.error('[hikaye-haritasi] JSON sınırı bulunamadı')
+      return NextResponse.json({ error: 'no_json_found', rawText }, { status: 500 })
     }
 
-    const data = JSON.parse(match[0]) as {
+    const jsonText = rawText.slice(first, last + 1)
+
+    let data: {
       hikayeHaritasi: {
         destanlar: string[]
         hikayeler: Array<{ no: string; ad: string; destan: string; surum: string; sprint: string }>
@@ -90,8 +97,19 @@ Kurallar:
       genelOzet: Array<{ surum: string; hikayeSayisi: number | string; sprintAraligi: string; sprintSayisi: number | string; sure: string }>
     }
 
+    try {
+      data = JSON.parse(jsonText)
+    } catch (parseErr) {
+      console.error('[hikaye-haritasi] JSON parse hatası:', parseErr, '\njsonText:', jsonText)
+      return NextResponse.json(
+        { error: 'json_parse_failed', parseError: String(parseErr), jsonText },
+        { status: 500 }
+      )
+    }
+
     return NextResponse.json(data)
-  } catch {
-    return NextResponse.json({ error: 'api_error' }, { status: 500 })
+  } catch (err) {
+    console.error('[hikaye-haritasi] API hatası:', err)
+    return NextResponse.json({ error: 'api_error', detail: String(err) }, { status: 500 })
   }
 }
