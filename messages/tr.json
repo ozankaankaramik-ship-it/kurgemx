@@ -150,10 +150,12 @@
       "aciklama": "Açıklama",
       "aciklamaPlaceholder": "Projenizi kısaca açıklayın...",
       "yzDetaylandir": "YZ ile Detaylandır",
-      "yzCikti": "YZ Önerisi",
+      "yzCikti": "Ayrıntılı Açıklama",
+      "shortDesc": "Açıklama",
       "yzPlaceholder": "YZ tarafından oluşturulan açıklama burada görünecek...",
       "olustur": "Proje Oluştur",
       "olusturuluyor": "Oluşturuluyor...",
+      "olusturTooltip": "Projeyi oluşturmadan önce lütfen açıklamanızı YZ ile detaylandırın",
       "hatalar": {
         "ad_zorunlu": "Proje adı zorunludur.",
         "ad_uzun": "Proje adı en fazla 100 karakter olabilir.",
@@ -165,9 +167,14 @@
       "baslik": "Hikaye Haritası",
       "uret": "Hikaye Haritası Oluştur",
       "tabloBos": "Hikaye haritası oluşturulunca burada görünecek.",
-      "sutun1": "Epik",
-      "sutun2": "Kullanıcı Hikayesi",
-      "sutun3": "Öncelik"
+      "surum": "Sürüm",
+      "destanPlaceholder1": "Destan 1",
+      "destanPlaceholder2": "Destan 2",
+      "nonFunctional": "İşlevsel Olmayan Gereksinimler",
+      "transition": "Geçiş Gereksinimleri",
+      "r1": "R1 — MVP",
+      "r2": "R2 — Geliştirme",
+      "r3": "R3 — İleri Düzey"
     },
     "adim3": {
       "baslik": "İş Analizi Dokümanları",

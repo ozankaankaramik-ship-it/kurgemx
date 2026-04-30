@@ -150,10 +150,12 @@
       "aciklama": "Description",
       "aciklamaPlaceholder": "Briefly describe your project...",
       "yzDetaylandir": "Enhance with AI",
-      "yzCikti": "AI Suggestion",
+      "yzCikti": "Detailed Description",
+      "shortDesc": "Description",
       "yzPlaceholder": "AI-generated description will appear here...",
       "olustur": "Create Project",
       "olusturuluyor": "Creating...",
+      "olusturTooltip": "Please enhance your description with AI before creating the project",
       "hatalar": {
         "ad_zorunlu": "Project name is required.",
         "ad_uzun": "Project name cannot exceed 100 characters.",
@@ -165,9 +167,14 @@
       "baslik": "Story Map",
       "uret": "Generate Story Map",
       "tabloBos": "Story map will appear here once generated.",
-      "sutun1": "Epic",
-      "sutun2": "User Story",
-      "sutun3": "Priority"
+      "surum": "Version",
+      "destanPlaceholder1": "Epic 1",
+      "destanPlaceholder2": "Epic 2",
+      "nonFunctional": "Non-Functional Requirements",
+      "transition": "Transition Requirements",
+      "r1": "R1 — MVP",
+      "r2": "R2 — Enhancement",
+      "r3": "R3 — Advanced"
     },
     "adim3": {
       "baslik": "Business Analysis Documents",

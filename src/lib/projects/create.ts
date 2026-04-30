@@ -117,7 +117,7 @@ export async function projeOlusturVeDon(
   formData: FormData
 ): Promise<ProjeOlusturVeDonState> {
   const ad = ((formData.get('ad') as string) ?? '').trim()
-  const aciklama = ((formData.get('aciklama') as string) ?? '').trim().slice(0, 500)
+  const aciklama = ((formData.get('aciklama') as string) ?? '').trim().slice(0, 5000)
   const dil = (formData.get('dil') as string) || 'EN'
 
   if (!ad) return { error: 'ad_zorunlu' }

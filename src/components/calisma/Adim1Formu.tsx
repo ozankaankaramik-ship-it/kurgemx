@@ -3,10 +3,7 @@
 import { useActionState, useEffect, useRef, useState } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
 import { projeOlusturVeDon } from '@/lib/projects/create'
-
-interface Props {
-  onSuccess: (id: string, ad: string, aciklama: string | null) => void
-}
+import { useProje } from './ProjeContext'
 
 function SparkleIcon() {
   return (
@@ -30,10 +27,12 @@ function Spinner() {
   )
 }
 
-export default function Adim1Formu({ onSuccess }: Props) {
+export default function Adim1Formu() {
   const t = useTranslations('calismaEkrani.adim1')
   const locale = useLocale()
+  const ctx = useProje()
   const [state, formAction, isPending] = useActionState(projeOlusturVeDon, null)
+  const [adValue, setAdValue] = useState('')
   const [aciklamaLen, setAciklamaLen] = useState(0)
   const [yzCikti, setYzCikti] = useState<string | null>(null)
   const [yzYukleniyor, setYzYukleniyor] = useState(false)
@@ -42,13 +41,19 @@ export default function Adim1Formu({ onSuccess }: Props) {
   const adRef = useRef<HTMLInputElement>(null)
   const aciklamaRef = useRef<HTMLTextAreaElement>(null)
 
+  const canSubmit = !isPending && adValue.trim().length > 0 && yzCikti !== null
+
   useEffect(() => {
-    if (state?.id) {
-      const ad = adRef.current?.value ?? ''
-      const aciklama = aciklamaRef.current?.value.trim() || null
-      onSuccess(state.id, ad, aciklama)
+    if (state?.id && yzCikti) {
+      const short = aciklamaRef.current?.value.trim() || null
+      ctx.setProje(state.id, adValue.trim(), short, yzCikti)
+      const route =
+        locale === 'en'
+          ? `/${locale}/projects/${state.id}`
+          : `/${locale}/projeler/${state.id}`
+      window.history.replaceState(null, '', route)
     }
-  }, [state, onSuccess])
+  }, [state]) // eslint-disable-line react-hooks/exhaustive-deps
 
   async function handleYz() {
     const projeAdi = adRef.current?.value.trim() ?? ''
@@ -86,6 +91,8 @@ export default function Adim1Formu({ onSuccess }: Props) {
   return (
     <form action={formAction} className="space-y-5">
       <input type="hidden" name="dil" value={locale === 'tr' ? 'TR' : 'EN'} />
+      {/* Detailed Description (AI output) is what gets saved as aciklama */}
+      <input type="hidden" name="aciklama" value={yzCikti ?? ''} />
 
       <div>
         <label htmlFor="ad" className="block text-sm font-medium text-gray-700 mb-1.5">
@@ -99,6 +106,8 @@ export default function Adim1Formu({ onSuccess }: Props) {
           required
           maxLength={100}
           placeholder={t('projeAdiPlaceholder')}
+          value={adValue}
+          onChange={e => setAdValue(e.target.value)}
           className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#2E75B6] transition"
         />
       </div>
@@ -113,7 +122,6 @@ export default function Adim1Formu({ onSuccess }: Props) {
         <textarea
           ref={aciklamaRef}
           id="aciklama"
-          name="aciklama"
           rows={4}
           maxLength={500}
           placeholder={t('aciklamaPlaceholder')}
@@ -156,13 +164,23 @@ export default function Adim1Formu({ onSuccess }: Props) {
         <p className="text-sm text-red-600">{hataMesaji}</p>
       )}
 
-      <button
-        type="submit"
-        disabled={isPending}
-        className="w-full rounded-lg bg-[#1F3864] text-white px-4 py-2.5 text-sm font-semibold hover:bg-[#2E75B6] disabled:opacity-50 transition"
-      >
-        {isPending ? t('olusturuluyor') : t('olustur')}
-      </button>
+      {/* Create Project button + tooltip */}
+      <div className="group relative w-full">
+        <button
+          type="submit"
+          disabled={!canSubmit}
+          className="w-full rounded-lg bg-[#1F3864] text-white px-4 py-2.5 text-sm font-semibold hover:bg-[#2E75B6] disabled:opacity-40 disabled:cursor-not-allowed transition"
+        >
+          {isPending ? t('olusturuluyor') : t('olustur')}
+        </button>
+        {!canSubmit && !isPending && (
+          <div className="pointer-events-none absolute bottom-full left-1/2 mb-2 -translate-x-1/2 z-10 hidden group-hover:block">
+            <span className="block whitespace-nowrap rounded-md bg-gray-800 px-3 py-1.5 text-xs text-white shadow">
+              {t('olusturTooltip')}
+            </span>
+          </div>
+        )}
+      </div>
     </form>
   )
 }
