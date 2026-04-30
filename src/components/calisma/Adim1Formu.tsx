@@ -1,9 +1,12 @@
 'use client'
 
 import { useActionState, useEffect, useRef, useState } from 'react'
-import { useRouter } from '@/i18n/navigation'
 import { useTranslations, useLocale } from 'next-intl'
 import { projeOlusturVeDon } from '@/lib/projects/create'
+
+interface Props {
+  onSuccess: (id: string, ad: string, aciklama: string | null) => void
+}
 
 function SparkleIcon() {
   return (
@@ -27,10 +30,9 @@ function Spinner() {
   )
 }
 
-export default function Adim1Formu() {
+export default function Adim1Formu({ onSuccess }: Props) {
   const t = useTranslations('calismaEkrani.adim1')
   const locale = useLocale()
-  const router = useRouter()
   const [state, formAction, isPending] = useActionState(projeOlusturVeDon, null)
   const [aciklamaLen, setAciklamaLen] = useState(0)
   const [yzCikti, setYzCikti] = useState<string | null>(null)
@@ -42,9 +44,11 @@ export default function Adim1Formu() {
 
   useEffect(() => {
     if (state?.id) {
-      router.replace({ pathname: '/projeler/[id]', params: { id: state.id } })
+      const ad = adRef.current?.value ?? ''
+      const aciklama = aciklamaRef.current?.value.trim() || null
+      onSuccess(state.id, ad, aciklama)
     }
-  }, [state, router])
+  }, [state, onSuccess])
 
   async function handleYz() {
     const projeAdi = adRef.current?.value.trim() ?? ''
