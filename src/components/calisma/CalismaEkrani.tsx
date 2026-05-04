@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import Adim1Formu from './Adim1Formu'
 import { ProjeProvider, useProje } from './ProjeContext'
@@ -14,21 +14,23 @@ interface HikayeItem {
   sprint: string
 }
 
-interface SprintPlaniRow {
-  sprint: string
-  odakAlani: string
-  hikayeler: string
-  hikayeSayisi: number | string
-  sure: string
-}
+type SprintPlaniRow = Record<string, string | number>
+type GenelOzetRow = Record<string, string | number>
 
-interface GenelOzetRow {
-  surum: string
-  hikayeSayisi: number | string
-  sprintAraligi: string
-  sprintSayisi: number | string
-  sure: string
-}
+const ADIM2_MESAJLAR = {
+  TR: [
+    'Proje açıklaması analiz ediliyor...',
+    'Destanlar ve hikayeler belirleniyor...',
+    'Sürümler ve sprintler planlanıyor...',
+    'Hikaye haritası tamamlanıyor...',
+  ],
+  EN: [
+    'Analyzing project description...',
+    'Identifying epics and user stories...',
+    'Planning releases and sprints...',
+    'Finalizing story map...',
+  ],
+} as const
 
 interface StoryMapData {
   hikayeHaritasi: { destanlar: string[]; hikayeler: HikayeItem[] }
@@ -272,6 +274,8 @@ function EkranIci() {
   const { projeId, ad, shortDesc, detailedDesc, projektDili } = ctx
   const [adim2Yukleniyor, setAdim2Yukleniyor] = useState(false)
   const [adim2Hata, setAdim2Hata] = useState(false)
+  const [adim2MesajIdx, setAdim2MesajIdx] = useState(0)
+  const adim2IntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const [adim3Yukleniyor, setAdim3Yukleniyor] = useState(false)
   const [adim3Hata, setAdim3Hata] = useState(false)
   const [adim4Yukleniyor, setAdim4Yukleniyor] = useState(false)
@@ -294,6 +298,18 @@ function EkranIci() {
     if (!detailedDesc) return
     setAdim2Yukleniyor(true)
     setAdim2Hata(false)
+    setAdim2MesajIdx(0)
+
+    let idx = 0
+    adim2IntervalRef.current = setInterval(() => {
+      idx += 1
+      if (idx <= 3) setAdim2MesajIdx(idx)
+      if (idx >= 3 && adim2IntervalRef.current) {
+        clearInterval(adim2IntervalRef.current)
+        adim2IntervalRef.current = null
+      }
+    }, 3000)
+
     try {
       const res = await fetch('/api/ai/hikaye-haritasi', {
         method: 'POST',
@@ -323,6 +339,10 @@ function EkranIci() {
       console.error('[generateStoryMap] hata:', err)
       setAdim2Hata(true)
     } finally {
+      if (adim2IntervalRef.current) {
+        clearInterval(adim2IntervalRef.current)
+        adim2IntervalRef.current = null
+      }
       setAdim2Yukleniyor(false)
     }
   }
@@ -475,7 +495,14 @@ function EkranIci() {
                     </button>
                   )}
                   </div>
-                  {adim2Yukleniyor && <ProgressBar />}
+                  {adim2Yukleniyor && (
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="inline-block w-3.5 h-3.5 rounded-full border-2 border-[#1F3864]/25 border-t-[#1F3864] animate-spin shrink-0" aria-hidden="true" />
+                      <span className="text-[13px] text-[#1F3864]">
+                        {(ADIM2_MESAJLAR[projektDili === 'TR' ? 'TR' : 'EN'])[adim2MesajIdx]}
+                      </span>
+                    </div>
+                  )}
                   {adim2Hata && <p className="text-xs text-red-500">{t('adim1.hatalar.genel')}</p>}
                 </div>
 
