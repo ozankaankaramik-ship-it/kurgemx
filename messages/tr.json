@@ -1,7 +1,10 @@
 {
   "nav": {
     "home": "Ana Sayfa",
-    "projeler": "Projelerim"
+    "projeler": "Projelerim",
+    "newProject": "Yeni Proje",
+    "signIn": "Giriş Yap",
+    "getStarted": "Başla"
   },
   "home": {
     "title": "Kurgemx'e Hoş Geldiniz",
@@ -10,7 +13,9 @@
     "sonProje": "Son proje"
   },
   "language": {
-    "switchTo": "Switch to English"
+    "switchTo": "Switch to English",
+    "code": "TR",
+    "name": "Türkçe"
   },
   "auth": {
     "girisYap": "Giriş Yap",
@@ -234,5 +239,55 @@
       "mimariOlusturuluyor": "Mimari doküman oluşturuluyor..."
     },
     "yenidenOlustur": "Yeniden Oluştur"
+  },
+  "landing": {
+    "meta": {
+      "title": "KurgemX — Yapay Zeka Destekli İş Analizi Platformu",
+      "description": "Yapay zeka ile hikaye haritaları, iş analizi dokümanları ve prototipler oluşturun. İş analistleri ve proje yöneticileri için.",
+      "keywords": "yapay zeka iş analizi, hikaye haritası oluşturucu, kullanıcı hikayesi haritalama, iş analisti aracı"
+    },
+    "hero": {
+      "title": "Yapay Zeka Destekli İş Analizi Platformu",
+      "subtitle": "Dakikalar içinde yapay zeka ile hikaye haritaları, iş analizi dokümanları ve prototipler oluşturun.",
+      "getStarted": "Ücretsiz Başla",
+      "signIn": "Giriş Yap"
+    },
+    "howItWorks": {
+      "title": "Nasıl Çalışır",
+      "step1Title": "Projenizi Açıklayın",
+      "step1Desc": "Proje adınızı ve kısa bir açıklama girin. Yapay zekamız bunu detaylı bir proje özetine dönüştürür.",
+      "step2Title": "Hikaye Haritası Oluşturun",
+      "step2Desc": "Yapay zeka destanlar, kullanıcı hikayeleri, sprint'ler ve sürüm planlaması ile eksiksiz hikaye haritası oluşturur.",
+      "step3Title": "Dışa Aktarın ve Paylaşın",
+      "step3Desc": "Hikaye haritanızı Excel'e aktarın, ekibinizle paylaşın ve geliştirmeye başlayın."
+    },
+    "features": {
+      "title": "İhtiyacınız Olan Her Şey",
+      "storyMap": "Hikaye Haritası Oluşturma",
+      "storyMapDesc": "R1/R2/R3 sürüm planlamasıyla kapsamlı hikaye haritaları otomatik oluşturun.",
+      "bizAnalysis": "İş Analizi Dokümanları",
+      "bizAnalysisDesc": "Hikaye haritanızla uyumlu R1, R2, R3 iş analizi dokümanları üretin.",
+      "prototype": "Prototip Oluşturma",
+      "prototypeDesc": "Kullanıcı hikayelerinizden etkileşimli prototipler oluşturun.",
+      "testScenarios": "Test Senaryoları",
+      "testScenariosDesc": "Her kullanıcı hikayesi için detaylı test senaryoları oluşturun.",
+      "export": "Excel ve Word Dışa Aktarma",
+      "exportDesc": "Hikaye haritaları, dokümanlar ve test senaryolarını standart formatlarda dışa aktarın.",
+      "multilang": "Çoklu Dil Desteği",
+      "multilangDesc": "Türkçe veya İngilizce çalışın — yapay zeka içerikleri proje dilinizde üretir."
+    },
+    "footer": {
+      "copyright": "© 2026 KurgemX",
+      "privacy": "Gizlilik Politikası",
+      "terms": "Kullanım Şartları"
+    }
+  },
+  "dashboard": {
+    "welcome": "{name}, tekrar hoş geldiniz",
+    "recentProjects": "Son Projeler",
+    "noProjects": "Henüz projeniz yok.",
+    "newProject": "Yeni Proje",
+    "allProjects": "Tüm Projeler",
+    "created": "Oluşturuldu"
   }
 }

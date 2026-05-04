@@ -1,7 +1,10 @@
 {
   "nav": {
     "home": "Home",
-    "projeler": "My Projects"
+    "projeler": "My Projects",
+    "newProject": "New Project",
+    "signIn": "Sign In",
+    "getStarted": "Get Started"
   },
   "home": {
     "title": "Welcome to Kurgemx",
@@ -10,7 +13,9 @@
     "sonProje": "Last project"
   },
   "language": {
-    "switchTo": "Türkçeye geç"
+    "switchTo": "Türkçeye geç",
+    "code": "EN",
+    "name": "English"
   },
   "auth": {
     "girisYap": "Sign In",
@@ -234,5 +239,55 @@
       "mimariOlusturuluyor": "Generating architecture document..."
     },
     "yenidenOlustur": "Regenerate"
+  },
+  "landing": {
+    "meta": {
+      "title": "KurgemX — AI-Powered Business Analysis Platform",
+      "description": "Generate story maps, business analysis documents and prototypes with AI. Built for business analysts and project managers.",
+      "keywords": "AI business analysis, story map generator, user story mapping, business analyst tool"
+    },
+    "hero": {
+      "title": "AI-Powered Business Analysis Platform",
+      "subtitle": "Generate story maps, business analysis documents and prototypes with AI in minutes.",
+      "getStarted": "Get Started Free",
+      "signIn": "Sign In"
+    },
+    "howItWorks": {
+      "title": "How It Works",
+      "step1Title": "Describe Your Project",
+      "step1Desc": "Enter your project name and a brief description. AI will expand it into a detailed project overview.",
+      "step2Title": "Generate Story Map",
+      "step2Desc": "AI creates a complete story map with epics, user stories, sprints, and release planning.",
+      "step3Title": "Export & Share",
+      "step3Desc": "Export your story map to Excel, share with your team, and start building."
+    },
+    "features": {
+      "title": "Everything You Need",
+      "storyMap": "Story Map Generation",
+      "storyMapDesc": "Automatically generate comprehensive story maps with R1/R2/R3 release planning.",
+      "bizAnalysis": "Business Analysis Documents",
+      "bizAnalysisDesc": "Generate R1, R2, R3 business analysis documents aligned with your story map.",
+      "prototype": "Prototype Creation",
+      "prototypeDesc": "Create interactive prototypes from your user stories.",
+      "testScenarios": "Test Scenarios",
+      "testScenariosDesc": "Generate detailed test scenarios for every user story.",
+      "export": "Excel & Word Export",
+      "exportDesc": "Export story maps, documents and test scenarios in standard formats.",
+      "multilang": "Multi-language Support",
+      "multilangDesc": "Work in Turkish or English — AI generates content in your project language."
+    },
+    "footer": {
+      "copyright": "© 2026 KurgemX",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service"
+    }
+  },
+  "dashboard": {
+    "welcome": "Welcome back, {name}",
+    "recentProjects": "Recent Projects",
+    "noProjects": "No projects yet.",
+    "newProject": "New Project",
+    "allProjects": "All Projects",
+    "created": "Created"
   }
 }

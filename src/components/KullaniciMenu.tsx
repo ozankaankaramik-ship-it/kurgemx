@@ -29,7 +29,7 @@ export default function KullaniciMenu() {
   }, [])
 
   if (loading) {
-    return <div className="w-24 h-8 rounded-md bg-gray-100 dark:bg-gray-800 animate-pulse" />
+    return <div className="w-24 h-8 rounded-md bg-gray-100 animate-pulse" />
   }
 
   if (user) {
@@ -40,14 +40,14 @@ export default function KullaniciMenu() {
 
     return (
       <div className="flex items-center gap-3">
-        <span className="hidden sm:block text-sm text-gray-600 dark:text-gray-400 truncate max-w-[160px]">
+        <span className="hidden sm:block text-sm text-gray-600 truncate max-w-[160px]">
           {displayName}
         </span>
         <form action={cikisYap}>
           <input type="hidden" name="locale" value={locale} />
           <button
             type="submit"
-            className="text-sm border border-gray-300 dark:border-gray-700 px-3 py-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            className="text-sm border border-gray-300 px-3 py-1.5 rounded-md hover:bg-gray-100 transition-colors"
           >
             {t('cikisYap')}
           </button>
@@ -60,13 +60,13 @@ export default function KullaniciMenu() {
     <div className="flex items-center gap-2">
       <Link
         href="/giris"
-        className="text-sm px-3 py-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+        className="text-sm px-3 py-1.5 rounded-md hover:bg-gray-100 transition-colors"
       >
         {t('girisYap')}
       </Link>
       <Link
         href="/kayit"
-        className="text-sm bg-black dark:bg-white text-white dark:text-black px-3 py-1.5 rounded-md hover:opacity-80 transition-opacity"
+        className="text-sm bg-[#1F3864] text-white px-3 py-1.5 rounded-md hover:bg-[#2E75B6] transition-colors"
       >
         {t('kayitOl')}
       </Link>
