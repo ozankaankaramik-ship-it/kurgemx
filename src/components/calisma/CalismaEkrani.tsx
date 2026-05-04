@@ -476,7 +476,7 @@ function EkranIci() {
                   <div className="flex items-center gap-3">
                     <GenerateButton
                       label={t('adim2.uret')}
-                      loadingLabel={t('adim2.olusturuluyor')}
+                      loadingLabel={(ADIM2_MESAJLAR[projektDili === 'TR' ? 'TR' : 'EN'])[adim2MesajIdx]}
                       regenerateLabel={t('yenidenOlustur')}
                       disabled={!adim2Aktif}
                       loading={adim2Yukleniyor}
@@ -495,14 +495,6 @@ function EkranIci() {
                     </button>
                   )}
                   </div>
-                  {adim2Yukleniyor && (
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className="inline-block w-3.5 h-3.5 rounded-full border-2 border-[#1F3864]/25 border-t-[#1F3864] animate-spin shrink-0" aria-hidden="true" />
-                      <span className="text-[13px] text-[#1F3864]">
-                        {(ADIM2_MESAJLAR[projektDili === 'TR' ? 'TR' : 'EN'])[adim2MesajIdx]}
-                      </span>
-                    </div>
-                  )}
                   {adim2Hata && <p className="text-xs text-red-500">{t('adim1.hatalar.genel')}</p>}
                 </div>
 
@@ -516,7 +508,9 @@ function EkranIci() {
                       <thead className="bg-[#1F3864]">
                         <tr>
                           <th className="px-4 py-2.5 text-xs font-semibold text-white uppercase tracking-wide w-36 border-r border-white/20">
-                            {t('adim2.surum')}
+                            {storyMapData.genelOzet[0]
+                              ? Object.keys(storyMapData.genelOzet[0])[0]
+                              : (projektDili === 'TR' ? 'Sürüm' : 'Release')}
                           </th>
                           {storyMapData.hikayeHaritasi.destanlar.map(d => (
                             <th key={d} className="px-4 py-2.5 text-xs font-semibold text-white uppercase tracking-wide border-r border-white/20 last:border-r-0">

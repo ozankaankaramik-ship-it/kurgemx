@@ -12,23 +12,22 @@ const DIL_ETIKET: Record<string, string> = {
 
 function dilKurali(projeDili: string, dilAdi: string): string {
   const fixedKeys = 'hikayeHaritasi, destanlar, hikayeler, no, ad, destan, surum, sprint'
+  const firstOzetKey = projeDili === 'TR' ? '"Sürüm"' : '"Release"'
+  const totalValue = projeDili === 'TR' ? '"Toplam"' : '"Total"'
+
+  const kurallar = [
+    `- Sabit JSON anahtarları (değiştirme): ${fixedKeys}`,
+    `- sprintPlani objelerinde key isimleri tam olarak şunlar olsun (sırayla): "Sprint", "Focus", "Stories", "Story Count", "Duration"`,
+    `- genelOzet objelerinde key isimleri tam olarak şunlar olsun (sırayla): ${firstOzetKey}, "Story Count", "Sprint Range", "Sprint Count", "Duration"`,
+    `- genelOzet son satırının (toplamlar) ${firstOzetKey} değeri ${totalValue} olmalı`,
+    `- Tüm metin değerleri ${dilAdi} dilinde üretilir`,
+    `- Key isimleri camelCase veya teknik değil — doğal dil ifadeler (zaten yukarıda belirtildi)`,
+  ].join('\n')
 
   if (projeDili === 'TR') {
-    return (
-      `DİL VE ANAHTAR KURALI: Tüm içerik Türkçe üretilir.\n` +
-      `- Sabit JSON anahtarları (değiştirme): ${fixedKeys}\n` +
-      `- sprintPlani dizi objelerinde: sprint, odakAlani, hikayeler, hikayeSayisi, sure\n` +
-      `- genelOzet dizi objelerinde: surum, hikayeSayisi, sprintAraligi, sprintSayisi, sure`
-    )
+    return `DİL VE ANAHTAR KURALI: Tüm içerik Türkçe üretilir.\n${kurallar}`
   }
-
-  return (
-    `LANGUAGE AND KEY RULE: All content in ${dilAdi}.\n` +
-    `- Fixed JSON keys (do not rename): ${fixedKeys}\n` +
-    `- For sprintPlani array objects use: sprint, focus, stories, numberOfStories, duration\n` +
-    `- For genelOzet array objects use: release, numberOfStories, sprints, numberOfSprints, duration\n` +
-    `- The last genelOzet row (totals) must have "Total" as its release value so it can be detected.`
-  )
+  return `LANGUAGE AND KEY RULE: All content in ${dilAdi}.\n${kurallar}`
 }
 
 function kullaniciPromptOlustur(
@@ -38,34 +37,25 @@ function kullaniciPromptOlustur(
   dilAdi: string,
 ): string {
   const isTR = projeDili === 'TR'
+  const versionKey = isTR ? 'Sürüm' : 'Release'
+  const totalValue = isTR ? 'Toplam' : 'Total'
+  const weekUnit = isTR ? 'hafta' : 'weeks'
 
-  const sprintOrnek = isTR
-    ? `{ "sprint": "SP1", "odakAlani": "Temel altyapı", "hikayeler": "ST1, ST2, ST3", "hikayeSayisi": 3, "sure": "2 hafta" }`
-    : `{ "sprint": "SP1", "focus": "Core infrastructure", "stories": "ST1, ST2, ST3", "numberOfStories": 3, "duration": "2 weeks" }`
+  const sprintOrnek =
+    `{ "Sprint": "SP1", "Focus": "${isTR ? 'Temel altyapı' : 'Core infrastructure'}", "Stories": "ST1, ST2, ST3", "Story Count": 3, "Duration": "2 ${weekUnit}" }`
 
-  const ozetOrnekler = isTR
-    ? [
-        `{ "surum": "R1 — MVP", "hikayeSayisi": 7, "sprintAraligi": "SP1 → SP2", "sprintSayisi": 2, "sure": "4 hafta" }`,
-        `{ "surum": "R2 — İyileştirme", "hikayeSayisi": 8, "sprintAraligi": "SP3 → SP5", "sprintSayisi": 3, "sure": "6 hafta" }`,
-        `{ "surum": "R3 — Gelişmiş", "hikayeSayisi": 10, "sprintAraligi": "SP6 → SP8", "sprintSayisi": 3, "sure": "6 hafta" }`,
-        `{ "surum": "Toplam", "hikayeSayisi": 25, "sprintAraligi": "SP1 → SP8", "sprintSayisi": 8, "sure": "16 hafta" }`,
-      ]
-    : [
-        `{ "release": "R1 — MVP", "numberOfStories": 7, "sprints": "SP1 → SP2", "numberOfSprints": 2, "duration": "4 weeks" }`,
-        `{ "release": "R2 — Improvement", "numberOfStories": 8, "sprints": "SP3 → SP5", "numberOfSprints": 3, "duration": "6 weeks" }`,
-        `{ "release": "R3 — Advanced", "numberOfStories": 10, "sprints": "SP6 → SP8", "numberOfSprints": 3, "duration": "6 weeks" }`,
-        `{ "release": "Total", "numberOfStories": 25, "sprints": "SP1 → SP8", "numberOfSprints": 8, "duration": "16 weeks" }`,
-      ]
-
-  const dilNotu = isTR
-    ? `Çıktı Dili: Türkçe`
-    : `Output Language: ${dilAdi}`
+  const ozetOrnekler = [
+    `{ "${versionKey}": "R1 — MVP", "Story Count": 7, "Sprint Range": "SP1 → SP2", "Sprint Count": 2, "Duration": "4 ${weekUnit}" }`,
+    `{ "${versionKey}": "${isTR ? 'R2 — İyileştirme' : 'R2 — Improvement'}", "Story Count": 8, "Sprint Range": "SP3 → SP5", "Sprint Count": 3, "Duration": "6 ${weekUnit}" }`,
+    `{ "${versionKey}": "${isTR ? 'R3 — Gelişmiş' : 'R3 — Advanced'}", "Story Count": 10, "Sprint Range": "SP6 → SP8", "Sprint Count": 3, "Duration": "6 ${weekUnit}" }`,
+    `{ "${versionKey}": "${totalValue}", "Story Count": 25, "Sprint Range": "SP1 → SP8", "Sprint Count": 8, "Duration": "16 ${weekUnit}" }`,
+  ]
 
   return `Aşağıdaki proje için hikaye haritası oluştur.
 
 Proje Adı: ${projeAdi}
 Detaylı Açıklama: ${detayliAciklama}
-${dilNotu}
+Çıktı Dili: ${dilAdi}
 
 Yalnızca aşağıdaki JSON yapısını döndür. Markdown kod bloğu, ön yazı veya ek açıklama ekleme — sadece JSON:
 {
