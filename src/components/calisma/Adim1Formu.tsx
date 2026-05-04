@@ -28,6 +28,15 @@ function Spinner() {
   )
 }
 
+function dilAlgila(text: string): { code: string; label: string } | null {
+  if (text.length < 20) return null
+  if (/[ğşıöüçĞŞİÖÜÇ]/.test(text)) return { code: 'TR', label: 'Algılanan dil: Türkçe' }
+  if (/[؀-ۿ]/.test(text)) return { code: 'AR', label: 'اللغة المكتشفة: عربية' }
+  if (/[Ѐ-ӿ]/.test(text)) return { code: 'RU', label: 'Обнаруженный язык: Русский' }
+  if (/[一-鿿぀-ゟ゠-ヿ]/.test(text)) return { code: 'JA', label: '検出された言語: 日本語/中文' }
+  return { code: 'EN', label: 'Detected language: English' }
+}
+
 function stripMarkdown(raw: string): string {
   return raw
     .replace(/#{1,6}\s+/g, '')
@@ -53,6 +62,8 @@ export default function Adim1Formu() {
   const [yzYukleniyor, setYzYukleniyor] = useState(false)
   const [yzHata, setYzHata] = useState(false)
 
+  const [algilananDil, setAlgilananDil] = useState<{ code: string; label: string } | null>(null)
+
   const adRef = useRef<HTMLInputElement>(null)
   const aciklamaRef = useRef<HTMLTextAreaElement>(null)
 
@@ -62,7 +73,8 @@ export default function Adim1Formu() {
   useEffect(() => {
     if (state?.id && yzCikti) {
       const short = aciklamaRef.current?.value.trim() || null
-      ctx.setProje(state.id, adValue.trim(), short, yzCikti)
+      const dil = algilananDil?.code ?? (locale === 'tr' ? 'TR' : 'EN')
+      ctx.setProje(state.id, adValue.trim(), short, yzCikti, dil)
       const route =
         locale === 'en'
           ? `/${locale}/projects/${state.id}`
@@ -84,7 +96,7 @@ export default function Adim1Formu() {
       const res = await fetch('/api/ai/detaylandir', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ projeAdi, aciklama }),
+        body: JSON.stringify({ projeAdi, aciklama, projeDili: algilananDil?.code }),
       })
       if (!res.ok || !res.body) throw new Error()
 
@@ -117,7 +129,7 @@ export default function Adim1Formu() {
 
   return (
     <form action={formAction} className="space-y-5">
-      <input type="hidden" name="dil" value={locale === 'tr' ? 'TR' : 'EN'} />
+      <input type="hidden" name="dil" value={algilananDil?.code ?? (locale === 'tr' ? 'TR' : 'EN')} />
       {/* Detailed Description (AI output) is what gets saved as aciklama */}
       <input type="hidden" name="aciklama" value={yzCikti ?? ''} />
 
@@ -152,9 +164,15 @@ export default function Adim1Formu() {
           rows={4}
           maxLength={500}
           placeholder={t('aciklamaPlaceholder')}
-          onChange={e => setAciklamaLen(e.target.value.length)}
+          onChange={e => {
+            setAciklamaLen(e.target.value.length)
+            setAlgilananDil(dilAlgila(e.target.value))
+          }}
           className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#2E75B6] transition resize-none"
         />
+        {algilananDil && (
+          <p className="mt-1 text-[11px] text-gray-400">{algilananDil.label}</p>
+        )}
 
         <div className="mt-2 space-y-2">
           <button

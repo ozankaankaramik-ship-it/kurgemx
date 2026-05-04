@@ -3,11 +3,17 @@ import { NextResponse } from 'next/server'
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
-const SISTEM =
-  'Sen bir iş analizi asistanısın. Kullanıcının verdiği proje açıklamasını alarak şu başlıkları içeren detaylı bir proje özeti üret: Proje Amacı, Hedef Kitle, Temel Özellikler, Kısıtlar ve Notlar. Kullanıcının yazdığı dilde yanıt ver — hangi dilde yazdıysa o dilde cevap ver, dili değiştirme.'
+const DIL_ETIKET: Record<string, string> = {
+  TR: 'Türkçe', EN: 'English', AR: 'Arabic', RU: 'Russian', JA: 'Japanese/Chinese',
+}
+
+function sistemPrompt(projeDili: string): string {
+  const dil = DIL_ETIKET[projeDili] ?? projeDili
+  return `Sen bir iş analizi asistanısın. Kullanıcının verdiği proje açıklamasını alarak şu başlıkları içeren detaylı bir proje özeti üret: Proje Amacı, Hedef Kitle, Temel Özellikler, Kısıtlar ve Notlar. Tüm çıktıları ${dil} dilinde üret.`
+}
 
 export async function POST(req: Request) {
-  let body: { aciklama?: string; projeAdi?: string }
+  let body: { aciklama?: string; projeAdi?: string; projeDili?: string }
   try {
     body = await req.json()
   } catch {
@@ -16,6 +22,7 @@ export async function POST(req: Request) {
 
   const aciklama = (body.aciklama ?? '').trim()
   const projeAdi = (body.projeAdi ?? '').trim()
+  const projeDili = (body.projeDili ?? 'TR').trim().toUpperCase()
 
   if (!aciklama && !projeAdi) {
     return NextResponse.json({ error: 'empty_input' }, { status: 400 })
@@ -41,7 +48,7 @@ export async function POST(req: Request) {
           model: 'claude-sonnet-4-6',
           max_tokens: 2000,
           stream: true,
-          system: [{ type: 'text', text: SISTEM, cache_control: { type: 'ephemeral' } }],
+          system: [{ type: 'text', text: sistemPrompt(projeDili), cache_control: { type: 'ephemeral' } }],
           messages: [{ role: 'user', content: mesaj }],
         })
 

@@ -6,8 +6,12 @@ const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
 const SISTEM = `${genel}\n\n${hikayeHaritasi}`
 
+const DIL_ETIKET: Record<string, string> = {
+  TR: 'Türkçe', EN: 'English', AR: 'Arabic', RU: 'Russian', JA: 'Japanese/Chinese',
+}
+
 export async function POST(req: Request) {
-  let body: { projeAdi?: string; detayliAciklama?: string }
+  let body: { projeAdi?: string; detayliAciklama?: string; projeDili?: string }
   try {
     body = await req.json()
   } catch {
@@ -16,6 +20,8 @@ export async function POST(req: Request) {
 
   const projeAdi = (body.projeAdi ?? '').trim()
   const detayliAciklama = (body.detayliAciklama ?? '').trim()
+  const projeDili = (body.projeDili ?? 'TR').trim().toUpperCase()
+  const dilAdi = DIL_ETIKET[projeDili] ?? projeDili
 
   if (!projeAdi || !detayliAciklama) {
     return NextResponse.json({ error: 'empty_input' }, { status: 400 })
@@ -29,6 +35,7 @@ export async function POST(req: Request) {
 
 Proje Adı: ${projeAdi}
 Detaylı Açıklama: ${detayliAciklama}
+Çıktı Dili: ${dilAdi} — JSON yapısındaki tüm metin değerlerini (hikaye adları, destan adları, odak alanları vb.) ${dilAdi} dilinde yaz. JSON anahtarları değişmez.
 
 Yalnızca aşağıdaki JSON yapısını döndür. Markdown kod bloğu, ön yazı veya ek açıklama ekleme — sadece JSON:
 {

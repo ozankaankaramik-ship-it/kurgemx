@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
-import DilDegistirici from './DilDegistirici'
 import Adim1Formu from './Adim1Formu'
 import { ProjeProvider, useProje } from './ProjeContext'
 import GenerateButton, { ProgressBar } from './GenerateButton'
@@ -270,7 +269,7 @@ export default function CalismaEkrani() {
 function EkranIci() {
   const t = useTranslations('calismaEkrani')
   const ctx = useProje()
-  const { projeId, ad, shortDesc, detailedDesc } = ctx
+  const { projeId, ad, shortDesc, detailedDesc, projektDili } = ctx
   const [adim2Yukleniyor, setAdim2Yukleniyor] = useState(false)
   const [adim2Hata, setAdim2Hata] = useState(false)
   const [adim3Yukleniyor, setAdim3Yukleniyor] = useState(false)
@@ -299,7 +298,7 @@ function EkranIci() {
       const res = await fetch('/api/ai/hikaye-haritasi', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ projeAdi: ad, detayliAciklama: detailedDesc }),
+        body: JSON.stringify({ projeAdi: ad, detayliAciklama: detailedDesc, projeDili: projektDili }),
       })
       const raw = await res.json()
       if (!res.ok) {
@@ -396,10 +395,6 @@ function EkranIci() {
   return (
     <main className="min-h-screen bg-gray-100">
       <div className="max-w-4xl mx-auto px-4 py-10 w-full">
-
-        <div className="flex justify-end mb-10">
-          <DilDegistirici />
-        </div>
 
         <div>
 

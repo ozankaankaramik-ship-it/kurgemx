@@ -4,7 +4,6 @@ import { createClient } from '@/lib/supabase/server'
 import { Link } from '@/i18n/navigation'
 import { projeGetir, type ProjeDetayRow } from '@/lib/projects/actions'
 import SonProjeKaydet from '@/components/SonProjeKaydet'
-import DilDegistirici from '@/components/calisma/DilDegistirici'
 import type { Metadata } from 'next'
 
 type Props = {
@@ -63,20 +62,17 @@ export default async function ProjeDetayPage({ params }: Props) {
 
       <div className="max-w-4xl mx-auto px-4 py-10 w-full">
 
-        {/* Üst bar: geri + proje adı + dil */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-4">
-            <Link
-              href="/projeler"
-              className="text-sm text-gray-500 hover:underline shrink-0"
-            >
-              ← {t('geri')}
-            </Link>
-            <h1 className="text-lg font-semibold text-[#1F3864] truncate">
-              {proje.ad}
-            </h1>
-          </div>
-          <DilDegistirici />
+        {/* Üst bar: geri + proje adı */}
+        <div className="flex items-center gap-4 mb-6">
+          <Link
+            href="/projeler"
+            className="text-sm text-gray-500 hover:underline shrink-0"
+          >
+            ← {t('geri')}
+          </Link>
+          <h1 className="text-lg font-semibold text-[#1F3864] truncate">
+            {proje.ad}
+          </h1>
         </div>
 
         {/* Salt okunur banner */}
