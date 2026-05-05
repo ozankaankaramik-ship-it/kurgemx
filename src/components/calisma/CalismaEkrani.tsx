@@ -1,9 +1,9 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import Adim1Formu from './Adim1Formu'
-import { ProjeProvider, useProje } from './ProjeContext'
+import { ProjeProvider, useProje, type InitialProje } from './ProjeContext'
 import GenerateButton, { ProgressBar } from './GenerateButton'
 
 interface HikayeItem {
@@ -259,19 +259,39 @@ async function exportToExcel(data: StoryMapData, projeAdi: string) {
 
 
 // Dış bileşen: ProjeProvider sağlar
-export default function CalismaEkrani() {
+export default function CalismaEkrani({
+  initialProje,
+  backHref,
+  backLabel,
+}: {
+  initialProje?: InitialProje
+  backHref?: string
+  backLabel?: string
+} = {}) {
   return (
-    <ProjeProvider>
-      <EkranIci />
+    <ProjeProvider initialProje={initialProje}>
+      <EkranIci backHref={backHref} backLabel={backLabel} />
     </ProjeProvider>
   )
 }
 
 // İç bileşen: context'i kullanır
-function EkranIci() {
+function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: string }) {
   const t = useTranslations('calismaEkrani')
   const ctx = useProje()
   const { projeId, ad, shortDesc, detailedDesc, projektDili } = ctx
+
+  // Başarı banner'ı: sadece yeni proje oluşturulduğunda göster
+  const initialProjeIdRef = useRef<string | null>(projeId)
+  const [basariBannerGoster, setBasariBannerGoster] = useState(false)
+  useEffect(() => {
+    if (initialProjeIdRef.current === null && projeId !== null) {
+      setBasariBannerGoster(true)
+      const timer = setTimeout(() => setBasariBannerGoster(false), 5000)
+      return () => clearTimeout(timer)
+    }
+  }, [projeId])
+
   const [adim2Yukleniyor, setAdim2Yukleniyor] = useState(false)
   const [adim2Hata, setAdim2Hata] = useState(false)
   const [adim2MesajIdx, setAdim2MesajIdx] = useState(0)
@@ -415,6 +435,38 @@ function EkranIci() {
   return (
     <main className="min-h-screen bg-gray-100">
       <div className="max-w-4xl mx-auto px-4 py-10 w-full">
+
+        {/* Geri butonu + proje başlığı (mevcut proje görüntüleme) */}
+        {backHref && backLabel && (
+          <div className="flex items-center gap-4 mb-6">
+            <a href={backHref} className="text-sm text-gray-500 hover:underline shrink-0">
+              {backLabel}
+            </a>
+            {ad && <h1 className="text-lg font-semibold text-[#1F3864] truncate">{ad}</h1>}
+          </div>
+        )}
+
+        {/* Başarı banner'ı */}
+        {basariBannerGoster && (
+          <div
+            className="mb-6 flex items-start gap-3 px-4 py-3 rounded-lg border-[0.5px]"
+            style={{ backgroundColor: '#EAF3DE', color: '#27500A', borderColor: '#C0DD97', borderRadius: 8 }}
+          >
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold">{t('projeOlustu.baslik')}</p>
+              <p className="text-xs mt-0.5" style={{ opacity: 0.8 }}>{t('projeOlustu.aciklama')}</p>
+            </div>
+            <button
+              onClick={() => setBasariBannerGoster(false)}
+              className="shrink-0 hover:opacity-70 transition"
+              aria-label="Kapat"
+            >
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              </svg>
+            </button>
+          </div>
+        )}
 
         <div>
 

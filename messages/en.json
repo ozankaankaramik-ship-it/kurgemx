@@ -245,6 +245,10 @@
       "kapsamOlusturuluyor": "Generating scope document...",
       "mimariOlusturuluyor": "Generating architecture document..."
     },
+    "projeOlustu": {
+      "baslik": "Project created successfully!",
+      "aciklama": "Continue with Step 2 to generate your story map."
+    },
     "yenidenOlustur": "Regenerate"
   },
   "landing": {

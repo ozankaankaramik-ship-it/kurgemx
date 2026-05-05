@@ -36,6 +36,13 @@ const BOŞ: DokumanDurumu = {
   mimariDoc: null,
 }
 
+export interface InitialProje {
+  id: string
+  ad: string
+  aciklama: string | null
+  dil: string
+}
+
 const ProjeContext = createContext<ProjeContextValue | null>(null)
 
 export function useProje() {
@@ -44,12 +51,12 @@ export function useProje() {
   return ctx
 }
 
-export function ProjeProvider({ children }: { children: ReactNode }) {
-  const [projeId, setProjeId] = useState<string | null>(null)
-  const [ad, setAd] = useState('')
+export function ProjeProvider({ children, initialProje }: { children: ReactNode; initialProje?: InitialProje }) {
+  const [projeId, setProjeId] = useState<string | null>(initialProje?.id ?? null)
+  const [ad, setAd] = useState(initialProje?.ad ?? '')
   const [shortDesc, setShortDesc] = useState<string | null>(null)
-  const [detailedDesc, setDetailedDesc] = useState<string | null>(null)
-  const [projektDili, setProjektDili] = useState<string | null>(null)
+  const [detailedDesc, setDetailedDesc] = useState<string | null>(initialProje?.aciklama ?? null)
+  const [projektDili, setProjektDili] = useState<string | null>(initialProje?.dil ?? null)
   const [dokuman, setDokumanState] = useState<DokumanDurumu>(BOŞ)
 
   // Proje ID değişince Supabase'den mevcut dokümanları yükle
