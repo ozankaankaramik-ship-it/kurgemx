@@ -200,7 +200,8 @@
       "ozetSutun4": "Sprint Count",
       "ozetSutun5": "Duration",
       "exportExcel": "Export to Excel",
-      "olusturuluyor": "Generating story map..."
+      "olusturuluyor": "Generating story map...",
+      "scrollIpucu": "Scroll to see all epics"
     },
     "adim3": {
       "baslik": "Business Analysis Documents",

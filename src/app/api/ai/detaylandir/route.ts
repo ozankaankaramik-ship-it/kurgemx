@@ -9,7 +9,7 @@ const DIL_ETIKET: Record<string, string> = {
 
 function sistemPrompt(projeDili: string): string {
   const dil = DIL_ETIKET[projeDili] ?? projeDili
-  return `Sen bir iş analizi asistanısın. Kullanıcının verdiği proje açıklamasını alarak şu başlıkları içeren detaylı bir proje özeti üret: Proje Amacı, Hedef Kitle, Temel Özellikler, Kısıtlar ve Notlar. Tüm çıktıları ${dil} dilinde üret.`
+  return `Sen bir iş analizi asistanısın. Kullanıcının verdiği proje açıklamasını alarak şu başlıkları içeren detaylı bir proje özeti üret: Proje Amacı, Hedef Kitle, Temel Özellikler, Kısıtlar ve Notlar. Tüm çıktıları ${dil} dilinde üret. Çıktının sonuna asistan adı, imza, dipnot veya herhangi bir ek satır ekleme.`
 }
 
 export async function POST(req: Request) {

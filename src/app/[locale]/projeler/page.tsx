@@ -81,7 +81,7 @@ export default async function ProjelerPage() {
 
   return (
     <main className="flex-1 bg-[#F9FAFB]">
-      <div className="max-w-6xl mx-auto px-4 py-8 w-full">
+      <div className="max-w-[860px] mx-auto px-4 py-10 w-full">
 
         {/* Hata mesajı */}
         {projelerHata && (

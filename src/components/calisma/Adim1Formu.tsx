@@ -46,6 +46,7 @@ function stripMarkdown(raw: string): string {
     .replace(/^\s*\d+\.\s+/gm, '')
     .replace(/`{1,3}([^`]+)`{1,3}/g, '$1')
     .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .replace(/\n[-–—]\s*.{0,60}(?:Assistant|Asistan|KurgemX)[^\n]*/gi, '')
     .replace(/\n{3,}/g, '\n\n')
     .trim()
 }

@@ -499,33 +499,44 @@ function EkranIci() {
                 </div>
 
                 {/* ── Tablo 1: Hikaye Haritası ── */}
-                <div className="rounded-lg border border-gray-200 overflow-hidden overflow-x-auto bg-white">
-                  {storyMapData ? (
-                    <table
-                      className="text-sm text-left"
-                      style={{ minWidth: `${(storyMapData.hikayeHaritasi.destanlar.length + 1) * 200}px`, width: '100%' }}
-                    >
-                      <thead className="bg-[#1F3864]">
-                        <tr>
-                          <th className="px-4 py-2.5 text-xs font-semibold text-white uppercase tracking-wide w-36 border-r border-white/20">
-                            {storyMapData.genelOzet[0]
-                              ? Object.keys(storyMapData.genelOzet[0])[0]
-                              : (projektDili === 'TR' ? 'Sürüm' : 'Release')}
-                          </th>
-                          {storyMapData.hikayeHaritasi.destanlar.map(d => (
-                            <th key={d} className="px-4 py-2.5 text-xs font-semibold text-white uppercase tracking-wide border-r border-white/20 last:border-r-0">
-                              {d}
+                {storyMapData && (
+                  <div className="flex items-center justify-end gap-1 mb-1.5">
+                    <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                      <path d="M2 8h12M10 4l4 4-4 4" stroke="#9CA3AF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                    <span className="text-[11px] text-gray-400">{t('adim2.scrollIpucu')}</span>
+                  </div>
+                )}
+                <div className="relative">
+                  <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white">
+                    {storyMapData ? (
+                      <table
+                        className="text-sm text-left"
+                        style={{ minWidth: `${(storyMapData.hikayeHaritasi.destanlar.length + 1) * 200}px`, width: '100%' }}
+                      >
+                        <thead className="bg-[#1F3864]">
+                          <tr>
+                            <th className="px-4 py-2.5 text-xs font-semibold text-white uppercase tracking-wide w-36 border-r border-white/20 sticky left-0 z-10 bg-[#1F3864]">
+                              {storyMapData.genelOzet[0]
+                                ? Object.keys(storyMapData.genelOzet[0])[0]
+                                : (projektDili === 'TR' ? 'Sürüm' : 'Release')}
                             </th>
-                          ))}
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-100">
-                        {// Satırları veriden türet — R1→R2→R3 sırasını koru
-                          (['R1', 'R2', 'R3'] as const)
+                            {storyMapData.hikayeHaritasi.destanlar.map(d => (
+                              <th key={d} className="px-4 py-2.5 text-xs font-semibold text-white uppercase tracking-wide border-r border-white/20 last:border-r-0">
+                                {d}
+                              </th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                          {(['R1', 'R2', 'R3'] as const)
                             .filter(s => storyMapData.hikayeHaritasi.hikayeler.some(h => h.surum === s))
                             .map((surumKey, idx) => (
                               <tr key={surumKey} className={idx % 2 === 1 ? 'bg-gray-50/50' : ''}>
-                                <td className="px-4 py-3 text-xs font-semibold text-gray-600 border-r border-gray-100 align-top w-36 whitespace-nowrap">
+                                <td
+                                  className={`px-4 py-3 text-xs font-semibold text-gray-600 border-r border-gray-100 align-top w-36 whitespace-nowrap sticky left-0 z-10 ${idx % 2 === 1 ? 'bg-gray-50' : 'bg-white'}`}
+                                  style={{ boxShadow: '1px 0 0 #E5E7EB' }}
+                                >
                                   {surumKey}
                                 </td>
                                 {storyMapData.hikayeHaritasi.destanlar.map(destan => (
@@ -541,11 +552,18 @@ function EkranIci() {
                                 ))}
                               </tr>
                             ))
-                        }
-                      </tbody>
-                    </table>
-                  ) : (
-                    <div className="py-10 text-center text-sm text-gray-300">{t('adim2.tabloBos')}</div>
+                          }
+                        </tbody>
+                      </table>
+                    ) : (
+                      <div className="py-10 text-center text-sm text-gray-300">{t('adim2.tabloBos')}</div>
+                    )}
+                  </div>
+                  {storyMapData && (
+                    <div
+                      className="pointer-events-none absolute inset-y-0 right-0 w-10 rounded-r-lg"
+                      style={{ background: 'linear-gradient(to right, transparent, white)' }}
+                    />
                   )}
                 </div>
 
