@@ -132,15 +132,20 @@
   },
   "projeler": {
     "baslik": "My Projects",
-    "yeniProje": "New Project",
+    "yeniProje": "+ New Project",
     "bosHal": {
-      "baslik": "No projects yet.",
-      "aciklama": "Create your first project!",
+      "baslik": "No projects yet",
+      "aciklama": "Create your first project to get started with AI-powered business analysis.",
       "btn": "Create New Project"
     },
     "kart": {
       "hikayeSayisi": "stories",
       "dokumanSayisi": "documents"
+    },
+    "badge": {
+      "hikayeHaritasi": "Story Map",
+      "devamEdiyor": "In Progress",
+      "yeni": "New"
     },
     "daha": "Load More"
   },

@@ -132,15 +132,20 @@
   },
   "projeler": {
     "baslik": "Projelerim",
-    "yeniProje": "Yeni Proje",
+    "yeniProje": "+ Yeni Proje",
     "bosHal": {
-      "baslik": "Henüz projeniz yok.",
-      "aciklama": "İlk projenizi oluşturun!",
+      "baslik": "Henüz projeniz yok",
+      "aciklama": "Yapay zeka destekli iş analizine başlamak için ilk projenizi oluşturun.",
       "btn": "Yeni Proje Oluştur"
     },
     "kart": {
       "hikayeSayisi": "hikaye",
       "dokumanSayisi": "doküman"
+    },
+    "badge": {
+      "hikayeHaritasi": "Hikaye Haritası",
+      "devamEdiyor": "Devam Ediyor",
+      "yeni": "Yeni"
     },
     "daha": "Daha Fazla Göster"
   },

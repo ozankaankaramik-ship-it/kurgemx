@@ -1,6 +1,6 @@
 import { getLocale, getTranslations } from "next-intl/server"
 import { createClient } from "@/lib/supabase/server"
-import { Link } from "@/i18n/navigation"
+import { Link, redirect } from "@/i18n/navigation"
 import type { Metadata } from "next"
 
 // ── Icons ─────────────────────────────────────────────────────────────────────
@@ -65,16 +65,6 @@ function GlobeIcon() {
   )
 }
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-function formatTarih(dateStr: string, locale: string) {
-  return new Intl.DateTimeFormat(locale === "tr" ? "tr-TR" : "en-US", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).format(new Date(dateStr))
-}
-
 // ── Metadata ──────────────────────────────────────────────────────────────────
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -98,82 +88,9 @@ export default async function HomePage() {
   } = await supabase.auth.getUser()
   const locale = await getLocale()
 
-  // ── Authenticated: Dashboard ──────────────────────────────────────────────
+  // ── Authenticated: redirect to projects list ─────────────────────────────
   if (user) {
-    const t = await getTranslations("dashboard")
-    const displayName =
-      (user.user_metadata?.ad as string | undefined) ||
-      user.email?.split("@")[0] ||
-      "?"
-
-    const { data: projeler } = await supabase
-      .from("projeler")
-      .select("id, ad, olusturma_tarihi")
-      .order("olusturma_tarihi", { ascending: false })
-      .limit(3)
-
-    return (
-      <main className="flex-1 bg-[#F9FAFB]">
-        <div className="max-w-4xl mx-auto px-4 py-10">
-
-          <h1 className="text-xl font-semibold text-[#1F3864] mb-6">
-            {t("welcome", { name: displayName })}
-          </h1>
-
-          <div className="flex gap-2 mb-10">
-            <Link
-              href="/projeler/yeni"
-              className="inline-flex items-center h-[34px] px-3.5 rounded-md bg-[#1F3864] text-white text-xs font-medium hover:bg-[#2E75B6] transition-colors"
-            >
-              {t("newProject")}
-            </Link>
-            <Link
-              href="/projeler"
-              className="inline-flex items-center h-[34px] px-3.5 rounded-md bg-white text-[#1F3864] text-xs font-medium hover:bg-[#EEF4FB] transition-colors"
-              style={{ border: "0.5px solid #2E75B6" }}
-            >
-              {t("allProjects")}
-            </Link>
-          </div>
-
-          <p className="text-[11px] font-medium text-gray-400 uppercase tracking-[0.8px] mb-3">
-            {t("recentProjects")}
-          </p>
-
-          {projeler?.length ? (
-            <div className="space-y-1">
-              {projeler.map((p) => (
-                <Link
-                  key={p.id}
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  href={{ pathname: "/projeler/[id]", params: { id: p.id } } as any}
-                  className="flex items-center justify-between bg-white rounded-xl px-5 py-[18px] transition-colors hover:border-[#2E75B6]/40"
-                  style={{ border: "0.5px solid #E5E7EB" }}
-                >
-                  <div>
-                    <p className="text-sm font-semibold text-[#1F3864]">{p.ad}</p>
-                    <p className="text-xs text-gray-400 mt-0.5">
-                      {t("created")}{" "}
-                      {p.olusturma_tarihi ? formatTarih(p.olusturma_tarihi, locale) : ""}
-                    </p>
-                  </div>
-                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                    <path d="M6 3l5 5-5 5" stroke="#9CA3AF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </Link>
-              ))}
-            </div>
-          ) : (
-            <div
-              className="bg-white rounded-xl px-5 py-10 text-center"
-              style={{ border: "0.5px solid #E5E7EB" }}
-            >
-              <p className="text-sm text-gray-400">{t("noProjects")}</p>
-            </div>
-          )}
-        </div>
-      </main>
-    )
+    redirect({ href: "/projeler", locale })
   }
 
   // ── Unauthenticated: Landing page ─────────────────────────────────────────
