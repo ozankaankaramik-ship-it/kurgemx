@@ -555,32 +555,34 @@ function EkranIci() {
                   return (
                     <div>
                       <h3 className="text-sm font-semibold text-[#1F3864] mb-2">{t('adim2.sprintPlanBaslik')}</h3>
-                      <div className="rounded-lg border border-gray-200 overflow-hidden overflow-x-auto bg-white">
-                        <table className="w-full text-sm text-left">
-                          <thead className="bg-[#1F3864]">
-                            <tr>
-                              {keys.map(k => (
-                                <th key={k} className="px-4 py-2.5 text-xs font-semibold text-white uppercase tracking-wide border-r border-white/20 last:border-r-0 whitespace-nowrap">
-                                  {k}
-                                </th>
-                              ))}
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y divide-gray-100">
-                            {storyMapData.sprintPlani.map((row, idx) => {
-                              const vals = Object.values(row)
-                              return (
-                                <tr key={idx} className={idx % 2 === 1 ? 'bg-gray-50/50' : ''}>
-                                  {vals.map((val, i) => (
-                                    <td key={i} className="px-4 py-2.5 text-xs text-gray-700 border-r border-gray-100 last:border-r-0">
-                                      {String(val ?? '')}
-                                    </td>
-                                  ))}
-                                </tr>
-                              )
-                            })}
-                          </tbody>
-                        </table>
+                      <div className="overflow-x-auto">
+                        <div className="rounded-lg border border-gray-200 overflow-hidden bg-white" style={{ width: 'fit-content' }}>
+                          <table className="text-sm text-left">
+                            <thead className="bg-[#1F3864]">
+                              <tr>
+                                {keys.map(k => (
+                                  <th key={k} className="px-4 py-2.5 text-xs font-semibold text-white uppercase tracking-wide border-r border-white/20 last:border-r-0 whitespace-nowrap">
+                                    {k}
+                                  </th>
+                                ))}
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-100">
+                              {storyMapData.sprintPlani.map((row, idx) => {
+                                const vals = Object.values(row)
+                                return (
+                                  <tr key={idx} className={idx % 2 === 1 ? 'bg-gray-50/50' : ''}>
+                                    {vals.map((val, i) => (
+                                      <td key={i} className="px-4 py-2.5 text-xs text-gray-700 border-r border-gray-100 last:border-r-0 whitespace-nowrap">
+                                        {String(val ?? '')}
+                                      </td>
+                                    ))}
+                                  </tr>
+                                )
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
                       </div>
                     </div>
                   )
@@ -592,34 +594,36 @@ function EkranIci() {
                   return (
                     <div>
                       <h3 className="text-sm font-semibold text-[#1F3864] mb-2">{t('adim2.genelOzetBaslik')}</h3>
-                      <div className="rounded-lg border border-gray-200 overflow-hidden bg-white">
-                        <table className="w-full text-sm text-left">
-                          <thead className="bg-[#1F3864]">
-                            <tr>
-                              {keys.map(k => (
-                                <th key={k} className="px-4 py-2.5 text-xs font-semibold text-white uppercase tracking-wide border-r border-white/20 last:border-r-0 whitespace-nowrap">
-                                  {k}
-                                </th>
-                              ))}
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y divide-gray-100">
-                            {storyMapData.genelOzet.map((row, idx) => {
-                              const vals = Object.values(row)
-                              const ilkDeger = String(vals[0] ?? '').toLowerCase()
-                              const isToplam = ilkDeger.includes('toplam') || ilkDeger.includes('total')
-                              return (
-                                <tr key={idx} className={isToplam ? 'bg-gray-50 font-semibold' : idx % 2 === 1 ? 'bg-gray-50/50' : ''}>
-                                  {vals.map((val, i) => (
-                                    <td key={i} className="px-4 py-2.5 text-xs text-gray-700 border-r border-gray-100 last:border-r-0 whitespace-nowrap">
-                                      {String(val ?? '')}
-                                    </td>
-                                  ))}
-                                </tr>
-                              )
-                            })}
-                          </tbody>
-                        </table>
+                      <div className="overflow-x-auto">
+                        <div className="rounded-lg border border-gray-200 overflow-hidden bg-white" style={{ width: 'fit-content' }}>
+                          <table className="text-sm text-left">
+                            <thead className="bg-[#1F3864]">
+                              <tr>
+                                {keys.map(k => (
+                                  <th key={k} className="px-4 py-2.5 text-xs font-semibold text-white uppercase tracking-wide border-r border-white/20 last:border-r-0 whitespace-nowrap">
+                                    {k}
+                                  </th>
+                                ))}
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-100">
+                              {storyMapData.genelOzet.map((row, idx) => {
+                                const vals = Object.values(row)
+                                const ilkDeger = String(vals[0] ?? '').toLowerCase()
+                                const isToplam = ilkDeger.includes('toplam') || ilkDeger.includes('total')
+                                return (
+                                  <tr key={idx} className={isToplam ? 'bg-gray-50 font-semibold' : idx % 2 === 1 ? 'bg-gray-50/50' : ''}>
+                                    {vals.map((val, i) => (
+                                      <td key={i} className="px-4 py-2.5 text-xs text-gray-700 border-r border-gray-100 last:border-r-0 whitespace-nowrap">
+                                        {String(val ?? '')}
+                                      </td>
+                                    ))}
+                                  </tr>
+                                )
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
                       </div>
                     </div>
                   )

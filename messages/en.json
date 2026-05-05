@@ -147,7 +147,8 @@
       "devamEdiyor": "In Progress",
       "yeni": "New"
     },
-    "daha": "Load More"
+    "daha": "Load More",
+    "hataMesaji": "An error occurred while loading projects. Please refresh the page."
   },
   "calismaEkrani": {
     "dilDegistir": "Türkçe",

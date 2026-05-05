@@ -1,17 +1,4 @@
 {
-  "hooks": {
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash -c 'ROOT=$(git rev-parse --show-toplevel 2>/dev/null) || exit 0; cd \"$ROOT\"; git add -A 2>/dev/null; git diff --cached --quiet 2>/dev/null && exit 0; FILE=$(git diff --cached --name-only | head -1); COUNT=$(git diff --cached --name-only | wc -l | tr -d \" \\r\\n\\t\"); MSG=\"update $FILE\"; if [ \"$COUNT\" -gt \"1\" ]; then MSG=\"$MSG (+$((COUNT-1)) more)\"; fi; git commit -m \"$MSG\" -q 2>/dev/null && git push origin HEAD -q 2>/dev/null; true'",
-            "statusMessage": "Committing and pushing changes..."
-          }
-        ]
-      }
-    ]
-  },
   "permissions": {
     "allow": [
       "Bash(npx create-next-app@latest:*)",
@@ -49,7 +36,21 @@
       "Bash(grep -v \"^$\")",
       "Bash(python3 -c ' *)",
       "Bash(xargs grep *)",
-      "Skill(update-config)"
+      "Skill(update-config)",
+      "Bash(python *)"
+    ]
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'ROOT=$(git rev-parse --show-toplevel 2>/dev/null) || exit 0; cd \"$ROOT\"; git add -A 2>/dev/null; git diff --cached --quiet 2>/dev/null && exit 0; FILE=$(git diff --cached --name-only | head -1); COUNT=$(git diff --cached --name-only | wc -l | tr -d \" \\r\\n\\t\"); MSG=\"update $FILE\"; if [ \"$COUNT\" -gt \"1\" ]; then MSG=\"$MSG (+$((COUNT-1)) more)\"; fi; git commit -m \"$MSG\" -q 2>/dev/null && git push origin HEAD -q 2>/dev/null; true'",
+            "statusMessage": "Committing and pushing changes..."
+          }
+        ]
+      }
     ]
   }
 }

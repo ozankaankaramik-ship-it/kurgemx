@@ -67,17 +67,28 @@ export default async function ProjelerPage() {
 
   const t = await getTranslations('projeler')
 
-  const { data: projeler } = await supabase
+  const { data: projeler, error: projelerHata } = await supabase
     .from('projeler')
-    .select('id, ad, aciklama, dil, durum, olusturma_tarihi, guncelleme_tarihi, hikayeler(count), analiz_dokumanlari(count)')
+    .select('*')
     .eq('kullanici_id', user!.id)
     .order('olusturma_tarihi', { ascending: false })
+
+  if (projelerHata) {
+    console.error('[ProjelerPage] Projeler sorgu hatası:', projelerHata)
+  }
 
   const liste = (projeler ?? []) as unknown as ProjeListeRow[]
 
   return (
     <main className="flex-1 bg-[#F9FAFB]">
       <div className="max-w-6xl mx-auto px-4 py-8 w-full">
+
+        {/* Hata mesajı */}
+        {projelerHata && (
+          <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+            {t('hataMesaji')}
+          </div>
+        )}
 
         {/* Header */}
         <div className="flex items-center justify-between mb-6">

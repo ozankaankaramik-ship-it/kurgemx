@@ -147,7 +147,8 @@
       "devamEdiyor": "Devam Ediyor",
       "yeni": "Yeni"
     },
-    "daha": "Daha Fazla Göster"
+    "daha": "Daha Fazla Göster",
+    "hataMesaji": "Projeler yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin."
   },
   "calismaEkrani": {
     "dilDegistir": "English",
