@@ -478,7 +478,7 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
               </div>
               <div className="w-px flex-1 bg-gray-200 mt-2" />
             </div>
-            <div className="flex-1 pb-10">
+            <div className="flex-1 pb-10 min-w-0">
               <h2 className="text-base font-semibold text-[#1F3864] mb-4">
                 {t('adim1.baslik')}
               </h2>
@@ -518,7 +518,7 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
               </div>
               <div className="w-px flex-1 bg-gray-200 mt-2" />
             </div>
-            <div className="flex-1 pb-10">
+            <div className="flex-1 pb-10 min-w-0">
               <h2 className={`text-base font-semibold mb-4 ${adim2Aktif ? 'text-[#1F3864]' : 'text-gray-400'}`}>
                 {t('adim2.baslik')}
               </h2>
@@ -564,7 +564,7 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
                     {storyMapData ? (
                       <table
                         className="text-sm text-left"
-                        style={{ minWidth: `${(storyMapData.hikayeHaritasi.destanlar.length + 1) * 200}px`, width: '100%' }}
+                        style={{ minWidth: `${(storyMapData.hikayeHaritasi.destanlar.length + 1) * 200}px` }}
                       >
                         <thead className="bg-[#1F3864]">
                           <tr>
@@ -708,7 +708,7 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
               <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold shrink-0 ${adim3Aktif ? 'bg-[#1F3864] text-white' : 'bg-gray-200 text-gray-400'}`}>3</div>
               <div className="w-px flex-1 bg-gray-200 mt-2" />
             </div>
-            <div className="flex-1 pb-10">
+            <div className="flex-1 pb-10 min-w-0">
               <h2 className={`text-base font-semibold mb-4 ${adim3Aktif ? 'text-[#1F3864]' : 'text-gray-400'}`}>{t('adim3.baslik')}</h2>
               <div className={`rounded-xl p-6 ${adim3Aktif ? 'bg-[#EEF4FB] border border-blue-100' : 'bg-white border border-gray-100'}`}>
                 <div className="space-y-2 mb-5">
@@ -744,7 +744,7 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
               <div className="w-9 h-9 rounded-full bg-gray-200 text-gray-400 flex items-center justify-center text-sm font-bold shrink-0">4</div>
               <div className="w-px flex-1 bg-gray-200 mt-2" />
             </div>
-            <div className="flex-1 pb-10">
+            <div className="flex-1 pb-10 min-w-0">
               <h2 className="text-base font-semibold text-gray-400 mb-4">{t('adim4.baslik')}</h2>
               <div className="bg-white border border-gray-100 rounded-xl p-6">
                 <div className="space-y-2 mb-5">
@@ -782,7 +782,7 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
             <div className="flex flex-col items-center">
               <div className="w-9 h-9 rounded-full bg-gray-200 text-gray-400 flex items-center justify-center text-sm font-bold shrink-0">5</div>
             </div>
-            <div className="flex-1 pb-10">
+            <div className="flex-1 pb-10 min-w-0">
               <h2 className="text-base font-semibold text-gray-400 mb-4">{t('adim5.baslik')}</h2>
               <div className="bg-white border border-gray-100 rounded-xl p-6">
                 <div className="space-y-2 mb-5">
