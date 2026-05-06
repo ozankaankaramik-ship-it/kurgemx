@@ -67,6 +67,7 @@ export default function Adim1Formu() {
 
   const adRef = useRef<HTMLInputElement>(null)
   const aciklamaRef = useRef<HTMLTextAreaElement>(null)
+  const yzTextareaRef = useRef<HTMLTextAreaElement>(null)
 
   // Streaming sırasında buton disabled — hem yzYukleniyor hem yzCikti kontrol edilir
   const canSubmit = !isPending && !yzYukleniyor && adValue.trim().length > 0 && yzCikti !== null
@@ -83,6 +84,13 @@ export default function Adim1Formu() {
       window.history.replaceState(null, '', route)
     }
   }, [state]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    const el = yzTextareaRef.current
+    if (!el) return
+    el.style.height = 'auto'
+    el.style.height = el.scrollHeight + 'px'
+  }, [yzCikti])
 
   async function handleYz() {
     const projeAdi = adRef.current?.value.trim() ?? ''
@@ -204,7 +212,7 @@ export default function Adim1Formu() {
         </div>
 
         {(yzCikti !== null || yzHata) && (
-          <div className="mt-3 rounded-lg border border-[#2E75B6]/25 bg-blue-50 p-4">
+          <div className="mt-3">
             <p className="text-xs font-semibold text-[#2E75B6] mb-1.5">{t('yzCikti')}</p>
             {yzHata ? (
               <p className="text-sm text-red-500">{t('hatalar.genel')}</p>
@@ -216,11 +224,20 @@ export default function Adim1Formu() {
                   </p>
                 )}
                 <textarea
+                  ref={yzTextareaRef}
                   value={yzCikti ?? ''}
-                  onChange={e => setYzCikti(e.target.value)}
+                  onChange={e => {
+                    setYzCikti(e.target.value)
+                    e.target.style.height = 'auto'
+                    e.target.style.height = e.target.scrollHeight + 'px'
+                  }}
                   readOnly={yzYukleniyor}
-                  style={{ minHeight: 200, maxHeight: 400, overflowY: 'auto', resize: 'vertical' }}
-                  className="w-full text-sm text-gray-700 leading-relaxed bg-transparent border-none outline-none"
+                  style={{ minHeight: 200, overflowY: 'hidden', resize: 'none' }}
+                  className={`w-full text-sm text-gray-700 leading-relaxed rounded-lg px-3 py-2.5 outline-none ${
+                    yzYukleniyor
+                      ? 'bg-gray-50 border border-gray-200'
+                      : 'bg-white border-[0.5px] border-[#2E75B6]'
+                  }`}
                 />
               </>
             )}
