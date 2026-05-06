@@ -168,40 +168,48 @@ async function exportToExcel(data: StoryMapData, projeAdi: string) {
 
   // ── Abbreviations table ───────────────────────────────────
   const abbrevOffset = 3 + surumler.length
+  const ABBREV_BORDER = {
+    top:    { style: 'thin', color: { rgb: 'E5E5E5' } },
+    bottom: { style: 'thin', color: { rgb: 'E5E5E5' } },
+    left:   { style: 'thin', color: { rgb: 'E5E5E5' } },
+    right:  { style: 'thin', color: { rgb: 'E5E5E5' } },
+  }
   rows1.push({ hpx: 16 }) // empty separator
 
   ws1[enc(abbrevOffset + 1, 0)] = c('Abbreviations', {
-    font: { bold: true, sz: 11, color: { rgb: WHITE } },
-    fill: { patternType: 'solid', fgColor: { rgb: DARK_BLUE } },
+    border: ABBREV_BORDER,
+    font: { bold: true, sz: 10, color: { rgb: '444441' } },
+    fill: { patternType: 'solid', fgColor: { rgb: 'F1EFE8' } },
     alignment: { horizontal: 'left', vertical: 'center' },
   })
-  for (let i = 1; i < numCols; i++) ws1[enc(abbrevOffset + 1, i)] = c('', { fill: { patternType: 'solid', fgColor: { rgb: DARK_BLUE } } })
+  for (let i = 1; i < numCols; i++) ws1[enc(abbrevOffset + 1, i)] = { v: '', t: 's', s: { fill: { patternType: 'solid', fgColor: { rgb: 'F1EFE8' } } } }
   m1.push({ s: { r: abbrevOffset + 1, c: 0 }, e: { r: abbrevOffset + 1, c: numCols - 1 } })
-  rows1.push({ hpx: 26 })
+  rows1.push({ hpx: 24 })
 
-  ws1[enc(abbrevOffset + 2, 0)] = hdr('Abbreviation')
-  ws1[enc(abbrevOffset + 2, 1)] = hdr('Full Name')
-  ws1[enc(abbrevOffset + 2, 2)] = hdr('Example')
-  for (let i = 3; i < numCols; i++) ws1[enc(abbrevOffset + 2, i)] = c('', { fill: { patternType: 'solid', fgColor: { rgb: DARK_BLUE } } })
-  rows1.push({ hpx: 22 })
+  const abbrevHdrStyle = { border: ABBREV_BORDER, font: { bold: true, sz: 9, color: { rgb: '666663' } }, fill: { patternType: 'solid', fgColor: { rgb: 'F9F9F9' } }, alignment: { horizontal: 'left', vertical: 'center' } }
+  ws1[enc(abbrevOffset + 2, 0)] = c('Abbreviation', abbrevHdrStyle)
+  ws1[enc(abbrevOffset + 2, 1)] = c('Full Name', abbrevHdrStyle)
+  ws1[enc(abbrevOffset + 2, 2)] = c('Example', abbrevHdrStyle)
+  for (let i = 3; i < numCols; i++) ws1[enc(abbrevOffset + 2, i)] = { v: '', t: 's', s: {} }
+  rows1.push({ hpx: 20 })
 
   const abbrevData = [
     ['ST', 'Story', 'ST1, ST2'],
     ['SP', 'Sprint', 'SP1, SP2'],
     ['R', 'Release', 'R1, R2, R3'],
   ] as const
+  const abbrevCellStyle = { border: ABBREV_BORDER, font: { italic: true, sz: 9, color: { rgb: '9CA3AF' } }, fill: { patternType: 'solid', fgColor: { rgb: WHITE } } }
   abbrevData.forEach(([code, name, example], ai) => {
     const r = abbrevOffset + 3 + ai
-    const bg = ai % 2 === 0 ? WHITE : 'F9FAFB'
-    ws1[enc(r, 0)] = c(code, { font: { bold: true, sz: 10, color: { rgb: '2E75B6' } }, fill: { patternType: 'solid', fgColor: { rgb: bg } } })
-    ws1[enc(r, 1)] = c(name, { font: { sz: 10, color: { rgb: '374151' } }, fill: { patternType: 'solid', fgColor: { rgb: bg } } })
-    ws1[enc(r, 2)] = c(example, { font: { sz: 10, color: { rgb: '9CA3AF' } }, fill: { patternType: 'solid', fgColor: { rgb: bg } } })
-    for (let i = 3; i < numCols; i++) ws1[enc(r, i)] = c('', { fill: { patternType: 'solid', fgColor: { rgb: bg } } })
-    rows1.push({ hpx: 20 })
+    ws1[enc(r, 0)] = c(code, abbrevCellStyle)
+    ws1[enc(r, 1)] = c(name, abbrevCellStyle)
+    ws1[enc(r, 2)] = c(example, abbrevCellStyle)
+    for (let i = 3; i < numCols; i++) ws1[enc(r, i)] = { v: '', t: 's', s: {} }
+    rows1.push({ hpx: 18 })
   })
 
   const footerRow1 = abbrevOffset + 3 + abbrevData.length + 1
-  ws1[enc(footerRow1, 0)] = { v: 'Created with KurgemX • kurgemx.com', t: 's', s: { font: { italic: true, sz: 9, color: { rgb: '9CA3AF' } }, alignment: { horizontal: 'left', vertical: 'center' } } }
+  ws1[enc(footerRow1, 0)] = { v: 'Created with KurgemX • kurgemx.com', t: 's', s: { font: { italic: true, sz: 8, color: { rgb: '9CA3AF' } }, alignment: { horizontal: 'left', vertical: 'center' } } }
   m1.push({ s: { r: footerRow1, c: 0 }, e: { r: footerRow1, c: numCols - 1 } })
   rows1.push({ hpx: 12 })
   rows1.push({ hpx: 14 })
@@ -250,7 +258,7 @@ async function exportToExcel(data: StoryMapData, projeAdi: string) {
     })
 
     const footerRow2 = 3 + sp.length
-    ws2[enc(footerRow2, 0)] = { v: 'Created with KurgemX • kurgemx.com', t: 's', s: { font: { italic: true, sz: 9, color: { rgb: '9CA3AF' } }, alignment: { horizontal: 'left', vertical: 'center' } } }
+    ws2[enc(footerRow2, 0)] = { v: 'Created with KurgemX • kurgemx.com', t: 's', s: { font: { italic: true, sz: 8, color: { rgb: '9CA3AF' } }, alignment: { horizontal: 'left', vertical: 'center' } } }
     m2.push({ s: { r: footerRow2, c: 0 }, e: { r: footerRow2, c: nSp - 1 } })
     rows2.push({ hpx: 16 })
     rows2.push({ hpx: 14 })
@@ -298,7 +306,7 @@ async function exportToExcel(data: StoryMapData, projeAdi: string) {
     })
 
     const footerRow3 = 3 + go.length
-    ws3[enc(footerRow3, 0)] = { v: 'Created with KurgemX • kurgemx.com', t: 's', s: { font: { italic: true, sz: 9, color: { rgb: '9CA3AF' } }, alignment: { horizontal: 'left', vertical: 'center' } } }
+    ws3[enc(footerRow3, 0)] = { v: 'Created with KurgemX • kurgemx.com', t: 's', s: { font: { italic: true, sz: 8, color: { rgb: '9CA3AF' } }, alignment: { horizontal: 'left', vertical: 'center' } } }
     m3.push({ s: { r: footerRow3, c: 0 }, e: { r: footerRow3, c: nGo - 1 } })
     rows3.push({ hpx: 16 })
     rows3.push({ hpx: 14 })
