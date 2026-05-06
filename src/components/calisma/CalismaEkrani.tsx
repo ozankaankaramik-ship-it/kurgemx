@@ -166,10 +166,44 @@ async function exportToExcel(data: StoryMapData, projeAdi: string) {
     rows1.push({ hpx: Math.max(30, maxCount * 18) })
   })
 
-  const footerRow1 = 4 + surumler.length
+  // ── Abbreviations table ───────────────────────────────────
+  const abbrevOffset = 3 + surumler.length
+  rows1.push({ hpx: 16 }) // empty separator
+
+  ws1[enc(abbrevOffset + 1, 0)] = c('Abbreviations', {
+    font: { bold: true, sz: 11, color: { rgb: WHITE } },
+    fill: { patternType: 'solid', fgColor: { rgb: DARK_BLUE } },
+    alignment: { horizontal: 'left', vertical: 'center' },
+  })
+  for (let i = 1; i < numCols; i++) ws1[enc(abbrevOffset + 1, i)] = c('', { fill: { patternType: 'solid', fgColor: { rgb: DARK_BLUE } } })
+  m1.push({ s: { r: abbrevOffset + 1, c: 0 }, e: { r: abbrevOffset + 1, c: numCols - 1 } })
+  rows1.push({ hpx: 26 })
+
+  ws1[enc(abbrevOffset + 2, 0)] = hdr('Abbreviation')
+  ws1[enc(abbrevOffset + 2, 1)] = hdr('Full Name')
+  ws1[enc(abbrevOffset + 2, 2)] = hdr('Example')
+  for (let i = 3; i < numCols; i++) ws1[enc(abbrevOffset + 2, i)] = c('', { fill: { patternType: 'solid', fgColor: { rgb: DARK_BLUE } } })
+  rows1.push({ hpx: 22 })
+
+  const abbrevData = [
+    ['ST', 'Story', 'ST1, ST2'],
+    ['SP', 'Sprint', 'SP1, SP2'],
+    ['R', 'Release', 'R1, R2, R3'],
+  ] as const
+  abbrevData.forEach(([code, name, example], ai) => {
+    const r = abbrevOffset + 3 + ai
+    const bg = ai % 2 === 0 ? WHITE : 'F9FAFB'
+    ws1[enc(r, 0)] = c(code, { font: { bold: true, sz: 10, color: { rgb: '2E75B6' } }, fill: { patternType: 'solid', fgColor: { rgb: bg } } })
+    ws1[enc(r, 1)] = c(name, { font: { sz: 10, color: { rgb: '374151' } }, fill: { patternType: 'solid', fgColor: { rgb: bg } } })
+    ws1[enc(r, 2)] = c(example, { font: { sz: 10, color: { rgb: '9CA3AF' } }, fill: { patternType: 'solid', fgColor: { rgb: bg } } })
+    for (let i = 3; i < numCols; i++) ws1[enc(r, i)] = c('', { fill: { patternType: 'solid', fgColor: { rgb: bg } } })
+    rows1.push({ hpx: 20 })
+  })
+
+  const footerRow1 = abbrevOffset + 3 + abbrevData.length + 1
   ws1[enc(footerRow1, 0)] = { v: 'Created with KurgemX • kurgemx.com', t: 's', s: { font: { italic: true, sz: 9, color: { rgb: '9CA3AF' } }, alignment: { horizontal: 'left', vertical: 'center' } } }
   m1.push({ s: { r: footerRow1, c: 0 }, e: { r: footerRow1, c: numCols - 1 } })
-  rows1.push({ hpx: 16 })
+  rows1.push({ hpx: 12 })
   rows1.push({ hpx: 14 })
   ws1['!ref']    = XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: footerRow1, c: numCols - 1 } })
   ws1['!merges'] = m1
@@ -309,7 +343,7 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
   useEffect(() => {
     if (initialProjeIdRef.current === null && projeId !== null) {
       setBasariBannerGoster(true)
-      const timer = setTimeout(() => setBasariBannerGoster(false), 5000)
+      const timer = setTimeout(() => setBasariBannerGoster(false), 8000)
       return () => clearTimeout(timer)
     }
   }, [projeId])
@@ -470,28 +504,6 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
           </div>
         )}
 
-        {/* Başarı banner'ı */}
-        {basariBannerGoster && (
-          <div
-            className="mb-6 flex items-start gap-3 px-4 py-3 rounded-lg border-[0.5px]"
-            style={{ backgroundColor: '#EAF3DE', color: '#27500A', borderColor: '#C0DD97', borderRadius: 8 }}
-          >
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold">{t('projeOlustu.baslik')}</p>
-              <p className="text-xs mt-0.5" style={{ opacity: 0.8 }}>{t('projeOlustu.aciklama')}</p>
-            </div>
-            <button
-              onClick={() => setBasariBannerGoster(false)}
-              className="shrink-0 hover:opacity-70 transition"
-              aria-label="Kapat"
-            >
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-              </svg>
-            </button>
-          </div>
-        )}
-
         <div>
 
           {/* ── Adım 1 ── */}
@@ -547,6 +559,27 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
                 {t('adim2.baslik')}
               </h2>
               <div className={`rounded-xl p-6 space-y-6 ${adim2Aktif ? 'bg-[#EEF4FB] border border-blue-100' : 'bg-white border border-gray-100'}`}>
+                {/* Proje oluşturma bildirimi */}
+                {basariBannerGoster && (
+                  <div
+                    className="flex items-start gap-2"
+                    style={{ backgroundColor: '#EAF3DE', color: '#27500A', border: '0.5px solid #C0DD97', borderRadius: 8, padding: '10px 14px' }}
+                  >
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold">{t('projeOlustu.baslik')}</p>
+                      <p className="text-xs mt-0.5" style={{ opacity: 0.8 }}>{t('projeOlustu.aciklama')}</p>
+                    </div>
+                    <button
+                      onClick={() => setBasariBannerGoster(false)}
+                      className="shrink-0 hover:opacity-70 transition"
+                      aria-label="Kapat"
+                    >
+                      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                        <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                      </svg>
+                    </button>
+                  </div>
+                )}
                 {/* Generate butonu */}
                 <div className="space-y-2">
                   <div className="flex items-center gap-3">

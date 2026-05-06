@@ -219,8 +219,8 @@ export default function Adim1Formu() {
                   value={yzCikti ?? ''}
                   onChange={e => setYzCikti(e.target.value)}
                   readOnly={yzYukleniyor}
-                  rows={6}
-                  className="w-full text-sm text-gray-700 leading-relaxed bg-transparent border-none outline-none resize-none"
+                  style={{ minHeight: 200, maxHeight: 400, overflowY: 'auto', resize: 'vertical' }}
+                  className="w-full text-sm text-gray-700 leading-relaxed bg-transparent border-none outline-none"
                 />
               </>
             )}
