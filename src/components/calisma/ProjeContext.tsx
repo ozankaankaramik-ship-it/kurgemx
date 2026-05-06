@@ -2,9 +2,11 @@
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { DOKUMAN_TIPLERI } from '@/lib/dokuman-tipleri'
 
 export interface DokumanDurumu {
   storyMap: string | null
+  storyMapTarih: string | null
   documentsR1: string | null
   documentsR2: string | null
   documentsR3: string | null
@@ -14,6 +16,8 @@ export interface DokumanDurumu {
   mimariDoc: string | null
 }
 
+type DokumanTur = Exclude<keyof DokumanDurumu, 'storyMapTarih'>
+
 interface ProjeContextValue {
   projeId: string | null
   ad: string
@@ -22,11 +26,12 @@ interface ProjeContextValue {
   projektDili: string | null
   dokuman: DokumanDurumu
   setProje: (id: string, ad: string, shortDesc: string | null, detailedDesc: string, dil?: string | null) => void
-  setDokuman: (tur: keyof DokumanDurumu, icerik: string) => void
+  setDokuman: (tur: DokumanTur, icerik: string) => void
 }
 
 const BOŞ: DokumanDurumu = {
   storyMap: null,
+  storyMapTarih: null,
   documentsR1: null,
   documentsR2: null,
   documentsR3: null,
@@ -59,27 +64,34 @@ export function ProjeProvider({ children, initialProje }: { children: ReactNode;
   const [projektDili, setProjektDili] = useState<string | null>(initialProje?.dil ?? null)
   const [dokuman, setDokumanState] = useState<DokumanDurumu>(BOŞ)
 
-  // Proje ID değişince Supabase'den mevcut dokümanları yükle
   useEffect(() => {
     if (!projeId) return
     const supabase = createClient()
     supabase
-      .from('analiz_dokumanlari')
-      .select('tur, icerik')
+      .from('dokumanlar')
+      .select('tip_id, icerik, created_at')
       .eq('proje_id', projeId)
       .then(({ data }) => {
         if (!data?.length) return
         const next = { ...BOŞ }
         for (const row of data) {
-          switch (row.tur as string) {
-            case 'hikaye_haritasi': next.storyMap = row.icerik; break
-            case 'r1': next.documentsR1 = row.icerik; break
-            case 'r2': next.documentsR2 = row.icerik; break
-            case 'r3': next.documentsR3 = row.icerik; break
-            case 'prototip': next.prototype = row.icerik; break
-            case 'test_senaryosu': next.testScenarios = row.icerik; break
-            case 'kapsam': next.kapsamDoc = row.icerik; break
-            case 'mimari': next.mimariDoc = row.icerik; break
+          switch (row.tip_id) {
+            case DOKUMAN_TIPLERI.hikaye_haritasi:
+              next.storyMap = row.icerik
+              next.storyMapTarih = row.created_at
+              break
+            case DOKUMAN_TIPLERI.test_senaryosu:
+              next.testScenarios = row.icerik
+              break
+            case DOKUMAN_TIPLERI.mimari:
+              next.mimariDoc = row.icerik
+              break
+            case DOKUMAN_TIPLERI.kapsam:
+              next.kapsamDoc = row.icerik
+              break
+            case DOKUMAN_TIPLERI.prototip:
+              next.prototype = row.icerik
+              break
           }
         }
         setDokumanState(next)
@@ -94,7 +106,7 @@ export function ProjeProvider({ children, initialProje }: { children: ReactNode;
     if (dil !== undefined) setProjektDili(dil ?? null)
   }
 
-  function setDokuman(tur: keyof DokumanDurumu, icerik: string) {
+  function setDokuman(tur: DokumanTur, icerik: string) {
     setDokumanState(prev => ({ ...prev, [tur]: icerik }))
   }
 

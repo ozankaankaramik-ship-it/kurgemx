@@ -202,7 +202,8 @@
       "ozetSutun5": "Duration",
       "exportExcel": "Export to Excel",
       "olusturuluyor": "Generating story map...",
-      "scrollIpucu": "Scroll to see all epics"
+      "scrollIpucu": "Scroll to see all epics",
+      "hikayeHaritasiTarih": "Story map generated on"
     },
     "adim3": {
       "baslik": "Business Analysis Documents",

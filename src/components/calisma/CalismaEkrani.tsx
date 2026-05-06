@@ -5,6 +5,8 @@ import { useTranslations } from 'next-intl'
 import Adim1Formu from './Adim1Formu'
 import { ProjeProvider, useProje, type InitialProje } from './ProjeContext'
 import GenerateButton, { ProgressBar } from './GenerateButton'
+import { createClient } from '@/lib/supabase/client'
+import { DOKUMAN_TIPLERI } from '@/lib/dokuman-tipleri'
 
 interface HikayeItem {
   no: string
@@ -420,6 +422,24 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
         sprintPlani: sprintPlani ?? [],
         genelOzet: genelOzet ?? [],
       }
+      if (projeId) {
+        const supabase = createClient()
+        const { error: upsertError } = await supabase
+          .from('dokumanlar')
+          .upsert(
+            {
+              proje_id: projeId,
+              tip_id: DOKUMAN_TIPLERI.hikaye_haritasi,
+              icerik: JSON.stringify(veri),
+              dil: projektDili ?? 'TR',
+            },
+            { onConflict: 'proje_id,tip_id' }
+          )
+        if (upsertError) {
+          console.error('[generateStoryMap] Kayıt hatası:', upsertError)
+          setAdim2Hata(true)
+        }
+      }
       ctx.setDokuman('storyMap', JSON.stringify(veri))
     } catch (err) {
       console.error('[generateStoryMap] hata:', err)
@@ -591,15 +611,25 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
                 {/* Generate butonu */}
                 <div className="space-y-2">
                   <div className="flex items-center gap-3">
-                    <GenerateButton
-                      label={t('adim2.uret')}
-                      loadingLabel={(ADIM2_MESAJLAR[projektDili === 'TR' ? 'TR' : 'EN'])[adim2MesajIdx]}
-                      regenerateLabel={t('yenidenOlustur')}
-                      disabled={!adim2Aktif}
-                      loading={adim2Yukleniyor}
-                      hasContent={storyMapData !== null}
-                      onClick={generateStoryMap}
-                    />
+                    {ctx.dokuman.storyMapTarih ? (
+                      <p className="text-xs text-gray-500 italic">
+                        {t('adim2.hikayeHaritasiTarih')}{' '}
+                        {new Date(ctx.dokuman.storyMapTarih).toLocaleDateString(
+                          projektDili === 'TR' ? 'tr-TR' : 'en-US',
+                          { day: 'numeric', month: 'long', year: 'numeric' }
+                        )}
+                      </p>
+                    ) : (
+                      <GenerateButton
+                        label={t('adim2.uret')}
+                        loadingLabel={(ADIM2_MESAJLAR[projektDili === 'TR' ? 'TR' : 'EN'])[adim2MesajIdx]}
+                        regenerateLabel={t('yenidenOlustur')}
+                        disabled={!adim2Aktif}
+                        loading={adim2Yukleniyor}
+                        hasContent={storyMapData !== null}
+                        onClick={generateStoryMap}
+                      />
+                    )}
                   {storyMapData && (
                     <button
                       onClick={() => exportToExcel(storyMapData, ad)}
