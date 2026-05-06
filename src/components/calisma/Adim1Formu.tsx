@@ -209,12 +209,20 @@ export default function Adim1Formu() {
             {yzHata ? (
               <p className="text-sm text-red-500">{t('hatalar.genel')}</p>
             ) : (
-              <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
-                {yzCikti}
-                {yzYukleniyor && (
-                  <span className="inline-block w-0.5 h-4 bg-[#2E75B6] ml-0.5 align-middle animate-pulse" />
+              <>
+                {!yzYukleniyor && (
+                  <p style={{ fontSize: 11, color: '#9CA3AF', fontStyle: 'italic' }} className="mb-1.5">
+                    {t('yzDuzenleNot')}
+                  </p>
                 )}
-              </p>
+                <textarea
+                  value={yzCikti ?? ''}
+                  onChange={e => setYzCikti(e.target.value)}
+                  readOnly={yzYukleniyor}
+                  rows={6}
+                  className="w-full text-sm text-gray-700 leading-relaxed bg-transparent border-none outline-none resize-none"
+                />
+              </>
             )}
           </div>
         )}

@@ -168,6 +168,7 @@
       "olusturuluyor": "Creating...",
       "yzOlusturuluyor": "Enhancing description...",
       "olusturTooltip": "Please enhance your description with AI before creating the project",
+      "yzDuzenleNot": "You can edit this description before creating your project.",
       "hatalar": {
         "ad_zorunlu": "Project name is required.",
         "ad_uzun": "Project name cannot exceed 100 characters.",
