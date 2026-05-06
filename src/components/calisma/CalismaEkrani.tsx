@@ -296,6 +296,8 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
   const [adim2Hata, setAdim2Hata] = useState(false)
   const [adim2MesajIdx, setAdim2MesajIdx] = useState(0)
   const adim2IntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const topScrollRef = useRef<HTMLDivElement>(null)
+  const bottomScrollRef = useRef<HTMLDivElement>(null)
   const [adim3Yukleniyor, setAdim3Yukleniyor] = useState(false)
   const [adim3Hata, setAdim3Hata] = useState(false)
   const [adim4Yukleniyor, setAdim4Yukleniyor] = useState(false)
@@ -560,62 +562,82 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
                   </div>
                 )}
                 <div className="relative">
-                  {/* rotateX(180deg) scroll bar'ı üste taşır; iç div geri çevirerek içeriği düzeltir */}
-                  <div
-                    className="overflow-x-auto rounded-lg border border-gray-200 bg-white"
-                    style={{ transform: 'rotateX(180deg)' }}
-                  >
-                    <div style={{ transform: 'rotateX(180deg)' }}>
-                      {storyMapData ? (
-                        <table
-                          className="text-sm text-left"
-                          style={{ minWidth: `${(storyMapData.hikayeHaritasi.destanlar.length + 1) * 200}px` }}
-                        >
-                          <thead className="bg-[#1F3864]">
-                            <tr>
-                              <th className="px-4 py-2.5 text-xs font-semibold text-white uppercase tracking-wide w-36 border-r border-white/20 sticky left-0 z-10 bg-[#1F3864]">
-                                {storyMapData.genelOzet[0]
-                                  ? Object.keys(storyMapData.genelOzet[0])[0]
-                                  : (projektDili === 'TR' ? 'Sürüm' : 'Release')}
-                              </th>
-                              {storyMapData.hikayeHaritasi.destanlar.map(d => (
-                                <th key={d} className="px-4 py-2.5 text-xs font-semibold text-white uppercase tracking-wide border-r border-white/20 last:border-r-0">
-                                  {d}
-                                </th>
-                              ))}
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y divide-gray-100">
-                            {(['R1', 'R2', 'R3'] as const)
-                              .filter(s => storyMapData.hikayeHaritasi.hikayeler.some(h => h.surum === s))
-                              .map((surumKey, idx) => (
-                                <tr key={surumKey} className={idx % 2 === 1 ? 'bg-gray-50/50' : ''}>
-                                  <td
-                                    className={`px-4 py-3 text-xs font-semibold text-gray-600 border-r border-gray-100 align-top w-36 whitespace-nowrap sticky left-0 z-10 ${idx % 2 === 1 ? 'bg-gray-50' : 'bg-white'}`}
-                                    style={{ boxShadow: '1px 0 0 #E5E7EB' }}
-                                  >
-                                    {surumKey}
-                                  </td>
-                                  {storyMapData.hikayeHaritasi.destanlar.map(destan => (
-                                    <td key={destan} className="px-4 py-3 border-r border-gray-100 align-top min-w-[180px] last:border-r-0">
-                                      {hikayelerFiltrele(storyMapData, surumKey, destan).map(h => (
-                                        <div key={h.no} className="mb-1 text-xs text-gray-700 leading-relaxed">
-                                          <span className="font-semibold text-[#2E75B6]">{h.no}</span>
-                                          {' · '}{h.ad}{' '}
-                                          <span className="text-gray-400">({h.sprint})</span>
-                                        </div>
-                                      ))}
-                                    </td>
-                                  ))}
-                                </tr>
-                              ))
-                            }
-                          </tbody>
-                        </table>
-                      ) : (
-                        <div className="py-10 text-center text-sm text-gray-300">{t('adim2.tabloBos')}</div>
-                      )}
+                  {/* Üst scroll bar — sadece içerik yok, phantom div ile tablo genişliğini taklit eder */}
+                  {storyMapData && (
+                    <div
+                      ref={topScrollRef}
+                      className="overflow-x-auto"
+                      style={{ height: 12 }}
+                      onScroll={() => {
+                        if (bottomScrollRef.current && topScrollRef.current &&
+                            bottomScrollRef.current.scrollLeft !== topScrollRef.current.scrollLeft) {
+                          bottomScrollRef.current.scrollLeft = topScrollRef.current.scrollLeft
+                        }
+                      }}
+                    >
+                      <div style={{ minWidth: `${(storyMapData.hikayeHaritasi.destanlar.length + 1) * 200}px`, height: 1 }} />
                     </div>
+                  )}
+                  {/* Alt scroll bar — gerçek tablo */}
+                  <div
+                    ref={bottomScrollRef}
+                    className="overflow-x-auto rounded-lg border border-gray-200 bg-white"
+                    onScroll={() => {
+                      if (topScrollRef.current && bottomScrollRef.current &&
+                          topScrollRef.current.scrollLeft !== bottomScrollRef.current.scrollLeft) {
+                        topScrollRef.current.scrollLeft = bottomScrollRef.current.scrollLeft
+                      }
+                    }}
+                  >
+                    {storyMapData ? (
+                      <table
+                        className="text-sm text-left"
+                        style={{ minWidth: `${(storyMapData.hikayeHaritasi.destanlar.length + 1) * 200}px` }}
+                      >
+                        <thead className="bg-[#1F3864]">
+                          <tr>
+                            <th className="px-4 py-2.5 text-xs font-semibold text-white uppercase tracking-wide w-36 border-r border-white/20 sticky left-0 z-10 bg-[#1F3864]">
+                              {storyMapData.genelOzet[0]
+                                ? Object.keys(storyMapData.genelOzet[0])[0]
+                                : (projektDili === 'TR' ? 'Sürüm' : 'Release')}
+                            </th>
+                            {storyMapData.hikayeHaritasi.destanlar.map(d => (
+                              <th key={d} className="px-4 py-2.5 text-xs font-semibold text-white uppercase tracking-wide border-r border-white/20 last:border-r-0">
+                                {d}
+                              </th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                          {(['R1', 'R2', 'R3'] as const)
+                            .filter(s => storyMapData.hikayeHaritasi.hikayeler.some(h => h.surum === s))
+                            .map((surumKey, idx) => (
+                              <tr key={surumKey} className={idx % 2 === 1 ? 'bg-gray-50/50' : ''}>
+                                <td
+                                  className={`px-4 py-3 text-xs font-semibold text-gray-600 border-r border-gray-100 align-top w-36 whitespace-nowrap sticky left-0 z-10 ${idx % 2 === 1 ? 'bg-gray-50' : 'bg-white'}`}
+                                  style={{ boxShadow: '1px 0 0 #E5E7EB' }}
+                                >
+                                  {surumKey}
+                                </td>
+                                {storyMapData.hikayeHaritasi.destanlar.map(destan => (
+                                  <td key={destan} className="px-4 py-3 border-r border-gray-100 align-top min-w-[180px] last:border-r-0">
+                                    {hikayelerFiltrele(storyMapData, surumKey, destan).map(h => (
+                                      <div key={h.no} className="mb-1 text-xs text-gray-700 leading-relaxed">
+                                        <span className="font-semibold text-[#2E75B6]">{h.no}</span>
+                                        {' · '}{h.ad}{' '}
+                                        <span className="text-gray-400">({h.sprint})</span>
+                                      </div>
+                                    ))}
+                                  </td>
+                                ))}
+                              </tr>
+                            ))
+                          }
+                        </tbody>
+                      </table>
+                    ) : (
+                      <div className="py-10 text-center text-sm text-gray-300">{t('adim2.tabloBos')}</div>
+                    )}
                   </div>
                   {storyMapData && (
                     <div
