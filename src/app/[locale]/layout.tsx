@@ -18,8 +18,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Kurgemx",
-  description: "Kurgemx - Çok dilli web uygulaması",
+  title: {
+    template: 'KurgemX — %s',
+    default: 'KurgemX',
+  },
+  description: "KurgemX - AI-Powered Business Analysis Platform",
   icons: {
     icon: '/kurgemx-icon.svg',
     apple: '/kurgemx-icon.svg',

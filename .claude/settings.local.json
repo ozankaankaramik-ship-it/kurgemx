@@ -37,7 +37,9 @@
       "Bash(python3 -c ' *)",
       "Bash(xargs grep *)",
       "Skill(update-config)",
-      "Bash(python *)"
+      "Bash(python *)",
+      "Bash(Get-ChildItem -Recurse -Path \"C:\\\\Users\\\\ozank\\\\Documents\\\\İşAnaliziAjan\\\\kurgemx\\\\src\\\\app\" -Filter \"page.tsx\")",
+      "Bash(Select-Object FullName)"
     ]
   },
   "hooks": {
