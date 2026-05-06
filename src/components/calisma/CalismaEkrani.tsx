@@ -42,6 +42,13 @@ function hikayelerFiltrele(data: StoryMapData, surum: string, destanAdi: string)
   return data.hikayeHaritasi.hikayeler.filter(h => h.surum === surum && h.destan === destanAdi)
 }
 
+function formatSurum(surum: string): string {
+  if (surum === 'R1') return 'R1 — MVP'
+  if (surum === 'R2') return 'R2 — Enhancement'
+  if (surum === 'R3') return 'R3 — Advanced'
+  return surum
+}
+
 async function exportToExcel(data: StoryMapData, projeAdi: string) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const XLSX = (await import('xlsx-js-style')) as any
@@ -141,7 +148,7 @@ async function exportToExcel(data: StoryMapData, projeAdi: string) {
     const maxCount = Math.max(1, ...destanlar.map(d =>
       hikayeler.filter(h => h.surum === surum && h.destan === d).length
     ))
-    ws1[enc(row, 0)] = c(surum, {
+    ws1[enc(row, 0)] = c(formatSurum(surum), {
       font: { bold: true, sz: 10, color: { rgb: DARK_BLUE } },
       fill: { patternType: 'solid', fgColor: { rgb: LIGHT_BLUE } },
       alignment: { horizontal: 'center', vertical: 'center' },
@@ -159,7 +166,12 @@ async function exportToExcel(data: StoryMapData, projeAdi: string) {
     rows1.push({ hpx: Math.max(30, maxCount * 18) })
   })
 
-  ws1['!ref']    = XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: 2 + surumler.length, c: numCols - 1 } })
+  const footerRow1 = 4 + surumler.length
+  ws1[enc(footerRow1, 0)] = { v: 'Created with KurgemX • kurgemx.com', t: 's', s: { font: { italic: true, sz: 9, color: { rgb: '9CA3AF' } }, alignment: { horizontal: 'left', vertical: 'center' } } }
+  m1.push({ s: { r: footerRow1, c: 0 }, e: { r: footerRow1, c: numCols - 1 } })
+  rows1.push({ hpx: 16 })
+  rows1.push({ hpx: 14 })
+  ws1['!ref']    = XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: footerRow1, c: numCols - 1 } })
   ws1['!merges'] = m1
   ws1['!cols']   = [{ wch: 12 }, ...destanlar.map(() => ({ wch: 28 }))]
   ws1['!rows']   = rows1
@@ -203,7 +215,12 @@ async function exportToExcel(data: StoryMapData, projeAdi: string) {
       rows2.push({ hpx: 24 })
     })
 
-    ws2['!ref']    = XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: 1 + sp.length, c: nSp - 1 } })
+    const footerRow2 = 3 + sp.length
+    ws2[enc(footerRow2, 0)] = { v: 'Created with KurgemX • kurgemx.com', t: 's', s: { font: { italic: true, sz: 9, color: { rgb: '9CA3AF' } }, alignment: { horizontal: 'left', vertical: 'center' } } }
+    m2.push({ s: { r: footerRow2, c: 0 }, e: { r: footerRow2, c: nSp - 1 } })
+    rows2.push({ hpx: 16 })
+    rows2.push({ hpx: 14 })
+    ws2['!ref']    = XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: footerRow2, c: nSp - 1 } })
     ws2['!merges'] = m2
     ws2['!cols']   = autoW(spKeys, sp as unknown as Record<string, unknown>[])
     ws2['!rows']   = rows2
@@ -246,7 +263,12 @@ async function exportToExcel(data: StoryMapData, projeAdi: string) {
       rows3.push({ hpx: 24 })
     })
 
-    ws3['!ref']    = XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: 1 + go.length, c: nGo - 1 } })
+    const footerRow3 = 3 + go.length
+    ws3[enc(footerRow3, 0)] = { v: 'Created with KurgemX • kurgemx.com', t: 's', s: { font: { italic: true, sz: 9, color: { rgb: '9CA3AF' } }, alignment: { horizontal: 'left', vertical: 'center' } } }
+    m3.push({ s: { r: footerRow3, c: 0 }, e: { r: footerRow3, c: nGo - 1 } })
+    rows3.push({ hpx: 16 })
+    rows3.push({ hpx: 14 })
+    ws3['!ref']    = XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: footerRow3, c: nGo - 1 } })
     ws3['!merges'] = m3
     ws3['!cols']   = autoW(goKeys, go as unknown as Record<string, unknown>[])
     ws3['!rows']   = rows3
@@ -617,7 +639,7 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
                                   className={`px-4 py-3 text-xs font-semibold text-gray-600 border-r border-gray-100 align-top w-36 whitespace-nowrap sticky left-0 z-10 ${idx % 2 === 1 ? 'bg-gray-50' : 'bg-white'}`}
                                   style={{ boxShadow: '1px 0 0 #E5E7EB' }}
                                 >
-                                  {surumKey}
+                                  {formatSurum(surumKey)}
                                 </td>
                                 {storyMapData.hikayeHaritasi.destanlar.map(destan => (
                                   <td key={destan} className="px-4 py-3 border-r border-gray-100 align-top min-w-[180px] last:border-r-0">
@@ -732,6 +754,44 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
             )
           })()}
 
+          {/* ── Kısaltmalar (Hikaye Haritası) ── */}
+          {storyMapData && (
+            <div className="flex gap-6">
+              <div className="w-9 shrink-0" />
+              <div className="flex-1 pb-6 min-w-0">
+                <h3 className="text-sm font-semibold text-[#1F3864] mb-2">{t('kisaltmalar.baslik')}</h3>
+                <div className="rounded-lg border border-gray-200 overflow-hidden bg-white inline-block">
+                  <table className="text-sm text-left">
+                    <thead className="bg-[#1F3864]">
+                      <tr>
+                        <th className="px-4 py-2.5 text-xs font-semibold text-white uppercase tracking-wide border-r border-white/20 whitespace-nowrap">{t('kisaltmalar.kod')}</th>
+                        <th className="px-4 py-2.5 text-xs font-semibold text-white uppercase tracking-wide border-r border-white/20 whitespace-nowrap">{t('kisaltmalar.anlam')}</th>
+                        <th className="px-4 py-2.5 text-xs font-semibold text-white uppercase tracking-wide whitespace-nowrap">{t('kisaltmalar.ornek')}</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100">
+                      <tr>
+                        <td className="px-4 py-2.5 text-xs font-semibold text-[#2E75B6] border-r border-gray-100 whitespace-nowrap">ST</td>
+                        <td className="px-4 py-2.5 text-xs text-gray-700 border-r border-gray-100 whitespace-nowrap">{t('kisaltmalar.st')}</td>
+                        <td className="px-4 py-2.5 text-xs text-gray-400 whitespace-nowrap">ST1, ST2</td>
+                      </tr>
+                      <tr className="bg-gray-50/50">
+                        <td className="px-4 py-2.5 text-xs font-semibold text-[#2E75B6] border-r border-gray-100 whitespace-nowrap">SP</td>
+                        <td className="px-4 py-2.5 text-xs text-gray-700 border-r border-gray-100 whitespace-nowrap">{t('kisaltmalar.sp')}</td>
+                        <td className="px-4 py-2.5 text-xs text-gray-400 whitespace-nowrap">SP1, SP2</td>
+                      </tr>
+                      <tr>
+                        <td className="px-4 py-2.5 text-xs font-semibold text-[#2E75B6] border-r border-gray-100 whitespace-nowrap">R</td>
+                        <td className="px-4 py-2.5 text-xs text-gray-700 border-r border-gray-100 whitespace-nowrap">{t('kisaltmalar.r')}</td>
+                        <td className="px-4 py-2.5 text-xs text-gray-400 whitespace-nowrap">R1, R2, R3</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* ── Adım 3 ── */}
           <div className="flex gap-6">
             <div className="flex flex-col items-center">
@@ -764,6 +824,57 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
                     </div>
                   ))}
                 </div>
+              </div>
+            </div>
+          </div>
+
+          {/* ── Kısaltmalar (İş Analizi) ── */}
+          <div className="flex gap-6">
+            <div className="w-9 shrink-0" />
+            <div className="flex-1 pb-6 min-w-0">
+              <h3 className="text-sm font-semibold text-[#1F3864] mb-2">{t('kisaltmalar.baslik')}</h3>
+              <div className="rounded-lg border border-gray-200 overflow-hidden bg-white inline-block">
+                <table className="text-sm text-left">
+                  <thead className="bg-[#1F3864]">
+                    <tr>
+                      <th className="px-4 py-2.5 text-xs font-semibold text-white uppercase tracking-wide border-r border-white/20 whitespace-nowrap">{t('kisaltmalar.kod')}</th>
+                      <th className="px-4 py-2.5 text-xs font-semibold text-white uppercase tracking-wide border-r border-white/20 whitespace-nowrap">{t('kisaltmalar.anlam')}</th>
+                      <th className="px-4 py-2.5 text-xs font-semibold text-white uppercase tracking-wide whitespace-nowrap">{t('kisaltmalar.ornek')}</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    <tr>
+                      <td className="px-4 py-2.5 text-xs font-semibold text-[#2E75B6] border-r border-gray-100 whitespace-nowrap">ST</td>
+                      <td className="px-4 py-2.5 text-xs text-gray-700 border-r border-gray-100 whitespace-nowrap">{t('kisaltmalar.st')}</td>
+                      <td className="px-4 py-2.5 text-xs text-gray-400 whitespace-nowrap">ST1, ST2</td>
+                    </tr>
+                    <tr className="bg-gray-50/50">
+                      <td className="px-4 py-2.5 text-xs font-semibold text-[#2E75B6] border-r border-gray-100 whitespace-nowrap">SP</td>
+                      <td className="px-4 py-2.5 text-xs text-gray-700 border-r border-gray-100 whitespace-nowrap">{t('kisaltmalar.sp')}</td>
+                      <td className="px-4 py-2.5 text-xs text-gray-400 whitespace-nowrap">SP1, SP2</td>
+                    </tr>
+                    <tr>
+                      <td className="px-4 py-2.5 text-xs font-semibold text-[#2E75B6] border-r border-gray-100 whitespace-nowrap">R</td>
+                      <td className="px-4 py-2.5 text-xs text-gray-700 border-r border-gray-100 whitespace-nowrap">{t('kisaltmalar.r')}</td>
+                      <td className="px-4 py-2.5 text-xs text-gray-400 whitespace-nowrap">R1, R2, R3</td>
+                    </tr>
+                    <tr className="bg-gray-50/50">
+                      <td className="px-4 py-2.5 text-xs font-semibold text-[#2E75B6] border-r border-gray-100 whitespace-nowrap">AC</td>
+                      <td className="px-4 py-2.5 text-xs text-gray-700 border-r border-gray-100 whitespace-nowrap">{t('kisaltmalar.ac')}</td>
+                      <td className="px-4 py-2.5 text-xs text-gray-400 whitespace-nowrap">AC-001</td>
+                    </tr>
+                    <tr>
+                      <td className="px-4 py-2.5 text-xs font-semibold text-[#2E75B6] border-r border-gray-100 whitespace-nowrap">BR</td>
+                      <td className="px-4 py-2.5 text-xs text-gray-700 border-r border-gray-100 whitespace-nowrap">{t('kisaltmalar.br')}</td>
+                      <td className="px-4 py-2.5 text-xs text-gray-400 whitespace-nowrap">BR-001</td>
+                    </tr>
+                    <tr className="bg-gray-50/50">
+                      <td className="px-4 py-2.5 text-xs font-semibold text-[#2E75B6] border-r border-gray-100 whitespace-nowrap">TC</td>
+                      <td className="px-4 py-2.5 text-xs text-gray-700 border-r border-gray-100 whitespace-nowrap">{t('kisaltmalar.tc')}</td>
+                      <td className="px-4 py-2.5 text-xs text-gray-400 whitespace-nowrap">TC-ST1-01</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>

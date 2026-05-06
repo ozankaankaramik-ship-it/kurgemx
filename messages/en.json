@@ -249,7 +249,19 @@
       "baslik": "Project created successfully!",
       "aciklama": "Continue with Step 2 to generate your story map."
     },
-    "yenidenOlustur": "Regenerate"
+    "yenidenOlustur": "Regenerate",
+    "kisaltmalar": {
+      "baslik": "Abbreviations",
+      "kod": "Code",
+      "anlam": "Meaning",
+      "ornek": "Example",
+      "st": "Story",
+      "sp": "Sprint",
+      "r": "Release",
+      "ac": "Acceptance Criteria",
+      "br": "Business Rule",
+      "tc": "Test Case"
+    }
   },
   "landing": {
     "meta": {

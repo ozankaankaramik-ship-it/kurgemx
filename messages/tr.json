@@ -249,7 +249,19 @@
       "baslik": "Proje başarıyla oluşturuldu!",
       "aciklama": "Hikaye haritasını oluşturmak için 2. adıma devam edin."
     },
-    "yenidenOlustur": "Yeniden Oluştur"
+    "yenidenOlustur": "Yeniden Oluştur",
+    "kisaltmalar": {
+      "baslik": "Kısaltmalar",
+      "kod": "Kod",
+      "anlam": "Anlam",
+      "ornek": "Örnek",
+      "st": "Hikaye",
+      "sp": "Sprint",
+      "r": "Sürüm",
+      "ac": "Kabul Kriteri",
+      "br": "İş Kuralı",
+      "tc": "Test Senaryosu"
+    }
   },
   "landing": {
     "meta": {

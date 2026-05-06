@@ -20,6 +20,10 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Kurgemx",
   description: "Kurgemx - Çok dilli web uygulaması",
+  icons: {
+    icon: '/kurgemx-icon.svg',
+    apple: '/kurgemx-icon.svg',
+  },
 };
 
 export default async function LocaleLayout({
