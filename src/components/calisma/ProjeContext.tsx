@@ -77,7 +77,9 @@ export function ProjeProvider({ children, initialProje }: { children: ReactNode;
         for (const row of data) {
           switch (row.tip_id) {
             case DOKUMAN_TIPLERI.hikaye_haritasi:
-              next.storyMap = row.icerik
+              next.storyMap = typeof row.icerik === 'string'
+                ? row.icerik
+                : JSON.stringify(row.icerik)
               next.storyMapTarih = row.created_at
               break
             case DOKUMAN_TIPLERI.test_senaryosu:

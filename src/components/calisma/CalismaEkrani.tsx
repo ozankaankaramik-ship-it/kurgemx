@@ -353,6 +353,7 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
   useEffect(() => {
     if (initialProjeIdRef.current === null && projeId !== null) {
       setBasariBannerGoster(true)
+      storyMapRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
       const timer = setTimeout(() => setBasariBannerGoster(false), 8000)
       return () => clearTimeout(timer)
     }
@@ -360,8 +361,10 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
 
   const [adim2Yukleniyor, setAdim2Yukleniyor] = useState(false)
   const [adim2Hata, setAdim2Hata] = useState(false)
+  const [adim2HataMesaji, setAdim2HataMesaji] = useState<string | null>(null)
   const [adim2MesajIdx, setAdim2MesajIdx] = useState(0)
   const adim2IntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const storyMapRef = useRef<HTMLDivElement>(null)
   const topScrollRef = useRef<HTMLDivElement>(null)
   const bottomScrollRef = useRef<HTMLDivElement>(null)
   const [adim3Yukleniyor, setAdim3Yukleniyor] = useState(false)
@@ -424,25 +427,26 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
       }
       if (projeId) {
         const supabase = createClient()
+        const upsertData = {
+          proje_id: projeId,
+          tip_id: DOKUMAN_TIPLERI.hikaye_haritasi,
+          icerik: veri,
+          dil: projektDili ?? 'TR',
+        }
+        console.log('[generateStoryMap] Kaydedilecek veri:', JSON.stringify(upsertData, null, 2))
         const { error: upsertError } = await supabase
           .from('dokumanlar')
-          .upsert(
-            {
-              proje_id: projeId,
-              tip_id: DOKUMAN_TIPLERI.hikaye_haritasi,
-              icerik: JSON.stringify(veri),
-              dil: projektDili ?? 'TR',
-            },
-            { onConflict: 'proje_id,tip_id' }
-          )
+          .upsert(upsertData, { onConflict: 'proje_id,tip_id' })
         if (upsertError) {
-          console.error('[generateStoryMap] Kayıt hatası:', upsertError)
+          console.error('[generateStoryMap] Kayıt hatası (tam):', JSON.stringify(upsertError, null, 2))
+          setAdim2HataMesaji(`Kayıt hatası: ${upsertError.message} (code: ${upsertError.code})`)
           setAdim2Hata(true)
         }
       }
       ctx.setDokuman('storyMap', JSON.stringify(veri))
     } catch (err) {
       console.error('[generateStoryMap] hata:', err)
+      setAdim2HataMesaji(err instanceof Error ? err.message : String(err))
       setAdim2Hata(true)
     } finally {
       if (adim2IntervalRef.current) {
@@ -575,7 +579,7 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
           </div>
 
           {/* ── Adım 2 ── */}
-          <div className="flex gap-6">
+          <div ref={storyMapRef} className="flex gap-6">
             <div className="flex flex-col items-center">
               <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold shrink-0 ${adim2Aktif ? 'bg-[#1F3864] text-white' : 'bg-gray-200 text-gray-400'}`}>
                 2
@@ -642,7 +646,9 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
                     </button>
                   )}
                   </div>
-                  {adim2Hata && <p className="text-xs text-red-500">{t('adim1.hatalar.genel')}</p>}
+                  {adim2Hata && (
+                    <p className="text-xs text-red-500">{adim2HataMesaji ?? t('adim1.hatalar.genel')}</p>
+                  )}
                 </div>
 
                 {/* ── Tablo 1: Hikaye Haritası ── */}
@@ -895,57 +901,6 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
                     </div>
                   ))}
                 </div>
-              </div>
-            </div>
-          </div>
-
-          {/* ── Kısaltmalar (İş Analizi) ── */}
-          <div className="flex gap-6">
-            <div className="w-9 shrink-0" />
-            <div className="flex-1 pb-6 min-w-0">
-              <h3 className="text-sm font-semibold text-[#1F3864] mb-2">{t('kisaltmalar.baslik')}</h3>
-              <div className="rounded-lg border border-gray-200 overflow-hidden bg-white inline-block">
-                <table className="text-sm text-left">
-                  <thead className="bg-[#1F3864]">
-                    <tr>
-                      <th className="px-4 py-2.5 text-xs font-semibold text-white uppercase tracking-wide border-r border-white/20 whitespace-nowrap">{t('kisaltmalar.kod')}</th>
-                      <th className="px-4 py-2.5 text-xs font-semibold text-white uppercase tracking-wide border-r border-white/20 whitespace-nowrap">{t('kisaltmalar.anlam')}</th>
-                      <th className="px-4 py-2.5 text-xs font-semibold text-white uppercase tracking-wide whitespace-nowrap">{t('kisaltmalar.ornek')}</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-100">
-                    <tr>
-                      <td className="px-4 py-2.5 text-xs font-semibold text-[#2E75B6] border-r border-gray-100 whitespace-nowrap">ST</td>
-                      <td className="px-4 py-2.5 text-xs text-gray-700 border-r border-gray-100 whitespace-nowrap">{t('kisaltmalar.st')}</td>
-                      <td className="px-4 py-2.5 text-xs text-gray-400 whitespace-nowrap">ST1, ST2</td>
-                    </tr>
-                    <tr className="bg-gray-50/50">
-                      <td className="px-4 py-2.5 text-xs font-semibold text-[#2E75B6] border-r border-gray-100 whitespace-nowrap">SP</td>
-                      <td className="px-4 py-2.5 text-xs text-gray-700 border-r border-gray-100 whitespace-nowrap">{t('kisaltmalar.sp')}</td>
-                      <td className="px-4 py-2.5 text-xs text-gray-400 whitespace-nowrap">SP1, SP2</td>
-                    </tr>
-                    <tr>
-                      <td className="px-4 py-2.5 text-xs font-semibold text-[#2E75B6] border-r border-gray-100 whitespace-nowrap">R</td>
-                      <td className="px-4 py-2.5 text-xs text-gray-700 border-r border-gray-100 whitespace-nowrap">{t('kisaltmalar.r')}</td>
-                      <td className="px-4 py-2.5 text-xs text-gray-400 whitespace-nowrap">R1, R2, R3</td>
-                    </tr>
-                    <tr className="bg-gray-50/50">
-                      <td className="px-4 py-2.5 text-xs font-semibold text-[#2E75B6] border-r border-gray-100 whitespace-nowrap">AC</td>
-                      <td className="px-4 py-2.5 text-xs text-gray-700 border-r border-gray-100 whitespace-nowrap">{t('kisaltmalar.ac')}</td>
-                      <td className="px-4 py-2.5 text-xs text-gray-400 whitespace-nowrap">AC-001</td>
-                    </tr>
-                    <tr>
-                      <td className="px-4 py-2.5 text-xs font-semibold text-[#2E75B6] border-r border-gray-100 whitespace-nowrap">BR</td>
-                      <td className="px-4 py-2.5 text-xs text-gray-700 border-r border-gray-100 whitespace-nowrap">{t('kisaltmalar.br')}</td>
-                      <td className="px-4 py-2.5 text-xs text-gray-400 whitespace-nowrap">BR-001</td>
-                    </tr>
-                    <tr className="bg-gray-50/50">
-                      <td className="px-4 py-2.5 text-xs font-semibold text-[#2E75B6] border-r border-gray-100 whitespace-nowrap">TC</td>
-                      <td className="px-4 py-2.5 text-xs text-gray-700 border-r border-gray-100 whitespace-nowrap">{t('kisaltmalar.tc')}</td>
-                      <td className="px-4 py-2.5 text-xs text-gray-400 whitespace-nowrap">TC-ST1-01</td>
-                    </tr>
-                  </tbody>
-                </table>
               </div>
             </div>
           </div>

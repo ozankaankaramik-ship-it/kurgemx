@@ -68,6 +68,7 @@ export default function Adim1Formu() {
   const adRef = useRef<HTMLInputElement>(null)
   const aciklamaRef = useRef<HTMLTextAreaElement>(null)
   const yzTextareaRef = useRef<HTMLTextAreaElement>(null)
+  const createProjectRef = useRef<HTMLDivElement>(null)
 
   // Streaming sırasında buton disabled — hem yzYukleniyor hem yzCikti kontrol edilir
   const canSubmit = !isPending && !yzYukleniyor && adValue.trim().length > 0 && yzCikti !== null
@@ -90,7 +91,10 @@ export default function Adim1Formu() {
     if (!el) return
     el.style.height = 'auto'
     el.style.height = el.scrollHeight + 'px'
-  }, [yzCikti])
+    if (yzYukleniyor) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'end' })
+    }
+  }, [yzCikti, yzYukleniyor])
 
   async function handleYz() {
     const projeAdi = adRef.current?.value.trim() ?? ''
@@ -123,7 +127,12 @@ export default function Adim1Formu() {
       setYzHata(true)
     } finally {
       setYzYukleniyor(false)
-      if (raw) setYzCikti(stripMarkdown(raw))  // Son temizleme
+      if (raw) {
+        setYzCikti(stripMarkdown(raw))
+        setTimeout(() => {
+          createProjectRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        }, 150)
+      }
     }
   }
 
@@ -250,7 +259,7 @@ export default function Adim1Formu() {
       )}
 
       {/* Create Project button + tooltip */}
-      <div className="group relative w-full">
+      <div ref={createProjectRef} className="group relative w-full">
         <button
           type="submit"
           disabled={!canSubmit}
