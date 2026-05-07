@@ -616,10 +616,10 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
                 {/* Generate butonu */}
                 <div className="space-y-2">
                   <div className="flex items-center gap-3">
-                    {ctx.dokuman.storyMapTarih ? (
+                    {storyMapData && !adim2Yukleniyor ? (
                       <p className="text-xs text-gray-500 italic">
                         {t('adim2.hikayeHaritasiTarih')}{' '}
-                        {new Date(ctx.dokuman.storyMapTarih).toLocaleDateString(
+                        {new Date(ctx.dokuman.storyMapTarih ?? new Date()).toLocaleDateString(
                           projektDili === 'TR' ? 'tr-TR' : 'en-US',
                           { day: 'numeric', month: 'long', year: 'numeric' }
                         )}
@@ -628,10 +628,10 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
                       <GenerateButton
                         label={t('adim2.uret')}
                         loadingLabel={(ADIM2_MESAJLAR[projektDili === 'TR' ? 'TR' : 'EN'])[adim2MesajIdx]}
-                        regenerateLabel={t('yenidenOlustur')}
+                        regenerateLabel=""
                         disabled={!adim2Aktif}
                         loading={adim2Yukleniyor}
-                        hasContent={storyMapData !== null}
+                        hasContent={false}
                         onClick={generateStoryMap}
                       />
                     )}
