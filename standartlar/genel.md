@@ -54,20 +54,6 @@ Dil seçiminden bağımsız, tüm dillerde aynı kısaltmalar kullanılır:
 
 ---
 
-## Doküman Üretim Modeli
-
-Analiz dokümanları **release bazında** üretilir — her release için en fazla bir analiz dokümanı:
-
-| Release | Doküman |
-|---------|---------|
-| R1 — MVP | R1 İş Analizi Dokümanı |
-| R2 — İyileştirme | R2 İş Analizi Dokümanı |
-| R3 — Gelişmiş | R3 İş Analizi Dokümanı |
-
-Her release dokümanı o release'e ait tüm hikayeleri, sistem gereksinimlerini ve geçiş gereksinimlerini kapsar.
-
----
-
 ## Word Dokümanı Görsel Standartları
 
 ### Sayfa Yapısı
@@ -95,8 +81,6 @@ Her release dokümanı o release'e ait tüm hikayeleri, sistem gereksinimlerini 
 - Maksimum genişlik: 580px (Word sayfasına sığacak şekilde)
 - EMU değeri: genişlik 5486400, yükseklik orantılı (`EMU_h = piksel_h * 914400 / 96`)
 - Her görüntünün altına italik açıklama yazısı eklenir: "Şekil N — [Açıklama]"
-- Tel çatı (wireframe) kullanılmaz; bunun yerine gerçekçi mockup görüntüleri kullanılır (HTML → PNG, wkhtmltoimage)
-- Zorunlu alanlar mockup'ta `*` ile işaretlenir
 - Görüntüler sayfada ortalanır
 
 ### Header ve Footer
@@ -109,7 +93,6 @@ Her release dokümanı o release'e ait tüm hikayeleri, sistem gereksinimlerini 
 ## Referans: Evrensel Kısaltmalar (Word Dokümanı Sonu)
 
 Her Word dokümanının son sayfasına aşağıdaki kısaltma tablosu eklenir.
-Kullanıcı okuma sırasında referans olarak kullanabilir.
 
 | Kısaltma | Açılım | Örnek |
 |----------|--------|-------|

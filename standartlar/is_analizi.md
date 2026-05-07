@@ -7,10 +7,10 @@ Bu dosyayı okumadan önce `genel.md` dosyasını oku ve oradaki kuralları da u
 ## Doküman Hakkında
 
 - **Doküman tipi kodu:** `is_analizi`
-- **Amaç:** Release bazında tüm hikayelerin kapsam, kabul kriterleri, sistem gereksinimleri ve teknik detaylarını belgeler
+- **Amaç:** Tüm release'lerdeki hikayelerin kapsam, kabul kriterleri, sistem gereksinimleri ve teknik detaylarını tek bir dokümanda belgeler
 - **Hedef kitle:** İş birimi (tüm bölümler) + Teknik ekip (tüm bölümler)
-- **Üretim zamanı:** Release başlangıcında, ilgili hikayelerin analizi tamamlandığında
-- **Üretim adedi:** Her release için en fazla bir doküman (R1, R2, R3)
+- **Üretim zamanı:** Hikaye haritası oluşturulduktan sonra
+- **Üretim adedi:** Proje başına bir doküman
 
 ---
 
@@ -18,9 +18,8 @@ Bu dosyayı okumadan önce `genel.md` dosyasını oku ve oradaki kuralları da u
 
 ### Bölüm 1: Doküman Genel Bilgileri
 - Proje adı
-- Release (R1 — MVP / R2 — İyileştirme / R3 — Gelişmiş)
-- Kapsanan hikayeler listesi (tüm release hikayeleri)
-- Tahmini süre
+- Kapsanan hikayeler listesi (tüm hikayeler, release bazında gruplandırılmış)
+- Tahmini süre (toplam)
 - Öncelik
 - Hazırlayan
 - Tarih
@@ -28,15 +27,24 @@ Bu dosyayı okumadan önce `genel.md` dosyasını oku ve oradaki kuralları da u
 - Sonraki güncelleme
 
 ### Bölüm 2: Hikaye Bazında Kapsam ve Kabul Kriterleri
+
+Release'ler alt bölümler halinde gruplandırılır:
+
+#### 2.1 R1 — MVP
 Her hikaye için şu sırayla:
 1. Kullanıcı hikayesi (AKTÖR / İHTİYAÇ / FAYDA formatında)
 2. Kapsam tablosu (içinde ✅ / dışında ❌)
-3. **Ekran mockup'ı** (kabul kriterlerinin hemen üstünde)
-4. Kabul kriterleri (sadeleştirilmiş format — aşağıya bakın)
-5. İş kuralları (BR-XXX — ilgili kriterin hemen altında)
+3. Kabul kriterleri (sadeleştirilmiş format — aşağıya bakın)
+4. İş kuralları (BR-XXX — ilgili kriterin hemen altında)
+
+#### 2.2 R2 — İyileştirme
+Aynı yapı R2 hikayelerine uygulanır.
+
+#### 2.3 R3 — Gelişmiş
+Aynı yapı R3 hikayelerine uygulanır.
 
 ### Bölüm 3: Sistem Gereksinimleri
-Release genelinde geçerli olan, belirli bir hikayeye bağlı olmayan gereksinimler bu bölümde ele alınır.
+Proje genelinde geçerli olan gereksinimler bu bölümde ele alınır.
 
 **3.1 Fonksiyonel Olmayan Gereksinimler**
 
@@ -47,7 +55,7 @@ Her release için değerlendirilmeli; ilgili olmayanlar atlanabilir:
 | Performans | Yanıt süresi hedefleri, eş zamanlı kullanıcı kapasitesi |
 | Responsive / Mobil uyum | Tüm cihazlarda çalışma gereksinimleri |
 | Uptime / Güvenilirlik | Kesintisiz çalışma süresi hedefi |
-| Erişilebilirlik | WCAG standartları (R2'de ele alınabilir) |
+| Erişilebilirlik | WCAG standartları |
 | Loglama ve izlenebilirlik | Günlükleme, izleme, ölçüm gereksinimleri |
 
 **3.2 Geçiş Gereksinimleri**
@@ -71,6 +79,13 @@ Her release için değerlendirilmeli; ilgili olmayanlar atlanabilir:
 - Veritabanı şeması (tablo yapıları, RLS politikaları)
 - Güvenlik uygulaması
 - Entegrasyon noktaları tablosu
+
+---
+
+## Ekran Tasarımları
+
+Bu dokümanda ekran mockup'ı yer almamaktadır.
+Tüm ekran tasarımları için KurgemX'te üretilen prototipe bakınız.
 
 ---
 
@@ -114,7 +129,7 @@ AC-001 — [Kriter Başlığı] [Tip Etiketi]
 Teknik olmayan kişilerin anlayabileceği dilde yazılır.
 KOŞUL / EYLEM / SONUÇ blokları kullanılmaz.]
 
-BR-001 · [İş Kuralı Başlığı]  ← sadece bu kritere ait iş kuralı varsa
+BR-001 · [İş Kuralı Başlığı]
 [Kural detayı, koşullar, istisnalar. Somut örneklerle açıkla.]
 ```
 
@@ -171,23 +186,10 @@ Kapsam dışındaki her madde için hangi hikayede ele alındığı mutlaka beli
 
 ---
 
-## Ekran Görüntüsü Kuralları
-
-- Tel çatı (ASCII wireframe) kullanılmaz
-- Gerçekçi mockup görüntüleri kullanılır (HTML → PNG, wkhtmltoimage)
-- Görüntü boyutu: genişlik 580px (Word'de), EMU genişlik: 5486400
-- Yükseklik orantılı olarak hesaplanır: `EMU_h = piksel_h * 914400 / 96`
-- Her görüntünün altında: `Şekil N — [Ekran adı ve kısa açıklama]` (italik, ortalı)
-- **Zorunlu alanlar mockup'ta `*` ile işaretlenir**
-- Ekran, ilgili hikayenin kabul kriterlerinin hemen üstünde gösterilir
-- Referans satırı: `İlgili kriterler: AC-XXX, AC-YYY | Tasarım: Masaüstü · Tablet · Mobil`
-- Duyarlı tasarım notu: Masaüstü / Tablet / Mobil
-
----
-
 ## Teknik Bölüm Standartları
 
 ### API Uç Noktası Formatı
+
 ```
 [METHOD] /api/[endpoint]
 İstek:  { alan: tip, ... }
