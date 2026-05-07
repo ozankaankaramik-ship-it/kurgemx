@@ -324,18 +324,34 @@ async function exportToExcel(data: StoryMapData, projeAdi: string) {
 }
 
 
+type DokumanRow = { tip_id: string; icerik: unknown; created_at: string }
+
 // Dış bileşen: ProjeProvider sağlar
 export default function CalismaEkrani({
   initialProje,
   backHref,
   backLabel,
+  mevcutDokumanlar = [],
 }: {
   initialProje?: InitialProje
   backHref?: string
   backLabel?: string
+  mevcutDokumanlar?: DokumanRow[]
 } = {}) {
+  const storyMapRow = mevcutDokumanlar.find(
+    d => d.tip_id === DOKUMAN_TIPLERI.hikaye_haritasi
+  ) ?? null
+
+  const enrichedInitialProje: InitialProje | undefined = initialProje
+    ? {
+        ...initialProje,
+        storyMapIcerik: storyMapRow?.icerik ?? null,
+        storyMapTarih: storyMapRow?.created_at ?? null,
+      }
+    : undefined
+
   return (
-    <ProjeProvider initialProje={initialProje}>
+    <ProjeProvider initialProje={enrichedInitialProje}>
       <EkranIci backHref={backHref} backLabel={backLabel} />
     </ProjeProvider>
   )

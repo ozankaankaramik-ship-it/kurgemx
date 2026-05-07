@@ -2,7 +2,6 @@ import { redirect } from '@/i18n/navigation'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
 import { projeGetir, type ProjeDetayRow } from '@/lib/projects/actions'
-import { DOKUMAN_TIPLERI } from '@/lib/dokuman-tipleri'
 import SonProjeKaydet from '@/components/SonProjeKaydet'
 import CalismaEkrani from '@/components/calisma/CalismaEkrani'
 import type { Metadata } from 'next'
@@ -40,12 +39,12 @@ export default async function ProjeDetayPage({ params }: Props) {
   const proje = projeRaw as ProjeDetayRow
   const t = await getTranslations('projeDetay')
 
-  const { data: dokumanlar } = await supabase
+  const { data: dokumanlar, error: dokError } = await supabase
     .from('dokumanlar')
-    .select('tip_id, icerik, created_at')
+    .select('*')
     .eq('proje_id', proje.id)
 
-  const storyMapRow = dokumanlar?.find(d => d.tip_id === DOKUMAN_TIPLERI.hikaye_haritasi) ?? null
+  if (dokError) console.error('Doküman hatası:', dokError)
 
   const backHref = `/${locale}/projeler`
   const backLabel = `← ${t('geri')}`
@@ -59,9 +58,8 @@ export default async function ProjeDetayPage({ params }: Props) {
           ad: proje.ad,
           aciklama: proje.aciklama,
           dil: proje.dil,
-          storyMapIcerik: storyMapRow?.icerik ?? null,
-          storyMapTarih: storyMapRow?.created_at ?? null,
         }}
+        mevcutDokumanlar={dokumanlar ?? []}
         backHref={backHref}
         backLabel={backLabel}
       />
