@@ -430,6 +430,7 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
         const upsertData = {
           proje_id: projeId,
           tip_id: DOKUMAN_TIPLERI.hikaye_haritasi,
+          baslik: projektDili === 'TR' ? 'Hikaye Haritası' : 'Story Map',
           icerik: veri,
           dil: projektDili ?? 'TR',
         }
