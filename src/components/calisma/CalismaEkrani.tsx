@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl'
 import Adim1Formu from './Adim1Formu'
 import { ProjeProvider, useProje, type InitialProje } from './ProjeContext'
 import GenerateButton, { ProgressBar } from './GenerateButton'
+import MarkdownGoster from '@/components/MarkdownGoster'
 import { createClient } from '@/lib/supabase/client'
 import { DOKUMAN_TIPLERI } from '@/lib/dokuman-tipleri'
 
@@ -33,6 +34,28 @@ const ADIM2_MESAJLAR = {
     'Finalizing story map...',
   ],
 } as const
+
+const ADIM3_MESAJLAR = {
+  TR: [
+    'Proje analiz ediliyor...',
+    'Hikayeler ve kabul kriterleri oluşturuluyor...',
+    'Sistem gereksinimleri belirleniyor...',
+    'Doküman tamamlanıyor...',
+  ],
+  EN: [
+    'Analyzing project...',
+    'Generating stories and acceptance criteria...',
+    'Defining system requirements...',
+    'Finalizing document...',
+  ],
+} as const
+
+interface IsAnaliziData {
+  baslik: string
+  tarih: string
+  versiyon: string
+  icerik: string
+}
 
 interface StoryMapData {
   hikayeHaritasi: { destanlar: string[]; hikayeler: HikayeItem[] }
@@ -338,15 +361,26 @@ export default function CalismaEkrani({
   backLabel?: string
   mevcutDokumanlar?: DokumanRow[]
 } = {}) {
-  const storyMapRow = mevcutDokumanlar.find(
-    d => d.tip_id === DOKUMAN_TIPLERI.hikaye_haritasi
-  ) ?? null
+  const storyMapRow = mevcutDokumanlar.find(d => d.tip_id === DOKUMAN_TIPLERI.hikaye_haritasi) ?? null
+  const isAnaliziRow = mevcutDokumanlar.find(d => d.tip_id === DOKUMAN_TIPLERI.is_analizi) ?? null
+
+  const isAnaliziStr: string | null = isAnaliziRow
+    ? JSON.stringify({
+        baslik: (isAnaliziRow as { baslik?: string }).baslik ?? '',
+        tarih: isAnaliziRow.created_at.split('T')[0],
+        versiyon: '1.0',
+        icerik: typeof isAnaliziRow.icerik === 'string'
+          ? isAnaliziRow.icerik
+          : JSON.stringify(isAnaliziRow.icerik),
+      })
+    : null
 
   const enrichedInitialProje: InitialProje | undefined = initialProje
     ? {
         ...initialProje,
         storyMapIcerik: storyMapRow?.icerik ?? null,
         storyMapTarih: storyMapRow?.created_at ?? null,
+        isAnaliziStr,
       }
     : undefined
 
@@ -385,6 +419,9 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
   const bottomScrollRef = useRef<HTMLDivElement>(null)
   const [adim3Yukleniyor, setAdim3Yukleniyor] = useState(false)
   const [adim3Hata, setAdim3Hata] = useState(false)
+  const [adim3HataMesaji, setAdim3HataMesaji] = useState<string | null>(null)
+  const [adim3MesajIdx, setAdim3MesajIdx] = useState(0)
+  const adim3IntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const [adim4Yukleniyor, setAdim4Yukleniyor] = useState(false)
   const [adim4Hata, setAdim4Hata] = useState(false)
   const [adim5Yukleniyor, setAdim5Yukleniyor] = useState(false)
@@ -396,6 +433,10 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
 
   const storyMapData: StoryMapData | null = ctx.dokuman.storyMap
     ? (JSON.parse(ctx.dokuman.storyMap) as StoryMapData)
+    : null
+
+  const isAnaliziData: IsAnaliziData | null = ctx.dokuman.isAnalizi
+    ? (JSON.parse(ctx.dokuman.isAnalizi) as IsAnaliziData)
     : null
 
   const adim2Aktif = projeId !== null
@@ -475,14 +516,68 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
   }
 
   async function generateDocuments() {
+    if (!detailedDesc || !storyMapData) return
     setAdim3Yukleniyor(true)
     setAdim3Hata(false)
+    setAdim3HataMesaji(null)
+    setAdim3MesajIdx(0)
+
+    let idx = 0
+    adim3IntervalRef.current = setInterval(() => {
+      idx += 1
+      if (idx <= 3) setAdim3MesajIdx(idx)
+      if (idx >= 3 && adim3IntervalRef.current) {
+        clearInterval(adim3IntervalRef.current)
+        adim3IntervalRef.current = null
+      }
+    }, 4000)
+
     try {
-      // TODO: /api/ai/is-analizi endpoint'i eklendiğinde buraya gelecek
-      await new Promise(r => setTimeout(r, 500))
-    } catch {
+      const res = await fetch('/api/ai/is-analizi', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          projeAdi: ad,
+          detayliAciklama: detailedDesc,
+          hikayeHaritasi: storyMapData.hikayeHaritasi,
+          projeDili: projektDili,
+        }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        throw new Error(data?.detail ?? data?.error ?? `HTTP ${res.status}`)
+      }
+      const { baslik, tarih, versiyon, icerik } = data as IsAnaliziData
+
+      if (projeId) {
+        const supabase = createClient()
+        const { error: upsertError } = await supabase
+          .from('dokumanlar')
+          .upsert(
+            {
+              proje_id: projeId,
+              tip_id: DOKUMAN_TIPLERI.is_analizi,
+              baslik,
+              icerik,
+              dil: projektDili ?? 'TR',
+            },
+            { onConflict: 'proje_id,tip_id' }
+          )
+        if (upsertError) {
+          console.error('[generateDocuments] kayıt hatası:', upsertError)
+        }
+      }
+
+      ctx.setDokuman('isAnalizi', JSON.stringify({ baslik, tarih, versiyon, icerik }))
+    } catch (err) {
+      console.error('[generateDocuments] hata:', err)
+      setAdim3HataMesaji(err instanceof Error ? err.message : String(err))
       setAdim3Hata(true)
     } finally {
+      if (adim3IntervalRef.current) {
+        clearInterval(adim3IntervalRef.current)
+        adim3IntervalRef.current = null
+      }
       setAdim3Yukleniyor(false)
     }
   }
@@ -895,29 +990,66 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
             <div className="flex-1 pb-10 min-w-0">
               <h2 className={`text-base font-semibold mb-4 ${adim3Aktif ? 'text-[#1F3864]' : 'text-gray-400'}`}>{t('adim3.baslik')}</h2>
               <div className={`rounded-xl p-6 ${adim3Aktif ? 'bg-[#EEF4FB] border border-blue-100' : 'bg-white border border-gray-100'}`}>
-                <div className="space-y-2 mb-5">
-                  <GenerateButton
-                    label={t('adim3.uret')}
-                    loadingLabel={t('adim3.olusturuluyor')}
-                    regenerateLabel={t('yenidenOlustur')}
-                    disabled={!adim3Aktif}
-                    loading={adim3Yukleniyor}
-                    hasContent={false}
-                    onClick={generateDocuments}
-                  />
+                {/* Buton / tarih satırı */}
+                <div className="space-y-2 mb-4">
+                  <div className="flex items-center gap-3">
+                    {isAnaliziData && !adim3Yukleniyor ? (
+                      <p className="text-xs text-gray-500 italic">
+                        {t('adim3.belgeTarih')}{' '}
+                        {new Date(isAnaliziData.tarih).toLocaleDateString(
+                          projektDili === 'TR' ? 'tr-TR' : 'en-US',
+                          { day: 'numeric', month: 'long', year: 'numeric' }
+                        )}
+                      </p>
+                    ) : (
+                      <GenerateButton
+                        label={t('adim3.uret')}
+                        loadingLabel={(ADIM3_MESAJLAR[projektDili === 'TR' ? 'TR' : 'EN'])[adim3MesajIdx]}
+                        regenerateLabel=""
+                        disabled={!adim3Aktif}
+                        loading={adim3Yukleniyor}
+                        hasContent={false}
+                        onClick={generateDocuments}
+                      />
+                    )}
+                    {isAnaliziData && (
+                      <button
+                        disabled
+                        className="inline-flex items-center gap-1.5 rounded-md h-[34px] px-3.5 text-xs font-medium border-[0.5px] border-gray-200 text-gray-400 cursor-not-allowed opacity-60"
+                        title={t('adim3.indirYakinBir')}
+                      >
+                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                          <path d="M8 1v9M4 7l4 4 4-4M2 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                        {t('adim3.indir')}
+                      </button>
+                    )}
+                  </div>
                   {adim3Yukleniyor && <ProgressBar />}
-                  {adim3Hata && <p className="text-xs text-red-500">{t('adim1.hatalar.genel')}</p>}
+                  {adim3Hata && (
+                    <p className="text-xs text-red-500">{adim3HataMesaji ?? t('adim1.hatalar.genel')}</p>
+                  )}
                 </div>
-                <div className="grid grid-cols-3 gap-4">
-                  {([t('adim3.r1'), t('adim3.r2'), t('adim3.r3')] as string[]).map((r) => (
-                    <div key={r} className="rounded-lg border border-gray-100 p-4 flex flex-col gap-3">
-                      <p className="text-sm font-semibold text-gray-300">{r}</p>
-                      <span className="self-start rounded-full bg-gray-100 px-2.5 py-0.5 text-xs text-gray-400">
-                        {t('adim3.beklemede')}
-                      </span>
+
+                {/* Doküman içeriği */}
+                {isAnaliziData ? (
+                  <div className="bg-white border border-gray-200 rounded-lg p-6 overflow-auto max-h-[70vh]">
+                    <MarkdownGoster icerik={isAnaliziData.icerik} />
+                  </div>
+                ) : (
+                  !adim3Yukleniyor && (
+                    <div className="grid grid-cols-3 gap-4">
+                      {([t('adim3.r1'), t('adim3.r2'), t('adim3.r3')] as string[]).map((r) => (
+                        <div key={r} className="rounded-lg border border-gray-100 p-4 flex flex-col gap-3">
+                          <p className="text-sm font-semibold text-gray-300">{r}</p>
+                          <span className="self-start rounded-full bg-gray-100 px-2.5 py-0.5 text-xs text-gray-400">
+                            {t('adim3.beklemede')}
+                          </span>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
+                  )
+                )}
               </div>
             </div>
           </div>

@@ -212,7 +212,10 @@
       "r1": "R1 — MVP",
       "r2": "R2 — Geliştirme",
       "r3": "R3 — İleri Düzey",
-      "beklemede": "Beklemede"
+      "beklemede": "Beklemede",
+      "belgeTarih": "Doküman oluşturuldu:",
+      "indir": "İndir (.docx)",
+      "indirYakinBir": "Yakında kullanıma girecek"
     },
     "adim4": {
       "baslik": "Prototip",

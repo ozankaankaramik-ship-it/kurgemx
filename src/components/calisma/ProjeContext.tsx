@@ -5,6 +5,7 @@ import { createContext, useContext, useState, type ReactNode } from 'react'
 export interface DokumanDurumu {
   storyMap: string | null
   storyMapTarih: string | null
+  isAnalizi: string | null
   documentsR1: string | null
   documentsR2: string | null
   documentsR3: string | null
@@ -30,6 +31,7 @@ interface ProjeContextValue {
 const BOŞ: DokumanDurumu = {
   storyMap: null,
   storyMapTarih: null,
+  isAnalizi: null,
   documentsR1: null,
   documentsR2: null,
   documentsR3: null,
@@ -46,6 +48,7 @@ export interface InitialProje {
   dil: string
   storyMapIcerik?: unknown
   storyMapTarih?: string | null
+  isAnaliziStr?: string | null
 }
 
 const ProjeContext = createContext<ProjeContextValue | null>(null)
@@ -72,6 +75,7 @@ export function ProjeProvider({ children, initialProje }: { children: ReactNode;
     ...BOŞ,
     storyMap: icerikStr(initialProje?.storyMapIcerik),
     storyMapTarih: initialProje?.storyMapTarih ?? null,
+    isAnalizi: initialProje?.isAnaliziStr ?? null,
   })
 
   function setProje(id: string, projeAd: string, short: string | null, detailed: string, dil?: string | null) {

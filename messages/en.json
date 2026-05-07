@@ -212,7 +212,10 @@
       "r1": "R1 — MVP",
       "r2": "R2 — Enhancement",
       "r3": "R3 — Advanced",
-      "beklemede": "Pending"
+      "beklemede": "Pending",
+      "belgeTarih": "Document generated on",
+      "indir": "Download (.docx)",
+      "indirYakinBir": "Coming soon"
     },
     "adim4": {
       "baslik": "Prototype",
