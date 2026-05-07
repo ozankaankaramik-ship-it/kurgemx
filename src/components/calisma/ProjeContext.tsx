@@ -1,8 +1,6 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
-import { createClient } from '@/lib/supabase/client'
-import { DOKUMAN_TIPLERI } from '@/lib/dokuman-tipleri'
+import { createContext, useContext, useState, type ReactNode } from 'react'
 
 export interface DokumanDurumu {
   storyMap: string | null
@@ -46,6 +44,8 @@ export interface InitialProje {
   ad: string
   aciklama: string | null
   dil: string
+  storyMapIcerik?: unknown
+  storyMapTarih?: string | null
 }
 
 const ProjeContext = createContext<ProjeContextValue | null>(null)
@@ -56,49 +56,23 @@ export function useProje() {
   return ctx
 }
 
+function icerikStr(v: unknown): string | null {
+  if (v == null) return null
+  if (typeof v === 'string') return v
+  return JSON.stringify(v)
+}
+
 export function ProjeProvider({ children, initialProje }: { children: ReactNode; initialProje?: InitialProje }) {
   const [projeId, setProjeId] = useState<string | null>(initialProje?.id ?? null)
   const [ad, setAd] = useState(initialProje?.ad ?? '')
   const [shortDesc, setShortDesc] = useState<string | null>(null)
   const [detailedDesc, setDetailedDesc] = useState<string | null>(initialProje?.aciklama ?? null)
   const [projektDili, setProjektDili] = useState<string | null>(initialProje?.dil ?? null)
-  const [dokuman, setDokumanState] = useState<DokumanDurumu>(BOŞ)
-
-  useEffect(() => {
-    if (!projeId) return
-    const supabase = createClient()
-    supabase
-      .from('dokumanlar')
-      .select('tip_id, icerik, created_at')
-      .eq('proje_id', projeId)
-      .then(({ data }) => {
-        if (!data?.length) return
-        const next = { ...BOŞ }
-        for (const row of data) {
-          switch (row.tip_id) {
-            case DOKUMAN_TIPLERI.hikaye_haritasi:
-              next.storyMap = typeof row.icerik === 'string'
-                ? row.icerik
-                : JSON.stringify(row.icerik)
-              next.storyMapTarih = row.created_at
-              break
-            case DOKUMAN_TIPLERI.test_senaryosu:
-              next.testScenarios = row.icerik
-              break
-            case DOKUMAN_TIPLERI.mimari:
-              next.mimariDoc = row.icerik
-              break
-            case DOKUMAN_TIPLERI.kapsam:
-              next.kapsamDoc = row.icerik
-              break
-            case DOKUMAN_TIPLERI.prototip:
-              next.prototype = row.icerik
-              break
-          }
-        }
-        setDokumanState(next)
-      })
-  }, [projeId])
+  const [dokuman, setDokumanState] = useState<DokumanDurumu>({
+    ...BOŞ,
+    storyMap: icerikStr(initialProje?.storyMapIcerik),
+    storyMapTarih: initialProje?.storyMapTarih ?? null,
+  })
 
   function setProje(id: string, projeAd: string, short: string | null, detailed: string, dil?: string | null) {
     setProjeId(id)
