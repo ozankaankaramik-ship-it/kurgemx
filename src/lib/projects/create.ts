@@ -119,6 +119,7 @@ export async function projeOlusturVeDon(
   const ad = ((formData.get('ad') as string) ?? '').trim()
   const aciklama = ((formData.get('aciklama') as string) ?? '').trim().slice(0, 5000)
   const dil = (formData.get('dil') as string) || 'EN'
+  const projeBuyuklugu = (formData.get('proje_buyuklugu') as string) || null
 
   if (!ad) return { error: 'ad_zorunlu' }
   if (ad.length > 100) return { error: 'ad_uzun' }
@@ -139,6 +140,7 @@ export async function projeOlusturVeDon(
       ad,
       aciklama: aciklama || null,
       dil,
+      proje_buyuklugu: projeBuyuklugu || null,
       durum: 'aktif',
     })
 

@@ -169,6 +169,13 @@
       "yzOlusturuluyor": "Enhancing description...",
       "olusturTooltip": "Please enhance your description with AI before creating the project",
       "yzDuzenleNot": "You can edit this description before creating your project.",
+      "projeBuyuklugu": "Project Size",
+      "kucuk": "Small",
+      "orta": "Medium",
+      "buyuk": "Large",
+      "kucukAlt": "1–5 stories · 1 wk – 2 mo",
+      "ortaAlt": "6–15 stories · 2 – 4 mo",
+      "buyukAlt": "16–40 stories · 4+ mo",
       "hatalar": {
         "ad_zorunlu": "Project name is required.",
         "ad_uzun": "Project name cannot exceed 100 characters.",

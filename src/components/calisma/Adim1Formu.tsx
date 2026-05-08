@@ -3,7 +3,7 @@
 import { useActionState, useEffect, useRef, useState } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
 import { projeOlusturVeDon } from '@/lib/projects/create'
-import { useProje } from './ProjeContext'
+import { useProje, type ProjeBuyuklugu } from './ProjeContext'
 import { ProgressBar } from './GenerateButton'
 
 function SparkleIcon() {
@@ -51,6 +51,9 @@ function stripMarkdown(raw: string): string {
     .trim()
 }
 
+const BUYUKLUK_SECENEKLER: ProjeBuyuklugu[] = ['Küçük', 'Orta', 'Büyük']
+
+
 export default function Adim1Formu() {
   const t = useTranslations('calismaEkrani.adim1')
   const tc = useTranslations('calismaEkrani')
@@ -62,6 +65,7 @@ export default function Adim1Formu() {
   const [yzCikti, setYzCikti] = useState<string | null>(null)
   const [yzYukleniyor, setYzYukleniyor] = useState(false)
   const [yzHata, setYzHata] = useState(false)
+  const [projeBuyuklugu, setProjeBuyuklugu] = useState<ProjeBuyuklugu | null>(null)
 
   const [algilananDil, setAlgilananDil] = useState<{ code: string; label: string } | null>(null)
 
@@ -70,7 +74,6 @@ export default function Adim1Formu() {
   const yzTextareaRef = useRef<HTMLTextAreaElement>(null)
   const createProjectRef = useRef<HTMLDivElement>(null)
 
-  // Streaming sırasında buton disabled — hem yzYukleniyor hem yzCikti kontrol edilir
   const canSubmit = !isPending && !yzYukleniyor && adValue.trim().length > 0 && yzCikti !== null
 
   useEffect(() => {
@@ -78,6 +81,7 @@ export default function Adim1Formu() {
       const short = aciklamaRef.current?.value.trim() || null
       const dil = algilananDil?.code ?? (locale === 'tr' ? 'TR' : 'EN')
       ctx.setProje(state.id, adValue.trim(), short, yzCikti, dil)
+      if (projeBuyuklugu) ctx.setProjeBuyuklugu(projeBuyuklugu)
       const route =
         locale === 'en'
           ? `/${locale}/projects/${state.id}`
@@ -91,10 +95,7 @@ export default function Adim1Formu() {
     if (!el) return
     el.style.height = 'auto'
     el.style.height = el.scrollHeight + 'px'
-    if (yzYukleniyor) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'end' })
-    }
-  }, [yzCikti, yzYukleniyor])
+  }, [yzCikti])
 
   async function handleYz() {
     const projeAdi = adRef.current?.value.trim() ?? ''
@@ -102,38 +103,42 @@ export default function Adim1Formu() {
 
     setYzYukleniyor(true)
     setYzHata(false)
-    setYzCikti('')  // Kutuyu hemen aç (boş), chunks gelince dolacak
+    setYzCikti(null)
+    setProjeBuyuklugu(null)
 
-    let raw = ''
     try {
       const res = await fetch('/api/ai/detaylandir', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ projeAdi, aciklama, projeDili: algilananDil?.code }),
       })
-      if (!res.ok || !res.body) throw new Error()
+      if (!res.ok) throw new Error()
 
-      const reader = res.body.getReader()
-      const decoder = new TextDecoder()
-
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
-        raw += decoder.decode(value, { stream: true })
-        setYzCikti(stripMarkdown(raw))
+      const data = await res.json() as {
+        detay: string
+        projeBuyuklugu: ProjeBuyuklugu
+        hikayeSayisiTahmini: number
       }
+
+      const detay = stripMarkdown(data.detay)
+      setYzCikti(detay)
+      setProjeBuyuklugu(data.projeBuyuklugu)
+      ctx.setProjeBuyuklugu(data.projeBuyuklugu)
+      ctx.setHikayeSayisiTahmini(data.hikayeSayisiTahmini)
     } catch {
       setYzCikti(null)
       setYzHata(true)
     } finally {
       setYzYukleniyor(false)
-      if (raw) {
-        setYzCikti(stripMarkdown(raw))
-        setTimeout(() => {
-          createProjectRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-        }, 150)
-      }
+      setTimeout(() => {
+        createProjectRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      }, 150)
     }
+  }
+
+  function handleBuyuklukSec(secenek: ProjeBuyuklugu) {
+    setProjeBuyuklugu(secenek)
+    ctx.setProjeBuyuklugu(secenek)
   }
 
   const hataMesaji = (() => {
@@ -148,8 +153,8 @@ export default function Adim1Formu() {
   return (
     <form action={formAction} className="space-y-5">
       <input type="hidden" name="dil" value={algilananDil?.code ?? (locale === 'tr' ? 'TR' : 'EN')} />
-      {/* Detailed Description (AI output) is what gets saved as aciklama */}
       <input type="hidden" name="aciklama" value={yzCikti ?? ''} />
+      <input type="hidden" name="proje_buyuklugu" value={projeBuyuklugu ?? ''} />
 
       <div>
         <label htmlFor="ad" className="block text-sm font-medium text-gray-700 mb-1.5">
@@ -248,6 +253,36 @@ export default function Adim1Formu() {
                       : 'bg-white border-[0.5px] border-[#2E75B6]'
                   }`}
                 />
+
+                {!yzYukleniyor && projeBuyuklugu && (
+                  <div className="mt-4">
+                    <p className="text-xs font-semibold text-[#2E75B6] mb-2">{t('projeBuyuklugu')}</p>
+                    <div className="grid grid-cols-3 gap-2">
+                      {BUYUKLUK_SECENEKLER.map((secenek) => {
+                        const isActive = projeBuyuklugu === secenek
+                        return (
+                          <button
+                            key={secenek}
+                            type="button"
+                            onClick={() => handleBuyuklukSec(secenek)}
+                            className={`flex flex-col items-center rounded-lg border px-2 py-2.5 text-center transition ${
+                              isActive
+                                ? 'bg-[#1F3864] border-[#1F3864] text-white'
+                                : 'bg-white border-gray-300 text-gray-700 hover:border-[#2E75B6] hover:text-[#1F3864]'
+                            }`}
+                          >
+                            <span className="text-xs font-semibold">
+                              {secenek === 'Küçük' ? t('kucuk') : secenek === 'Orta' ? t('orta') : t('buyuk')}
+                            </span>
+                            <span className={`mt-1 text-[10px] leading-tight ${isActive ? 'text-blue-200' : 'text-gray-400'}`}>
+                              {secenek === 'Küçük' ? t('kucukAlt') : secenek === 'Orta' ? t('ortaAlt') : t('buyukAlt')}
+                            </span>
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
               </>
             )}
           </div>
@@ -258,7 +293,6 @@ export default function Adim1Formu() {
         <p className="text-sm text-red-600">{hataMesaji}</p>
       )}
 
-      {/* Create Project button + tooltip */}
       <div ref={createProjectRef} className="group relative w-full">
         <button
           type="submit"

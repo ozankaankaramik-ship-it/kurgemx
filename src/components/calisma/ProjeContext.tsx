@@ -17,14 +17,20 @@ export interface DokumanDurumu {
 
 type DokumanTur = Exclude<keyof DokumanDurumu, 'storyMapTarih'>
 
+export type ProjeBuyuklugu = 'Küçük' | 'Orta' | 'Büyük'
+
 interface ProjeContextValue {
   projeId: string | null
   ad: string
   shortDesc: string | null
   detailedDesc: string | null
   projektDili: string | null
+  projeBuyuklugu: ProjeBuyuklugu | null
+  hikayeSayisiTahmini: number | null
   dokuman: DokumanDurumu
   setProje: (id: string, ad: string, shortDesc: string | null, detailedDesc: string, dil?: string | null) => void
+  setProjeBuyuklugu: (val: ProjeBuyuklugu) => void
+  setHikayeSayisiTahmini: (n: number) => void
   setDokuman: (tur: DokumanTur, icerik: string) => void
 }
 
@@ -46,6 +52,7 @@ export interface InitialProje {
   ad: string
   aciklama: string | null
   dil: string
+  projeBuyuklugu?: ProjeBuyuklugu | null
   storyMapIcerik?: unknown
   storyMapTarih?: string | null
   isAnaliziStr?: string | null
@@ -71,6 +78,10 @@ export function ProjeProvider({ children, initialProje }: { children: ReactNode;
   const [shortDesc, setShortDesc] = useState<string | null>(null)
   const [detailedDesc, setDetailedDesc] = useState<string | null>(initialProje?.aciklama ?? null)
   const [projektDili, setProjektDili] = useState<string | null>(initialProje?.dil ?? null)
+  const [projeBuyuklugu, setProjeBuyukluguState] = useState<ProjeBuyuklugu | null>(
+    initialProje?.projeBuyuklugu ?? null
+  )
+  const [hikayeSayisiTahmini, setHikayeSayisiTahminiState] = useState<number | null>(null)
   const [dokuman, setDokumanState] = useState<DokumanDurumu>({
     ...BOŞ,
     storyMap: icerikStr(initialProje?.storyMapIcerik),
@@ -86,12 +97,25 @@ export function ProjeProvider({ children, initialProje }: { children: ReactNode;
     if (dil !== undefined) setProjektDili(dil ?? null)
   }
 
+  function setProjeBuyuklugu(val: ProjeBuyuklugu) {
+    setProjeBuyukluguState(val)
+  }
+
+  function setHikayeSayisiTahmini(n: number) {
+    setHikayeSayisiTahminiState(n)
+  }
+
   function setDokuman(tur: DokumanTur, icerik: string) {
     setDokumanState(prev => ({ ...prev, [tur]: icerik }))
   }
 
   return (
-    <ProjeContext.Provider value={{ projeId, ad, shortDesc, detailedDesc, projektDili, dokuman, setProje, setDokuman }}>
+    <ProjeContext.Provider value={{
+      projeId, ad, shortDesc, detailedDesc, projektDili,
+      projeBuyuklugu, hikayeSayisiTahmini,
+      dokuman,
+      setProje, setProjeBuyuklugu, setHikayeSayisiTahmini, setDokuman,
+    }}>
       {children}
     </ProjeContext.Provider>
   )

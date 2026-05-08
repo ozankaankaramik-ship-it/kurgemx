@@ -169,6 +169,13 @@
       "yzOlusturuluyor": "Açıklama detaylandırılıyor...",
       "olusturTooltip": "Projeyi oluşturmadan önce lütfen açıklamanızı YZ ile detaylandırın",
       "yzDuzenleNot": "Projeyi oluşturmadan önce bu açıklamayı düzenleyebilirsiniz.",
+      "projeBuyuklugu": "Proje Büyüklüğü",
+      "kucuk": "Küçük",
+      "orta": "Orta",
+      "buyuk": "Büyük",
+      "kucukAlt": "1–5 hikaye · 1 hft – 2 ay",
+      "ortaAlt": "6–15 hikaye · 2 ay – 4 ay",
+      "buyukAlt": "16–40 hikaye · 4 ay ve üzeri",
       "hatalar": {
         "ad_zorunlu": "Proje adı zorunludur.",
         "ad_uzun": "Proje adı en fazla 100 karakter olabilir.",
