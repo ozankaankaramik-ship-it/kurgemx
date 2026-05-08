@@ -40,7 +40,7 @@ export type ProjeDetayRow = {
   id: string
   ad: string
   aciklama: string | null
-  dil: string
+  dil: string | null
   durum: string
   proje_buyuklugu: 'Küçük' | 'Orta' | 'Büyük' | null
   kaynak_dokuman_url: string | null

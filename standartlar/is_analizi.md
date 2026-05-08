@@ -57,6 +57,11 @@ Aynı yapı R2 hikayelerine uygulanır.
 #### 2.3 R3 — Gelişmiş
 Aynı yapı R3 hikayelerine uygulanır.
 
+#### Ekran Tasarımları Notu
+Bölüm 2'nin sonuna, tüm hikayelerden sonra şu notu ekle:
+
+> **Ekran Tasarımları:** Bu dokümanda ekran mockup'ı yer almamaktadır. Tüm ekran tasarımları için KurgemX'te üretilen prototipe bakınız.
+
 ### Bölüm 3: Sistem Gereksinimleri
 Proje genelinde geçerli olan gereksinimler bu bölümde ele alınır.
 
@@ -92,13 +97,6 @@ Proje genelinde geçerli olan gereksinimler bu bölümde ele alınır.
 - Temel API uç noktaları (özet düzeyde)
 - Güvenlik notları
 - Entegrasyon noktaları (varsa)
-
----
-
-## Ekran Tasarımları
-
-Bu dokümanda ekran mockup'ı yer almamaktadır.
-Tüm ekran tasarımları için KurgemX'te üretilen prototipe bakınız.
 
 ---
 

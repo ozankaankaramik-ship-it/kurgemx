@@ -56,8 +56,8 @@ export default async function ProjeDetayPage({ params }: Props) {
         initialProje={{
           id: proje.id,
           ad: proje.ad,
-          aciklama: proje.aciklama,
-          dil: proje.dil,
+          aciklama: proje.aciklama ?? null,
+          dil: proje.dil ?? 'TR',
           projeBuyuklugu: proje.proje_buyuklugu ?? null,
         }}
         mevcutDokumanlar={dokumanlar ?? []}

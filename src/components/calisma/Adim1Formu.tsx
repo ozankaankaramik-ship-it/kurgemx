@@ -53,7 +53,6 @@ function stripMarkdown(raw: string): string {
 
 const BUYUKLUK_SECENEKLER: ProjeBuyuklugu[] = ['Küçük', 'Orta', 'Büyük']
 
-
 export default function Adim1Formu() {
   const t = useTranslations('calismaEkrani.adim1')
   const tc = useTranslations('calismaEkrani')
@@ -71,7 +70,7 @@ export default function Adim1Formu() {
 
   const adRef = useRef<HTMLInputElement>(null)
   const aciklamaRef = useRef<HTMLTextAreaElement>(null)
-  const yzTextareaRef = useRef<HTMLTextAreaElement>(null)
+  const yzContainerRef = useRef<HTMLDivElement>(null)
   const createProjectRef = useRef<HTMLDivElement>(null)
 
   const canSubmit = !isPending && !yzYukleniyor && adValue.trim().length > 0 && yzCikti !== null
@@ -81,7 +80,7 @@ export default function Adim1Formu() {
       const short = aciklamaRef.current?.value.trim() || null
       const dil = algilananDil?.code ?? (locale === 'tr' ? 'TR' : 'EN')
       ctx.setProje(state.id, adValue.trim(), short, yzCikti, dil)
-      if (projeBuyuklugu) ctx.setProjeBuyuklugu(projeBuyuklugu)
+      ctx.setProjeBuyuklugu(projeBuyuklugu ?? 'Orta')
       const route =
         locale === 'en'
           ? `/${locale}/projects/${state.id}`
@@ -90,14 +89,11 @@ export default function Adim1Formu() {
     }
   }, [state]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Scroll textarea into view and to top when content appears
   useEffect(() => {
-    const el = yzTextareaRef.current
-    if (!el) return
-    el.style.height = 'auto'
-    el.style.height = el.scrollHeight + 'px'
-    if (yzCikti) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
-    }
+    if (!yzCikti) return
+    const el = yzContainerRef.current
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
   }, [yzCikti])
 
   async function handleYz() {
@@ -229,7 +225,7 @@ export default function Adim1Formu() {
         </div>
 
         {(yzCikti !== null || yzHata) && (
-          <div className="mt-3">
+          <div ref={yzContainerRef} className="mt-3">
             <p className="text-xs font-semibold text-[#2E75B6] mb-1.5">{t('yzCikti')}</p>
             {yzHata ? (
               <p className="text-sm text-red-500">{t('hatalar.genel')}</p>
@@ -240,22 +236,23 @@ export default function Adim1Formu() {
                     {t('yzDuzenleNot')}
                   </p>
                 )}
-                <textarea
-                  ref={yzTextareaRef}
-                  value={yzCikti ?? ''}
-                  onChange={e => {
-                    setYzCikti(e.target.value)
-                    e.target.style.height = 'auto'
-                    e.target.style.height = e.target.scrollHeight + 'px'
-                  }}
-                  readOnly={yzYukleniyor}
-                  style={{ minHeight: 200, overflowY: 'hidden', resize: 'none' }}
-                  className={`w-full text-sm text-gray-700 leading-relaxed rounded-lg px-3 py-2.5 outline-none ${
+                {/* Fixed-height scrollable container — mirrors is-analizi display window */}
+                <div
+                  style={{ height: 400, overflowY: 'auto', resize: 'vertical' }}
+                  className={`w-full rounded-lg border px-3 py-2.5 ${
                     yzYukleniyor
-                      ? 'bg-gray-50 border border-gray-200'
+                      ? 'bg-gray-50 border-gray-200'
                       : 'bg-white border-[0.5px] border-[#2E75B6]'
                   }`}
-                />
+                >
+                  <textarea
+                    value={yzCikti ?? ''}
+                    onChange={e => setYzCikti(e.target.value)}
+                    readOnly={yzYukleniyor}
+                    style={{ resize: 'none', minHeight: '100%', height: '100%' }}
+                    className="w-full text-sm text-gray-700 leading-relaxed outline-none bg-transparent"
+                  />
+                </div>
 
                 {!yzYukleniyor && projeBuyuklugu && (
                   <div className="mt-4">

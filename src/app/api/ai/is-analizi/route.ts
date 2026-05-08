@@ -61,9 +61,13 @@ function kullaniciPrompt(
   const isTR = projeDili === 'TR'
   const hikayeMetni = formatHikayeHaritasi(hh, projeDili)
 
+  const ekranNotu = isTR
+    ? `\n\nBölüm 2'nin sonuna, tüm hikayelerden sonra şu notu ekle:\n> **Ekran Tasarımları:** Bu dokümanda ekran mockup'ı yer almamaktadır. Tüm ekran tasarımları için KurgemX'te üretilen prototipe bakınız.`
+    : `\n\nAt the end of Section 2, after all stories, include this note:\n> **Screen Designs:** This document does not include screen mockups. For all screen designs, refer to the prototype generated in KurgemX.`
+
   return isTR
     ? `Aşağıdaki proje için standartlara tam uygun bir iş analizi dokümanı oluştur.
-Tüm R1, R2 ve R3 hikayelerini kapsamalı; her hikaye için kullanıcı hikayesi, kapsam tablosu, kabul kriterleri ve iş kuralları içermeli.
+Tüm R1, R2 ve R3 hikayelerini kapsamalı; her hikaye için kullanıcı hikayesi, kabul kriterleri ve iş kuralları içermeli.${ekranNotu}
 
 Proje Adı: ${projeAdi}
 Çıktı Dili: ${dilAdi}
@@ -76,7 +80,7 @@ ${hikayeMetni}
 
 Yanıt olarak SADECE markdown formatında dokümanı döndür. JSON, kod bloğu veya ek açıklama ekleme.`
     : `Create a business analysis document fully compliant with the standards for the project below.
-Cover all R1, R2, R3 stories; each story must have user story, scope table, acceptance criteria and business rules.
+Cover all R1, R2, R3 stories; each story must have user story, acceptance criteria and business rules.${ekranNotu}
 
 Project Name: ${projeAdi}
 Output Language: ${dilAdi}
@@ -144,7 +148,9 @@ export async function POST(req: Request) {
           }
         }
 
+        console.log('[is-analizi] finish_reason:', finishReason)
         if (finishReason === 'max_tokens') {
+          console.error('[is-analizi] UYARI: Yanıt max_tokens ile kesildi!')
           controller.enqueue(encoder.encode('\n\n<!-- TRUNCATED -->'))
         }
       } catch (err) {

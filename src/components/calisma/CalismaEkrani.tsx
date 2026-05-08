@@ -437,7 +437,8 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
   useEffect(() => {
     const el = isAnaliziContainerRef.current
     if (!el || !adim3Yukleniyor) return
-    el.scrollTop = el.scrollHeight
+    const isAtBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 50
+    if (isAtBottom) el.scrollTop = el.scrollHeight
   }, [adim3StreamContent, adim3Yukleniyor])
 
   const storyMapData: StoryMapData | null = ctx.dokuman.storyMap
@@ -576,6 +577,8 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
         icerik += decoder.decode(value, { stream: true })
         setAdim3StreamContent(icerik)
       }
+      // Flush any remaining bytes in the decoder buffer
+      icerik += decoder.decode()
 
       if (icerik.includes('<!-- TRUNCATED -->')) {
         icerik = icerik.replace('<!-- TRUNCATED -->', '').trim()
@@ -1059,9 +1062,18 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
                     )}
                     {isAnaliziData && (
                       <button
-                        disabled
-                        className="inline-flex items-center gap-1.5 rounded-md h-[34px] px-3.5 text-xs font-medium border-[0.5px] border-gray-200 text-gray-400 cursor-not-allowed opacity-60"
-                        title={t('adim3.indirYakinBir')}
+                        onClick={() => {
+                          const blob = new Blob([isAnaliziData.icerik], { type: 'text/markdown;charset=utf-8' })
+                          const url = URL.createObjectURL(blob)
+                          const a = document.createElement('a')
+                          a.href = url
+                          a.download = `is-analizi-${ad.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9ğşıöüçîâûÇĞİÖÜŞ-]/gi, '').slice(0, 50)}.md`
+                          document.body.appendChild(a)
+                          a.click()
+                          document.body.removeChild(a)
+                          URL.revokeObjectURL(url)
+                        }}
+                        className="inline-flex items-center gap-1.5 rounded-md h-[34px] px-3.5 text-xs font-medium border-[0.5px] border-[#2E75B6]/50 text-[#1F3864] hover:bg-[#EEF4FB] transition"
                       >
                         <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                           <path d="M8 1v9M4 7l4 4 4-4M2 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
