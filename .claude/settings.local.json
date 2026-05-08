@@ -42,7 +42,10 @@
       "Bash(Select-Object FullName)",
       "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('\\\\n'.join\\(sorted\\([*d.get\\('dependencies',{}\\).keys\\(\\),*d.get\\('devDependencies',{}\\).keys\\(\\)]\\)\\)\\)\")",
       "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\('calismaEkrani',{}\\).get\\('adim3',{}\\), ensure_ascii=False, indent=2\\)\\)\")",
-      "Bash(python3 *)"
+      "Bash(python3 *)",
+      "Bash(winget install *)",
+      "Bash(scoop *)",
+      "Bash(choco *)"
     ]
   },
   "hooks": {
