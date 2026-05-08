@@ -14,9 +14,18 @@ Bu dosyayı okumadan önce `genel.md` dosyasını oku ve oradaki kuralları da u
 
 ---
 
-## Hikaye Kapsam Kuralı
+## Hikaye Seçim Kuralı
 
-Analiz dokümanına yalnızca **yazılımı kullanan kişilerin bakış açısından yazılmış hikayeler** dahil edilir. Veritabanı kurulumu, sunucu yapılandırması, CI/CD pipeline gibi teknik/altyapı hikayeleri bu dokümana dahil edilmez — bunlar mimari ve teknik dokümanlara aittir.
+Bu dokümana yalnızca yazılımı kullanan kişilerin (son kullanıcı, yönetici, iş birimi vb.) bakış açısından yazılmış hikayeler dahil edilir.
+
+Şu tür hikayeler bu dokümana eklenmez — bunlar mimari ve teknik dokümanlara aittir:
+- Veritabanı kurulumu ve şema oluşturma
+- Sunucu ve altyapı yapılandırması
+- CI/CD pipeline kurulumu
+- Güvenlik sertifikaları ve ortam değişkenleri
+- Yedekleme ve kurtarma altyapısı
+
+Her hikaye için kapsam tablosu oluşturulmaz.
 
 ---
 

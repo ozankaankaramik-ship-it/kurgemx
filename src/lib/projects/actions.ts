@@ -42,6 +42,7 @@ export type ProjeDetayRow = {
   aciklama: string | null
   dil: string
   durum: string
+  proje_buyuklugu: 'Küçük' | 'Orta' | 'Büyük' | null
   kaynak_dokuman_url: string | null
   olusturma_tarihi: string
   guncelleme_tarihi: string
@@ -51,7 +52,7 @@ export async function projeGetir(id: string): Promise<ProjeDetayRow | null> {
   const supabase = await createClient()
   const { data } = await supabase
     .from('projeler')
-    .select('id, ad, aciklama, dil, durum, kaynak_dokuman_url, olusturma_tarihi, guncelleme_tarihi')
+    .select('id, ad, aciklama, dil, durum, proje_buyuklugu, kaynak_dokuman_url, olusturma_tarihi, guncelleme_tarihi')
     .eq('id', id)
     .single()
 

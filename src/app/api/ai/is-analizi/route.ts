@@ -2,6 +2,8 @@ import Anthropic from '@anthropic-ai/sdk'
 import { NextResponse } from 'next/server'
 import { genel, isAnalizi } from '@/lib/standartlar'
 
+export const maxDuration = 300
+
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 const SISTEM = `${genel}\n\n---\n\n${isAnalizi}`
 
@@ -114,28 +116,53 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'api_key_missing' }, { status: 500 })
   }
 
-  try {
-    const yanit = await client.messages.create({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 8192,
-      system: [{ type: 'text', text: SISTEM, cache_control: { type: 'ephemeral' } }],
-      messages: [{ role: 'user', content: kullaniciPrompt(projeAdi, detayliAciklama, hikayeHaritasi, projeDili, dilAdi) }],
-    })
+  const bugun = new Date().toISOString().split('T')[0]
+  const baslik = projeDili === 'TR'
+    ? `${projeAdi} — İş Analizi Dokümanı`
+    : `${projeAdi} — Business Analysis Document`
 
-    const icerik = (yanit.content[0]?.type === 'text' ? yanit.content[0].text : '').trim()
+  const encoder = new TextEncoder()
 
-    if (!icerik) {
-      return NextResponse.json({ error: 'empty_response' }, { status: 500 })
-    }
+  const readable = new ReadableStream({
+    async start(controller) {
+      let finishReason: string | null = null
+      try {
+        const stream = await client.messages.create({
+          model: 'claude-sonnet-4-6',
+          max_tokens: 32000,
+          stream: true,
+          system: [{ type: 'text', text: SISTEM, cache_control: { type: 'ephemeral' } }],
+          messages: [{ role: 'user', content: kullaniciPrompt(projeAdi, detayliAciklama, hikayeHaritasi, projeDili, dilAdi) }],
+        })
 
-    const bugun = new Date().toISOString().split('T')[0]
-    const baslik = projeDili === 'TR'
-      ? `${projeAdi} — İş Analizi Dokümanı`
-      : `${projeAdi} — Business Analysis Document`
+        for await (const event of stream) {
+          if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
+            controller.enqueue(encoder.encode(event.delta.text))
+          }
+          if (event.type === 'message_delta') {
+            finishReason = event.delta.stop_reason ?? null
+          }
+        }
 
-    return NextResponse.json({ baslik, tarih: bugun, versiyon: '1.0', icerik })
-  } catch (err) {
-    console.error('[is-analizi] API hatası:', err)
-    return NextResponse.json({ error: 'api_error', detail: String(err) }, { status: 500 })
-  }
+        if (finishReason === 'max_tokens') {
+          controller.enqueue(encoder.encode('\n\n<!-- TRUNCATED -->'))
+        }
+      } catch (err) {
+        console.error('[is-analizi] stream hatası:', err)
+        controller.error(err)
+      } finally {
+        controller.close()
+      }
+    },
+  })
+
+  return new Response(readable, {
+    headers: {
+      'Content-Type': 'text/plain; charset=utf-8',
+      'Cache-Control': 'no-cache',
+      'X-Baslik': encodeURIComponent(baslik),
+      'X-Tarih': bugun,
+      'X-Versiyon': '1.0',
+    },
+  })
 }

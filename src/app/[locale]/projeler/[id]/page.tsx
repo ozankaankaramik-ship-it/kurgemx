@@ -58,6 +58,7 @@ export default async function ProjeDetayPage({ params }: Props) {
           ad: proje.ad,
           aciklama: proje.aciklama,
           dil: proje.dil,
+          projeBuyuklugu: proje.proje_buyuklugu ?? null,
         }}
         mevcutDokumanlar={dokumanlar ?? []}
         backHref={backHref}

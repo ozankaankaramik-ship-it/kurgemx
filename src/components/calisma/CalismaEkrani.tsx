@@ -395,7 +395,7 @@ export default function CalismaEkrani({
 function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: string }) {
   const t = useTranslations('calismaEkrani')
   const ctx = useProje()
-  const { projeId, ad, shortDesc, detailedDesc, projektDili } = ctx
+  const { projeId, ad, shortDesc, detailedDesc, projektDili, projeBuyuklugu } = ctx
 
   // Başarı banner'ı: sadece yeni proje oluşturulduğunda göster
   const initialProjeIdRef = useRef<string | null>(projeId)
@@ -421,7 +421,10 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
   const [adim3Hata, setAdim3Hata] = useState(false)
   const [adim3HataMesaji, setAdim3HataMesaji] = useState<string | null>(null)
   const [adim3MesajIdx, setAdim3MesajIdx] = useState(0)
+  const [adim3StreamContent, setAdim3StreamContent] = useState<string | null>(null)
+  const [adim3TokenLimiti, setAdim3TokenLimiti] = useState(false)
   const adim3IntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const isAnaliziContainerRef = useRef<HTMLDivElement>(null)
   const [adim4Yukleniyor, setAdim4Yukleniyor] = useState(false)
   const [adim4Hata, setAdim4Hata] = useState(false)
   const [adim5Yukleniyor, setAdim5Yukleniyor] = useState(false)
@@ -430,6 +433,12 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
   const [kapsamHata, setKapsamHata] = useState(false)
   const [mimariYukleniyor, setMimariYukleniyor] = useState(false)
   const [mimariHata, setMimariHata] = useState(false)
+
+  useEffect(() => {
+    const el = isAnaliziContainerRef.current
+    if (!el || !adim3Yukleniyor) return
+    el.scrollTop = el.scrollHeight
+  }, [adim3StreamContent, adim3Yukleniyor])
 
   const storyMapData: StoryMapData | null = ctx.dokuman.storyMap
     ? (JSON.parse(ctx.dokuman.storyMap) as StoryMapData)
@@ -462,7 +471,7 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
       const res = await fetch('/api/ai/hikaye-haritasi', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ projeAdi: ad, detayliAciklama: detailedDesc, projeDili: projektDili }),
+        body: JSON.stringify({ projeAdi: ad, detayliAciklama: detailedDesc, projeDili: projektDili, projeBuyuklugu }),
       })
       const raw = await res.json()
       if (!res.ok) {
@@ -521,6 +530,8 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
     setAdim3Hata(false)
     setAdim3HataMesaji(null)
     setAdim3MesajIdx(0)
+    setAdim3StreamContent('')
+    setAdim3TokenLimiti(false)
 
     let idx = 0
     adim3IntervalRef.current = setInterval(() => {
@@ -543,11 +554,33 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
           projeDili: projektDili,
         }),
       })
-      const data = await res.json()
+
       if (!res.ok) {
-        throw new Error(data?.detail ?? data?.error ?? `HTTP ${res.status}`)
+        const errData = await res.json().catch(() => ({}))
+        throw new Error((errData as { detail?: string; error?: string }).detail ?? (errData as { error?: string }).error ?? `HTTP ${res.status}`)
       }
-      const { baslik, tarih, versiyon, icerik } = data as IsAnaliziData
+
+      const baslik = decodeURIComponent(res.headers.get('X-Baslik') ?? '')
+      const tarih = res.headers.get('X-Tarih') ?? new Date().toISOString().split('T')[0]
+      const versiyon = res.headers.get('X-Versiyon') ?? '1.0'
+
+      if (!res.body) throw new Error('no_body')
+
+      const reader = res.body.getReader()
+      const decoder = new TextDecoder()
+      let icerik = ''
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        icerik += decoder.decode(value, { stream: true })
+        setAdim3StreamContent(icerik)
+      }
+
+      if (icerik.includes('<!-- TRUNCATED -->')) {
+        icerik = icerik.replace('<!-- TRUNCATED -->', '').trim()
+        setAdim3TokenLimiti(true)
+      }
 
       if (projeId) {
         const supabase = createClient()
@@ -557,7 +590,7 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
             {
               proje_id: projeId,
               tip_id: DOKUMAN_TIPLERI.is_analizi,
-              baslik,
+              baslik: baslik || (projektDili === 'TR' ? `${ad} — İş Analizi Dokümanı` : `${ad} — Business Analysis Document`),
               icerik,
               dil: projektDili ?? 'TR',
             },
@@ -569,10 +602,12 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
       }
 
       ctx.setDokuman('isAnalizi', JSON.stringify({ baslik, tarih, versiyon, icerik }))
+      setAdim3StreamContent(null)
     } catch (err) {
       console.error('[generateDocuments] hata:', err)
       setAdim3HataMesaji(err instanceof Error ? err.message : String(err))
       setAdim3Hata(true)
+      setAdim3StreamContent(null)
     } finally {
       if (adim3IntervalRef.current) {
         clearInterval(adim3IntervalRef.current)
@@ -670,6 +705,16 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
                       <p className="text-xs font-medium text-gray-400 mb-1">{t('adim1.projeAdi')}</p>
                       <p className="text-sm font-semibold text-gray-800">{ad}</p>
                     </div>
+                    {projeBuyuklugu && (
+                      <div>
+                        <p className="text-xs font-medium text-gray-400 mb-1">{t('adim1.projeBuyuklugu')}</p>
+                        <span className="inline-flex items-center gap-1.5 rounded-md bg-[#EEF4FB] border border-blue-100 px-2.5 py-1 text-xs font-medium text-[#1F3864]">
+                          {projeBuyuklugu === 'Küçük' ? t('adim1.kucuk') : projeBuyuklugu === 'Orta' ? t('adim1.orta') : t('adim1.buyuk')}
+                          <span className="text-[#2E75B6]">·</span>
+                          {projeBuyuklugu === 'Küçük' ? t('adim1.kucukHikaye') : projeBuyuklugu === 'Orta' ? t('adim1.ortaHikaye') : t('adim1.buyukHikaye')}
+                        </span>
+                      </div>
+                    )}
                     {shortDesc && (
                       <div>
                         <p className="text-xs font-medium text-gray-400 mb-1">{t('adim1.shortDesc')}</p>
@@ -1032,9 +1077,15 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
                 </div>
 
                 {/* Doküman içeriği */}
-                {isAnaliziData ? (
-                  <div className="bg-white border border-gray-200 rounded-lg p-6 overflow-auto max-h-[70vh]">
-                    <MarkdownGoster icerik={isAnaliziData.icerik} />
+                {adim3TokenLimiti && (
+                  <p className="text-xs text-amber-600 mb-2">{t('adim3.tokenLimiti')}</p>
+                )}
+                {(isAnaliziData || adim3StreamContent !== null) ? (
+                  <div
+                    ref={isAnaliziContainerRef}
+                    className="bg-white border border-gray-200 rounded-lg p-6 overflow-auto max-h-[70vh]"
+                  >
+                    <MarkdownGoster icerik={isAnaliziData?.icerik ?? adim3StreamContent ?? ''} />
                   </div>
                 ) : (
                   !adim3Yukleniyor && (

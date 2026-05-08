@@ -176,6 +176,9 @@
       "kucukAlt": "1–5 hikaye · 1 hft – 2 ay",
       "ortaAlt": "6–15 hikaye · 2 ay – 4 ay",
       "buyukAlt": "16–40 hikaye · 4 ay ve üzeri",
+      "kucukHikaye": "1–5 hikaye",
+      "ortaHikaye": "6–15 hikaye",
+      "buyukHikaye": "16–40 hikaye",
       "hatalar": {
         "ad_zorunlu": "Proje adı zorunludur.",
         "ad_uzun": "Proje adı en fazla 100 karakter olabilir.",
@@ -222,7 +225,8 @@
       "beklemede": "Beklemede",
       "belgeTarih": "Doküman oluşturuldu:",
       "indir": "İndir (.docx)",
-      "indirYakinBir": "Yakında kullanıma girecek"
+      "indirYakinBir": "Yakında kullanıma girecek",
+      "tokenLimiti": "Doküman token limitine ulaştı — içerik kısaltılmış olabilir."
     },
     "adim4": {
       "baslik": "Prototip",

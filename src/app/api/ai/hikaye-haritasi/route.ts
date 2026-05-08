@@ -30,11 +30,24 @@ function dilKurali(projeDili: string, dilAdi: string): string {
   return `LANGUAGE AND KEY RULE: All content in ${dilAdi}.\n${kurallar}`
 }
 
+function buyuklukKurali(projeBuyuklugu: string | null, projeDili: string): string {
+  if (!projeBuyuklugu) return ''
+  const isTR = projeDili === 'TR'
+  const sinir =
+    projeBuyuklugu === 'Küçük' ? (isTR ? 'en fazla 5 hikaye' : 'maximum 5 stories') :
+    projeBuyuklugu === 'Orta'  ? (isTR ? 'en fazla 15 hikaye' : 'maximum 15 stories') :
+                                  (isTR ? 'en fazla 40 hikaye' : 'maximum 40 stories')
+  return isTR
+    ? `\nProje Büyüklüğü: ${projeBuyuklugu} — Hikaye sayısı sınırı: ${sinir}\n`
+    : `\nProject Size: ${projeBuyuklugu} — Story count limit: ${sinir}\n`
+}
+
 function kullaniciPromptOlustur(
   projeAdi: string,
   detayliAciklama: string,
   projeDili: string,
   dilAdi: string,
+  projeBuyuklugu: string | null,
 ): string {
   const isTR = projeDili === 'TR'
   const versionKey = isTR ? 'Sürüm' : 'Release'
@@ -51,8 +64,7 @@ function kullaniciPromptOlustur(
     `{ "${versionKey}": "${totalValue}", "Story Count": 25, "Sprint Range": "SP1 → SP8", "Sprint Count": 8, "Duration": "16 ${weekUnit}" }`,
   ]
 
-  return `Aşağıdaki proje için hikaye haritası oluştur.
-
+  return `Aşağıdaki proje için hikaye haritası oluştur.${buyuklukKurali(projeBuyuklugu, projeDili)}
 Proje Adı: ${projeAdi}
 Detaylı Açıklama: ${detayliAciklama}
 Çıktı Dili: ${dilAdi}
@@ -75,7 +87,7 @@ Yalnızca aşağıdaki JSON yapısını döndür. Markdown kod bloğu, ön yazı
 }
 
 export async function POST(req: Request) {
-  let body: { projeAdi?: string; detayliAciklama?: string; projeDili?: string }
+  let body: { projeAdi?: string; detayliAciklama?: string; projeDili?: string; projeBuyuklugu?: string }
   try {
     body = await req.json()
   } catch {
@@ -85,6 +97,7 @@ export async function POST(req: Request) {
   const projeAdi = (body.projeAdi ?? '').trim()
   const detayliAciklama = (body.detayliAciklama ?? '').trim()
   const projeDili = (body.projeDili ?? 'TR').trim().toUpperCase()
+  const projeBuyuklugu = body.projeBuyuklugu ?? null
   const dilAdi = DIL_ETIKET[projeDili] ?? 'English'
 
   if (!projeAdi || !detayliAciklama) {
@@ -95,7 +108,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'api_key_missing' }, { status: 500 })
   }
 
-  const kullaniciPrompt = kullaniciPromptOlustur(projeAdi, detayliAciklama, projeDili, dilAdi)
+  const kullaniciPrompt = kullaniciPromptOlustur(projeAdi, detayliAciklama, projeDili, dilAdi, projeBuyuklugu)
 
   try {
     const yanit = await client.messages.create({

@@ -95,6 +95,9 @@ export default function Adim1Formu() {
     if (!el) return
     el.style.height = 'auto'
     el.style.height = el.scrollHeight + 'px'
+    if (yzCikti) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+    }
   }, [yzCikti])
 
   async function handleYz() {

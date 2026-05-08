@@ -176,6 +176,9 @@
       "kucukAlt": "1–5 stories · 1 wk – 2 mo",
       "ortaAlt": "6–15 stories · 2 – 4 mo",
       "buyukAlt": "16–40 stories · 4+ mo",
+      "kucukHikaye": "1–5 stories",
+      "ortaHikaye": "6–15 stories",
+      "buyukHikaye": "16–40 stories",
       "hatalar": {
         "ad_zorunlu": "Project name is required.",
         "ad_uzun": "Project name cannot exceed 100 characters.",
@@ -222,7 +225,8 @@
       "beklemede": "Pending",
       "belgeTarih": "Document generated on",
       "indir": "Download (.docx)",
-      "indirYakinBir": "Coming soon"
+      "indirYakinBir": "Coming soon",
+      "tokenLimiti": "Document reached token limit — content may be truncated."
     },
     "adim4": {
       "baslik": "Prototype",
