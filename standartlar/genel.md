@@ -26,6 +26,18 @@ Doküman tipine özgü kurallar için ilgili dosyaya bakınız.
 
 ---
 
+## Proje Büyüklüğü
+
+Proje büyüklüğü hikaye haritası oluşturulmadan önce belirlenir. YZ projenin açıklamasına göre büyüklüğü otomatik önerir; kullanıcı değiştirebilir.
+
+| Proje Büyüklüğü | Hikaye Sayısı | Tahmini Süre | Açıklama |
+|----------------|---------------|--------------|----------|
+| Küçük | 1 – 5 hikaye | 1 hafta – 2 ay | Mevcut ürüne yeni özellik ekleme veya MVP odaklı küçük ürün |
+| Orta | 6 – 15 hikaye | 2 ay – 4 ay | Çok modüllü, birden fazla kullanıcı rolü |
+| Büyük | 16 – 40 hikaye | 4 ay ve üzeri | Kurumsal ürün, birden fazla release |
+
+---
+
 ## Evrensel Kısaltmalar
 
 Dil seçiminden bağımsız, tüm dillerde aynı kısaltmalar kullanılır:

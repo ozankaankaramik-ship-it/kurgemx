@@ -39,6 +39,33 @@ Tüm dillerde aynı kısaltmalar kullanılır:
 
 ---
 
+## Proje Büyüklüğü ve Hikaye Sayısı
+
+Hikaye haritası oluşturulmadan önce proje büyüklüğü belirlenir. YZ projenin detaylı açıklamasına göre büyüklüğü otomatik önerir; kullanıcı değiştirebilir. Hikaye sayısı proje büyüklüğüne göre sınırlandırılır.
+
+| Proje Büyüklüğü | Hikaye Sayısı |
+|----------------|---------------|
+| Küçük | 1 – 5 hikaye |
+| Orta | 6 – 15 hikaye |
+| Büyük | 16 – 40 hikaye |
+
+**Maksimum hikaye sayısı: 40.** Bu sınır aşılmamalıdır.
+
+---
+
+## Hikaye Kapsam Kuralı
+
+Hikaye haritasına yalnızca **yazılımı kullanan kişilerin (son kullanıcı, yönetici, iş birimi vb.) bakış açısından yazılmış hikayeler** dahil edilir.
+
+Aşağıdaki hikayeler hikaye haritasına **dahil edilmez** — bu konular mimari ve teknik dokümanlara aittir:
+- Veritabanı kurulumu ve şema oluşturma
+- Sunucu ve altyapı yapılandırması
+- CI/CD pipeline kurulumu
+- Güvenlik sertifikaları ve ortam değişkenleri
+- Yedekleme ve kurtarma altyapısı
+
+---
+
 ## Tablo Yapısı
 
 - **Sütunlar:** Destanlar (Epic'ler)
@@ -46,7 +73,7 @@ Tüm dillerde aynı kısaltmalar kullanılır:
 - Hikayeler ilgili destan sütunu altında, ilgili sürüm satırında gösterilir
 - Her hücrede birden fazla hikaye yer alabilir (yatay düzende)
 - Markdown tablo formatında hazırlanır
-- Destanlar projenin ihtiyaçlarına göre kullanıcı tarafından belirlenir; zorunlu sabit destan yoktur
+- Destanlar projenin ihtiyaçlarına göre belirlenir; zorunlu sabit destan yoktur
 
 ---
 
@@ -79,7 +106,7 @@ Her hikaye şu kriterleri karşılamalıdır:
 - Her sprint 2 haftadır
 - Sprint numaraları: SP1, SP2, SP3 ...
 - Sprint odak alanı belirtilir: örn. "SP2 — Proje yönetimi + hikaye haritalama"
-- Hikaye sayısı projenin kapsamına göre AI tarafından belirlenir; yapay bir üst/alt sınır uygulanmaz
+- Hikaye sayısı proje büyüklüğüne göre belirlenir (bkz. Proje Büyüklüğü tablosu)
 
 ### Altyapı Önce Prensibi
 Sprint planlaması geliştirici bakış açısıyla yapılır: **altyapı önce, özellik sonra.**
@@ -99,7 +126,7 @@ Sprint planlaması geliştirici bakış açısıyla yapılır: **altyapı önce,
 
 **KVKK ve güvenlik hikayeleri her zaman R1 — MVP'de, tercihen ilk sprint'te ele alınmalıdır.**
 
-**Fonksiyonel olmayan gereksinimler ve geçiş gereksinimleri hikaye haritasında ayrı destan olarak yer almaz; release bazında üretilen analiz dokümanının "Sistem Gereksinimleri" bölümünde ele alınır.**
+**Fonksiyonel olmayan gereksinimler ve geçiş gereksinimleri hikaye haritasında ayrı destan olarak yer almaz; analiz dokümanının "Sistem Gereksinimleri" bölümünde ele alınır.**
 
 ---
 
@@ -118,7 +145,7 @@ Sprint planlaması geliştirici bakış açısıyla yapılır: **altyapı önce,
 ### 2. Sprint Planı Özeti
 
 ```
-| Sprint | Focus | Stories | Number of Stories | Duration |
+| Sprint | Odak Alanı | Hikayeler | Hikaye Sayısı | Süre |
 |--------|------------|-----------|---------------|------|
 | SP1 | Temel altyapı | ST1, ST2, ST3 | x | 2 hafta |
 | SP2 | ... | ... | x | 2 hafta |
@@ -127,7 +154,7 @@ Sprint planlaması geliştirici bakış açısıyla yapılır: **altyapı önce,
 ### 3. Genel Özet Tablosu
 
 ```
-| Release | Number of Stories | Sprints | Number od Sprints | Duration |
+| Sürüm | Hikaye Sayısı | Sprint Aralığı | Sprint Sayısı | Süre |
 |-------|---------------|----------------|---------------|------|
 | R1 — MVP | | SP1 → SP_x | | |
 | R2 — İyileştirme | | | | |

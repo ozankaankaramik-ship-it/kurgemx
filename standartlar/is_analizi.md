@@ -7,10 +7,16 @@ Bu dosyayı okumadan önce `genel.md` dosyasını oku ve oradaki kuralları da u
 ## Doküman Hakkında
 
 - **Doküman tipi kodu:** `is_analizi`
-- **Amaç:** Tüm release'lerdeki hikayelerin kapsam, kabul kriterleri, sistem gereksinimleri ve teknik detaylarını tek bir dokümanda belgeler
+- **Amaç:** Tüm release'lerdeki hikayelerin kabul kriterleri, sistem gereksinimleri ve teknik detaylarını tek bir dokümanda belgeler
 - **Hedef kitle:** İş birimi (tüm bölümler) + Teknik ekip (tüm bölümler)
 - **Üretim zamanı:** Hikaye haritası oluşturulduktan sonra
 - **Üretim adedi:** Proje başına bir doküman
+
+---
+
+## Hikaye Kapsam Kuralı
+
+Analiz dokümanına yalnızca **yazılımı kullanan kişilerin bakış açısından yazılmış hikayeler** dahil edilir. Veritabanı kurulumu, sunucu yapılandırması, CI/CD pipeline gibi teknik/altyapı hikayeleri bu dokümana dahil edilmez — bunlar mimari ve teknik dokümanlara aittir.
 
 ---
 
@@ -26,16 +32,15 @@ Bu dosyayı okumadan önce `genel.md` dosyasını oku ve oradaki kuralları da u
 - Onay durumu
 - Sonraki güncelleme
 
-### Bölüm 2: Hikaye Bazında Kapsam ve Kabul Kriterleri
+### Bölüm 2: Hikaye Bazında Kabul Kriterleri
 
 Release'ler alt bölümler halinde gruplandırılır:
 
 #### 2.1 R1 — MVP
 Her hikaye için şu sırayla:
 1. Kullanıcı hikayesi (AKTÖR / İHTİYAÇ / FAYDA formatında)
-2. Kapsam tablosu (içinde ✅ / dışında ❌)
-3. Kabul kriterleri (sadeleştirilmiş format — aşağıya bakın)
-4. İş kuralları (BR-XXX — ilgili kriterin hemen altında)
+2. Kabul kriterleri (sadeleştirilmiş format — aşağıya bakın)
+3. İş kuralları (BR-XXX — yalnızca gerekli olduğunda, ilgili kriterin hemen altında)
 
 #### 2.2 R2 — İyileştirme
 Aynı yapı R2 hikayelerine uygulanır.
@@ -48,7 +53,7 @@ Proje genelinde geçerli olan gereksinimler bu bölümde ele alınır.
 
 **3.1 Fonksiyonel Olmayan Gereksinimler**
 
-Her release için değerlendirilmeli; ilgili olmayanlar atlanabilir:
+İlgili olmayanlar atlanabilir:
 
 | Konu | Açıklama |
 |------|---------|
@@ -60,7 +65,7 @@ Her release için değerlendirilmeli; ilgili olmayanlar atlanabilir:
 
 **3.2 Geçiş Gereksinimleri**
 
-Her release için değerlendirilmeli; ilgili olmayanlar atlanabilir:
+İlgili olmayanlar atlanabilir:
 
 | Konu | Açıklama |
 |------|---------|
@@ -74,11 +79,10 @@ Her release için değerlendirilmeli; ilgili olmayanlar atlanabilir:
 - Etkilenen iş süreçleri
 - Riskler tablosu (Risk, Olasılık, Etki, Azaltım Stratejisi)
 
-### Bölüm 5: Teknik Detaylar ve Entegrasyonlar *(yalnızca teknik ekip)*
-- API uç noktaları (istek/yanıt örnekleri JSON formatında)
-- Veritabanı şeması (tablo yapıları, RLS politikaları)
-- Güvenlik uygulaması
-- Entegrasyon noktaları tablosu
+### Bölüm 5: Teknik Detaylar *(yalnızca teknik ekip)*
+- Temel API uç noktaları (özet düzeyde)
+- Güvenlik notları
+- Entegrasyon noktaları (varsa)
 
 ---
 
@@ -112,13 +116,13 @@ FAYDA:   Böylece [sonuç/değer] gerçekleştirebilirim
 - AC → Acceptance Criteria, BR → Business Rule, TC → Test Case
 
 ### Kriter Tipleri
-- `[Positive]` — başarılı / mutlu yol kriterleri (en az 2)
-- `[Negative]` — hata kriterleri (en az 2)
-- `[Boundary]` — sınır / kenar durumlar
+- `[Positive]` — başarılı / mutlu yol kriterleri (en az 1)
+- `[Negative]` — hata kriterleri (en az 1)
+- `[Boundary]` — sınır / kenar durumlar (gerektiğinde)
 - `[Security]` — güvenlik ve doğrulama (KVKK içeren hikayelerde zorunlu)
 
 ### Kriter Başına Minimum / Maksimum
-- Her hikaye için: minimum 4, maksimum 8 kabul kriteri
+- Her hikaye için: **minimum 2, maksimum 6** kabul kriteri
 
 ### Format
 
@@ -129,22 +133,24 @@ AC-001 — [Kriter Başlığı] [Tip Etiketi]
 Teknik olmayan kişilerin anlayabileceği dilde yazılır.
 KOŞUL / EYLEM / SONUÇ blokları kullanılmaz.]
 
-BR-001 · [İş Kuralı Başlığı]
+BR-001 · [İş Kuralı Başlığı]  ← yalnızca bu kritere özgü iş kuralı varsa
 [Kural detayı, koşullar, istisnalar. Somut örneklerle açıkla.]
 ```
 
 ### Örnek
 
 ```
-AC-001 — Başarılı Proje Oluşturma [Positive]
+AC-001 — Başarılı Giriş [Positive]
 
-Kullanıcı zorunlu alanları doldurup "Proje Oluştur" butonuna tıkladığında
-proje veritabanına kaydedilir, proje detay ekranına yönlendirilir ve
-başarı bildirimi gösterilir.
+Kullanıcı doğru e-posta ve şifresini girip "Giriş Yap" butonuna tıkladığında
+sisteme başarıyla giriş yapılır ve ana sayfaya yönlendirilir.
 
-BR-001 · Proje adı zorunluluğu
-Proje adı boş veya yalnızca boşluktan oluşan değer kabul edilmez.
-Maksimum 100 karakter.
+AC-002 — Hatalı Şifrede Engelleme [Negative]
+
+Kullanıcı yanlış şifre girdiğinde giriş reddedilir ve hata mesajı gösterilir.
+
+BR-001 · Ardışık hatalı giriş kilitleme
+5 ardışık hatalı girişte hesap 15 dakika kilitlenir.
 ```
 
 ---
@@ -154,7 +160,7 @@ Maksimum 100 karakter.
 | | Kabul Kriteri | Test Case |
 |---|---|---|
 | Soru | Ne bekliyoruz? | Nasıl test edeceğiz? |
-| Perspektif | İş perspektifi | Teknik perspektif |
+| Perspektif | İş perspektifi | Test ve doğrulama perspektifi |
 | Odak | Onay odaklı | Uygulama odaklı |
 | Kimin için | İş birimi + Teknik ekip | Test ekibi |
 | Format | Düz açıklama cümlesi | Adım adım teknik |
@@ -170,38 +176,20 @@ BR-XXX · [Kural Başlığı]
 
 **Kurallar:**
 - Numaralandırma proje genelinde sıralıdır (BR-001, BR-002 ...)
+- İş kuralları yalnızca gerçekten gerekli olduğunda eklenir — her AC'ye zorunlu değildir
 - İş kuralları ilgili kabul kriterinin hemen altında yer alır — ayrı bölüm olmaz
 - Aynı iş kuralı birden fazla kriterde geçerliyse tekrar yazılmaz, "BR-XXX geçerlidir" yaz
 - Kategoriler: Kimlik Doğrulama, Veri Güvenliği/KVKK, İş Süreci, Raporlama/Denetim
 
 ---
 
-## Kapsam Tablosu Formatı
+## Teknik Bölüm Standartları (Bölüm 5)
 
-| ✅ Kapsam İçinde | ❌ Kapsam Dışında |
-|-----------------|-----------------|
-| [Özellik] | [Özellik] → ST-XX kapsamında ele alınacak |
+Bölüm 5 özet düzeyde tutulur — detaylı teknik bilgi mimari dokümana aittir.
 
-Kapsam dışındaki her madde için hangi hikayede ele alındığı mutlaka belirtilir.
-
----
-
-## Teknik Bölüm Standartları
-
-### API Uç Noktası Formatı
-
-```
-[METHOD] /api/[endpoint]
-İstek:  { alan: tip, ... }
-Başarı: [HTTP kodu] — { ... }
-Hata:   [HTTP kodu] — { "error": "..." }
-```
-
-### Veritabanı Şeması Tablosu
-Sütunlar: Alan | Tip | Zorunlu | Açıklama
-
-### RLS Politikaları
-Her tablo için SELECT, INSERT, UPDATE, DELETE politikaları ayrı ayrı belirtilir.
+- Temel API uç noktaları: sadece endpoint adı ve HTTP metodu
+- Güvenlik notları: kimlik doğrulama yöntemi, yetkilendirme kuralları
+- Entegrasyon noktaları: hangi sistemlerle entegrasyon gerektiği
 
 ---
 
@@ -215,7 +203,6 @@ Her tablo için SELECT, INSERT, UPDATE, DELETE politikaları ayrı ayrı belirti
 - Ton: Profesyonel, net, açık. Teknik olmayan paydaşların anlayabileceği dil
 - KVKK/Güvenlik: İlgili hikayelerde güvenlik kriterleri ve iş kuralları mutlaka yer alır
 - Teknik terim açıklaması: OTP, JWT, RLS gibi terimler ilk geçtiklerinde parantez içinde açıklanır
-- Bütünü gör: Bir hikayenin diğerleriyle ilişkisi etki analizinde ve kapsam dışında mutlaka belirtilir
 
 ---
 
@@ -224,11 +211,10 @@ Her tablo için SELECT, INSERT, UPDATE, DELETE politikaları ayrı ayrı belirti
 **İş Birimi (Ürün Sahibi, İş Analisti) için:**
 - Bölüm 1, 2, 3 ve 4 iş birimi onayı için hazırlanmıştır
 - Bölüm 5 teknik ekip içindir, atlanabilir
-- Kabul kriterleri, iş kuralları ve sistem gereksinimleri iş birimi tarafından onaylanmalıdır
+- Kabul kriterleri ve sistem gereksinimleri iş birimi tarafından onaylanmalıdır
 
 **Teknik Ekip için:**
 - Tüm bölümler okunmalıdır
-- Bölüm 5 uygulama için kritiktir
 - Kabul kriterleri test case'lerinin temelini oluşturur
 
 ---
