@@ -709,7 +709,6 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
                       <p className="text-xs font-medium text-gray-400 mb-1">{t('adim1.projeAdi')}</p>
                       <p className="text-sm font-semibold text-gray-800">{ad}</p>
                     </div>
-                    <p style={{fontSize:10,color:'red'}}>DEBUG projeBuyuklugu: {String(projeBuyuklugu ?? 'NULL')}</p>
                     {projeBuyuklugu && (
                       <div>
                         <p className="text-xs font-medium text-gray-400 mb-1">{t('adim1.projeBuyuklugu')}</p>
