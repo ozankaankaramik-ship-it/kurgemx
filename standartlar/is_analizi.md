@@ -43,6 +43,11 @@ Her hikaye için kapsam tablosu oluşturulmaz.
 
 ### Bölüm 2: Hikaye Bazında Kabul Kriterleri
 
+> Bu bölümde kullanılan kısaltmalar:
+> - **ST:** Story — Hikaye
+> - **AC:** Acceptance Criteria — Kabul Kriteri *(Hikaye bazında ilgili hikayenin altında sıralanmıştır)*
+> - **BR:** Business Rule — İş Kuralı *(Varsa ilgili AC altında belirtilmiştir)*
+
 Release'ler alt bölümler halinde gruplandırılır:
 
 #### 2.1 R1 — MVP
