@@ -64,7 +64,7 @@ interface StoryMapData {
 }
 
 function hikayelerFiltrele(data: StoryMapData, surum: string, destanAdi: string): HikayeItem[] {
-  return data.hikayeHaritasi.hikayeler.filter(h => h.surum === surum && h.destan === destanAdi)
+  return (data.hikayeHaritasi?.hikayeler ?? []).filter(h => h.surum === surum && h.destan === destanAdi)
 }
 
 function formatSurum(surum: string): string {
@@ -131,7 +131,8 @@ async function exportToExcel(data: StoryMapData, projeAdi: string) {
   function enc(r: number, c: number) { return XLSX.utils.encode_cell({ r, c }) }
 
   // ── SHEET 1: Story Map ─────────────────────────────────────
-  const { destanlar, hikayeler } = data.hikayeHaritasi
+  const destanlar = data.hikayeHaritasi?.destanlar ?? []
+  const hikayeler = data.hikayeHaritasi?.hikayeler ?? []
   const surumler = (['R1', 'R2', 'R3'] as const).filter(s => hikayeler.some(h => h.surum === s))
   const numCols = destanlar.length + 1
 
@@ -367,7 +368,7 @@ export default function CalismaEkrani({
   const isAnaliziStr: string | null = isAnaliziRow
     ? JSON.stringify({
         baslik: (isAnaliziRow as { baslik?: string }).baslik ?? '',
-        tarih: isAnaliziRow.created_at.split('T')[0],
+        tarih: (isAnaliziRow.created_at ?? new Date().toISOString()).split('T')[0],
         versiyon: '1.0',
         icerik: typeof isAnaliziRow.icerik === 'string'
           ? isAnaliziRow.icerik
@@ -834,7 +835,7 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
                         }
                       }}
                     >
-                      <div style={{ minWidth: `${(storyMapData.hikayeHaritasi.destanlar.length + 1) * 200}px`, height: 1 }} />
+                      <div style={{ minWidth: `${((storyMapData.hikayeHaritasi?.destanlar ?? []).length + 1) * 200}px`, height: 1 }} />
                     </div>
                   )}
                   {/* Alt scroll bar — gerçek tablo */}
@@ -851,7 +852,7 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
                     {storyMapData ? (
                       <table
                         className="text-sm text-left"
-                        style={{ minWidth: `${(storyMapData.hikayeHaritasi.destanlar.length + 1) * 200}px` }}
+                        style={{ minWidth: `${((storyMapData.hikayeHaritasi?.destanlar ?? []).length + 1) * 200}px` }}
                       >
                         <thead className="bg-[#1F3864]">
                           <tr>
@@ -860,7 +861,7 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
                                 ? Object.keys(storyMapData.genelOzet[0])[0]
                                 : (projektDili === 'TR' ? 'Sürüm' : 'Release')}
                             </th>
-                            {storyMapData.hikayeHaritasi.destanlar.map(d => (
+                            {(storyMapData.hikayeHaritasi?.destanlar ?? []).map(d => (
                               <th key={d} className="px-4 py-2.5 text-xs font-semibold text-white uppercase tracking-wide border-r border-white/20 last:border-r-0">
                                 {d}
                               </th>
@@ -869,7 +870,7 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
                         </thead>
                         <tbody className="divide-y divide-gray-100">
                           {(['R1', 'R2', 'R3'] as const)
-                            .filter(s => storyMapData.hikayeHaritasi.hikayeler.some(h => h.surum === s))
+                            .filter(s => (storyMapData.hikayeHaritasi?.hikayeler ?? []).some(h => h.surum === s))
                             .map((surumKey, idx) => (
                               <tr key={surumKey} className={idx % 2 === 1 ? 'bg-gray-50/50' : ''}>
                                 <td
@@ -878,7 +879,7 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
                                 >
                                   {formatSurum(surumKey)}
                                 </td>
-                                {storyMapData.hikayeHaritasi.destanlar.map(destan => (
+                                {(storyMapData.hikayeHaritasi?.destanlar ?? []).map(destan => (
                                   <td key={destan} className="px-4 py-3 border-r border-gray-100 align-top min-w-[180px] last:border-r-0">
                                     {hikayelerFiltrele(storyMapData, surumKey, destan).map(h => (
                                       <div key={h.no} className="mb-1 text-xs text-gray-700 leading-relaxed">

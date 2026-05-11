@@ -2,7 +2,7 @@
 
 import type { ReactNode, CSSProperties } from 'react'
 
-interface Props { icerik: string }
+interface Props { icerik: string | null | undefined }
 
 const COLOR = { darkBlue: '#1F3864', midBlue: '#2E75B6', text: '#374151', muted: '#6B7280' }
 
@@ -21,7 +21,7 @@ function P({ html, style }: { html: string; style?: CSSProperties }) {
 }
 
 export default function MarkdownGoster({ icerik }: Props) {
-  const lines = icerik.split('\n')
+  const lines = (icerik ?? '').split('\n')
   const nodes: ReactNode[] = []
   let i = 0
   let k = 0
