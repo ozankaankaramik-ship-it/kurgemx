@@ -37,6 +37,7 @@ export default async function ProjeDetayPage({ params }: Props) {
   }
 
   const proje = projeRaw as ProjeDetayRow
+  console.log('[ProjeDetay] proje_buyuklugu:', proje.proje_buyuklugu, '| proje.id:', proje.id)
   const t = await getTranslations('projeDetay')
 
   const { data: dokumanlar, error: dokError } = await supabase
