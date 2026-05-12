@@ -528,18 +528,29 @@ export async function POST(req: Request) {
 
   try {
     const buf = await Packer.toBuffer(doc)
-    const safe = projeAdi
+
+    // Dosya adı: header için ASCII-safe + RFC 5987 ile UTF-8 (modern tarayıcılar
+    // ikincisini kullanır). HTTP header'ları ByteString olduğu için Türkçe
+    // karakterleri filename="..." içinde geçmek hata verir.
+    const trToAscii: Record<string, string> = {
+      ç: 'c', Ç: 'c', ğ: 'g', Ğ: 'g', ı: 'i', İ: 'i',
+      ö: 'o', Ö: 'o', ş: 's', Ş: 's', ü: 'u', Ü: 'u',
+      â: 'a', Â: 'a', î: 'i', Î: 'i', û: 'u', Û: 'u',
+    }
+    const ascii = projeAdi
+      .replace(/[çÇğĞıİöÖşŞüÜâÂîÎûÛ]/g, (c) => trToAscii[c] ?? c)
       .toLowerCase()
-      .replace(/\s+/g, '-')
-      .replace(/[^a-z0-9ğşıöüçîâû-]/gi, '')
+      .replace(/[^a-z0-9-]+/g, '-')
+      .replace(/^-+|-+$/g, '')
       .slice(0, 50) || 'proje'
-    const filename = `is-analizi-${safe}.docx`
+    const filenameAscii = `is-analizi-${ascii}.docx`
+    const filenameUtf8 = `is-analizi-${projeAdi}.docx`
 
     return new Response(new Uint8Array(buf), {
       headers: {
         'Content-Type':
           'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'Content-Disposition': `attachment; filename="${filename}"; filename*=UTF-8''${encodeURIComponent(filename)}`,
+        'Content-Disposition': `attachment; filename="${filenameAscii}"; filename*=UTF-8''${encodeURIComponent(filenameUtf8)}`,
         'Cache-Control': 'no-store',
       },
     })
