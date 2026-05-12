@@ -1143,16 +1143,47 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
                     )}
                     {isAnaliziData && (
                       <button
-                        onClick={() => {
-                          const blob = new Blob([isAnaliziData.icerik], { type: 'text/markdown;charset=utf-8' })
-                          const url = URL.createObjectURL(blob)
-                          const a = document.createElement('a')
-                          a.href = url
-                          a.download = `is-analizi-${ad.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9ğşıöüçîâûÇĞİÖÜŞ-]/gi, '').slice(0, 50)}.md`
-                          document.body.appendChild(a)
-                          a.click()
-                          document.body.removeChild(a)
-                          URL.revokeObjectURL(url)
+                        onClick={async () => {
+                          try {
+                            const res = await fetch('/api/dokuman/is-analizi-docx', {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({
+                                icerik: isAnaliziData.icerik,
+                                projeAdi: ad,
+                                versiyon: isAnaliziData.versiyon,
+                                tarih: isAnaliziData.tarih,
+                              }),
+                            })
+                            if (!res.ok) {
+                              const err = await res.json().catch(() => ({}))
+                              throw new Error(
+                                (err as { detail?: string; error?: string }).detail ??
+                                  (err as { error?: string }).error ??
+                                  `HTTP ${res.status}`,
+                              )
+                            }
+                            const blob = await res.blob()
+                            const url = URL.createObjectURL(blob)
+                            const a = document.createElement('a')
+                            a.href = url
+                            a.download = `is-analizi-${ad
+                              .toLowerCase()
+                              .replace(/\s+/g, '-')
+                              .replace(/[^a-z0-9ğşıöüçîâûÇĞİÖÜŞ-]/gi, '')
+                              .slice(0, 50)}.docx`
+                            document.body.appendChild(a)
+                            a.click()
+                            document.body.removeChild(a)
+                            URL.revokeObjectURL(url)
+                          } catch (e) {
+                            console.error('[is-analizi-docx] indirme hatası:', e)
+                            alert(
+                              projektDili === 'TR'
+                                ? 'Doküman indirilemedi. Lütfen tekrar deneyin.'
+                                : 'Failed to download document. Please try again.',
+                            )
+                          }
                         }}
                         className="inline-flex items-center gap-1.5 rounded-md h-[34px] px-3.5 text-xs font-medium border-[0.5px] border-[#2E75B6]/50 text-[#1F3864] hover:bg-[#EEF4FB] transition"
                       >
