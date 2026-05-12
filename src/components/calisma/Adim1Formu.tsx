@@ -71,7 +71,26 @@ export default function Adim1Formu() {
   const adRef = useRef<HTMLInputElement>(null)
   const aciklamaRef = useRef<HTMLTextAreaElement>(null)
   const yzContainerRef = useRef<HTMLDivElement>(null)
+  const yzScrollRef = useRef<HTMLDivElement>(null)
+  const yzTextareaRef = useRef<HTMLTextAreaElement>(null)
   const createProjectRef = useRef<HTMLDivElement>(null)
+
+  // Textarea'yı içeriğe göre büyüt — kendi scroll'u oluşmasın, sadece dış kapsayıcı scroll etsin
+  useEffect(() => {
+    const ta = yzTextareaRef.current
+    if (!ta) return
+    ta.style.height = 'auto'
+    ta.style.height = `${ta.scrollHeight}px`
+  }, [yzCikti])
+
+  // İçerik güncellenirken kullanıcı zaten alttaysa otomatik olarak aşağı kaydır
+  // (iş analizi doküman scroll davranışının aynısı)
+  useEffect(() => {
+    const el = yzScrollRef.current
+    if (!el || !yzYukleniyor) return
+    const isAtBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 50
+    if (isAtBottom) el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
+  }, [yzCikti, yzYukleniyor])
 
   const canSubmit = !isPending && !yzYukleniyor && adValue.trim().length > 0 && yzCikti !== null
 
@@ -236,21 +255,25 @@ export default function Adim1Formu() {
                     {t('yzDuzenleNot')}
                   </p>
                 )}
-                {/* Fixed-height scrollable container — mirrors is-analizi display window */}
+                {/* Tek scrollbar — iş analizi doküman penceresiyle aynı davranış.
+                    Dış div scroll eder; içerideki textarea içeriğine göre büyür. */}
                 <div
-                  style={{ height: 400, overflowY: 'auto', resize: 'vertical' }}
-                  className={`w-full rounded-lg border px-3 py-2.5 ${
+                  ref={yzScrollRef}
+                  style={{ height: 400, resize: 'vertical', scrollBehavior: 'smooth' }}
+                  className={`w-full rounded-lg border px-3 py-2.5 overflow-y-auto overflow-x-hidden ${
                     yzYukleniyor
                       ? 'bg-gray-50 border-gray-200'
                       : 'bg-white border-[0.5px] border-[#2E75B6]'
                   }`}
                 >
                   <textarea
+                    ref={yzTextareaRef}
                     value={yzCikti ?? ''}
                     onChange={e => setYzCikti(e.target.value)}
                     readOnly={yzYukleniyor}
-                    style={{ resize: 'none', minHeight: '100%', height: '100%' }}
-                    className="w-full text-sm text-gray-700 leading-relaxed outline-none bg-transparent"
+                    rows={1}
+                    style={{ resize: 'none', overflow: 'hidden', display: 'block' }}
+                    className="w-full text-sm text-gray-700 leading-relaxed outline-none bg-transparent border-0 p-0"
                   />
                 </div>
 

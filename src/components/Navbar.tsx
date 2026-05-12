@@ -79,12 +79,17 @@ export default function Navbar() {
               >
                 {tNav("projeler")}
               </Link>
-              <Link
-                href="/projeler/yeni"
+              {/* Yeni Proje: Çalışma ekranında Adim1Formu içinde
+                  window.history.replaceState ile URL değiştirildiği için Next.js
+                  router /projeler/yeni'de olduğunu sanıyor ve <Link> tıklaması
+                  no-op oluyor. Hard navigate ile her seferinde temiz state'le
+                  yeni proje sayfasını açıyoruz. */}
+              <a
+                href={locale === "en" ? "/en/projects/new" : "/tr/projeler/yeni"}
                 className="text-[13px] text-white/80 hover:text-white transition-colors"
               >
                 {tNav("newProject")}
-              </Link>
+              </a>
             </>
           )}
         </div>
