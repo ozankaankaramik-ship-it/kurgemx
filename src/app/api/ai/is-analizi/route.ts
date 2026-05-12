@@ -2,10 +2,9 @@ import Anthropic from '@anthropic-ai/sdk'
 import { NextResponse } from 'next/server'
 import { genel, isAnalizi } from '@/lib/standartlar'
 
-// Loglardan: R1 16K max_tokens'a takıldı (37580 char), R2/R3 ~8K token
-// rahat sığdı. R1 kapsamlı MVP olduğunda 16K yetmiyor → 24K. Bu da
-// ~400s üretim demek; 600s güvenli sınır.
-export const maxDuration = 600
+// Vercel plan sınırı içinde kalmak için 300s. Her release ayrı request
+// olduğundan bu budget yalnızca tek bir release için geçerli.
+export const maxDuration = 300
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 const SISTEM = `${genel}\n\n---\n\n${isAnalizi}`
