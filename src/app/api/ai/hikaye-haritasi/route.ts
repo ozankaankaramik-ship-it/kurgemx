@@ -113,7 +113,9 @@ export async function POST(req: Request) {
   try {
     const yanit = await client.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 4096,
+      // Büyük projede (40 hikaye + sprint planı + özet) JSON 4K token'ı aşıyordu
+      // ve yarım kesilen JSON parse edilemiyordu. 16K güvenli üst sınır.
+      max_tokens: 16000,
       system: [
         { type: 'text', text: SISTEM, cache_control: { type: 'ephemeral' } },
         { type: 'text', text: dilKurali(projeDili, dilAdi) },
@@ -124,7 +126,17 @@ export async function POST(req: Request) {
     const ilkBlok = yanit.content[0]
     const rawText = ilkBlok.type === 'text' ? ilkBlok.text : ''
 
+    console.error('[hikaye-haritasi] stop_reason:', yanit.stop_reason, 'usage:', yanit.usage)
     console.error('[hikaye-haritasi] raw response:', rawText)
+
+    // Eğer model max_tokens'a takıldıysa JSON yarım — açık ve anlaşılır hata dön
+    if (yanit.stop_reason === 'max_tokens') {
+      console.error('[hikaye-haritasi] UYARI: yanıt max_tokens ile kesildi')
+      return NextResponse.json(
+        { error: 'max_tokens_truncated', detail: 'AI yanıtı token limitine takıldı. Lütfen tekrar deneyin veya proje büyüklüğünü daha küçük seçin.', rawText },
+        { status: 500 }
+      )
+    }
 
     const first = rawText.indexOf('{')
     const last = rawText.lastIndexOf('}')
