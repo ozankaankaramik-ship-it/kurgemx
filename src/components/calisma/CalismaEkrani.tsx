@@ -35,18 +35,23 @@ const ADIM2_MESAJLAR = {
   ],
 } as const
 
-// Adım 3 artık release bazında 3 ayrı API çağrısı yapıyor (R1, R2, R3).
-// Mesajlar release ilerleyişine göre değişir.
+// Adım 3 artık 5 bölümlük üretim yapıyor: bolum1 → R1 → R2 → R3 → bolum345
+// Mesajlar hangi bölümde olduğumuza göre değişir. Mesaj sırası kodda
+// üretilen bolumler dizisiyle aynı olmalı.
 const ADIM3_MESAJLAR = {
   TR: [
-    'R1 — MVP analiz ediliyor... (1/3)',
-    'R2 — İyileştirme analiz ediliyor... (2/3)',
-    'R3 — Gelişmiş analiz ediliyor... (3/3)',
+    'Doküman başlığı ve genel bilgiler hazırlanıyor... (1/5)',
+    'R1 — MVP analiz ediliyor... (2/5)',
+    'R2 — İyileştirme analiz ediliyor... (3/5)',
+    'R3 — Gelişmiş analiz ediliyor... (4/5)',
+    'Sistem gereksinimleri ve etki analizi hazırlanıyor... (5/5)',
   ],
   EN: [
-    'Analyzing R1 — MVP... (1/3)',
-    'Analyzing R2 — Enhancement... (2/3)',
-    'Analyzing R3 — Advanced... (3/3)',
+    'Generating header and general information... (1/5)',
+    'Analyzing R1 — MVP... (2/5)',
+    'Analyzing R2 — Enhancement... (3/5)',
+    'Analyzing R3 — Advanced... (4/5)',
+    'Generating system requirements and impact analysis... (5/5)',
   ],
 } as const
 
@@ -543,10 +548,13 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
     }
   }
 
-  // Adım 3: R1 → R2 → R3 sırasıyla 3 ayrı API çağrısı yapar. Her release
-  // tamamlanınca header'dan (META marker'dan) son AC/BR numaralarını alıp
-  // bir sonraki çağrıya başlangıç olarak gönderir. Tüm bölümler bittiğinde
-  // R1+R2+R3 birleştirilip tek kayıt olarak Supabase'e yazılır.
+  // Adım 3: bolum1 → R1 → R2 → R3 → bolum345 sırasıyla 5 ayrı API çağrısı.
+  //   bolum1   → Doküman başlığı + header + Bölüm 1
+  //   R1/R2/R3 → Bölüm 2.1 / 2.2 / 2.3 (AC/BR numaraları zincirleme akar)
+  //   bolum345 → Ekran notu + Bölüm 3,4,5 + kısaltmalar tablosu + footer
+  // Yalnızca R1-R3 AC/BR ürettiği için bolum1 ve bolum345 numaralandırma
+  // zincirini etkilemez. Tüm parçalar "\n\n" ile birleşip Supabase'e tek
+  // kayıt olur.
   async function generateDocuments() {
     if (!detailedDesc || !storyMapData) return
     setAdim3Yukleniyor(true)
@@ -556,11 +564,15 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
     setAdim3StreamContent('')
     setAdim3TokenLimiti(false)
 
-    const releases: ReadonlyArray<'R1' | 'R2' | 'R3'> = ['R1', 'R2', 'R3']
-    // Hikaye haritasında olmayan release'leri atla (örn. küçük projede sadece R1)
-    const aktifReleases = releases.filter(r =>
-      (storyMapData.hikayeHaritasi?.hikayeler ?? []).some(h => h.surum === r),
-    )
+    type Bolum = 'bolum1' | 'R1' | 'R2' | 'R3' | 'bolum345'
+    const hikayeler = storyMapData.hikayeHaritasi?.hikayeler ?? []
+    // Sırayı koru, hikaye haritasında olmayan release'leri atla.
+    const bolumler: Bolum[] = ['bolum1']
+    for (const r of ['R1', 'R2', 'R3'] as const) {
+      if (hikayeler.some(h => h.surum === r)) bolumler.push(r)
+    }
+    bolumler.push('bolum345')
+
     const parcalar: Record<string, string> = {}
     let acBaslangic = 1
     let brBaslangic = 1
@@ -569,10 +581,20 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
     let versiyon = '1.0'
     let truncated = false
 
+    // ADIM3_MESAJLAR sabit 5 öğelik. Hikaye haritasında bazı release'ler
+    // yoksa bolumler.length < 5 olur; bu durumda mesaj sayısı da kısalır
+    // ama indeks olarak ADIM3_MESAJLAR sırasındaki konuma map'lemek gerek.
+    const mesajIdxFor = (bolum: Bolum): number =>
+      bolum === 'bolum1' ? 0
+      : bolum === 'R1' ? 1
+      : bolum === 'R2' ? 2
+      : bolum === 'R3' ? 3
+      : 4
+
     try {
-      for (let i = 0; i < aktifReleases.length; i++) {
-        const release = aktifReleases[i]
-        setAdim3MesajIdx(i)
+      for (let i = 0; i < bolumler.length; i++) {
+        const bolum = bolumler[i]
+        setAdim3MesajIdx(mesajIdxFor(bolum))
 
         const res = await fetch('/api/ai/is-analizi', {
           method: 'POST',
@@ -582,7 +604,7 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
             detayliAciklama: detailedDesc,
             hikayeHaritasi: storyMapData.hikayeHaritasi,
             projeDili: projektDili,
-            release,
+            bolum,
             acBaslangic,
             brBaslangic,
           }),
@@ -593,7 +615,7 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
           throw new Error(
             (errData as { detail?: string; error?: string }).detail ??
               (errData as { error?: string }).error ??
-              `HTTP ${res.status} (${release})`,
+              `HTTP ${res.status} (${bolum})`,
           )
         }
 
@@ -605,41 +627,40 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
 
         const reader = res.body.getReader()
         const decoder = new TextDecoder()
-        let bolum = ''
+        let aktif = ''
 
-        // Önceki release'lerin bitmiş içeriği ekranda kalsın, geçerli release
-        // stream eder.
-        const oncekiParcalar = aktifReleases
+        // Bitmiş önceki parçalar ekranda kalsın, geçerli bölüm stream eder.
+        const oncekiParcalar = bolumler
           .slice(0, i)
-          .map(r => parcalar[r])
+          .map(b => parcalar[b])
           .filter(Boolean)
           .join('\n\n')
 
         while (true) {
           const { done, value } = await reader.read()
           if (done) break
-          bolum += decoder.decode(value, { stream: true })
-          const display = [oncekiParcalar, stripStreamMarkers(bolum)].filter(Boolean).join('\n\n')
+          aktif += decoder.decode(value, { stream: true })
+          const display = [oncekiParcalar, stripStreamMarkers(aktif)]
+            .filter(Boolean)
+            .join('\n\n')
           setAdim3StreamContent(display)
         }
-        bolum += decoder.decode()
+        aktif += decoder.decode()
 
         // META marker'dan sonAC / sonBR'yi al → bir sonraki release'in başlangıçları
-        const meta = parseMetaFromChunk(bolum)
+        const meta = parseMetaFromChunk(aktif)
         if (meta) {
           if (typeof meta.sonAC === 'number') acBaslangic = meta.sonAC + 1
           if (typeof meta.sonBR === 'number') brBaslangic = meta.sonBR + 1
         }
-        if (bolum.includes('<!-- TRUNCATED -->')) {
+        if (aktif.includes('<!-- TRUNCATED -->')) {
           truncated = true
         }
-        // Marker'ları stripleyip parçayı kaydet
-        parcalar[release] = stripStreamMarkers(bolum).trim()
+        parcalar[bolum] = stripStreamMarkers(aktif).trim()
       }
 
-      // Tüm bölümleri birleştir
-      const icerik = aktifReleases
-        .map(r => parcalar[r])
+      const icerik = bolumler
+        .map(b => parcalar[b])
         .filter(Boolean)
         .join('\n\n')
 

@@ -155,26 +155,17 @@ FAYDA:   Böylece [sonuç/değer] gerçekleştirebilirim
 ### Format
 
 ```
-AC-001 [P]
+AC-001 [P] : [Maksimum 15 kelime. "Ne olur" sorusunu yanıtlar. Teknik detay, rol listesi ve sayısal limit içermez.]
 
-[Maksimum 15 kelime. "Ne olur" sorusunu yanıtlar.
-Teknik detay, rol listesi ve sayısal limit içermez.]
-
-BR-001 · [İş Kuralı Başlığı]  ← yalnızca bu kritere özgü iş kuralı varsa
-[Maksimum 2 cümle. Sayısal limitler ve kısıtlar burada belirtilir.]
+BR-001 : [Maksimum 2 cümle. Sayısal limitler ve kısıtlar burada belirtilir. Başlık yazılmaz.]
 ```
 
 ### Örnek
 
 ```
-AC-001 [P]
-Doğru kimlik bilgileriyle giriş yapılır, ana panele yönlendirilir.
-
-AC-002 [N]
-Yanlış şifre girildiğinde giriş reddedilir ve hata mesajı gösterilir.
-
-BR-001 · Ardışık hatalı giriş kilitleme
-5 ardışık hatalı girişte hesap 15 dakika kilitlenir.
+AC-001 [P] : Doğru kimlik bilgileriyle giriş yapılır, ana panele yönlendirilir.
+AC-002 [N] : Yanlış şifre girildiğinde giriş reddedilir ve hata mesajı gösterilir.
+BR-001 : 5 ardışık hatalı girişte hesap 15 dakika kilitlenir.
 ```
 
 **Kötü örnek → iyi örnek:**
@@ -184,9 +175,7 @@ BR-001 · Ardışık hatalı giriş kilitleme
    e-posta ve şifre ile giriş yaptıktan sonra OTP kodunu
    girmeden sisteme erişemez. (22 kelime)
 
-✅ AC-001 [S]
-   Yetkili roller şifre sonrası OTP doğrulaması olmadan giremez.
-   (9 kelime)
+✅ AC-001 [S] : Yetkili roller şifre sonrası OTP doğrulaması olmadan giremez. (9 kelime)
 ```
 
 ---
@@ -206,8 +195,7 @@ BR-001 · Ardışık hatalı giriş kilitleme
 ## İş Kuralı Formatı
 
 ```
-BR-XXX · [Kural Başlığı]
-[Kural detayı, koşullar, istisnalar, somut örnekler]
+BR-XXX : [Kural metni — maksimum 2 cümle. Başlık yazılmaz.]
 ```
 
 **Kurallar:**
