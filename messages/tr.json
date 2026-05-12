@@ -226,7 +226,12 @@
       "belgeTarih": "Doküman oluşturuldu:",
       "indir": "İndir (.docx)",
       "indirYakinBir": "Yakında kullanıma girecek",
-      "tokenLimiti": "Doküman token limitine ulaştı — içerik kısaltılmış olabilir."
+      "tokenLimiti": "Doküman token limitine ulaştı — içerik kısaltılmış olabilir.",
+      "releaseAnaliz": {
+        "r1": "R1 — MVP analiz ediliyor... (1/3)",
+        "r2": "R2 — İyileştirme analiz ediliyor... (2/3)",
+        "r3": "R3 — Gelişmiş analiz ediliyor... (3/3)"
+      }
     },
     "adim4": {
       "baslik": "Prototip",

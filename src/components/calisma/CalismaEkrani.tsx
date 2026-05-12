@@ -35,20 +35,38 @@ const ADIM2_MESAJLAR = {
   ],
 } as const
 
+// Adım 3 artık release bazında 3 ayrı API çağrısı yapıyor (R1, R2, R3).
+// Mesajlar release ilerleyişine göre değişir.
 const ADIM3_MESAJLAR = {
   TR: [
-    'Proje analiz ediliyor...',
-    'Hikayeler ve kabul kriterleri oluşturuluyor...',
-    'Sistem gereksinimleri belirleniyor...',
-    'Doküman tamamlanıyor...',
+    'R1 — MVP analiz ediliyor... (1/3)',
+    'R2 — İyileştirme analiz ediliyor... (2/3)',
+    'R3 — Gelişmiş analiz ediliyor... (3/3)',
   ],
   EN: [
-    'Analyzing project...',
-    'Generating stories and acceptance criteria...',
-    'Defining system requirements...',
-    'Finalizing document...',
+    'Analyzing R1 — MVP... (1/3)',
+    'Analyzing R2 — Enhancement... (2/3)',
+    'Analyzing R3 — Advanced... (3/3)',
   ],
 } as const
+
+// is-analizi API stream'in sonuna gömdüğü metadata marker'ı.
+const META_MARKER_RE = /\n?<!--\s*META\s*(\{[\s\S]*?\})\s*-->\n?/g
+const TRUNCATED_MARKER_RE = /\n?<!--\s*TRUNCATED\s*-->\n?/g
+
+function stripStreamMarkers(s: string): string {
+  return s.replace(META_MARKER_RE, '').replace(TRUNCATED_MARKER_RE, '')
+}
+
+function parseMetaFromChunk(chunk: string): { sonAC?: number; sonBR?: number; finishReason?: string } | null {
+  const m = chunk.match(/<!--\s*META\s*(\{[\s\S]*?\})\s*-->/)
+  if (!m) return null
+  try {
+    return JSON.parse(m[1])
+  } catch {
+    return null
+  }
+}
 
 interface IsAnaliziData {
   baslik: string
@@ -424,7 +442,6 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
   const [adim3MesajIdx, setAdim3MesajIdx] = useState(0)
   const [adim3StreamContent, setAdim3StreamContent] = useState<string | null>(null)
   const [adim3TokenLimiti, setAdim3TokenLimiti] = useState(false)
-  const adim3IntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const isAnaliziContainerRef = useRef<HTMLDivElement>(null)
   const [adim4Yukleniyor, setAdim4Yukleniyor] = useState(false)
   const [adim4Hata, setAdim4Hata] = useState(false)
@@ -526,6 +543,10 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
     }
   }
 
+  // Adım 3: R1 → R2 → R3 sırasıyla 3 ayrı API çağrısı yapar. Her release
+  // tamamlanınca header'dan (META marker'dan) son AC/BR numaralarını alıp
+  // bir sonraki çağrıya başlangıç olarak gönderir. Tüm bölümler bittiğinde
+  // R1+R2+R3 birleştirilip tek kayıt olarak Supabase'e yazılır.
   async function generateDocuments() {
     if (!detailedDesc || !storyMapData) return
     setAdim3Yukleniyor(true)
@@ -535,56 +556,94 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
     setAdim3StreamContent('')
     setAdim3TokenLimiti(false)
 
-    let idx = 0
-    adim3IntervalRef.current = setInterval(() => {
-      idx += 1
-      if (idx <= 3) setAdim3MesajIdx(idx)
-      if (idx >= 3 && adim3IntervalRef.current) {
-        clearInterval(adim3IntervalRef.current)
-        adim3IntervalRef.current = null
-      }
-    }, 4000)
+    const releases: ReadonlyArray<'R1' | 'R2' | 'R3'> = ['R1', 'R2', 'R3']
+    // Hikaye haritasında olmayan release'leri atla (örn. küçük projede sadece R1)
+    const aktifReleases = releases.filter(r =>
+      (storyMapData.hikayeHaritasi?.hikayeler ?? []).some(h => h.surum === r),
+    )
+    const parcalar: Record<string, string> = {}
+    let acBaslangic = 1
+    let brBaslangic = 1
+    let baslik = ''
+    let tarih = new Date().toISOString().split('T')[0]
+    let versiyon = '1.0'
+    let truncated = false
 
     try {
-      const res = await fetch('/api/ai/is-analizi', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          projeAdi: ad,
-          detayliAciklama: detailedDesc,
-          hikayeHaritasi: storyMapData.hikayeHaritasi,
-          projeDili: projektDili,
-        }),
-      })
+      for (let i = 0; i < aktifReleases.length; i++) {
+        const release = aktifReleases[i]
+        setAdim3MesajIdx(i)
 
-      if (!res.ok) {
-        const errData = await res.json().catch(() => ({}))
-        throw new Error((errData as { detail?: string; error?: string }).detail ?? (errData as { error?: string }).error ?? `HTTP ${res.status}`)
+        const res = await fetch('/api/ai/is-analizi', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            projeAdi: ad,
+            detayliAciklama: detailedDesc,
+            hikayeHaritasi: storyMapData.hikayeHaritasi,
+            projeDili: projektDili,
+            release,
+            acBaslangic,
+            brBaslangic,
+          }),
+        })
+
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}))
+          throw new Error(
+            (errData as { detail?: string; error?: string }).detail ??
+              (errData as { error?: string }).error ??
+              `HTTP ${res.status} (${release})`,
+          )
+        }
+
+        baslik = decodeURIComponent(res.headers.get('X-Baslik') ?? baslik)
+        tarih = res.headers.get('X-Tarih') ?? tarih
+        versiyon = res.headers.get('X-Versiyon') ?? versiyon
+
+        if (!res.body) throw new Error('no_body')
+
+        const reader = res.body.getReader()
+        const decoder = new TextDecoder()
+        let bolum = ''
+
+        // Önceki release'lerin bitmiş içeriği ekranda kalsın, geçerli release
+        // stream eder.
+        const oncekiParcalar = aktifReleases
+          .slice(0, i)
+          .map(r => parcalar[r])
+          .filter(Boolean)
+          .join('\n\n')
+
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
+          bolum += decoder.decode(value, { stream: true })
+          const display = [oncekiParcalar, stripStreamMarkers(bolum)].filter(Boolean).join('\n\n')
+          setAdim3StreamContent(display)
+        }
+        bolum += decoder.decode()
+
+        // META marker'dan sonAC / sonBR'yi al → bir sonraki release'in başlangıçları
+        const meta = parseMetaFromChunk(bolum)
+        if (meta) {
+          if (typeof meta.sonAC === 'number') acBaslangic = meta.sonAC + 1
+          if (typeof meta.sonBR === 'number') brBaslangic = meta.sonBR + 1
+        }
+        if (bolum.includes('<!-- TRUNCATED -->')) {
+          truncated = true
+        }
+        // Marker'ları stripleyip parçayı kaydet
+        parcalar[release] = stripStreamMarkers(bolum).trim()
       }
 
-      const baslik = decodeURIComponent(res.headers.get('X-Baslik') ?? '')
-      const tarih = res.headers.get('X-Tarih') ?? new Date().toISOString().split('T')[0]
-      const versiyon = res.headers.get('X-Versiyon') ?? '1.0'
+      // Tüm bölümleri birleştir
+      const icerik = aktifReleases
+        .map(r => parcalar[r])
+        .filter(Boolean)
+        .join('\n\n')
 
-      if (!res.body) throw new Error('no_body')
-
-      const reader = res.body.getReader()
-      const decoder = new TextDecoder()
-      let icerik = ''
-
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
-        icerik += decoder.decode(value, { stream: true })
-        setAdim3StreamContent(icerik)
-      }
-      // Flush any remaining bytes in the decoder buffer
-      icerik += decoder.decode()
-
-      if (icerik.includes('<!-- TRUNCATED -->')) {
-        icerik = icerik.replace('<!-- TRUNCATED -->', '').trim()
-        setAdim3TokenLimiti(true)
-      }
+      if (truncated) setAdim3TokenLimiti(true)
 
       if (projeId) {
         const supabase = createClient()
@@ -594,11 +653,15 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
             {
               proje_id: projeId,
               tip_id: DOKUMAN_TIPLERI.is_analizi,
-              baslik: baslik || (projektDili === 'TR' ? `${ad} — İş Analizi Dokümanı` : `${ad} — Business Analysis Document`),
+              baslik:
+                baslik ||
+                (projektDili === 'TR'
+                  ? `${ad} — İş Analizi Dokümanı`
+                  : `${ad} — Business Analysis Document`),
               icerik,
               dil: projektDili ?? 'TR',
             },
-            { onConflict: 'proje_id,tip_id' }
+            { onConflict: 'proje_id,tip_id' },
           )
         if (upsertError) {
           console.error('[generateDocuments] kayıt hatası:', upsertError)
@@ -613,10 +676,6 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
       setAdim3Hata(true)
       setAdim3StreamContent(null)
     } finally {
-      if (adim3IntervalRef.current) {
-        clearInterval(adim3IntervalRef.current)
-        adim3IntervalRef.current = null
-      }
       setAdim3Yukleniyor(false)
     }
   }
