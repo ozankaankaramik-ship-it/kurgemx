@@ -191,7 +191,9 @@ export async function POST(req: Request) {
       messages: [{ role: 'user', content: kullaniciPrompt }],
     })
 
-    console.error('[hikaye-haritasi] stop_reason:', yanit.stop_reason, 'usage:', yanit.usage)
+    // Bilgilendirme amaçlı log — başarılı durumda da yazılıyor; console.log
+    // kullanılıyor ki Vercel logs'ta hata seviyesinde görünmesin.
+    console.log('[hikaye-haritasi] stop_reason:', yanit.stop_reason, 'usage:', yanit.usage)
 
     if (yanit.stop_reason === 'max_tokens') {
       console.error('[hikaye-haritasi] UYARI: yanıt max_tokens ile kesildi')

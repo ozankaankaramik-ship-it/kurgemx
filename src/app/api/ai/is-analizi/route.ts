@@ -2,7 +2,9 @@ import Anthropic from '@anthropic-ai/sdk'
 import { NextResponse } from 'next/server'
 import { genel, isAnalizi } from '@/lib/standartlar'
 
-export const maxDuration = 120
+// Tek bir release ~13 hikaye × 800-1000 token = 10-13K token. Sonnet
+// ~50-80 tok/s ile üretir → 150-260s. 120s yetmiyordu, 300s güvenli üst sınır.
+export const maxDuration = 300
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 const SISTEM = `${genel}\n\n---\n\n${isAnalizi}`
