@@ -110,60 +110,123 @@ export async function POST(req: Request) {
 
   const kullaniciPrompt = kullaniciPromptOlustur(projeAdi, detayliAciklama, projeDili, dilAdi, projeBuyuklugu)
 
+  // Tool use ile structured output: Claude'un JSON üretirken virgül/quote
+  // atlaması gibi hataları imkansız hale gelir, çıktı schema'ya uymak
+  // zorunda. Eskiden serbest metinde JSON parse hatası alıyorduk.
+  const versionKey = projeDili === 'TR' ? 'Sürüm' : 'Release'
+  const tool = {
+    name: 'hikaye_haritasi_olustur',
+    description:
+      projeDili === 'TR'
+        ? 'Proje için hikaye haritası, sprint planı ve genel özet üretir.'
+        : 'Produces story map, sprint plan and general summary for the project.',
+    input_schema: {
+      type: 'object' as const,
+      properties: {
+        hikayeHaritasi: {
+          type: 'object',
+          properties: {
+            destanlar: { type: 'array', items: { type: 'string' } },
+            hikayeler: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  no: { type: 'string', description: 'ST1, ST2 ...' },
+                  ad: { type: 'string' },
+                  destan: { type: 'string' },
+                  surum: { type: 'string', enum: ['R1', 'R2', 'R3'] },
+                  sprint: { type: 'string', description: 'SP1, SP2 ...' },
+                },
+                required: ['no', 'ad', 'destan', 'surum', 'sprint'],
+              },
+            },
+          },
+          required: ['destanlar', 'hikayeler'],
+        },
+        sprintPlani: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              Sprint: { type: 'string' },
+              Focus: { type: 'string' },
+              Stories: { type: 'string', description: 'ST1, ST2, ST3' },
+              'Story Count': { type: 'number' },
+              Duration: { type: 'string' },
+            },
+            required: ['Sprint', 'Focus', 'Stories', 'Story Count', 'Duration'],
+          },
+        },
+        genelOzet: {
+          type: 'array',
+          description: `Last item must be the totals row with ${versionKey}="${projeDili === 'TR' ? 'Toplam' : 'Total'}"`,
+          items: {
+            type: 'object',
+            properties: {
+              [versionKey]: { type: 'string' },
+              'Story Count': { type: 'number' },
+              'Sprint Range': { type: 'string' },
+              'Sprint Count': { type: 'number' },
+              Duration: { type: 'string' },
+            },
+            required: [versionKey, 'Story Count', 'Sprint Range', 'Sprint Count', 'Duration'],
+          },
+        },
+      },
+      required: ['hikayeHaritasi', 'sprintPlani', 'genelOzet'],
+    },
+  }
+
   try {
     const yanit = await client.messages.create({
       model: 'claude-sonnet-4-6',
-      // Büyük projede (40 hikaye + sprint planı + özet) JSON 4K token'ı aşıyordu
-      // ve yarım kesilen JSON parse edilemiyordu. 16K güvenli üst sınır.
       max_tokens: 16000,
       system: [
         { type: 'text', text: SISTEM, cache_control: { type: 'ephemeral' } },
         { type: 'text', text: dilKurali(projeDili, dilAdi) },
       ],
+      tools: [tool],
+      tool_choice: { type: 'tool', name: tool.name },
       messages: [{ role: 'user', content: kullaniciPrompt }],
     })
 
-    const ilkBlok = yanit.content[0]
-    const rawText = ilkBlok.type === 'text' ? ilkBlok.text : ''
-
     console.error('[hikaye-haritasi] stop_reason:', yanit.stop_reason, 'usage:', yanit.usage)
-    console.error('[hikaye-haritasi] raw response:', rawText)
 
-    // Eğer model max_tokens'a takıldıysa JSON yarım — açık ve anlaşılır hata dön
     if (yanit.stop_reason === 'max_tokens') {
       console.error('[hikaye-haritasi] UYARI: yanıt max_tokens ile kesildi')
       return NextResponse.json(
-        { error: 'max_tokens_truncated', detail: 'AI yanıtı token limitine takıldı. Lütfen tekrar deneyin veya proje büyüklüğünü daha küçük seçin.', rawText },
+        {
+          error: 'max_tokens_truncated',
+          detail:
+            'AI yanıtı token limitine takıldı. Lütfen tekrar deneyin veya proje büyüklüğünü daha küçük seçin.',
+        },
         { status: 500 }
       )
     }
 
-    const first = rawText.indexOf('{')
-    const last = rawText.lastIndexOf('}')
-    if (first === -1 || last === -1 || last <= first) {
-      console.error('[hikaye-haritasi] JSON sınırı bulunamadı')
-      return NextResponse.json({ error: 'no_json_found', rawText }, { status: 500 })
+    // Tool use bloğunu bul — tool_choice forced olduğu için her zaman olmalı
+    const toolBlock = yanit.content.find((b) => b.type === 'tool_use')
+    if (!toolBlock || toolBlock.type !== 'tool_use') {
+      const textFallback = yanit.content.find((b) => b.type === 'text')
+      console.error('[hikaye-haritasi] tool_use bloğu yok, content:', JSON.stringify(yanit.content))
+      return NextResponse.json(
+        {
+          error: 'no_tool_use',
+          detail: 'AI tool use yanıtı vermedi',
+          rawText: textFallback?.type === 'text' ? textFallback.text : '',
+        },
+        { status: 500 }
+      )
     }
 
-    const jsonText = rawText.slice(first, last + 1)
-
-    let data: {
+    const data = toolBlock.input as {
       hikayeHaritasi: {
         destanlar: string[]
         hikayeler: Array<{ no: string; ad: string; destan: string; surum: string; sprint: string }>
       }
       sprintPlani: Array<Record<string, string | number>>
       genelOzet: Array<Record<string, string | number>>
-    }
-
-    try {
-      data = JSON.parse(jsonText)
-    } catch (parseErr) {
-      console.error('[hikaye-haritasi] JSON parse hatası:', parseErr, '\njsonText:', jsonText)
-      return NextResponse.json(
-        { error: 'json_parse_failed', parseError: String(parseErr), jsonText },
-        { status: 500 }
-      )
     }
 
     return NextResponse.json(data)
