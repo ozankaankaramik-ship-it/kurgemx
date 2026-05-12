@@ -2,7 +2,10 @@ import Anthropic from '@anthropic-ai/sdk'
 import { NextResponse } from 'next/server'
 import { genel, isAnalizi } from '@/lib/standartlar'
 
-export const maxDuration = 300
+// Pro plan + Fluid Compute ile maxDuration 800s'ye kadar çıkabilir.
+// 32K çıktı token'ı ~50-80 tok/s hızla üretildiğinde 400-650s sürer;
+// 300s sınırı tek geçişte bile yetmiyordu.
+export const maxDuration = 800
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 const SISTEM = `${genel}\n\n---\n\n${isAnalizi}`
@@ -130,7 +133,9 @@ export async function POST(req: Request) {
   // max_tokens'a takılırsa otomatik devam (prefill ile birikmiş assistant mesajını
   // göndererek Claude'a kaldığı yerden sürdür dedirtiyoruz). En fazla
   // MAX_CONTINUATIONS kez denenir; her parça streaming ile client'a akar.
-  const MAX_CONTINUATIONS = 4
+  // 1 ek deneme = toplam 2 × 32K = 64K çıktı kapasitesi (40+ hikaye için yeterli).
+  // Daha fazla deneme 800s'lik Vercel sınırını zorlar.
+  const MAX_CONTINUATIONS = 1
   const userPromptText = kullaniciPrompt(projeAdi, detayliAciklama, hikayeHaritasi, projeDili, dilAdi)
 
   const readable = new ReadableStream({
