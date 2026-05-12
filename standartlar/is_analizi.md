@@ -47,6 +47,10 @@ Her hikaye için kapsam tablosu oluşturulmaz.
 > - **ST:** Story — Hikaye
 > - **AC:** Acceptance Criteria — Kabul Kriteri *(Hikaye bazında ilgili hikayenin altında sıralanmıştır)*
 > - **BR:** Business Rule — İş Kuralı *(Varsa ilgili AC altında belirtilmiştir)*
+> - **[P]:** Positive — Başarılı / mutlu yol kriteri
+> - **[N]:** Negative — Hata / olumsuz durum kriteri
+> - **[B]:** Boundary — Sınır / kenar durum
+> - **[S]:** Security — Güvenlik ve doğrulama
 
 Release'ler alt bölümler halinde gruplandırılır:
 
@@ -128,41 +132,61 @@ FAYDA:   Böylece [sonuç/değer] gerçekleştirebilirim
 - AC → Acceptance Criteria, BR → Business Rule, TC → Test Case
 
 ### Kriter Tipleri
-- `[Positive]` — başarılı / mutlu yol kriterleri (en az 1)
-- `[Negative]` — hata kriterleri (en az 1)
-- `[Boundary]` — sınır / kenar durumlar (gerektiğinde)
-- `[Security]` — güvenlik ve doğrulama (KVKK içeren hikayelerde zorunlu)
+- `[P]` — başarılı / mutlu yol kriterleri (en az 1)
+- `[N]` — hata kriterleri (en az 1)
+- `[B]` — sınır / kenar durumlar (gerektiğinde)
+- `[S]` — güvenlik ve doğrulama (KVKK içeren hikayelerde zorunlu)
 
 ### Kriter Başına Minimum / Maksimum
 - Her hikaye için: **minimum 2, maksimum 6** kabul kriteri
 
+### AC Yazım İlkeleri
+- Her AC **maksimum 15 kelime** olsun
+- AC başlığı üretilmez — sadece numara ve tip etiketi yazılır
+- AC "ne olur" sorusunu yanıtlar — "nasıl yapılır" sorusunu değil
+- Şunlar AC'ye yazılmaz:
+  * Teknik uygulama detayları (selfie mi video mu, OTP mi SMS mi)
+  * Rol listeleri ve parantez içi açıklamalar
+  * "...amacıyla", "...butonuna tıkladığında" gibi metni uzatan kalıplar
+  * Sayısal limitler ve süreler (bunlar BR'a aittir)
+- Zorunlu tipler: 1 P, 1 N
+- S yalnızca KVKK/güvenlik içeren hikayelerde ekle
+
 ### Format
 
 ```
-AC-001 — [Kriter Başlığı] [Tip Etiketi]
+AC-001 [P]
 
-[Tek düz cümle: koşul + eylem + beklenen sonuç.
-Teknik olmayan kişilerin anlayabileceği dilde yazılır.
-KOŞUL / EYLEM / SONUÇ blokları kullanılmaz.]
+[Maksimum 15 kelime. "Ne olur" sorusunu yanıtlar.
+Teknik detay, rol listesi ve sayısal limit içermez.]
 
 BR-001 · [İş Kuralı Başlığı]  ← yalnızca bu kritere özgü iş kuralı varsa
-[Kural detayı, koşullar, istisnalar. Somut örneklerle açıkla.]
+[Maksimum 2 cümle. Sayısal limitler ve kısıtlar burada belirtilir.]
 ```
 
 ### Örnek
 
 ```
-AC-001 — Başarılı Giriş [Positive]
+AC-001 [P]
+Doğru kimlik bilgileriyle giriş yapılır, ana panele yönlendirilir.
 
-Kullanıcı doğru e-posta ve şifresini girip "Giriş Yap" butonuna tıkladığında
-sisteme başarıyla giriş yapılır ve ana sayfaya yönlendirilir.
-
-AC-002 — Hatalı Şifrede Engelleme [Negative]
-
-Kullanıcı yanlış şifre girdiğinde giriş reddedilir ve hata mesajı gösterilir.
+AC-002 [N]
+Yanlış şifre girildiğinde giriş reddedilir ve hata mesajı gösterilir.
 
 BR-001 · Ardışık hatalı giriş kilitleme
 5 ardışık hatalı girişte hesap 15 dakika kilitlenir.
+```
+
+**Kötü örnek → iyi örnek:**
+```
+❌ AC-001 — Başarılı Giriş [Positive]
+   Şube yöneticisi ve uyum ekibi üyesi rolündeki kullanıcılar,
+   e-posta ve şifre ile giriş yaptıktan sonra OTP kodunu
+   girmeden sisteme erişemez. (22 kelime)
+
+✅ AC-001 [S]
+   Yetkili roller şifre sonrası OTP doğrulaması olmadan giremez.
+   (9 kelime)
 ```
 
 ---
@@ -175,7 +199,7 @@ BR-001 · Ardışık hatalı giriş kilitleme
 | Perspektif | İş perspektifi | Test ve doğrulama perspektifi |
 | Odak | Onay odaklı | Uygulama odaklı |
 | Kimin için | İş birimi + Teknik ekip | Test ekibi |
-| Format | Düz açıklama cümlesi | Adım adım teknik |
+| Format | Kısa cümle (max 15 kelime) | Adım adım teknik |
 
 ---
 
@@ -191,6 +215,7 @@ BR-XXX · [Kural Başlığı]
 - İş kuralları yalnızca gerçekten gerekli olduğunda eklenir — her AC'ye zorunlu değildir
 - İş kuralları ilgili kabul kriterinin hemen altında yer alır — ayrı bölüm olmaz
 - Aynı iş kuralı birden fazla kriterde geçerliyse tekrar yazılmaz, "BR-XXX geçerlidir" yaz
+- **Maksimum 2 cümle** — sayısal limitler ve kısıtlar burada belirtilir, teknik detay yazılmaz
 - Kategoriler: Kimlik Doğrulama, Veri Güvenliği/KVKK, İş Süreci, Raporlama/Denetim
 
 ---
