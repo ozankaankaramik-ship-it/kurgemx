@@ -2,9 +2,10 @@ import Anthropic from '@anthropic-ai/sdk'
 import { NextResponse } from 'next/server'
 import { genel, isAnalizi } from '@/lib/standartlar'
 
-// Tek bir release ~13 hikaye × 800-1000 token = 10-13K token. Sonnet
-// ~50-80 tok/s ile üretir → 150-260s. 120s yetmiyordu, 300s güvenli üst sınır.
-export const maxDuration = 300
+// Loglardan: R1 16K max_tokens'a takıldı (37580 char), R2/R3 ~8K token
+// rahat sığdı. R1 kapsamlı MVP olduğunda 16K yetmiyor → 24K. Bu da
+// ~400s üretim demek; 600s güvenli sınır.
+export const maxDuration = 600
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 const SISTEM = `${genel}\n\n---\n\n${isAnalizi}`
@@ -164,7 +165,9 @@ export async function POST(req: Request) {
       try {
         const stream = await client.messages.create({
           model: 'claude-sonnet-4-6',
-          max_tokens: 16000,
+          // 16K bazı R1'lerde yetersiz kaldı (kapsamlı MVP'ler). 24K ile
+          // büyük R1'ler de bir geçişte tamamlanır.
+          max_tokens: 24000,
           stream: true,
           system: [{ type: 'text', text: SISTEM, cache_control: { type: 'ephemeral' } }],
           messages: [{ role: 'user', content: userPromptText }],
