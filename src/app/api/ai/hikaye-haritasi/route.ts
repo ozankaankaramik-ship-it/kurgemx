@@ -2,10 +2,6 @@ import Anthropic from '@anthropic-ai/sdk'
 import { NextResponse } from 'next/server'
 import { genel, hikayeHaritasi } from '@/lib/standartlar'
 
-// Hikaye haritası genelde 4-6K çıktı token; 300s yeterli ama is-analizi
-// ile aynı limiti kullanmak tutarlılık sağlar.
-export const maxDuration = 300
-
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
 const SISTEM = `${genel}\n\n${hikayeHaritasi}`
