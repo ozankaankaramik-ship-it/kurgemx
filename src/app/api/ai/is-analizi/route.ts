@@ -127,30 +127,59 @@ export async function POST(req: Request) {
 
   const encoder = new TextEncoder()
 
+  // max_tokens'a takılırsa otomatik devam (prefill ile birikmiş assistant mesajını
+  // göndererek Claude'a kaldığı yerden sürdür dedirtiyoruz). En fazla
+  // MAX_CONTINUATIONS kez denenir; her parça streaming ile client'a akar.
+  const MAX_CONTINUATIONS = 4
+  const userPromptText = kullaniciPrompt(projeAdi, detayliAciklama, hikayeHaritasi, projeDili, dilAdi)
+
   const readable = new ReadableStream({
     async start(controller) {
       let finishReason: string | null = null
+      let accumulated = ''
+      let attempt = 0
       try {
-        const stream = await client.messages.create({
-          model: 'claude-sonnet-4-6',
-          max_tokens: 32000,
-          stream: true,
-          system: [{ type: 'text', text: SISTEM, cache_control: { type: 'ephemeral' } }],
-          messages: [{ role: 'user', content: kullaniciPrompt(projeAdi, detayliAciklama, hikayeHaritasi, projeDili, dilAdi) }],
-        })
+        // Anthropic SDK'nın MessageParam tipi
+        type MessageParam = { role: 'user' | 'assistant'; content: string }
 
-        for await (const event of stream) {
-          if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
-            controller.enqueue(encoder.encode(event.delta.text))
+        while (attempt <= MAX_CONTINUATIONS) {
+          const messages: MessageParam[] =
+            attempt === 0
+              ? [{ role: 'user', content: userPromptText }]
+              : [
+                  { role: 'user', content: userPromptText },
+                  // Trailing whitespace assistant prefill'inde sorun çıkarır → trimEnd
+                  { role: 'assistant', content: accumulated.trimEnd() },
+                ]
+
+          const stream = await client.messages.create({
+            model: 'claude-sonnet-4-6',
+            max_tokens: 32000,
+            stream: true,
+            system: [{ type: 'text', text: SISTEM, cache_control: { type: 'ephemeral' } }],
+            messages,
+          })
+
+          finishReason = null
+          for await (const event of stream) {
+            if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
+              const chunk = event.delta.text
+              accumulated += chunk
+              controller.enqueue(encoder.encode(chunk))
+            }
+            if (event.type === 'message_delta') {
+              finishReason = event.delta.stop_reason ?? null
+            }
           }
-          if (event.type === 'message_delta') {
-            finishReason = event.delta.stop_reason ?? null
-          }
+
+          console.log(`[is-analizi] attempt=${attempt} finish_reason=${finishReason} length=${accumulated.length}`)
+
+          if (finishReason !== 'max_tokens') break
+          attempt += 1
         }
 
-        console.log('[is-analizi] finish_reason:', finishReason)
         if (finishReason === 'max_tokens') {
-          console.error('[is-analizi] UYARI: Yanıt max_tokens ile kesildi!')
+          console.error(`[is-analizi] UYARI: ${MAX_CONTINUATIONS + 1} denemede de max_tokens ile kesildi.`)
           controller.enqueue(encoder.encode('\n\n<!-- TRUNCATED -->'))
         }
       } catch (err) {
