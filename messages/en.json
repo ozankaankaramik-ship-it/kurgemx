@@ -239,7 +239,9 @@
       "baslik": "Prototype",
       "uret": "Generate Prototype",
       "olusturuluyor": "Generating prototype...",
-      "cerceveBos": "Prototype preview will appear here."
+      "cerceveBos": "Prototype preview will appear here.",
+      "indir": "Download (.html)",
+      "yeniSekme": "Open in New Tab"
     },
     "adim5": {
       "baslik": "Test Scenarios",

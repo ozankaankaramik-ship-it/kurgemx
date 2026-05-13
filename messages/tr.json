@@ -239,7 +239,9 @@
       "baslik": "Prototip",
       "uret": "Prototip Oluştur",
       "olusturuluyor": "Prototip oluşturuluyor...",
-      "cerceveBos": "Prototip önizlemesi burada görünecek."
+      "cerceveBos": "Prototip önizlemesi burada görünecek.",
+      "indir": "İndir (.html)",
+      "yeniSekme": "Yeni Sekmede Aç"
     },
     "adim5": {
       "baslik": "Test Senaryosu",

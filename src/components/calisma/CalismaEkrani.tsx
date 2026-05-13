@@ -55,6 +55,21 @@ const ADIM3_MESAJLAR = {
   ],
 } as const
 
+const ADIM4_MESAJLAR = {
+  TR: [
+    'Hikayeler analiz ediliyor...',
+    'Ekranlar tasarlanıyor...',
+    'Navigasyon oluşturuluyor...',
+    'Prototip tamamlanıyor...',
+  ],
+  EN: [
+    'Analyzing stories...',
+    'Designing screens...',
+    'Building navigation...',
+    'Finalizing prototype...',
+  ],
+} as const
+
 // is-analizi API stream'in sonuna gömdüğü metadata marker'ı.
 const META_MARKER_RE = /\n?<!--\s*META\s*(\{[\s\S]*?\})\s*-->\n?/g
 const TRUNCATED_MARKER_RE = /\n?<!--\s*TRUNCATED\s*-->\n?/g
@@ -71,6 +86,35 @@ function parseMetaFromChunk(chunk: string): { sonAC?: number; sonBR?: number; fi
   } catch {
     return null
   }
+}
+
+function parsePositiveAcler(icerik: string): Record<string, string[]> {
+  const result: Record<string, string[]> = {}
+  const lines = icerik.split('\n')
+  let currentStory: string | null = null
+
+  for (const line of lines) {
+    const headingMatch =
+      line.match(/^#{1,4}\s+.*?\b(ST\d+)\b/) ??
+      line.match(/^\*{1,2}(ST\d+)\*{1,2}/) ??
+      line.match(/^(ST\d+)\s+[—\-|]/)
+    if (headingMatch) currentStory = headingMatch[1]
+
+    if (currentStory && /\[P\]/.test(line)) {
+      const text = line
+        .replace(/^[-*•·]\s*/, '')
+        .replace(/AC[-–]?\d*\s*/i, '')
+        .replace(/\[P\]/g, '')
+        .replace(/\|.*$/, '')
+        .trim()
+      if (text.length > 5) {
+        if (!result[currentStory]) result[currentStory] = []
+        result[currentStory].push(text)
+      }
+    }
+  }
+
+  return result
 }
 
 interface IsAnaliziData {
@@ -450,6 +494,9 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
   const isAnaliziContainerRef = useRef<HTMLDivElement>(null)
   const [adim4Yukleniyor, setAdim4Yukleniyor] = useState(false)
   const [adim4Hata, setAdim4Hata] = useState(false)
+  const [adim4HataMesaji, setAdim4HataMesaji] = useState<string | null>(null)
+  const [adim4MesajIdx, setAdim4MesajIdx] = useState(0)
+  const adim4IntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const [adim5Yukleniyor, setAdim5Yukleniyor] = useState(false)
   const [adim5Hata, setAdim5Hata] = useState(false)
   const [kapsamYukleniyor, setKapsamYukleniyor] = useState(false)
@@ -702,14 +749,92 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
   }
 
   async function generatePrototype() {
+    if (!detailedDesc || !storyMapData) return
     setAdim4Yukleniyor(true)
     setAdim4Hata(false)
+    setAdim4HataMesaji(null)
+    setAdim4MesajIdx(0)
+
+    const mesajlar = ADIM4_MESAJLAR[projektDili === 'TR' ? 'TR' : 'EN']
+    let msgIdx = 0
+    adim4IntervalRef.current = setInterval(() => {
+      msgIdx = Math.min(msgIdx + 1, mesajlar.length - 1)
+      setAdim4MesajIdx(msgIdx)
+    }, 4000)
+
     try {
-      // TODO: /api/ai/prototip endpoint'i eklendiğinde buraya gelecek
-      await new Promise(r => setTimeout(r, 500))
-    } catch {
+      const positiveAcler: Record<string, string[]> = isAnaliziData?.icerik
+        ? parsePositiveAcler(isAnaliziData.icerik)
+        : {}
+
+      const hikayeler = storyMapData.hikayeHaritasi?.hikayeler ?? []
+
+      const res = await fetch('/api/ai/prototip', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          projeAdi: ad,
+          detayliAciklama: detailedDesc,
+          hikayeler,
+          positiveAcler,
+          projeDili: projektDili,
+        }),
+      })
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}))
+        throw new Error(
+          (errData as { detail?: string; error?: string }).detail ??
+            (errData as { error?: string }).error ??
+            `HTTP ${res.status}`,
+        )
+      }
+
+      if (!res.body) throw new Error('no_body')
+
+      const reader = res.body.getReader()
+      const decoder = new TextDecoder()
+      let htmlIcerik = ''
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        htmlIcerik += decoder.decode(value, { stream: true })
+      }
+      htmlIcerik += decoder.decode()
+
+      // Olası markdown kod bloğu sarmalayıcısını temizle
+      htmlIcerik = htmlIcerik.replace(/^```html\s*/i, '').replace(/\s*```\s*$/, '').trim()
+
+      if (projeId) {
+        const supabase = createClient()
+        const { error: upsertError } = await supabase
+          .from('dokumanlar')
+          .upsert(
+            {
+              proje_id: projeId,
+              tip_id: DOKUMAN_TIPLERI.prototip,
+              baslik: projektDili === 'TR' ? `${ad} — Prototip` : `${ad} — Prototype`,
+              icerik: htmlIcerik,
+              dil: projektDili ?? 'TR',
+            },
+            { onConflict: 'proje_id,tip_id' },
+          )
+        if (upsertError) {
+          console.error('[generatePrototype] kayıt hatası:', upsertError)
+        }
+      }
+
+      ctx.setDokuman('prototype', htmlIcerik)
+    } catch (err) {
+      console.error('[generatePrototype] hata:', err)
+      setAdim4HataMesaji(err instanceof Error ? err.message : String(err))
       setAdim4Hata(true)
     } finally {
+      if (adim4IntervalRef.current) {
+        clearInterval(adim4IntervalRef.current)
+        adim4IntervalRef.current = null
+      }
       setAdim4Yukleniyor(false)
     }
   }
@@ -1255,41 +1380,83 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
             </div>
           </div>
 
-          {/* ── Adım 4 — Pasif ── */}
+          {/* ── Adım 4 ── */}
           <div className="flex gap-6">
             <div className="flex flex-col items-center">
-              <div className="w-9 h-9 rounded-full bg-gray-200 text-gray-400 flex items-center justify-center text-sm font-bold shrink-0">4</div>
+              <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold shrink-0 ${adim3Aktif ? 'bg-[#1F3864] text-white' : 'bg-gray-200 text-gray-400'}`}>4</div>
               <div className="w-px flex-1 bg-gray-200 mt-2" />
             </div>
             <div className="flex-1 pb-10 min-w-0">
-              <h2 className="text-base font-semibold text-gray-400 mb-4">{t('adim4.baslik')}</h2>
-              <div className="bg-white border border-gray-100 rounded-xl p-6">
-                <div className="space-y-2 mb-5">
-                  <GenerateButton
-                    label={t('adim4.uret')}
-                    loadingLabel={t('adim4.olusturuluyor')}
-                    regenerateLabel={t('yenidenOlustur')}
-                    disabled={!adim3Aktif}
-                    loading={adim4Yukleniyor}
-                    hasContent={false}
-                    onClick={generatePrototype}
-                  />
+              <h2 className={`text-base font-semibold mb-4 ${adim3Aktif ? 'text-[#1F3864]' : 'text-gray-400'}`}>{t('adim4.baslik')}</h2>
+              <div className={`rounded-xl p-6 ${adim3Aktif ? 'bg-[#EEF4FB] border border-blue-100' : 'bg-white border border-gray-100'}`}>
+                <div className="space-y-2 mb-4">
+                  <div className="flex items-center gap-3">
+                    <GenerateButton
+                      label={t('adim4.uret')}
+                      loadingLabel={(ADIM4_MESAJLAR[projektDili === 'TR' ? 'TR' : 'EN'])[adim4MesajIdx]}
+                      regenerateLabel={t('yenidenOlustur')}
+                      disabled={!adim3Aktif}
+                      loading={adim4Yukleniyor}
+                      hasContent={!!ctx.dokuman.prototype}
+                      onClick={generatePrototype}
+                    />
+                    {ctx.dokuman.prototype && !adim4Yukleniyor && (
+                      <>
+                        <button
+                          onClick={() => {
+                            const blob = new Blob([ctx.dokuman.prototype!], { type: 'text/html;charset=utf-8' })
+                            const url = URL.createObjectURL(blob)
+                            const a = document.createElement('a')
+                            a.href = url
+                            a.download = `prototip-${ad.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/gi, '').slice(0, 50)}.html`
+                            document.body.appendChild(a)
+                            a.click()
+                            document.body.removeChild(a)
+                            URL.revokeObjectURL(url)
+                          }}
+                          className="inline-flex items-center gap-1.5 rounded-md h-[34px] px-3.5 text-xs font-medium border-[0.5px] border-[#2E75B6]/50 text-[#1F3864] hover:bg-[#EEF4FB] transition"
+                        >
+                          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                            <path d="M8 1v9M4 7l4 4 4-4M2 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                          {t('adim4.indir')}
+                        </button>
+                        <button
+                          onClick={() => {
+                            const blob = new Blob([ctx.dokuman.prototype!], { type: 'text/html;charset=utf-8' })
+                            const url = URL.createObjectURL(blob)
+                            window.open(url, '_blank')
+                          }}
+                          className="inline-flex items-center gap-1.5 rounded-md h-[34px] px-3.5 text-xs font-medium border-[0.5px] border-[#2E75B6]/50 text-[#1F3864] hover:bg-[#EEF4FB] transition"
+                        >
+                          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                            <path d="M7 3H3a1 1 0 00-1 1v9a1 1 0 001 1h9a1 1 0 001-1V9M9 2h5m0 0v5m0-5L8 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                          {t('adim4.yeniSekme')}
+                        </button>
+                      </>
+                    )}
+                  </div>
                   {adim4Yukleniyor && <ProgressBar />}
-                  {adim4Hata && <p className="text-xs text-red-500">{t('adim1.hatalar.genel')}</p>}
+                  {adim4Hata && (
+                    <p className="text-xs text-red-500">{adim4HataMesaji ?? t('adim1.hatalar.genel')}</p>
+                  )}
                 </div>
-                <div className="rounded-lg border-2 border-gray-100 overflow-hidden">
-                  <div className="bg-gray-50 px-4 py-2.5 flex items-center gap-2.5 border-b border-gray-100">
-                    <div className="flex gap-1.5">
-                      <div className="w-2.5 h-2.5 rounded-full bg-gray-200" />
-                      <div className="w-2.5 h-2.5 rounded-full bg-gray-200" />
-                      <div className="w-2.5 h-2.5 rounded-full bg-gray-200" />
+                {!ctx.dokuman.prototype && (
+                  <div className="rounded-lg border-2 border-gray-100 overflow-hidden">
+                    <div className="bg-gray-50 px-4 py-2.5 flex items-center gap-2.5 border-b border-gray-100">
+                      <div className="flex gap-1.5">
+                        <div className="w-2.5 h-2.5 rounded-full bg-gray-200" />
+                        <div className="w-2.5 h-2.5 rounded-full bg-gray-200" />
+                        <div className="w-2.5 h-2.5 rounded-full bg-gray-200" />
+                      </div>
+                      <div className="flex-1 h-4 bg-gray-100 rounded" />
                     </div>
-                    <div className="flex-1 h-4 bg-gray-100 rounded" />
+                    <div className="h-44 flex items-center justify-center bg-white">
+                      <p className="text-sm text-gray-300">{t('adim4.cerceveBos')}</p>
+                    </div>
                   </div>
-                  <div className="h-44 flex items-center justify-center bg-white">
-                    <p className="text-sm text-gray-300">{t('adim4.cerceveBos')}</p>
-                  </div>
-                </div>
+                )}
               </div>
             </div>
           </div>
