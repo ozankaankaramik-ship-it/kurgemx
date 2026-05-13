@@ -71,6 +71,7 @@ Navigasyon ve Ekran Kuralları:
 - İlgili hikayeler tek ekranda birleştirilebilir — her hikaye için ayrı ekran zorunlu değil
 - Bir ekran birden fazla hikayeyi kapsayabilir; bir hikaye birden fazla ekrana yayılabilir
 - Sayfanın altında footer görünür olsun: sol tarafta bugünün tarihi, sağ tarafta "KurgemX" yazısı
+- KRİTİK: Her nav-item'ın onclick'inde kullandığı screen ID ile tam olarak eşleşen id'ye sahip bir div.screen elementi MUTLAKA bulunmalıdır. Menüde listelenen her ekran için içerik div'i üretilmeli, hiçbir ekran atlanmamalı
 
 Yalnızca HTML döndür — açıklama veya markdown kod bloğu ekleme.`
     : `Project name: ${projeAdi}
@@ -88,6 +89,7 @@ Navigation and Screen Rules:
 - Related stories can be combined on a single screen — a separate screen per story is not required
 - One screen can cover multiple stories; one story can span multiple screens
 - Footer must be visible at the bottom: today's date on the left, "KurgemX" on the right
+- CRITICAL: Every nav-item's onclick screen ID MUST have a matching div.screen element with that exact id. Generate a content div for every screen listed in the sidebar — no screen may be omitted
 
 Return only HTML — no explanation or markdown code block.`
 

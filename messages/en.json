@@ -216,7 +216,7 @@
       "hikayeHaritasiTarih": "Story map generated on"
     },
     "adim3": {
-      "baslik": "Business Analysis Documents",
+      "baslik": "Business Analysis Document",
       "uret": "Generate Documents",
       "olusturuluyor": "Generating documents...",
       "r1": "R1 — MVP",
@@ -277,6 +277,7 @@
     },
     "yenidenOlustur": "Regenerate",
     "uretimNotu": "Generation is running in the background. Feel free to multitask — just don't close this tab.",
+    "uretimMetrigi": "Generation time: {sure}s · Est. tokens: ~{token}",
     "kisaltmalar": {
       "baslik": "Abbreviations",
       "kod": "Code",

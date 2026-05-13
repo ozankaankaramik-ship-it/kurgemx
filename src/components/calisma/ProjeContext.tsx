@@ -10,12 +10,13 @@ export interface DokumanDurumu {
   documentsR2: string | null
   documentsR3: string | null
   prototype: string | null
+  prototipTarih: string | null
   testScenarios: string | null
   kapsamDoc: string | null
   mimariDoc: string | null
 }
 
-type DokumanTur = Exclude<keyof DokumanDurumu, 'storyMapTarih'>
+type DokumanTur = Exclude<keyof DokumanDurumu, 'storyMapTarih' | 'prototipTarih'>
 
 export type ProjeBuyuklugu = 'Küçük' | 'Orta' | 'Büyük'
 
@@ -42,6 +43,7 @@ const BOŞ: DokumanDurumu = {
   documentsR2: null,
   documentsR3: null,
   prototype: null,
+  prototipTarih: null,
   testScenarios: null,
   kapsamDoc: null,
   mimariDoc: null,
@@ -56,6 +58,8 @@ export interface InitialProje {
   storyMapIcerik?: unknown
   storyMapTarih?: string | null
   isAnaliziStr?: string | null
+  prototipIcerik?: string | null
+  prototipTarih?: string | null
 }
 
 const ProjeContext = createContext<ProjeContextValue | null>(null)
@@ -87,6 +91,8 @@ export function ProjeProvider({ children, initialProje }: { children: ReactNode;
     storyMap: icerikStr(initialProje?.storyMapIcerik),
     storyMapTarih: initialProje?.storyMapTarih ?? null,
     isAnalizi: initialProje?.isAnaliziStr ?? null,
+    prototype: initialProje?.prototipIcerik ?? null,
+    prototipTarih: initialProje?.prototipTarih ?? null,
   })
 
   function setProje(id: string, projeAd: string, short: string | null, detailed: string, dil?: string | null) {

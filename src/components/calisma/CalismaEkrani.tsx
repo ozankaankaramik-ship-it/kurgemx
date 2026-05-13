@@ -415,7 +415,7 @@ async function exportToExcel(data: StoryMapData, projeAdi: string) {
 }
 
 
-type DokumanRow = { tip_id: string; icerik: unknown; created_at: string }
+type DokumanRow = { tip_id: string; icerik: unknown; created_at: string; uretim_suresi?: number | null; token_tahmini?: number | null }
 
 // Dış bileşen: ProjeProvider sağlar
 export default function CalismaEkrani({
@@ -431,6 +431,7 @@ export default function CalismaEkrani({
 } = {}) {
   const storyMapRow = mevcutDokumanlar.find(d => d.tip_id === DOKUMAN_TIPLERI.hikaye_haritasi) ?? null
   const isAnaliziRow = mevcutDokumanlar.find(d => d.tip_id === DOKUMAN_TIPLERI.is_analizi) ?? null
+  const prototipRow = mevcutDokumanlar.find(d => d.tip_id === DOKUMAN_TIPLERI.prototip) ?? null
 
   const isAnaliziStr: string | null = isAnaliziRow
     ? JSON.stringify({
@@ -449,6 +450,10 @@ export default function CalismaEkrani({
         storyMapIcerik: storyMapRow?.icerik ?? null,
         storyMapTarih: storyMapRow?.created_at ?? null,
         isAnaliziStr,
+        prototipIcerik: prototipRow
+          ? (typeof prototipRow.icerik === 'string' ? prototipRow.icerik : null)
+          : null,
+        prototipTarih: prototipRow?.created_at ?? null,
       }
     : undefined
 
@@ -497,7 +502,10 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
   const [adim4HataMesaji, setAdim4HataMesaji] = useState<string | null>(null)
   const [adim4MesajIdx, setAdim4MesajIdx] = useState(0)
   const adim4IntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
-  const [adim4Tarih, setAdim4Tarih] = useState<string | null>(null)
+  const [adim4Tarih, setAdim4Tarih] = useState<string | null>(ctx.dokuman.prototipTarih ?? null)
+  const [adim2Metrigi, setAdim2Metrigi] = useState<{sure: number; token: number} | null>(null)
+  const [adim3Metrigi, setAdim3Metrigi] = useState<{sure: number; token: number} | null>(null)
+  const [adim4Metrigi, setAdim4Metrigi] = useState<{sure: number; token: number} | null>(null)
   const [adim5Yukleniyor, setAdim5Yukleniyor] = useState(false)
   const [adim5Hata, setAdim5Hata] = useState(false)
   const [kapsamYukleniyor, setKapsamYukleniyor] = useState(false)
@@ -539,6 +547,7 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
       }
     }, 3000)
 
+    const startTime2 = Date.now()
     try {
       const res = await fetch('/api/ai/hikaye-haritasi', {
         method: 'POST',
@@ -563,6 +572,8 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
         sprintPlani: sprintPlani ?? [],
         genelOzet: genelOzet ?? [],
       }
+      const sure2 = Math.round((Date.now() - startTime2) / 1000)
+      const token2 = Math.round(JSON.stringify(veri).length / 4)
       if (projeId) {
         const supabase = createClient()
         const upsertData = {
@@ -571,6 +582,8 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
           baslik: projektDili === 'TR' ? 'Hikaye Haritası' : 'Story Map',
           icerik: veri,
           dil: projektDili ?? 'TR',
+          uretim_suresi: sure2,
+          token_tahmini: token2,
         }
         console.log('[generateStoryMap] Kaydedilecek veri:', JSON.stringify(upsertData, null, 2))
         const { error: upsertError } = await supabase
@@ -583,6 +596,7 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
         }
       }
       ctx.setDokuman('storyMap', JSON.stringify(veri))
+      setAdim2Metrigi({ sure: sure2, token: token2 })
     } catch (err) {
       console.error('[generateStoryMap] hata:', err)
       setAdim2HataMesaji(err instanceof Error ? err.message : String(err))
@@ -639,6 +653,7 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
       : bolum === 'R3' ? 3
       : 4
 
+    const startTime3 = Date.now()
     try {
       for (let i = 0; i < bolumler.length; i++) {
         const bolum = bolumler[i]
@@ -714,6 +729,9 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
 
       if (truncated) setAdim3TokenLimiti(true)
 
+      const sure3 = Math.round((Date.now() - startTime3) / 1000)
+      const token3 = Math.round(icerik.length / 4)
+
       if (projeId) {
         const supabase = createClient()
         const { error: upsertError } = await supabase
@@ -729,6 +747,8 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
                   : `${ad} — Business Analysis Document`),
               icerik,
               dil: projektDili ?? 'TR',
+              uretim_suresi: sure3,
+              token_tahmini: token3,
             },
             { onConflict: 'proje_id,tip_id' },
           )
@@ -738,6 +758,7 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
       }
 
       ctx.setDokuman('isAnalizi', JSON.stringify({ baslik, tarih, versiyon, icerik }))
+      setAdim3Metrigi({ sure: sure3, token: token3 })
       setAdim3StreamContent(null)
     } catch (err) {
       console.error('[generateDocuments] hata:', err)
@@ -763,6 +784,7 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
       setAdim4MesajIdx(msgIdx)
     }, 4000)
 
+    const startTime4 = Date.now()
     try {
       const positiveAcler: Record<string, string[]> = isAnaliziData?.icerik
         ? parsePositiveAcler(isAnaliziData.icerik)
@@ -807,6 +829,9 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
       // Olası markdown kod bloğu sarmalayıcısını temizle
       htmlIcerik = htmlIcerik.replace(/^```html\s*/i, '').replace(/\s*```\s*$/, '').trim()
 
+      const sure4 = Math.round((Date.now() - startTime4) / 1000)
+      const token4 = Math.round(htmlIcerik.length / 4)
+
       if (projeId) {
         const supabase = createClient()
         const { error: upsertError } = await supabase
@@ -818,6 +843,8 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
               baslik: projektDili === 'TR' ? `${ad} — Prototip` : `${ad} — Prototype`,
               icerik: htmlIcerik,
               dil: projektDili ?? 'TR',
+              uretim_suresi: sure4,
+              token_tahmini: token4,
             },
             { onConflict: 'proje_id,tip_id' },
           )
@@ -827,6 +854,7 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
       }
 
       setAdim4Tarih(new Date().toISOString())
+      setAdim4Metrigi({ sure: sure4, token: token4 })
       ctx.setDokuman('prototype', htmlIcerik)
     } catch (err) {
       console.error('[generatePrototype] hata:', err)
@@ -1016,6 +1044,11 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
                   </div>
                   {adim2Hata && (
                     <p className="text-xs text-red-500">{adim2HataMesaji ?? t('adim1.hatalar.genel')}</p>
+                  )}
+                  {adim2Metrigi && storyMapData && !adim2Yukleniyor && (
+                    <p style={{ fontSize: 11, opacity: 0.4, fontStyle: 'italic' }} className="text-gray-500">
+                      {t('uretimMetrigi', { sure: adim2Metrigi.sure, token: adim2Metrigi.token.toLocaleString() })}
+                    </p>
                   )}
                 </div>
 
@@ -1344,6 +1377,11 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
                   {adim3Hata && (
                     <p className="text-xs text-red-500">{adim3HataMesaji ?? t('adim1.hatalar.genel')}</p>
                   )}
+                  {adim3Metrigi && isAnaliziData && !adim3Yukleniyor && (
+                    <p style={{ fontSize: 11, opacity: 0.4, fontStyle: 'italic' }} className="text-gray-500">
+                      {t('uretimMetrigi', { sure: adim3Metrigi.sure, token: adim3Metrigi.token.toLocaleString() })}
+                    </p>
+                  )}
                 </div>
 
                 {/* Doküman içeriği */}
@@ -1460,6 +1498,11 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
                   )}
                   {adim4Hata && (
                     <p className="text-xs text-red-500">{adim4HataMesaji ?? t('adim1.hatalar.genel')}</p>
+                  )}
+                  {adim4Metrigi && ctx.dokuman.prototype && !adim4Yukleniyor && (
+                    <p style={{ fontSize: 11, opacity: 0.4, fontStyle: 'italic' }} className="text-gray-500">
+                      {t('uretimMetrigi', { sure: adim4Metrigi.sure, token: adim4Metrigi.token.toLocaleString() })}
+                    </p>
                   )}
                 </div>
                 {!ctx.dokuman.prototype && (

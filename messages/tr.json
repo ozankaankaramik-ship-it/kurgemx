@@ -216,7 +216,7 @@
       "hikayeHaritasiTarih": "Hikaye haritası oluşturuldu:"
     },
     "adim3": {
-      "baslik": "İş Analizi Dokümanları",
+      "baslik": "İş Analizi Dokümanı",
       "uret": "Doküman Oluştur",
       "olusturuluyor": "Dokümanlar oluşturuluyor...",
       "r1": "R1 — MVP",
@@ -277,6 +277,7 @@
     },
     "yenidenOlustur": "Yeniden Oluştur",
     "uretimNotu": "Üretim arka planda devam ediyor. Bu sekmeyi kapatmadan başka işlerinize bakabilirsiniz.",
+    "uretimMetrigi": "Üretim süresi: {sure}s · Tahmini token: ~{token}",
     "kisaltmalar": {
       "baslik": "Kısaltmalar",
       "kod": "Kod",
