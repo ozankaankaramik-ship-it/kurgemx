@@ -64,8 +64,14 @@ Hikayeler:
 ${hikayelerMetni}
 
 Prototip.md standartlarına uygun, tüm hikayeler için tek bir standalone HTML dosyası üret.
-Sol menüde destanlar ana başlık, her destanın altında hikayeleri tıklanabilir bağlantı olarak listele.
 Tüm CSS ve JavaScript satır içinde olsun — dış bağımlılık olmadan çalışsın.
+
+Navigasyon ve Ekran Kuralları:
+- Sol menüde maksimum 10 öğe göster; menü gruplandırmasını mantıksal olarak yap (destanlara birebir uymak zorunda değil)
+- İlgili hikayeler tek ekranda birleştirilebilir — her hikaye için ayrı ekran zorunlu değil
+- Bir ekran birden fazla hikayeyi kapsayabilir; bir hikaye birden fazla ekrana yayılabilir
+- Sayfanın altında footer görünür olsun: sol tarafta bugünün tarihi, sağ tarafta "KurgemX" yazısı
+
 Yalnızca HTML döndür — açıklama veya markdown kod bloğu ekleme.`
     : `Project name: ${projeAdi}
 Detailed description: ${detayliAciklama}
@@ -75,8 +81,14 @@ Stories:
 ${hikayelerMetni}
 
 Generate a single standalone HTML file following prototip.md standards for all stories.
-Left sidebar lists epics as headings with their stories as clickable links underneath.
 All CSS and JavaScript must be inline — no external dependencies.
+
+Navigation and Screen Rules:
+- Show maximum 10 items in the sidebar; group navigation logically (does not need to mirror epics exactly)
+- Related stories can be combined on a single screen — a separate screen per story is not required
+- One screen can cover multiple stories; one story can span multiple screens
+- Footer must be visible at the bottom: today's date on the left, "KurgemX" on the right
+
 Return only HTML — no explanation or markdown code block.`
 
   try {

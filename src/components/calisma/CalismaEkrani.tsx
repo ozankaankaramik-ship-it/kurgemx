@@ -497,6 +497,7 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
   const [adim4HataMesaji, setAdim4HataMesaji] = useState<string | null>(null)
   const [adim4MesajIdx, setAdim4MesajIdx] = useState(0)
   const adim4IntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const [adim4Tarih, setAdim4Tarih] = useState<string | null>(null)
   const [adim5Yukleniyor, setAdim5Yukleniyor] = useState(false)
   const [adim5Hata, setAdim5Hata] = useState(false)
   const [kapsamYukleniyor, setKapsamYukleniyor] = useState(false)
@@ -825,6 +826,7 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
         }
       }
 
+      setAdim4Tarih(new Date().toISOString())
       ctx.setDokuman('prototype', htmlIcerik)
     } catch (err) {
       console.error('[generatePrototype] hata:', err)
@@ -1393,16 +1395,28 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
               <h2 className={`text-base font-semibold mb-4 ${adim3Aktif ? 'text-[#1F3864]' : 'text-gray-400'}`}>{t('adim4.baslik')}</h2>
               <div className={`rounded-xl p-6 ${adim3Aktif ? 'bg-[#EEF4FB] border border-blue-100' : 'bg-white border border-gray-100'}`}>
                 <div className="space-y-2 mb-4">
-                  <div className="flex items-center gap-3">
-                    <GenerateButton
-                      label={t('adim4.uret')}
-                      loadingLabel={(ADIM4_MESAJLAR[projektDili === 'TR' ? 'TR' : 'EN'])[adim4MesajIdx]}
-                      regenerateLabel={t('yenidenOlustur')}
-                      disabled={!adim3Aktif}
-                      loading={adim4Yukleniyor}
-                      hasContent={!!ctx.dokuman.prototype}
-                      onClick={generatePrototype}
-                    />
+                  <div className="flex items-center gap-3 flex-wrap">
+                    {ctx.dokuman.prototype && !adim4Yukleniyor ? (
+                      <p className="text-xs text-gray-500 italic">
+                        {t('adim4.prototipOlusturuldu')}
+                        {adim4Tarih && (
+                          <>{' — '}{new Date(adim4Tarih).toLocaleDateString(
+                            projektDili === 'TR' ? 'tr-TR' : 'en-US',
+                            { day: 'numeric', month: 'long', year: 'numeric' }
+                          )}</>
+                        )}
+                      </p>
+                    ) : (
+                      <GenerateButton
+                        label={t('adim4.uret')}
+                        loadingLabel={(ADIM4_MESAJLAR[projektDili === 'TR' ? 'TR' : 'EN'])[adim4MesajIdx]}
+                        regenerateLabel=""
+                        disabled={!adim3Aktif}
+                        loading={adim4Yukleniyor}
+                        hasContent={false}
+                        onClick={generatePrototype}
+                      />
+                    )}
                     {ctx.dokuman.prototype && !adim4Yukleniyor && (
                       <>
                         <button
@@ -1442,7 +1456,7 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
                   </div>
                   {adim4Yukleniyor && <ProgressBar />}
                   {adim4Yukleniyor && (
-                    <p style={{ fontSize: 11, color: '#9CA3AF', fontStyle: 'italic' }}>{t('uretimNotu')}</p>
+                    <p style={{ fontSize: 12, color: '#9CA3AF', fontStyle: 'italic' }}>{t('uretimNotu')}</p>
                   )}
                   {adim4Hata && (
                     <p className="text-xs text-red-500">{adim4HataMesaji ?? t('adim1.hatalar.genel')}</p>

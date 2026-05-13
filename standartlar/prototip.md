@@ -81,13 +81,14 @@ Negative, Boundary ve Security AC'ler prototipin kapsamı dışındadır — bun
 ### Navigasyon
 - **Sol menü** (sabit, 240px genişlik):
   - Proje adı üstte
-  - Destanlar ana başlık olarak listelenir
-  - Her destanın altında ilgili hikayeler alt madde olarak
-  - Aktif hikaye vurgulanır
-  - Release bilgisi (R1/R2/R3) hikaye yanında küçük badge olarak
+  - Menü yapısı YZ tarafından mantıksal olarak gruplandırılır — destanlara birebir uymak zorunda değildir, proje akışına göre kullanıcı dostu bir yapı kurulur
+  - İlk seviyede maksimum 10 item gösterilir
+  - Her grubun altında ilgili ekranlar ikinci seviyede listelenir
+  - Aktif ekran vurgulanır
+  - Release bilgisi (R1/R2/R3) küçük badge olarak gösterilir
 - **İçerik alanı** (kalan alan):
-  - Aktif hikayenin ekranı gösterilir
-  - Üstte hikaye başlığı ve sprint bilgisi
+  - Aktif ekran gösterilir
+  - Üstte ekran başlığı ve ilgili hikaye no'ları
   - Altında ekran içeriği
 
 ### Responsive
@@ -102,8 +103,15 @@ Negative, Boundary ve Security AC'ler prototipin kapsamı dışındadır — bun
 
 ## Ekran Kuralları
 
-### Her Hikaye Ekranı İçin
-1. **Başlık satırı:** Hikaye no + adı + destan + sprint badge'i
+### Hikaye-Ekran Eşlemesi
+- Her hikaye için ayrı ekran zorunlu değildir
+- İlgili hikayeler mantıksal olarak tek ekranda gruplandırılabilir
+- Bir ekran birden fazla hikayeyi kapsayabilir
+- Bir hikaye birden fazla ekrana yayılabilir (çok adımlı formlar vb.)
+- Eşleme YZ tarafından projeye özgü belirlenir
+
+### Her Ekran İçin
+1. **Başlık satırı:** Ekran adı + ilgili hikaye no'ları + sprint badge'i
 2. **Ekran içeriği:** Hikayenin işlevine göre uygun UI:
    - Liste/tablo hikayeleri → veri tablosu
    - Form hikayeleri → doldurulabilir form

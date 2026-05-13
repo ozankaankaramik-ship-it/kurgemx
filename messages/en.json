@@ -241,7 +241,8 @@
       "olusturuluyor": "Generating prototype...",
       "cerceveBos": "Prototype preview will appear here.",
       "indir": "Download (.html)",
-      "yeniSekme": "Open in New Tab"
+      "yeniSekme": "Open in New Tab",
+      "prototipOlusturuldu": "✓ Prototype generated"
     },
     "adim5": {
       "baslik": "Test Scenarios",

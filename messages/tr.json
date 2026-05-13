@@ -241,7 +241,8 @@
       "olusturuluyor": "Prototip oluşturuluyor...",
       "cerceveBos": "Prototip önizlemesi burada görünecek.",
       "indir": "İndir (.html)",
-      "yeniSekme": "Yeni Sekmede Aç"
+      "yeniSekme": "Yeni Sekmede Aç",
+      "prototipOlusturuldu": "✓ Prototip oluşturuldu"
     },
     "adim5": {
       "baslik": "Test Senaryosu",
