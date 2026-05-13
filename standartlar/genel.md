@@ -26,18 +26,6 @@ Doküman tipine özgü kurallar için ilgili dosyaya bakınız.
 
 ---
 
-## Proje Büyüklüğü
-
-Proje büyüklüğü hikaye haritası oluşturulmadan önce belirlenir. YZ projenin açıklamasına göre büyüklüğü otomatik önerir; kullanıcı değiştirebilir.
-
-| Proje Büyüklüğü | Hikaye Sayısı | Tahmini Süre | Açıklama |
-|----------------|---------------|--------------|----------|
-| Küçük | 1 – 5 hikaye | 1 hafta – 2 ay | Mevcut ürüne yeni özellik ekleme veya MVP odaklı küçük ürün |
-| Orta | 6 – 15 hikaye | 2 ay – 4 ay | Çok modüllü, birden fazla kullanıcı rolü |
-| Büyük | 16 – 40 hikaye | 4 ay ve üzeri | Kurumsal ürün, birden fazla release |
-
----
-
 ## Evrensel Kısaltmalar
 
 Dil seçiminden bağımsız, tüm dillerde aynı kısaltmalar kullanılır:
@@ -77,9 +65,12 @@ Dil seçiminden bağımsız, tüm dillerde aynı kısaltmalar kullanılır:
 - Başlık yazı rengi (H1): Beyaz
 - Başlık rengi (H2): #1F3864
 - Vurgu rengi: #2E75B6
+- Açık arka plan: #EEF4FB
 - Tablo başlık arka planı: #1F3864 (beyaz yazı)
 - Tablo alt başlık arka planı: #D6E4F0 (lacivert yazı)
 - Tablo satır arka planı: Beyaz
+- Uyarı / Dikkat: #F59E0B (turuncu) — nadir kullanılır; pending, in review, uyarı durumları için
+- Uyarı açık arka plan: #FEF3C7
 
 ### Yazı Tipleri
 - Gövde yazı tipi: Arial
