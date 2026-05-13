@@ -89,7 +89,7 @@ export default function Adim1Formu() {
     const el = yzScrollRef.current
     if (!el || !yzYukleniyor) return
     const isAtBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 50
-    if (isAtBottom) el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
+    if (isAtBottom) el.scrollTop = el.scrollHeight
   }, [yzCikti, yzYukleniyor])
 
   const canSubmit = !isPending && !yzYukleniyor && adValue.trim().length > 0 && yzCikti !== null

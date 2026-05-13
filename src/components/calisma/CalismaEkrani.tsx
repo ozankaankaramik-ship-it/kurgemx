@@ -976,7 +976,42 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
                         </tbody>
                       </table>
                     ) : (
-                      <div className="py-10 text-center text-sm text-gray-300">{t('adim2.tabloBos')}</div>
+                      <div style={{ opacity: 0.4 }}>
+                        <table className="w-full text-sm text-left">
+                          <thead>
+                            <tr>
+                              {['Release', 'Epic 1', 'Epic 2', 'Epic 3'].map(col => (
+                                <th
+                                  key={col}
+                                  className="px-4 py-2.5 text-xs font-semibold"
+                                  style={{ background: 'var(--color-background-secondary)', border: '0.5px solid var(--color-border-tertiary)' }}
+                                >
+                                  {col}
+                                </th>
+                              ))}
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {[
+                              { label: 'R1 — MVP', widths: [['65%', '45%'], ['75%', '50%'], ['55%', '70%']] as [string, string][] },
+                              { label: 'R2 — Enhancement', widths: [['50%', '70%'], ['60%', '40%'], ['75%', '55%']] as [string, string][] },
+                              { label: 'R3 — Advanced', widths: [['70%', '50%'], ['45%', '65%'], ['60%', '40%']] as [string, string][] },
+                            ].map(({ label, widths }) => (
+                              <tr key={label}>
+                                <td className="px-4 py-3 text-xs font-semibold" style={{ border: '0.5px solid var(--color-border-tertiary)', background: 'var(--color-background-secondary)' }}>
+                                  {label}
+                                </td>
+                                {widths.map((pair, i) => (
+                                  <td key={i} className="px-4 py-3" style={{ border: '0.5px solid var(--color-border-tertiary)' }}>
+                                    <div className="h-2 rounded-full mb-1.5" style={{ width: pair[0], background: 'var(--color-background-secondary)' }} />
+                                    <div className="h-2 rounded-full" style={{ width: pair[1], background: 'var(--color-background-secondary)' }} />
+                                  </td>
+                                ))}
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
                     )}
                   </div>
                   {storyMapData && (
@@ -1077,35 +1112,16 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
             <div className="flex gap-6">
               <div className="w-9 shrink-0" />
               <div className="flex-1 pb-6 min-w-0">
-                <h3 className="text-sm font-semibold text-[#1F3864] mb-2">{t('kisaltmalar.baslik')}</h3>
-                <div className="rounded-lg border border-gray-200 overflow-hidden bg-white inline-block">
-                  <table className="text-sm text-left">
-                    <thead className="bg-[#1F3864]">
-                      <tr>
-                        <th className="px-4 py-2.5 text-xs font-semibold text-white uppercase tracking-wide border-r border-white/20 whitespace-nowrap">{t('kisaltmalar.kod')}</th>
-                        <th className="px-4 py-2.5 text-xs font-semibold text-white uppercase tracking-wide border-r border-white/20 whitespace-nowrap">{t('kisaltmalar.anlam')}</th>
-                        <th className="px-4 py-2.5 text-xs font-semibold text-white uppercase tracking-wide whitespace-nowrap">{t('kisaltmalar.ornek')}</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-100">
-                      <tr>
-                        <td className="px-4 py-2.5 text-xs font-semibold text-[#2E75B6] border-r border-gray-100 whitespace-nowrap">ST</td>
-                        <td className="px-4 py-2.5 text-xs text-gray-700 border-r border-gray-100 whitespace-nowrap">{t('kisaltmalar.st')}</td>
-                        <td className="px-4 py-2.5 text-xs text-gray-400 whitespace-nowrap">ST1, ST2</td>
-                      </tr>
-                      <tr className="bg-gray-50/50">
-                        <td className="px-4 py-2.5 text-xs font-semibold text-[#2E75B6] border-r border-gray-100 whitespace-nowrap">SP</td>
-                        <td className="px-4 py-2.5 text-xs text-gray-700 border-r border-gray-100 whitespace-nowrap">{t('kisaltmalar.sp')}</td>
-                        <td className="px-4 py-2.5 text-xs text-gray-400 whitespace-nowrap">SP1, SP2</td>
-                      </tr>
-                      <tr>
-                        <td className="px-4 py-2.5 text-xs font-semibold text-[#2E75B6] border-r border-gray-100 whitespace-nowrap">R</td>
-                        <td className="px-4 py-2.5 text-xs text-gray-700 border-r border-gray-100 whitespace-nowrap">{t('kisaltmalar.r')}</td>
-                        <td className="px-4 py-2.5 text-xs text-gray-400 whitespace-nowrap">R1, R2, R3</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
+                <p
+                  className="text-xs text-gray-500"
+                  style={{
+                    opacity: 0.4,
+                    borderLeft: '2px solid var(--color-border-tertiary)',
+                    paddingLeft: 10,
+                  }}
+                >
+                  ST Story · SP Sprint · R Release · AC Acceptance Criteria · BR Business Rule · TC Test Case
+                </p>
               </div>
             </div>
           )}
@@ -1213,13 +1229,23 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
                   </div>
                 ) : (
                   !adim3Yukleniyor && (
-                    <div className="grid grid-cols-3 gap-4">
-                      {([t('adim3.r1'), t('adim3.r2'), t('adim3.r3')] as string[]).map((r) => (
-                        <div key={r} className="rounded-lg border border-gray-100 p-4 flex flex-col gap-3">
-                          <p className="text-sm font-semibold text-gray-300">{r}</p>
-                          <span className="self-start rounded-full bg-gray-100 px-2.5 py-0.5 text-xs text-gray-400">
-                            {t('adim3.beklemede')}
-                          </span>
+                    <div style={{ opacity: 0.4 }} className="space-y-3">
+                      <p className="text-sm font-semibold text-gray-500">Business Analysis Document</p>
+                      {[
+                        { no: 1, title: 'Document Overview' },
+                        { no: 2, title: 'Story-Based Acceptance Criteria' },
+                        { no: 3, title: 'System Requirements' },
+                        { no: 4, title: 'Impact Analysis' },
+                        { no: 5, title: 'Technical Details & Integrations' },
+                      ].map(({ no, title }) => (
+                        <div
+                          key={no}
+                          className="rounded-lg p-4 space-y-2"
+                          style={{ border: '0.5px solid var(--color-border-tertiary)' }}
+                        >
+                          <p className="text-xs font-semibold text-gray-600">{no} — {title}</p>
+                          <div className="h-2 rounded-full" style={{ background: 'var(--color-background-secondary)', width: '75%' }} />
+                          <div className="h-2 rounded-full" style={{ background: 'var(--color-background-secondary)', width: '50%' }} />
                         </div>
                       ))}
                     </div>
