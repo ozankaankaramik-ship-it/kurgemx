@@ -24,8 +24,9 @@ Bu dosyayı okumadan önce `genel.md` dosyasını oku ve oradaki kuralları da u
 
 ## Gruplama Kuralı
 
-- Hikayeler analiz dokümanında nasıl gruplandıysa test senaryoları da aynı şekilde gruplandırılır
-- Tek bir analiz dokümanı → tek bir test senaryosu dokümanı
+- Test senaryoları release bazında gruplandırılır: R1, R2, R3
+- Her release için ayrı Excel sheet oluşturulur
+- Tek bir iş analizi dokümanı → tek bir test senaryosu Excel dosyası
 
 ---
 
@@ -40,14 +41,19 @@ Bu dosyayı okumadan önce `genel.md` dosyasını oku ve oradaki kuralları da u
 
 ---
 
-## Test Case Sayıları (Öneri)
+## Test Case Sayıları
 
-| Tip | Minimum | Maksimum |
-|-----|---------|---------|
-| Olumlu | 5 | 10 |
-| Olumsuz | 10 | 15 |
-| Performans | 3 | 5 |
-| Güvenlik | 3 | 5 (gerekirse) |
+Her hikaye için **5 TC** hedeflenir:
+
+| Tip | Adet | Kural |
+|-----|------|-------|
+| Positive | 2 | Her hikayede zorunlu |
+| Negative | 2 | Her hikayede zorunlu |
+| Security | 1 | Yalnızca KVKK/güvenlik içeren hikayelerde |
+| Boundary | 1 | Yalnızca sınır durumu olan hikayelerde |
+
+- Güvenlik veya sınır durumu yoksa hikaye başına minimum 4 TC üretilir
+- Performans TC'leri yalnızca kritik hikayelerde eklenir (ödeme, giriş, yüksek hacimli işlemler)
 
 ---
 
@@ -80,16 +86,20 @@ Durum:        pending
 
 ## Çıktı Formatı
 
-- Test senaryosu dokümanı Excel (.xlsx) formatında üretilir
+- Test senaryosu Excel (.xlsx) formatında üretilir
 - Her test case bir satır olarak gösterilir
 - Sütunlar: Test Case No | Başlık | Tip | Hikaye | Ön Koşul | Adımlar | Beklenen Sonuç | Durum
-- Tip sütununa göre renk kodlaması uygulanır:
-  - Olumlu (positive): Yeşil
-  - Olumsuz (negative): Kırmızı
-  - Performans (performance): Turuncu
-  - Güvenlik (security): Mor
+- Tip sütununa göre renk kodlaması:
+  - Positive: Yeşil
+  - Negative: Kırmızı
+  - Security: Mor
+  - Boundary: Turuncu
+  - Performance: Mavi
 - Durum sütunu: pending / passed / failed / blocked
-- Her hikaye grubu için ayrı sekme (sheet) oluşturulur
+- **3 sheet — release bazında:**
+  - Sheet 1: R1 — MVP
+  - Sheet 2: R2 — İyileştirme
+  - Sheet 3: R3 — Gelişmiş
 
 ---
 

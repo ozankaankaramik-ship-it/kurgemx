@@ -1336,6 +1336,9 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
                     )}
                   </div>
                   {adim3Yukleniyor && <ProgressBar />}
+                  {adim3Yukleniyor && (
+                    <p style={{ fontSize: 11, color: '#9CA3AF', fontStyle: 'italic' }}>{t('uretimNotu')}</p>
+                  )}
                   {adim3Hata && (
                     <p className="text-xs text-red-500">{adim3HataMesaji ?? t('adim1.hatalar.genel')}</p>
                   )}
@@ -1438,6 +1441,9 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
                     )}
                   </div>
                   {adim4Yukleniyor && <ProgressBar />}
+                  {adim4Yukleniyor && (
+                    <p style={{ fontSize: 11, color: '#9CA3AF', fontStyle: 'italic' }}>{t('uretimNotu')}</p>
+                  )}
                   {adim4Hata && (
                     <p className="text-xs text-red-500">{adim4HataMesaji ?? t('adim1.hatalar.genel')}</p>
                   )}
