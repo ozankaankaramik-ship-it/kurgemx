@@ -46,7 +46,9 @@
       "Bash(winget install *)",
       "Bash(scoop *)",
       "Bash(choco *)",
-      "Bash(vercel logs *)"
+      "Bash(vercel logs *)",
+      "Bash(Select-String \"prototip\")",
+      "Bash(findstr \"prototip\")"
     ]
   },
   "hooks": {
