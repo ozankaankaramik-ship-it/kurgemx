@@ -95,17 +95,14 @@ ${hikayelerMetni}
 
 Bu proje için HTML prototip iskeletini üret.
 
-HTML belgesi ZORUNLU yapısı (bu sıraya uy):
-<html>
-  <head>
-    <!-- Tüm CSS stilleri buraya (prototip.md tasarım sistemine uygun — sidebar, ekran layout, nav, form, tablo) -->
-  </head>
-  <body>
-    <!-- 1. Sol sidebar: maksimum 10 nav item, mantıksal gruplandırma, footer (sol: bugünün tarihi, sağ: "KurgemX") -->
-    <!-- 2. Her ekran için BOŞ div — aşağıdaki kalıba uy -->
-    <!-- 3. Script bloğu: nav ve içerik bölümlerinden SONRA, </body> kapanmadan hemen önce -->
-  </body>
-</html>
+TOKEN LİMİTİ VAR — ŞU SIRAYA KESİNLİKLE UY:
+1. <html><head> — sadece <meta charset> + <title>. CSS YOK.
+2. <body> açılışı
+3. Sol sidebar nav (maks 10 item, data-screen, footer: sol=bugünün tarihi, sağ="KurgemX")
+4. Her ekran için BOŞ div — SCREEN_CONTENT placeholderı ile
+5. Aşağıdaki script bloğunu AYNEN koy (değiştirme)
+6. <style> bloğu — sidebar+screen+nav CSS, MAKSİMUM 40 SATIR
+7. </body></html>
 
 Nav item kalıbı:
 <a class="nav-item" data-screen="SCREEN_ID" href="#">Ekran Adı</a>
@@ -115,15 +112,16 @@ Ekran div kalıbı:
 <!-- SCREEN_CONTENT_SCREEN_ID -->
 </div>
 
-Script bloğunu nav ve içerik bölümlerinden SONRA, </body> kapanmadan hemen önce AYNEN koy (değiştirme):
+Script bloğu (adım 5 — AYNEN koy):
 ${SHARED_NAV_JS}
 
 KRİTİK KURALLAR:
+- Nav itemlar VE screen placeholder'lar CSS'ten önce gelir — CSS sona kalır
 - SCREEN_ID: küçük harf, tire ile ayrılmış (ör: kullanici-listesi, urun-detay)
-- Her nav-item'ın data-screen değeri ile tam eşleşen bir div.screen id'si olmalı
-- Ekran div'lerinin içinde SADECE <!-- SCREEN_CONTENT_SCREEN_ID --> olsun, başka içerik yok
-- Tüm ekranlar style="display:none" — JS DOMContentLoaded'da ilkini gösterir
-- Script bloğu MUTLAKA </body> kapanmadan hemen önce olmalı
+- Her nav-item data-screen değeri tam eşleşen bir div.screen id'siyle eşleşmeli
+- Ekran div'lerinde SADECE <!-- SCREEN_CONTENT_SCREEN_ID --> olsun
+- Tüm ekranlar style="display:none"
+- CSS maksimum 40 satır — temel layout yeterli, detay renk/gölge yok
 
 Yalnızca HTML döndür.`
     : `Project: ${projeAdi}
@@ -135,17 +133,14 @@ ${hikayelerMetni}
 
 Generate the HTML skeleton for this prototype.
 
-REQUIRED HTML document structure (follow this order exactly):
-<html>
-  <head>
-    <!-- All CSS styles here (per prototip.md design system — sidebar, screen layout, nav, form, table) -->
-  </head>
-  <body>
-    <!-- 1. Left sidebar: max 10 nav items, logical grouping, footer (left: today's date, right: "KurgemX") -->
-    <!-- 2. Empty screen divs — follow the pattern below -->
-    <!-- 3. Script block: AFTER nav and content sections, just before </body> -->
-  </body>
-</html>
+TOKEN LIMIT — FOLLOW THIS ORDER STRICTLY:
+1. <html><head> — only <meta charset> + <title>. NO CSS.
+2. <body> open
+3. Left sidebar nav (max 10 items, data-screen, footer: left=today's date, right="KurgemX")
+4. Empty screen div for each screen — with SCREEN_CONTENT placeholder
+5. Include the script block below EXACTLY as shown (do not modify)
+6. <style> block — sidebar+screen+nav CSS, MAXIMUM 40 LINES
+7. </body></html>
 
 Nav item pattern:
 <a class="nav-item" data-screen="SCREEN_ID" href="#">Screen Name</a>
@@ -155,15 +150,16 @@ Screen div pattern:
 <!-- SCREEN_CONTENT_SCREEN_ID -->
 </div>
 
-Place the script block AFTER nav and all screen divs, just before </body> — include it EXACTLY as shown (do not modify):
+Script block (step 5 — include EXACTLY):
 ${SHARED_NAV_JS}
 
 CRITICAL RULES:
+- Nav items AND screen placeholders come BEFORE CSS — CSS goes last
 - SCREEN_ID: lowercase, hyphen-separated (e.g., user-list, product-detail)
-- Every nav-item's data-screen value must exactly match a div.screen id
-- Screen divs must contain ONLY <!-- SCREEN_CONTENT_SCREEN_ID -->, no other content
-- All screens start with style="display:none" — JS shows the first on DOMContentLoaded
-- Script block MUST be placed just before </body>
+- Every nav-item data-screen value must match a div.screen id exactly
+- Screen divs must contain ONLY <!-- SCREEN_CONTENT_SCREEN_ID -->
+- All screens start with style="display:none"
+- CSS maximum 40 lines — basic layout only, no detail colors/shadows
 
 Return only HTML.`
 
