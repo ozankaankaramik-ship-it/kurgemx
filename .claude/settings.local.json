@@ -48,7 +48,9 @@
       "Bash(choco *)",
       "Bash(vercel logs *)",
       "Bash(Select-String \"prototip\")",
-      "Bash(findstr \"prototip\")"
+      "Bash(findstr \"prototip\")",
+      "Bash(mkdir -p /tmp)",
+      "Bash(npx vercel *)"
     ]
   },
   "hooks": {

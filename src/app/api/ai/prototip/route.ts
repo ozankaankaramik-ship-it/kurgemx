@@ -3,7 +3,7 @@ import { genel, prototip as prototipStandart } from '@/lib/standartlar'
 
 export const maxDuration = 300
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY, maxRetries: 4 })
 
 const SISTEM_EK = `
 
@@ -336,26 +336,23 @@ export async function POST(req: Request) {
         const batches = chunkArray(screenIds, 5)
         console.log('[prototip] batch planı:', batches.length, 'batch,', screenIds.length, 'ekran')
 
-        // Aşama 2: Paralel batch ekran içerikleri
+        // Aşama 2: Sıralı batch ekran içerikleri (paralel yerine — rate limit aşımını önler)
         const contentMap = new Map<string, string>()
-        let completedBatches = 0
 
-        await Promise.all(
-          batches.map(async (batch, i) => {
-            console.log(`[prototip-batch-${i + 1}] başlıyor — ekranlar:`, batch.join(','))
-            const batchContents = await generateScreenBatch(
-              batch, skeleton, projeAdi, detayliAciklama, hikayelerMetni, isTR, i + 1,
-            )
-            completedBatches++
-            console.log(`[prototip-batch-${i + 1}] tamamlandı — ${batchContents.size}/${batch.length} ekran üretildi`)
-            progress(isUITR
-              ? `Ekranlar oluşturuluyor... (${completedBatches}/${batches.length})`
-              : `Generating screens... (${completedBatches}/${batches.length})`)
-            for (const [id, content] of batchContents) {
-              contentMap.set(id, content)
-            }
-          }),
-        )
+        for (let i = 0; i < batches.length; i++) {
+          const batch = batches[i]
+          console.log(`[prototip-batch-${i + 1}] başlıyor — ekranlar:`, batch.join(','))
+          const batchContents = await generateScreenBatch(
+            batch, skeleton, projeAdi, detayliAciklama, hikayelerMetni, isTR, i + 1,
+          )
+          console.log(`[prototip-batch-${i + 1}] tamamlandı — ${batchContents.size}/${batch.length} ekran üretildi`)
+          progress(isUITR
+            ? `Ekranlar oluşturuluyor... (${i + 1}/${batches.length})`
+            : `Generating screens... (${i + 1}/${batches.length})`)
+          for (const [id, content] of batchContents) {
+            contentMap.set(id, content)
+          }
+        }
 
         // Birleştirme
         progress(isUITR ? 'Prototip tamamlanıyor...' : 'Finalizing prototype...')
