@@ -1517,51 +1517,51 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
                   )}
                 </div>
                 {!ctx.dokuman.prototype && (
-                  <div style={{ opacity: 0.4, height: 320, border: '0.5px solid var(--color-border-tertiary)', borderRadius: 8, overflow: 'hidden', display: 'flex' }}>
+                  <div style={{ opacity: 0.4, height: 320, border: '0.5px solid #e5e7eb', borderRadius: 8, overflow: 'hidden', display: 'flex' }}>
                     {/* Sol menü skeleton */}
-                    <div style={{ width: 180, borderRight: '0.5px solid var(--color-border-tertiary)', background: 'var(--color-background-secondary)', padding: 16, display: 'flex', flexDirection: 'column', gap: 16, flexShrink: 0 }}>
+                    <div style={{ width: 180, borderRight: '0.5px solid #e5e7eb', background: '#f9fafb', padding: 16, display: 'flex', flexDirection: 'column', gap: 16, flexShrink: 0 }}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                        <div style={{ height: 8, borderRadius: 4, background: 'var(--color-background-tertiary)', width: '70%' }} />
-                        <div style={{ height: 6, borderRadius: 4, background: 'var(--color-background-tertiary)', width: '50%' }} />
+                        <div style={{ height: 8, borderRadius: 4, background: '#e5e7eb', width: '70%' }} />
+                        <div style={{ height: 6, borderRadius: 4, background: '#e5e7eb', width: '50%' }} />
                       </div>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                        <div style={{ height: 6, borderRadius: 4, background: 'var(--color-background-tertiary)', width: '40%', marginBottom: 4 }} />
+                        <div style={{ height: 6, borderRadius: 4, background: '#d1d5db', width: '40%', marginBottom: 4 }} />
                         {([80, 60, 70] as number[]).map((w, i) => (
-                          <div key={i} style={{ height: 6, borderRadius: 4, background: 'var(--color-background-tertiary)', width: `${w}%` }} />
+                          <div key={i} style={{ height: 6, borderRadius: 4, background: '#e5e7eb', width: `${w}%` }} />
                         ))}
                       </div>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                        <div style={{ height: 6, borderRadius: 4, background: 'var(--color-background-tertiary)', width: '40%', marginBottom: 4 }} />
+                        <div style={{ height: 6, borderRadius: 4, background: '#d1d5db', width: '40%', marginBottom: 4 }} />
                         {([65, 75] as number[]).map((w, i) => (
-                          <div key={i} style={{ height: 6, borderRadius: 4, background: 'var(--color-background-tertiary)', width: `${w}%` }} />
+                          <div key={i} style={{ height: 6, borderRadius: 4, background: '#e5e7eb', width: `${w}%` }} />
                         ))}
                       </div>
                     </div>
                     {/* Sağ içerik alanı skeleton */}
-                    <div style={{ flex: 1, background: 'var(--color-background-secondary)', padding: 16, display: 'flex', flexDirection: 'column', gap: 12, overflow: 'hidden' }}>
+                    <div style={{ flex: 1, background: '#f9fafb', padding: 16, display: 'flex', flexDirection: 'column', gap: 12, overflow: 'hidden' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <div style={{ height: 10, borderRadius: 4, background: 'var(--color-background-tertiary)', width: '30%' }} />
-                        <div style={{ height: 10, borderRadius: 10, background: 'var(--color-background-tertiary)', width: 40 }} />
-                        <div style={{ height: 10, borderRadius: 10, background: 'var(--color-background-tertiary)', width: 48 }} />
+                        <div style={{ height: 10, borderRadius: 4, background: '#e5e7eb', width: '30%' }} />
+                        <div style={{ height: 10, borderRadius: 10, background: '#e5e7eb', width: 40 }} />
+                        <div style={{ height: 10, borderRadius: 10, background: '#e5e7eb', width: 48 }} />
                       </div>
-                      <div style={{ border: '0.5px solid var(--color-border-tertiary)', borderRadius: 6, padding: 12, display: 'flex', flexDirection: 'column', gap: 10, background: 'var(--color-background-secondary)' }}>
+                      <div style={{ border: '0.5px solid #e5e7eb', borderRadius: 6, padding: 12, display: 'flex', flexDirection: 'column', gap: 10, background: '#ffffff' }}>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
                           {([0, 1, 2, 3] as number[]).map(i => (
-                            <div key={i} style={{ height: 24, borderRadius: 4, background: 'var(--color-background-tertiary)' }} />
+                            <div key={i} style={{ height: 24, borderRadius: 4, background: '#e5e7eb' }} />
                           ))}
                         </div>
                         <div style={{ display: 'flex', gap: 8 }}>
-                          <div style={{ height: 20, borderRadius: 4, background: 'var(--color-background-tertiary)', width: 60 }} />
-                          <div style={{ height: 20, borderRadius: 4, background: 'var(--color-background-tertiary)', width: 80 }} />
+                          <div style={{ height: 20, borderRadius: 4, background: '#e5e7eb', width: 60 }} />
+                          <div style={{ height: 20, borderRadius: 4, background: '#e5e7eb', width: 80 }} />
                         </div>
                       </div>
-                      <div style={{ border: '0.5px solid var(--color-border-tertiary)', borderRadius: 6, overflow: 'hidden', background: 'var(--color-background-secondary)' }}>
-                        <div style={{ height: 24, background: 'var(--color-background-tertiary)' }} />
+                      <div style={{ border: '0.5px solid #e5e7eb', borderRadius: 6, overflow: 'hidden', background: '#ffffff' }}>
+                        <div style={{ height: 24, background: '#e5e7eb' }} />
                         {([0, 1] as number[]).map(i => (
-                          <div key={i} style={{ display: 'flex', gap: 8, padding: '6px 12px', borderTop: '0.5px solid var(--color-border-tertiary)' }}>
-                            <div style={{ height: 6, borderRadius: 4, background: 'var(--color-background-tertiary)', width: '25%' }} />
-                            <div style={{ height: 6, borderRadius: 4, background: 'var(--color-background-tertiary)', width: '40%' }} />
-                            <div style={{ height: 6, borderRadius: 4, background: 'var(--color-background-tertiary)', width: '20%' }} />
+                          <div key={i} style={{ display: 'flex', gap: 8, padding: '6px 12px', borderTop: '0.5px solid #e5e7eb' }}>
+                            <div style={{ height: 6, borderRadius: 4, background: '#e5e7eb', width: '25%' }} />
+                            <div style={{ height: 6, borderRadius: 4, background: '#e5e7eb', width: '40%' }} />
+                            <div style={{ height: 6, borderRadius: 4, background: '#e5e7eb', width: '20%' }} />
                           </div>
                         ))}
                       </div>
