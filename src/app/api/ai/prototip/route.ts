@@ -72,6 +72,31 @@ export async function POST(req: Request) {
     })
     .join('\n')
 
+  const NAV_PATTERN = `
+KRİTİK — Navigasyon için SADECE bu kalıbı kullan, başka bir pattern YAZMA:
+
+<script>
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(function(s) { s.style.display = 'none'; });
+  var el = document.getElementById(id);
+  if (el) el.style.display = 'block';
+  document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
+  var nav = document.querySelector('[data-screen="' + id + '"]');
+  if (nav) nav.classList.add('active');
+}
+</script>
+
+Nav item kalıbı (her menü öğesi için):
+<a class="nav-item" data-screen="EKRAN_ID" onclick="showScreen('EKRAN_ID'); return false;" href="#">Ekran Adı</a>
+
+Ekran div kalıbı:
+<div id="EKRAN_ID" class="screen" style="display:none">...</div>
+
+Kurallar:
+- İlk ekran style="display:none" OLMADAN (varsayılan görünür) yazılır; geri kalanlar display:none
+- EKRAN_ID değerleri nav-item data-screen ve onclick ile div id arasında BIREBIR aynı olmalı — fazladan prefix/suffix ekleme
+- Menüde listelenen her ekran için mutlaka bir div.screen üretilmeli`
+
   const kullaniciPrompt = isTR
     ? `Proje adı: ${projeAdi}
 Detaylı açıklama: ${detayliAciklama}
@@ -88,7 +113,7 @@ Navigasyon ve Ekran Kuralları:
 - İlgili hikayeler tek ekranda birleştirilebilir — her hikaye için ayrı ekran zorunlu değil
 - Bir ekran birden fazla hikayeyi kapsayabilir; bir hikaye birden fazla ekrana yayılabilir
 - Sayfanın altında footer görünür olsun: sol tarafta bugünün tarihi, sağ tarafta "KurgemX" yazısı
-- KRİTİK: Her nav-item'ın onclick'inde kullandığı screen ID ile tam olarak eşleşen id'ye sahip bir div.screen elementi MUTLAKA bulunmalıdır. Menüde listelenen her ekran için içerik div'i üretilmeli, hiçbir ekran atlanmamalı
+${NAV_PATTERN}
 
 Yalnızca HTML döndür — açıklama veya markdown kod bloğu ekleme.`
     : `Project name: ${projeAdi}
@@ -106,7 +131,7 @@ Navigation and Screen Rules:
 - Related stories can be combined on a single screen — a separate screen per story is not required
 - One screen can cover multiple stories; one story can span multiple screens
 - Footer must be visible at the bottom: today's date on the left, "KurgemX" on the right
-- CRITICAL: Every nav-item's onclick screen ID MUST have a matching div.screen element with that exact id. Generate a content div for every screen listed in the sidebar — no screen may be omitted
+${NAV_PATTERN}
 
 Return only HTML — no explanation or markdown code block.`
 
