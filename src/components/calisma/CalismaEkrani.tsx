@@ -553,6 +553,7 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
   const [adim4HataMesaji, setAdim4HataMesaji] = useState<string | null>(null)
   const [adim4MesajIdx, setAdim4MesajIdx] = useState(0)
   const adim4IntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const [adim4StreamMsg, setAdim4StreamMsg] = useState<string | null>(null)
   const [adim4Tarih, setAdim4Tarih] = useState<string | null>(ctx.dokuman.prototipTarih ?? null)
   const [adim2Metrigi, setAdim2Metrigi] = useState<{sure: number; token: number} | null>(null)
   const [adim3Metrigi, setAdim3Metrigi] = useState<{sure: number; token: number} | null>(null)
@@ -828,13 +829,7 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
     setAdim4Hata(false)
     setAdim4HataMesaji(null)
     setAdim4MesajIdx(0)
-
-    const mesajlar = ADIM4_MESAJLAR[projektDili === 'TR' ? 'TR' : 'EN']
-    let msgIdx = 0
-    adim4IntervalRef.current = setInterval(() => {
-      msgIdx = Math.min(msgIdx + 1, mesajlar.length - 1)
-      setAdim4MesajIdx(msgIdx)
-    }, 4000)
+    setAdim4StreamMsg(null)
 
     const startTime4 = Date.now()
     try {
@@ -870,18 +865,25 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
 
       const reader = res.body.getReader()
       const decoder = new TextDecoder()
-      let htmlIcerik = ''
+      let rawAccumulated = ''
+      const PROGRESS_RE = /<!-- PROTOTIP_PROGRESS: (.*?) -->/g
 
       while (true) {
         const { done, value } = await reader.read()
         if (done) break
-        htmlIcerik += decoder.decode(value, { stream: true })
+        rawAccumulated += decoder.decode(value, { stream: true })
+        // Progress marker'larını çıkar ve ilerleme mesajını güncelle
+        const matches = [...rawAccumulated.matchAll(PROGRESS_RE)]
+        if (matches.length > 0) {
+          setAdim4StreamMsg(String(matches[matches.length - 1][1]))
+        }
       }
-      htmlIcerik += decoder.decode()
+      rawAccumulated += decoder.decode()
 
-      // Olası markdown kod bloğu sarmalayıcısını temizle
+      // Progress marker'larını temizle → HTML
+      let htmlIcerik = rawAccumulated.replace(/<!-- PROTOTIP_PROGRESS: .*? -->\n?/g, '').trim()
       htmlIcerik = htmlIcerik.replace(/^```html\s*/i, '').replace(/\s*```\s*$/, '').trim()
-      // Navigasyonu patch et — modelin yazdığı script'ten bağımsız çalışır
+      // Navigasyonu patch et — iskelet JS'ine ek olarak garantili override
       htmlIcerik = patchPrototipNavigasyon(htmlIcerik)
 
       const sure4 = Math.round((Date.now() - startTime4) / 1000)
@@ -916,10 +918,7 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
       setAdim4HataMesaji(err instanceof Error ? err.message : String(err))
       setAdim4Hata(true)
     } finally {
-      if (adim4IntervalRef.current) {
-        clearInterval(adim4IntervalRef.current)
-        adim4IntervalRef.current = null
-      }
+      setAdim4StreamMsg(null)
       setAdim4Yukleniyor(false)
     }
   }
@@ -1503,7 +1502,7 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
                       <div title={isAnaliziData === null ? t('adim4.isAnaliziGerekli') : undefined} style={{ display: 'inline-block' }}>
                         <GenerateButton
                           label={t('adim4.uret')}
-                          loadingLabel={(ADIM4_MESAJLAR[projektDili === 'TR' ? 'TR' : 'EN'])[adim4MesajIdx]}
+                          loadingLabel={adim4StreamMsg ?? (ADIM4_MESAJLAR[projektDili === 'TR' ? 'TR' : 'EN'])[adim4MesajIdx]}
                           regenerateLabel=""
                           disabled={isAnaliziData === null}
                           loading={adim4Yukleniyor}

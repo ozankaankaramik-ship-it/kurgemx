@@ -9,24 +9,247 @@ const SISTEM_EK = `
 
 Minimal ve sade HTML üret.
 Gereksiz CSS animasyonu ekleme.
-Her ekran için sadece o hikayeye ait UI elemanlarını üret.
-JavaScript sadece navigasyon ve form simülasyonu için kullan.
-Inline style yerine CSS class kullan.`
+JavaScript sadece navigasyon ve form simülasyonu için kullan.`
 
 const SISTEM = `${genel}\n\n${prototipStandart}${SISTEM_EK}`
 
-const MAX_TOKENS: Record<string, number> = {
-  Küçük: 32000,
-  Orta: 32000,
-  Büyük: 32000,
+interface HikayeItem {
+  no: string; ad: string; destan: string; surum: string; sprint: string
 }
 
-interface HikayeItem {
-  no: string
-  ad: string
-  destan: string
-  surum: string
-  sprint: string
+function chunkArray<T>(arr: T[], size: number): T[][] {
+  const result: T[][] = []
+  for (let i = 0; i < arr.length; i += size) result.push(arr.slice(i, i + size))
+  return result
+}
+
+function extractScreenIds(html: string): string[] {
+  const ids: string[] = []
+  const re = /<!--\s*SCREEN_CONTENT_([A-Za-z0-9_-]+)\s*-->/g
+  let m
+  while ((m = re.exec(html)) !== null) {
+    if (!ids.includes(m[1])) ids.push(m[1])
+  }
+  return ids
+}
+
+function extractScreenName(skeleton: string, screenId: string): string {
+  const re = new RegExp(`data-screen=["']${screenId}["'][^>]*>\\s*([^<]+)`, 'i')
+  const m = skeleton.match(re)
+  return m ? m[1].trim() : screenId
+}
+
+function buildHikayelerMetni(
+  hikayeler: HikayeItem[],
+  positiveAcler: Record<string, string[]>,
+  isTR: boolean,
+): string {
+  return hikayeler
+    .map(h => {
+      const aclar = positiveAcler[h.no]
+      const acMetni = aclar?.length ? `\n  Positive ACs: ${aclar.join(' | ')}` : ''
+      return `- ${h.no} | ${h.ad} | ${isTR ? 'Destan' : 'Epic'}: ${h.destan} | ${h.surum} | ${h.sprint}${acMetni}`
+    })
+    .join('\n')
+}
+
+// Garantili navigasyon JS — skeleton prompt'a gömülür ve patchPrototipNavigasyon tarafından da eklenir
+const SHARED_NAV_JS = `<script>
+(function(){
+  function showScreen(id){
+    document.querySelectorAll('.screen').forEach(function(s){s.style.display='none';});
+    var el=document.getElementById(id);if(el)el.style.display='block';
+    document.querySelectorAll('[data-screen]').forEach(function(n){n.classList.remove('active');});
+    var nav=document.querySelector('[data-screen="'+id+'"]');if(nav)nav.classList.add('active');
+  }
+  window.showScreen=showScreen;
+  document.addEventListener('DOMContentLoaded',function(){
+    var screens=document.querySelectorAll('.screen');
+    screens.forEach(function(s){s.style.display='none';});
+    if(screens.length>0){
+      var first=screens[0];first.style.display='block';
+      var n=document.querySelector('[data-screen="'+first.id+'"]');if(n)n.classList.add('active');
+    }
+    document.querySelectorAll('[data-screen]').forEach(function(nav){
+      nav.addEventListener('click',function(e){
+        e.preventDefault();var sid=nav.getAttribute('data-screen');if(sid)showScreen(sid);
+      });
+    });
+  });
+})();
+</script>`
+
+async function generateSkeleton(
+  projeAdi: string,
+  detayliAciklama: string,
+  hikayelerMetni: string,
+  isTR: boolean,
+): Promise<string> {
+  const prompt = isTR
+    ? `Proje: ${projeAdi}
+Açıklama: ${detayliAciklama}
+Çıktı dili: Türkçe
+
+Hikayeler:
+${hikayelerMetni}
+
+Bu proje için HTML prototip iskeletini üret. Şunları içermeli:
+
+1. Tüm CSS stilleri (prototip.md tasarım sistemine uygun — sidebar, ekran layout, nav, form, tablo stilleri)
+2. Sol sidebar — maksimum 10 nav item, mantıksal gruplandırma, footer (sol: bugünün tarihi, sağ: "KurgemX")
+3. Aşağıdaki JS bloğunu AYNEN koy (değiştirme):
+${SHARED_NAV_JS}
+
+4. Her ekran için BOŞ bir div — içinde SADECE şu placeholder:
+
+Nav item kalıbı:
+<a class="nav-item" data-screen="SCREEN_ID" href="#">Ekran Adı</a>
+
+Ekran div kalıbı:
+<div id="SCREEN_ID" class="screen" style="display:none">
+<!-- SCREEN_CONTENT_SCREEN_ID -->
+</div>
+
+KRİTİK KURALLAR:
+- SCREEN_ID: küçük harf, tire ile ayrılmış (ör: kullanici-listesi, urun-detay)
+- Her nav-item'ın data-screen değeri ile tam eşleşen bir div.screen id'si olmalı
+- Ekran div'lerinin içinde SADECE <!-- SCREEN_CONTENT_SCREEN_ID --> olsun, başka içerik yok
+- Tüm ekranlar style="display:none" — JS DOMContentLoaded'da ilkini gösterir
+
+Yalnızca HTML döndür.`
+    : `Project: ${projeAdi}
+Description: ${detayliAciklama}
+Output language: English
+
+Stories:
+${hikayelerMetni}
+
+Generate the HTML skeleton for this prototype. Must include:
+
+1. All CSS styles (per prototip.md design system — sidebar, screen layout, nav, form, table styles)
+2. Left sidebar — max 10 nav items, logical grouping, footer (left: today's date, right: "KurgemX")
+3. Include the EXACT JS block below (do not modify):
+${SHARED_NAV_JS}
+
+4. For each screen, an EMPTY div containing ONLY this placeholder:
+
+Nav item pattern:
+<a class="nav-item" data-screen="SCREEN_ID" href="#">Screen Name</a>
+
+Screen div pattern:
+<div id="SCREEN_ID" class="screen" style="display:none">
+<!-- SCREEN_CONTENT_SCREEN_ID -->
+</div>
+
+CRITICAL RULES:
+- SCREEN_ID: lowercase, hyphen-separated (e.g., user-list, product-detail)
+- Every nav-item's data-screen value must exactly match a div.screen id
+- Screen divs must contain ONLY <!-- SCREEN_CONTENT_SCREEN_ID -->, no other content
+- All screens start with style="display:none" — JS shows the first on DOMContentLoaded
+
+Return only HTML.`
+
+  const response = await client.messages.create({
+    model: 'claude-sonnet-4-6',
+    max_tokens: 4000,
+    system: [{ type: 'text', text: SISTEM, cache_control: { type: 'ephemeral' } }],
+    messages: [{ role: 'user', content: prompt }],
+  })
+
+  console.log('[prototip-skeleton] stop_reason:', response.stop_reason, 'output_tokens:', response.usage?.output_tokens)
+
+  const raw = response.content[0].type === 'text' ? response.content[0].text : ''
+  return raw.replace(/^```html\s*/i, '').replace(/\s*```\s*$/, '').trim()
+}
+
+async function generateScreenBatch(
+  batchScreenIds: string[],
+  skeleton: string,
+  projeAdi: string,
+  detayliAciklama: string,
+  hikayelerMetni: string,
+  isTR: boolean,
+  batchIdx: number,
+): Promise<Map<string, string>> {
+  const screenList = batchScreenIds
+    .map(id => `- ${id}: ${extractScreenName(skeleton, id)}`)
+    .join('\n')
+
+  const prompt = isTR
+    ? `Proje: ${projeAdi}
+Açıklama: ${detayliAciklama}
+Çıktı dili: Türkçe
+
+Hikayeler:
+${hikayelerMetni}
+
+Aşağıdaki ekranların iç HTML içeriğini üret. Hikayenin işlevine uygun UI kullan:
+- Liste/tablo → veri tablosu (prototip.md tablo stili)
+- Form → doldurulabilir form (prototip.md form stili)
+- Detay → detay kartı
+- Dashboard → özet kartlar
+
+SADECE şu formatta döndür — başka açıklama ekleme:
+
+SCREEN:[screen-id]
+[ekranın iç HTML içeriği — wrapper div hariç, direkt içerik elementleri]
+/SCREEN
+
+Ekranlar:
+${screenList}
+
+Kurallar:
+- Prototip.md tasarım standardına uy (renkler, butonlar, tablolar)
+- Gerçekçi Türkçe örnek veriler kullan
+- Her ekran bağımsız çalışmalı`
+    : `Project: ${projeAdi}
+Description: ${detayliAciklama}
+Output language: English
+
+Stories:
+${hikayelerMetni}
+
+Generate the inner HTML content for the following screens. Use appropriate UI for each screen's function:
+- List/table → data table (prototip.md table style)
+- Form → fillable form (prototip.md form style)
+- Detail → detail card
+- Dashboard → summary cards
+
+Return ONLY in this exact format — no other text:
+
+SCREEN:[screen-id]
+[screen inner HTML content — no wrapper div, just the content elements]
+/SCREEN
+
+Screens:
+${screenList}
+
+Rules:
+- Follow prototip.md design standards (colors, buttons, tables)
+- Use realistic English example data
+- Each screen must work independently`
+
+  const response = await client.messages.create({
+    model: 'claude-sonnet-4-6',
+    max_tokens: 20000,
+    system: [{ type: 'text', text: SISTEM, cache_control: { type: 'ephemeral' } }],
+    messages: [{ role: 'user', content: prompt }],
+  })
+
+  console.log(
+    `[prototip-batch-${batchIdx}] stop_reason:`, response.stop_reason,
+    'output_tokens:', response.usage?.output_tokens,
+    'screens:', batchScreenIds.join(','),
+  )
+
+  const raw = response.content[0].type === 'text' ? response.content[0].text : ''
+  const result = new Map<string, string>()
+  const re = /SCREEN:([A-Za-z0-9_-]+)\n([\s\S]*?)\/SCREEN/g
+  let m
+  while ((m = re.exec(raw)) !== null) {
+    result.set(m[1].trim(), m[2].trim())
+  }
+  return result
 }
 
 export async function POST(req: Request) {
@@ -50,9 +273,7 @@ export async function POST(req: Request) {
   const hikayeler = body.hikayeler ?? []
   const positiveAcler = body.positiveAcler ?? {}
   const projeDili = (body.projeDili ?? 'TR').trim().toUpperCase()
-  const projeBuyuklugu = (body.projeBuyuklugu ?? 'Orta').trim()
   const isTR = projeDili === 'TR'
-  const maxTokens = MAX_TOKENS[projeBuyuklugu] ?? 20000
 
   if (!projeAdi || !detayliAciklama || hikayeler.length === 0) {
     return new Response(JSON.stringify({ error: 'empty_input' }), { status: 400 })
@@ -62,118 +283,73 @@ export async function POST(req: Request) {
     return new Response(JSON.stringify({ error: 'api_key_missing' }), { status: 500 })
   }
 
-  const hikayelerMetni = hikayeler
-    .map(h => {
-      const aclar = positiveAcler[h.no]
-      const acMetni = aclar && aclar.length > 0
-        ? `\n  Positive ACs: ${aclar.join(' | ')}`
-        : ''
-      return `- ${h.no} | ${h.ad} | ${isTR ? 'Destan' : 'Epic'}: ${h.destan} | ${h.surum} | ${h.sprint}${acMetni}`
-    })
-    .join('\n')
+  const hikayelerMetni = buildHikayelerMetni(hikayeler, positiveAcler, isTR)
+  const encoder = new TextEncoder()
 
-  const NAV_PATTERN = `
-KRİTİK — Navigasyon için SADECE bu kalıbı kullan, başka bir pattern YAZMA:
+  const readable = new ReadableStream({
+    async start(controller) {
+      const emit = (s: string) => controller.enqueue(encoder.encode(s))
+      const progress = (msg: string) => emit(`<!-- PROTOTIP_PROGRESS: ${msg} -->\n`)
 
-<script>
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(function(s) { s.style.display = 'none'; });
-  var el = document.getElementById(id);
-  if (el) el.style.display = 'block';
-  document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
-  var nav = document.querySelector('[data-screen="' + id + '"]');
-  if (nav) nav.classList.add('active');
-}
-</script>
+      try {
+        // Aşama 1: İskelet
+        progress(isTR ? 'İskelet oluşturuluyor...' : 'Building skeleton...')
+        const skeleton = await generateSkeleton(projeAdi, detayliAciklama, hikayelerMetni, isTR)
 
-Nav item kalıbı (her menü öğesi için):
-<a class="nav-item" data-screen="EKRAN_ID" onclick="showScreen('EKRAN_ID'); return false;" href="#">Ekran Adı</a>
+        const screenIds = extractScreenIds(skeleton)
+        console.log('[prototip] screen ids:', screenIds)
 
-Ekran div kalıbı:
-<div id="EKRAN_ID" class="screen" style="display:none">...</div>
-
-Kurallar:
-- İlk ekran style="display:none" OLMADAN (varsayılan görünür) yazılır; geri kalanlar display:none
-- EKRAN_ID değerleri nav-item data-screen ve onclick ile div id arasında BIREBIR aynı olmalı — fazladan prefix/suffix ekleme
-- Menüde listelenen her ekran için mutlaka bir div.screen üretilmeli`
-
-  const kullaniciPrompt = isTR
-    ? `Proje adı: ${projeAdi}
-Detaylı açıklama: ${detayliAciklama}
-Çıktı dili: Türkçe
-
-Hikayeler:
-${hikayelerMetni}
-
-Prototip.md standartlarına uygun, tüm hikayeler için tek bir standalone HTML dosyası üret.
-Tüm CSS ve JavaScript satır içinde olsun — dış bağımlılık olmadan çalışsın.
-
-Navigasyon ve Ekran Kuralları:
-- Sol menüde maksimum 10 öğe göster; menü gruplandırmasını mantıksal olarak yap (destanlara birebir uymak zorunda değil)
-- İlgili hikayeler tek ekranda birleştirilebilir — her hikaye için ayrı ekran zorunlu değil
-- Bir ekran birden fazla hikayeyi kapsayabilir; bir hikaye birden fazla ekrana yayılabilir
-- Sayfanın altında footer görünür olsun: sol tarafta bugünün tarihi, sağ tarafta "KurgemX" yazısı
-${NAV_PATTERN}
-
-Yalnızca HTML döndür — açıklama veya markdown kod bloğu ekleme.`
-    : `Project name: ${projeAdi}
-Detailed description: ${detayliAciklama}
-Output language: English
-
-Stories:
-${hikayelerMetni}
-
-Generate a single standalone HTML file following prototip.md standards for all stories.
-All CSS and JavaScript must be inline — no external dependencies.
-
-Navigation and Screen Rules:
-- Show maximum 10 items in the sidebar; group navigation logically (does not need to mirror epics exactly)
-- Related stories can be combined on a single screen — a separate screen per story is not required
-- One screen can cover multiple stories; one story can span multiple screens
-- Footer must be visible at the bottom: today's date on the left, "KurgemX" on the right
-${NAV_PATTERN}
-
-Return only HTML — no explanation or markdown code block.`
-
-  try {
-    const stream = await client.messages.create({
-      model: 'claude-sonnet-4-6',
-      max_tokens: maxTokens,
-      system: [
-        { type: 'text', text: SISTEM, cache_control: { type: 'ephemeral' } },
-      ],
-      messages: [{ role: 'user', content: kullaniciPrompt }],
-      stream: true,
-    })
-
-    const encoder = new TextEncoder()
-    const readable = new ReadableStream({
-      async start(controller) {
-        try {
-          for await (const event of stream) {
-            if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
-              controller.enqueue(encoder.encode(event.delta.text))
-            }
-            if (event.type === 'message_delta') {
-              console.log('[prototip] finish_reason:', event.delta.stop_reason, 'output_tokens:', event.usage?.output_tokens)
-            }
-          }
+        if (screenIds.length === 0) {
+          // Placeholder bulunamadı — iskelet doğrudan döndür
+          progress(isTR ? 'Prototip tamamlanıyor...' : 'Finalizing prototype...')
+          emit(skeleton)
           controller.close()
-        } catch (err) {
-          controller.error(err)
+          return
         }
-      },
-    })
 
-    return new Response(readable, {
-      headers: {
-        'Content-Type': 'text/plain; charset=utf-8',
-        'Cache-Control': 'no-cache',
-        'X-Accel-Buffering': 'no',
-      },
-    })
-  } catch (err) {
-    console.error('[prototip] API hatası:', err)
-    return new Response(JSON.stringify({ error: 'api_error', detail: String(err) }), { status: 500 })
-  }
+        const batches = chunkArray(screenIds, 5)
+
+        // Aşama 2: Paralel batch ekran içerikleri
+        const contentMap = new Map<string, string>()
+        let completedBatches = 0
+
+        await Promise.all(
+          batches.map(async (batch, i) => {
+            const batchContents = await generateScreenBatch(
+              batch, skeleton, projeAdi, detayliAciklama, hikayelerMetni, isTR, i + 1,
+            )
+            completedBatches++
+            progress(isTR
+              ? `Ekranlar oluşturuluyor... (${completedBatches}/${batches.length})`
+              : `Generating screens... (${completedBatches}/${batches.length})`)
+            for (const [id, content] of batchContents) {
+              contentMap.set(id, content)
+            }
+          }),
+        )
+
+        // Birleştirme
+        progress(isTR ? 'Prototip tamamlanıyor...' : 'Finalizing prototype...')
+        let html = skeleton
+        for (const [id, content] of contentMap) {
+          html = html.replace(`<!-- SCREEN_CONTENT_${id} -->`, content)
+        }
+
+        console.log('[prototip] finish=assembled screens:', screenIds.length, 'batches:', batches.length)
+        emit(html)
+        controller.close()
+      } catch (err) {
+        console.error('[prototip] hata:', err)
+        controller.error(err)
+      }
+    },
+  })
+
+  return new Response(readable, {
+    headers: {
+      'Content-Type': 'text/plain; charset=utf-8',
+      'Cache-Control': 'no-cache',
+      'X-Accel-Buffering': 'no',
+    },
+  })
 }
