@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import Adim1Formu from './Adim1Formu'
 import { ProjeProvider, useProje, type InitialProje } from './ProjeContext'
 import GenerateButton, { ProgressBar } from './GenerateButton'
@@ -518,6 +518,7 @@ export default function CalismaEkrani({
 // İç bileşen: context'i kullanır
 function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: string }) {
   const t = useTranslations('calismaEkrani')
+  const locale = useLocale()
   const ctx = useProje()
   const { projeId, ad, shortDesc, detailedDesc, projektDili, projeBuyuklugu } = ctx
 
@@ -849,6 +850,7 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
           positiveAcler,
           projeDili: projektDili,
           projeBuyuklugu: ctx.projeBuyuklugu ?? 'Orta',
+          arayuzDili: locale,
         }),
       })
 
@@ -1076,7 +1078,7 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
                     ) : (
                       <GenerateButton
                         label={t('adim2.uret')}
-                        loadingLabel={(ADIM2_MESAJLAR[projektDili === 'TR' ? 'TR' : 'EN'])[adim2MesajIdx]}
+                        loadingLabel={(ADIM2_MESAJLAR[locale === 'tr' ? 'TR' : 'EN'])[adim2MesajIdx]}
                         regenerateLabel=""
                         disabled={!adim2Aktif}
                         loading={adim2Yukleniyor}
@@ -1363,7 +1365,7 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
                     ) : (
                       <GenerateButton
                         label={t('adim3.uret')}
-                        loadingLabel={(ADIM3_MESAJLAR[projektDili === 'TR' ? 'TR' : 'EN'])[adim3MesajIdx]}
+                        loadingLabel={(ADIM3_MESAJLAR[locale === 'tr' ? 'TR' : 'EN'])[adim3MesajIdx]}
                         regenerateLabel=""
                         disabled={!adim3Aktif}
                         loading={adim3Yukleniyor}
@@ -1502,7 +1504,7 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
                       <div title={isAnaliziData === null ? t('adim4.isAnaliziGerekli') : undefined} style={{ display: 'inline-block' }}>
                         <GenerateButton
                           label={t('adim4.uret')}
-                          loadingLabel={adim4StreamMsg ?? (ADIM4_MESAJLAR[projektDili === 'TR' ? 'TR' : 'EN'])[adim4MesajIdx]}
+                          loadingLabel={adim4StreamMsg ?? (ADIM4_MESAJLAR[locale === 'tr' ? 'TR' : 'EN'])[adim4MesajIdx]}
                           regenerateLabel=""
                           disabled={isAnaliziData === null}
                           loading={adim4Yukleniyor}

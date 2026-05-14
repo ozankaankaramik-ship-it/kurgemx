@@ -93,14 +93,19 @@ Açıklama: ${detayliAciklama}
 Hikayeler:
 ${hikayelerMetni}
 
-Bu proje için HTML prototip iskeletini üret. Şunları içermeli:
+Bu proje için HTML prototip iskeletini üret.
 
-1. Tüm CSS stilleri (prototip.md tasarım sistemine uygun — sidebar, ekran layout, nav, form, tablo stilleri)
-2. Sol sidebar — maksimum 10 nav item, mantıksal gruplandırma, footer (sol: bugünün tarihi, sağ: "KurgemX")
-3. Aşağıdaki JS bloğunu AYNEN koy (değiştirme):
-${SHARED_NAV_JS}
-
-4. Her ekran için BOŞ bir div — içinde SADECE şu placeholder:
+HTML belgesi ZORUNLU yapısı (bu sıraya uy):
+<html>
+  <head>
+    <!-- Tüm CSS stilleri buraya (prototip.md tasarım sistemine uygun — sidebar, ekran layout, nav, form, tablo) -->
+  </head>
+  <body>
+    <!-- 1. Sol sidebar: maksimum 10 nav item, mantıksal gruplandırma, footer (sol: bugünün tarihi, sağ: "KurgemX") -->
+    <!-- 2. Her ekran için BOŞ div — aşağıdaki kalıba uy -->
+    <!-- 3. Script bloğu: nav ve içerik bölümlerinden SONRA, </body> kapanmadan hemen önce -->
+  </body>
+</html>
 
 Nav item kalıbı:
 <a class="nav-item" data-screen="SCREEN_ID" href="#">Ekran Adı</a>
@@ -110,11 +115,15 @@ Ekran div kalıbı:
 <!-- SCREEN_CONTENT_SCREEN_ID -->
 </div>
 
+Script bloğunu nav ve içerik bölümlerinden SONRA, </body> kapanmadan hemen önce AYNEN koy (değiştirme):
+${SHARED_NAV_JS}
+
 KRİTİK KURALLAR:
 - SCREEN_ID: küçük harf, tire ile ayrılmış (ör: kullanici-listesi, urun-detay)
 - Her nav-item'ın data-screen değeri ile tam eşleşen bir div.screen id'si olmalı
 - Ekran div'lerinin içinde SADECE <!-- SCREEN_CONTENT_SCREEN_ID --> olsun, başka içerik yok
 - Tüm ekranlar style="display:none" — JS DOMContentLoaded'da ilkini gösterir
+- Script bloğu MUTLAKA </body> kapanmadan hemen önce olmalı
 
 Yalnızca HTML döndür.`
     : `Project: ${projeAdi}
@@ -124,14 +133,19 @@ Output language: English
 Stories:
 ${hikayelerMetni}
 
-Generate the HTML skeleton for this prototype. Must include:
+Generate the HTML skeleton for this prototype.
 
-1. All CSS styles (per prototip.md design system — sidebar, screen layout, nav, form, table styles)
-2. Left sidebar — max 10 nav items, logical grouping, footer (left: today's date, right: "KurgemX")
-3. Include the EXACT JS block below (do not modify):
-${SHARED_NAV_JS}
-
-4. For each screen, an EMPTY div containing ONLY this placeholder:
+REQUIRED HTML document structure (follow this order exactly):
+<html>
+  <head>
+    <!-- All CSS styles here (per prototip.md design system — sidebar, screen layout, nav, form, table) -->
+  </head>
+  <body>
+    <!-- 1. Left sidebar: max 10 nav items, logical grouping, footer (left: today's date, right: "KurgemX") -->
+    <!-- 2. Empty screen divs — follow the pattern below -->
+    <!-- 3. Script block: AFTER nav and content sections, just before </body> -->
+  </body>
+</html>
 
 Nav item pattern:
 <a class="nav-item" data-screen="SCREEN_ID" href="#">Screen Name</a>
@@ -141,22 +155,29 @@ Screen div pattern:
 <!-- SCREEN_CONTENT_SCREEN_ID -->
 </div>
 
+Place the script block AFTER nav and all screen divs, just before </body> — include it EXACTLY as shown (do not modify):
+${SHARED_NAV_JS}
+
 CRITICAL RULES:
 - SCREEN_ID: lowercase, hyphen-separated (e.g., user-list, product-detail)
 - Every nav-item's data-screen value must exactly match a div.screen id
 - Screen divs must contain ONLY <!-- SCREEN_CONTENT_SCREEN_ID -->, no other content
 - All screens start with style="display:none" — JS shows the first on DOMContentLoaded
+- Script block MUST be placed just before </body>
 
 Return only HTML.`
 
   const response = await client.messages.create({
     model: 'claude-sonnet-4-6',
-    max_tokens: 4000,
+    max_tokens: 6000,
     system: [{ type: 'text', text: SISTEM, cache_control: { type: 'ephemeral' } }],
     messages: [{ role: 'user', content: prompt }],
   })
 
   console.log('[prototip-skeleton] stop_reason:', response.stop_reason, 'output_tokens:', response.usage?.output_tokens)
+  if (response.stop_reason === 'max_tokens') {
+    console.warn('[prototip-skeleton] UYARI: max_tokens sınırına ulaşıldı — iskelet eksik olabilir! output_tokens:', response.usage?.output_tokens)
+  }
 
   const raw = response.content[0].type === 'text' ? response.content[0].text : ''
   return raw.replace(/^```html\s*/i, '').replace(/\s*```\s*$/, '').trim()
@@ -260,6 +281,7 @@ export async function POST(req: Request) {
     positiveAcler?: Record<string, string[]>
     projeDili?: string
     projeBuyuklugu?: string
+    arayuzDili?: string
   }
 
   try {
@@ -274,6 +296,8 @@ export async function POST(req: Request) {
   const positiveAcler = body.positiveAcler ?? {}
   const projeDili = (body.projeDili ?? 'TR').trim().toUpperCase()
   const isTR = projeDili === 'TR'
+  const arayuzDili = (body.arayuzDili ?? '').trim().toLowerCase()
+  const isUITR = arayuzDili === 'tr' || (arayuzDili === '' && isTR)
 
   if (!projeAdi || !detayliAciklama || hikayeler.length === 0) {
     return new Response(JSON.stringify({ error: 'empty_input' }), { status: 400 })
@@ -293,21 +317,24 @@ export async function POST(req: Request) {
 
       try {
         // Aşama 1: İskelet
-        progress(isTR ? 'İskelet oluşturuluyor...' : 'Building skeleton...')
+        progress(isUITR ? 'İskelet oluşturuluyor...' : 'Building skeleton...')
+        console.log('[prototip-skeleton] başlıyor — projeDili:', projeDili, 'arayuzDili:', arayuzDili)
         const skeleton = await generateSkeleton(projeAdi, detayliAciklama, hikayelerMetni, isTR)
 
         const screenIds = extractScreenIds(skeleton)
-        console.log('[prototip] screen ids:', screenIds)
+        console.log('[prototip] iskelet hazır — screen ids:', screenIds, 'uzunluk:', skeleton.length)
 
         if (screenIds.length === 0) {
-          // Placeholder bulunamadı — iskelet doğrudan döndür
-          progress(isTR ? 'Prototip tamamlanıyor...' : 'Finalizing prototype...')
+          // Placeholder bulunamadı — iskelet eksik veya placeholder yok
+          console.warn('[prototip] UYARI: screen placeholder bulunamadı — iskelet doğrudan döndürülüyor. Skeleton başlangıcı:', skeleton.slice(0, 300))
+          progress(isUITR ? 'Prototip tamamlanıyor...' : 'Finalizing prototype...')
           emit(skeleton)
           controller.close()
           return
         }
 
         const batches = chunkArray(screenIds, 5)
+        console.log('[prototip] batch planı:', batches.length, 'batch,', screenIds.length, 'ekran')
 
         // Aşama 2: Paralel batch ekran içerikleri
         const contentMap = new Map<string, string>()
@@ -315,11 +342,13 @@ export async function POST(req: Request) {
 
         await Promise.all(
           batches.map(async (batch, i) => {
+            console.log(`[prototip-batch-${i + 1}] başlıyor — ekranlar:`, batch.join(','))
             const batchContents = await generateScreenBatch(
               batch, skeleton, projeAdi, detayliAciklama, hikayelerMetni, isTR, i + 1,
             )
             completedBatches++
-            progress(isTR
+            console.log(`[prototip-batch-${i + 1}] tamamlandı — ${batchContents.size}/${batch.length} ekran üretildi`)
+            progress(isUITR
               ? `Ekranlar oluşturuluyor... (${completedBatches}/${batches.length})`
               : `Generating screens... (${completedBatches}/${batches.length})`)
             for (const [id, content] of batchContents) {
@@ -329,17 +358,21 @@ export async function POST(req: Request) {
         )
 
         // Birleştirme
-        progress(isTR ? 'Prototip tamamlanıyor...' : 'Finalizing prototype...')
+        progress(isUITR ? 'Prototip tamamlanıyor...' : 'Finalizing prototype...')
         let html = skeleton
         for (const [id, content] of contentMap) {
           html = html.replace(`<!-- SCREEN_CONTENT_${id} -->`, content)
         }
 
-        console.log('[prototip] finish=assembled screens:', screenIds.length, 'batches:', batches.length)
+        const missingScreens = screenIds.filter(id => !contentMap.has(id))
+        if (missingScreens.length > 0) {
+          console.warn('[prototip] eksik ekranlar (içerik üretilemedi):', missingScreens.join(','))
+        }
+        console.log('[prototip] finish=assembled screens:', screenIds.length, 'batches:', batches.length, 'contentMap boyutu:', contentMap.size)
         emit(html)
         controller.close()
       } catch (err) {
-        console.error('[prototip] hata:', err)
+        console.error('[prototip] KRİTİK HATA:', err instanceof Error ? err.message : String(err), err)
         controller.error(err)
       }
     },
