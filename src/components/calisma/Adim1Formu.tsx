@@ -77,14 +77,19 @@ export default function Adim1Formu() {
   // Sayfa scroll'unu yalnızca içerik ilk kez belirdiğinde tetikle
   const didScrollIntoViewRef = useRef(false)
 
-  // Textarea'yı içeriğe göre büyüt — streaming sırasında height:auto reseti layout shift
-  // yapıp sayfayı kaydırdığından yalnızca yükleme bittikten sonra çalıştır
+  // Textarea'yı içeriğe göre büyüt.
+  // Streaming sırasında: yalnızca büyüt (height:auto sıfırı layout shift yaptığından).
+  // Bittikten sonra: height:auto ile tam fit et.
   useEffect(() => {
-    if (yzYukleniyor) return
     const ta = yzTextareaRef.current
     if (!ta) return
-    ta.style.height = 'auto'
-    ta.style.height = `${ta.scrollHeight}px`
+    if (yzYukleniyor) {
+      const current = parseInt(ta.style.height) || 0
+      if (ta.scrollHeight > current) ta.style.height = `${ta.scrollHeight}px`
+    } else {
+      ta.style.height = 'auto'
+      ta.style.height = `${ta.scrollHeight}px`
+    }
   }, [yzCikti, yzYukleniyor])
 
   // İç kapsayıcıyı aşağı kaydır — iş analizi dokümanıyla aynı davranış
