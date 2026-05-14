@@ -239,10 +239,10 @@
       "baslik": "Prototip",
       "uret": "Prototip Oluştur",
       "olusturuluyor": "Prototip oluşturuluyor...",
-      "cerceveBos": "Prototip önizlemesi burada görünecek.",
       "indir": "İndir (.html)",
       "yeniSekme": "Yeni Sekmede Aç",
-      "prototipOlusturuldu": "✓ Prototip oluşturuldu"
+      "prototipOlusturuldu": "✓ Prototip oluşturuldu",
+      "isAnaliziGerekli": "Önce İş Analizi Dokümanı oluşturulmalıdır"
     },
     "adim5": {
       "baslik": "Test Senaryosu",
@@ -277,7 +277,7 @@
     },
     "yenidenOlustur": "Yeniden Oluştur",
     "uretimNotu": "Üretim arka planda devam ediyor. Bu sekmeyi kapatmadan başka işlerinize bakabilirsiniz.",
-    "uretimMetrigi": "Üretim süresi: {sure}s · Tahmini token: ~{token}",
+    "uretimMetrigi": "Üretim süresi: {sure} · Tahmini token: ~{token}",
     "kisaltmalar": {
       "baslik": "Kısaltmalar",
       "kod": "Kod",

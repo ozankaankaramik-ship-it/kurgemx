@@ -5,7 +5,21 @@ export const maxDuration = 300
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
-const SISTEM = `${genel}\n\n${prototipStandart}`
+const SISTEM_EK = `
+
+Minimal ve sade HTML üret.
+Gereksiz CSS animasyonu ekleme.
+Her ekran için sadece o hikayeye ait UI elemanlarını üret.
+JavaScript sadece navigasyon ve form simülasyonu için kullan.
+Inline style yerine CSS class kullan.`
+
+const SISTEM = `${genel}\n\n${prototipStandart}${SISTEM_EK}`
+
+const MAX_TOKENS: Record<string, number> = {
+  Küçük: 10000,
+  Orta: 20000,
+  Büyük: 32000,
+}
 
 interface HikayeItem {
   no: string
@@ -22,6 +36,7 @@ export async function POST(req: Request) {
     hikayeler?: HikayeItem[]
     positiveAcler?: Record<string, string[]>
     projeDili?: string
+    projeBuyuklugu?: string
   }
 
   try {
@@ -35,7 +50,9 @@ export async function POST(req: Request) {
   const hikayeler = body.hikayeler ?? []
   const positiveAcler = body.positiveAcler ?? {}
   const projeDili = (body.projeDili ?? 'TR').trim().toUpperCase()
+  const projeBuyuklugu = (body.projeBuyuklugu ?? 'Orta').trim()
   const isTR = projeDili === 'TR'
+  const maxTokens = MAX_TOKENS[projeBuyuklugu] ?? 20000
 
   if (!projeAdi || !detayliAciklama || hikayeler.length === 0) {
     return new Response(JSON.stringify({ error: 'empty_input' }), { status: 400 })
@@ -96,7 +113,7 @@ Return only HTML — no explanation or markdown code block.`
   try {
     const stream = await client.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 32000,
+      max_tokens: maxTokens,
       system: [
         { type: 'text', text: SISTEM, cache_control: { type: 'ephemeral' } },
       ],

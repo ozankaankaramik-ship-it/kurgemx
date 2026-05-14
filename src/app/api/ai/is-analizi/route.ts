@@ -351,6 +351,7 @@ export async function POST(req: Request) {
     bolum?: Bolum
     acBaslangic?: number
     brBaslangic?: number
+    projeBuyuklugu?: string
   }
   try {
     body = await req.json()
@@ -365,7 +366,11 @@ export async function POST(req: Request) {
   const bolum = body.bolum
   const acBaslangic = Math.max(1, Math.floor(body.acBaslangic ?? 1))
   const brBaslangic = Math.max(1, Math.floor(body.brBaslangic ?? 1))
+  const projeBuyuklugu = (body.projeBuyuklugu ?? 'Orta').trim()
   const dilAdi = DIL_ETIKET[projeDili] ?? 'English'
+
+  const MAX_TOKENS_MAP: Record<string, number> = { Küçük: 8000, Orta: 16000, Büyük: 24000 }
+  const maxTokens = MAX_TOKENS_MAP[projeBuyuklugu] ?? 16000
 
   if (!projeAdi || !detayliAciklama || !hikayeHaritasi || !bolum) {
     return NextResponse.json({ error: 'empty_input', detail: 'projeAdi, detayliAciklama, hikayeHaritasi, bolum required' }, { status: 400 })
@@ -404,9 +409,7 @@ export async function POST(req: Request) {
       try {
         const stream = await client.messages.create({
           model: 'claude-sonnet-4-6',
-          // R1 bazen 16K'ya takılıyordu; 24K bir geçişte tamamlar.
-          // bolum1 ve bolum345 daha küçük (3-8K) ama aynı limit zarar vermez.
-          max_tokens: 24000,
+          max_tokens: maxTokens,
           stream: true,
           system: [{ type: 'text', text: SISTEM, cache_control: { type: 'ephemeral' } }],
           messages: [{ role: 'user', content: userPromptText }],

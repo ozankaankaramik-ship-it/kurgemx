@@ -141,6 +141,13 @@ function formatSurum(surum: string): string {
   return surum
 }
 
+function formatSure(saniye: number, dil: string): string {
+  if (saniye < 60) return dil === 'TR' ? `${saniye} san.` : `${saniye} sec`
+  const dak = Math.floor(saniye / 60)
+  const san = saniye % 60
+  return dil === 'TR' ? `${dak} dak. ${san} san.` : `${dak} min ${san} sec`
+}
+
 async function exportToExcel(data: StoryMapData, projeAdi: string) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const XLSX = (await import('xlsx-js-style')) as any
@@ -670,6 +677,7 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
             bolum,
             acBaslangic,
             brBaslangic,
+            projeBuyuklugu: ctx.projeBuyuklugu ?? 'Orta',
           }),
         })
 
@@ -801,6 +809,7 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
           hikayeler,
           positiveAcler,
           projeDili: projektDili,
+          projeBuyuklugu: ctx.projeBuyuklugu ?? 'Orta',
         }),
       })
 
@@ -1047,7 +1056,7 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
                   )}
                   {adim2Metrigi && storyMapData && !adim2Yukleniyor && (
                     <p style={{ fontSize: 11, opacity: 0.4, fontStyle: 'italic' }} className="text-gray-500">
-                      {t('uretimMetrigi', { sure: adim2Metrigi.sure, token: adim2Metrigi.token.toLocaleString() })}
+                      {t('uretimMetrigi', { sure: formatSure(adim2Metrigi.sure, projektDili ?? 'TR'), token: adim2Metrigi.token.toLocaleString() })}
                     </p>
                   )}
                 </div>
@@ -1379,7 +1388,7 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
                   )}
                   {adim3Metrigi && isAnaliziData && !adim3Yukleniyor && (
                     <p style={{ fontSize: 11, opacity: 0.4, fontStyle: 'italic' }} className="text-gray-500">
-                      {t('uretimMetrigi', { sure: adim3Metrigi.sure, token: adim3Metrigi.token.toLocaleString() })}
+                      {t('uretimMetrigi', { sure: formatSure(adim3Metrigi.sure, projektDili ?? 'TR'), token: adim3Metrigi.token.toLocaleString() })}
                     </p>
                   )}
                 </div>
@@ -1445,15 +1454,17 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
                         )}
                       </p>
                     ) : (
-                      <GenerateButton
-                        label={t('adim4.uret')}
-                        loadingLabel={(ADIM4_MESAJLAR[projektDili === 'TR' ? 'TR' : 'EN'])[adim4MesajIdx]}
-                        regenerateLabel=""
-                        disabled={!adim3Aktif}
-                        loading={adim4Yukleniyor}
-                        hasContent={false}
-                        onClick={generatePrototype}
-                      />
+                      <div title={isAnaliziData === null ? t('adim4.isAnaliziGerekli') : undefined} style={{ display: 'inline-block' }}>
+                        <GenerateButton
+                          label={t('adim4.uret')}
+                          loadingLabel={(ADIM4_MESAJLAR[projektDili === 'TR' ? 'TR' : 'EN'])[adim4MesajIdx]}
+                          regenerateLabel=""
+                          disabled={isAnaliziData === null}
+                          loading={adim4Yukleniyor}
+                          hasContent={false}
+                          onClick={generatePrototype}
+                        />
+                      </div>
                     )}
                     {ctx.dokuman.prototype && !adim4Yukleniyor && (
                       <>
@@ -1501,22 +1512,59 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
                   )}
                   {adim4Metrigi && ctx.dokuman.prototype && !adim4Yukleniyor && (
                     <p style={{ fontSize: 11, opacity: 0.4, fontStyle: 'italic' }} className="text-gray-500">
-                      {t('uretimMetrigi', { sure: adim4Metrigi.sure, token: adim4Metrigi.token.toLocaleString() })}
+                      {t('uretimMetrigi', { sure: formatSure(adim4Metrigi.sure, projektDili ?? 'TR'), token: adim4Metrigi.token.toLocaleString() })}
                     </p>
                   )}
                 </div>
                 {!ctx.dokuman.prototype && (
-                  <div className="rounded-lg border-2 border-gray-100 overflow-hidden">
-                    <div className="bg-gray-50 px-4 py-2.5 flex items-center gap-2.5 border-b border-gray-100">
-                      <div className="flex gap-1.5">
-                        <div className="w-2.5 h-2.5 rounded-full bg-gray-200" />
-                        <div className="w-2.5 h-2.5 rounded-full bg-gray-200" />
-                        <div className="w-2.5 h-2.5 rounded-full bg-gray-200" />
+                  <div style={{ opacity: 0.4, height: 320, border: '0.5px solid var(--color-border-tertiary)', borderRadius: 8, overflow: 'hidden', display: 'flex' }}>
+                    {/* Sol menü skeleton */}
+                    <div style={{ width: 180, borderRight: '0.5px solid var(--color-border-tertiary)', background: 'var(--color-background-secondary)', padding: 16, display: 'flex', flexDirection: 'column', gap: 16, flexShrink: 0 }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                        <div style={{ height: 8, borderRadius: 4, background: 'var(--color-background-tertiary)', width: '70%' }} />
+                        <div style={{ height: 6, borderRadius: 4, background: 'var(--color-background-tertiary)', width: '50%' }} />
                       </div>
-                      <div className="flex-1 h-4 bg-gray-100 rounded" />
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                        <div style={{ height: 6, borderRadius: 4, background: 'var(--color-background-tertiary)', width: '40%', marginBottom: 4 }} />
+                        {([80, 60, 70] as number[]).map((w, i) => (
+                          <div key={i} style={{ height: 6, borderRadius: 4, background: 'var(--color-background-tertiary)', width: `${w}%` }} />
+                        ))}
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                        <div style={{ height: 6, borderRadius: 4, background: 'var(--color-background-tertiary)', width: '40%', marginBottom: 4 }} />
+                        {([65, 75] as number[]).map((w, i) => (
+                          <div key={i} style={{ height: 6, borderRadius: 4, background: 'var(--color-background-tertiary)', width: `${w}%` }} />
+                        ))}
+                      </div>
                     </div>
-                    <div className="h-44 flex items-center justify-center bg-white">
-                      <p className="text-sm text-gray-300">{t('adim4.cerceveBos')}</p>
+                    {/* Sağ içerik alanı skeleton */}
+                    <div style={{ flex: 1, background: 'var(--color-background-secondary)', padding: 16, display: 'flex', flexDirection: 'column', gap: 12, overflow: 'hidden' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <div style={{ height: 10, borderRadius: 4, background: 'var(--color-background-tertiary)', width: '30%' }} />
+                        <div style={{ height: 10, borderRadius: 10, background: 'var(--color-background-tertiary)', width: 40 }} />
+                        <div style={{ height: 10, borderRadius: 10, background: 'var(--color-background-tertiary)', width: 48 }} />
+                      </div>
+                      <div style={{ border: '0.5px solid var(--color-border-tertiary)', borderRadius: 6, padding: 12, display: 'flex', flexDirection: 'column', gap: 10, background: 'var(--color-background-secondary)' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                          {([0, 1, 2, 3] as number[]).map(i => (
+                            <div key={i} style={{ height: 24, borderRadius: 4, background: 'var(--color-background-tertiary)' }} />
+                          ))}
+                        </div>
+                        <div style={{ display: 'flex', gap: 8 }}>
+                          <div style={{ height: 20, borderRadius: 4, background: 'var(--color-background-tertiary)', width: 60 }} />
+                          <div style={{ height: 20, borderRadius: 4, background: 'var(--color-background-tertiary)', width: 80 }} />
+                        </div>
+                      </div>
+                      <div style={{ border: '0.5px solid var(--color-border-tertiary)', borderRadius: 6, overflow: 'hidden', background: 'var(--color-background-secondary)' }}>
+                        <div style={{ height: 24, background: 'var(--color-background-tertiary)' }} />
+                        {([0, 1] as number[]).map(i => (
+                          <div key={i} style={{ display: 'flex', gap: 8, padding: '6px 12px', borderTop: '0.5px solid var(--color-border-tertiary)' }}>
+                            <div style={{ height: 6, borderRadius: 4, background: 'var(--color-background-tertiary)', width: '25%' }} />
+                            <div style={{ height: 6, borderRadius: 4, background: 'var(--color-background-tertiary)', width: '40%' }} />
+                            <div style={{ height: 6, borderRadius: 4, background: 'var(--color-background-tertiary)', width: '20%' }} />
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 )}
