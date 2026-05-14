@@ -16,8 +16,8 @@ Inline style yerine CSS class kullan.`
 const SISTEM = `${genel}\n\n${prototipStandart}${SISTEM_EK}`
 
 const MAX_TOKENS: Record<string, number> = {
-  Küçük: 10000,
-  Orta: 20000,
+  Küçük: 32000,
+  Orta: 32000,
   Büyük: 32000,
 }
 
