@@ -148,6 +148,50 @@ function formatSure(saniye: number, dil: string): string {
   return dil === 'TR' ? `${dak} dak. ${san} san.` : `${dak} min ${san} sec`
 }
 
+// Modelin ürettiği HTML'e garantili navigasyon script'i enjekte eder.
+// Model farklı bir pattern yazmış olsa bile bu script override eder.
+function patchPrototipNavigasyon(html: string): string {
+  const script = `
+<script>
+(function(){
+  function showScreen(id){
+    document.querySelectorAll('.screen').forEach(function(s){s.style.display='none';});
+    var el=document.getElementById(id);
+    if(el) el.style.display='block';
+    document.querySelectorAll('[data-screen]').forEach(function(n){n.classList.remove('active');});
+    var nav=document.querySelector('[data-screen="'+id+'"]');
+    if(nav) nav.classList.add('active');
+  }
+  window.showScreen=showScreen;
+
+  document.addEventListener('DOMContentLoaded',function(){
+    var screens=document.querySelectorAll('.screen');
+    var navItems=document.querySelectorAll('[data-screen]');
+
+    screens.forEach(function(s){s.style.display='none';});
+
+    if(screens.length>0){
+      screens[0].style.display='block';
+      var firstId=screens[0].id;
+      var firstNav=document.querySelector('[data-screen="'+firstId+'"]');
+      if(firstNav) firstNav.classList.add('active');
+    }
+
+    navItems.forEach(function(nav){
+      nav.addEventListener('click',function(e){
+        e.preventDefault();
+        var sid=nav.getAttribute('data-screen');
+        if(sid) showScreen(sid);
+      });
+    });
+  });
+})();
+</script>`
+
+  if (html.includes('</body>')) return html.replace('</body>', script + '\n</body>')
+  return html + script
+}
+
 async function exportToExcel(data: StoryMapData, projeAdi: string) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const XLSX = (await import('xlsx-js-style')) as any
@@ -837,6 +881,8 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
 
       // Olası markdown kod bloğu sarmalayıcısını temizle
       htmlIcerik = htmlIcerik.replace(/^```html\s*/i, '').replace(/\s*```\s*$/, '').trim()
+      // Navigasyonu patch et — modelin yazdığı script'ten bağımsız çalışır
+      htmlIcerik = patchPrototipNavigasyon(htmlIcerik)
 
       const sure4 = Math.round((Date.now() - startTime4) / 1000)
       const token4 = Math.round(htmlIcerik.length / 4)
