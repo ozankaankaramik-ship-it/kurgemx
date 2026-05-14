@@ -124,25 +124,49 @@ export default function Adim1Formu() {
     setYzCikti(null)
     setProjeBuyuklugu(null)
 
+    const META_RE = /\n?<!--\s*META\s*\{[\s\S]*?\}\s*-->\n?/g
+
     try {
       const res = await fetch('/api/ai/detaylandir', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ projeAdi, aciklama, projeDili: algilananDil?.code }),
       })
-      if (!res.ok) throw new Error()
+      if (!res.ok || !res.body) throw new Error()
 
-      const data = await res.json() as {
-        detay: string
-        projeBuyuklugu: ProjeBuyuklugu
-        hikayeSayisiTahmini: number
+      const reader = res.body.getReader()
+      const decoder = new TextDecoder()
+      let accumulated = ''
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        accumulated += decoder.decode(value, { stream: true })
+        setYzCikti(accumulated.replace(META_RE, ''))
+      }
+      accumulated += decoder.decode()
+
+      // META'dan projeBuyuklugu ve hikayeSayisiTahmini'ni oku
+      const metaMatch = accumulated.match(/<!--\s*META\s*(\{[\s\S]*?\})\s*-->/)
+      let buyukluk: ProjeBuyuklugu = 'Orta'
+      let hikayeSayisi = 5
+      if (metaMatch) {
+        try {
+          const meta = JSON.parse(metaMatch[1]) as { projeBuyuklugu?: string; hikayeSayisiTahmini?: number }
+          if (meta.projeBuyuklugu && BUYUKLUK_SECENEKLER.includes(meta.projeBuyuklugu as ProjeBuyuklugu)) {
+            buyukluk = meta.projeBuyuklugu as ProjeBuyuklugu
+          }
+          if (Number.isFinite(meta.hikayeSayisiTahmini) && (meta.hikayeSayisiTahmini ?? 0) >= 1) {
+            hikayeSayisi = meta.hikayeSayisiTahmini!
+          }
+        } catch { /* varsayılanları koru */ }
       }
 
-      const detay = stripMarkdown(data.detay)
-      setYzCikti(detay)
-      setProjeBuyuklugu(data.projeBuyuklugu)
-      ctx.setProjeBuyuklugu(data.projeBuyuklugu)
-      ctx.setHikayeSayisiTahmini(data.hikayeSayisiTahmini)
+      const finalText = stripMarkdown(accumulated.replace(META_RE, ''))
+      setYzCikti(finalText)
+      setProjeBuyuklugu(buyukluk)
+      ctx.setProjeBuyuklugu(buyukluk)
+      ctx.setHikayeSayisiTahmini(hikayeSayisi)
     } catch {
       setYzCikti(null)
       setYzHata(true)
