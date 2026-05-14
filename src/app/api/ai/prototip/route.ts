@@ -154,6 +154,9 @@ Return only HTML — no explanation or markdown code block.`
             if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
               controller.enqueue(encoder.encode(event.delta.text))
             }
+            if (event.type === 'message_delta') {
+              console.log('[prototip] finish_reason:', event.delta.stop_reason, 'output_tokens:', event.usage?.output_tokens)
+            }
           }
           controller.close()
         } catch (err) {
