@@ -266,10 +266,7 @@
       "etiket": "İsteğe Bağlı",
       "kapsam": "Kapsam Dokümanı",
       "mimari": "Mimari Doküman",
-      "uret": "Oluştur",
-      "durum": "Beklemede",
-      "kapsamOlusturuluyor": "Kapsam dokümanı oluşturuluyor...",
-      "mimariOlusturuluyor": "Mimari doküman oluşturuluyor..."
+      "yakinda": "Yakında"
     },
     "projeOlustu": {
       "baslik": "Proje başarıyla oluşturuldu!",

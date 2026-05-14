@@ -1634,47 +1634,17 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
               </span>
             </div>
             <div className="grid grid-cols-2 gap-4">
-              <div className="rounded-xl border border-gray-100 bg-white p-5">
-                <div className="flex items-center justify-between mb-2">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600 mb-1">{t('tamamlayici.kapsam')}</p>
-                    <span className="rounded-full bg-[#F1EFE8] px-2.5 py-0.5 text-xs text-[#444441]">
-                      {t('tamamlayici.durum')}
-                    </span>
-                  </div>
-                  <GenerateButton
-                    label={t('tamamlayici.uret')}
-                    loadingLabel={t('tamamlayici.kapsamOlusturuluyor')}
-                    regenerateLabel={t('yenidenOlustur')}
-                    disabled={!adim2Aktif}
-                    loading={kapsamYukleniyor}
-                    hasContent={false}
-                    onClick={generateKapsam}
-                  />
-                </div>
-                {kapsamYukleniyor && <ProgressBar />}
-                {kapsamHata && <p className="text-xs text-red-500 mt-1">{t('adim1.hatalar.genel')}</p>}
+              <div className="rounded-xl border border-gray-100 bg-white p-5" style={{ opacity: 0.6 }}>
+                <p className="text-sm font-medium text-gray-600 mb-2">{t('tamamlayici.kapsam')}</p>
+                <span style={{ background: '#FEF3C7', color: '#92400E', borderRadius: 12, fontSize: 11, padding: '2px 10px' }}>
+                  {t('tamamlayici.yakinda')}
+                </span>
               </div>
-              <div className="rounded-xl border border-gray-100 bg-white p-5">
-                <div className="flex items-center justify-between mb-2">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600 mb-1">{t('tamamlayici.mimari')}</p>
-                    <span className="rounded-full bg-[#F1EFE8] px-2.5 py-0.5 text-xs text-[#444441]">
-                      {t('tamamlayici.durum')}
-                    </span>
-                  </div>
-                  <GenerateButton
-                    label={t('tamamlayici.uret')}
-                    loadingLabel={t('tamamlayici.mimariOlusturuluyor')}
-                    regenerateLabel={t('yenidenOlustur')}
-                    disabled={!adim2Aktif}
-                    loading={mimariYukleniyor}
-                    hasContent={false}
-                    onClick={generateMimari}
-                  />
-                </div>
-                {mimariYukleniyor && <ProgressBar />}
-                {mimariHata && <p className="text-xs text-red-500 mt-1">{t('adim1.hatalar.genel')}</p>}
+              <div className="rounded-xl border border-gray-100 bg-white p-5" style={{ opacity: 0.6 }}>
+                <p className="text-sm font-medium text-gray-600 mb-2">{t('tamamlayici.mimari')}</p>
+                <span style={{ background: '#FEF3C7', color: '#92400E', borderRadius: 12, fontSize: 11, padding: '2px 10px' }}>
+                  {t('tamamlayici.yakinda')}
+                </span>
               </div>
             </div>
           </div>

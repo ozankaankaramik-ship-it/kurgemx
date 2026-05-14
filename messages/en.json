@@ -266,10 +266,7 @@
       "etiket": "Optional",
       "kapsam": "Scope Document",
       "mimari": "Architecture Document",
-      "uret": "Generate",
-      "durum": "Pending",
-      "kapsamOlusturuluyor": "Generating scope document...",
-      "mimariOlusturuluyor": "Generating architecture document..."
+      "yakinda": "Coming Soon"
     },
     "projeOlustu": {
       "baslik": "Project created successfully!",
