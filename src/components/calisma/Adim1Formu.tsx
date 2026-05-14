@@ -74,17 +74,20 @@ export default function Adim1Formu() {
   const yzScrollRef = useRef<HTMLDivElement>(null)
   const yzTextareaRef = useRef<HTMLTextAreaElement>(null)
   const createProjectRef = useRef<HTMLDivElement>(null)
+  // Sayfa scroll'unu yalnızca içerik ilk kez belirdiğinde tetikle
+  const didScrollIntoViewRef = useRef(false)
 
-  // Textarea'yı içeriğe göre büyüt — kendi scroll'u oluşmasın, sadece dış kapsayıcı scroll etsin
+  // Textarea'yı içeriğe göre büyüt — streaming sırasında height:auto reseti layout shift
+  // yapıp sayfayı kaydırdığından yalnızca yükleme bittikten sonra çalıştır
   useEffect(() => {
+    if (yzYukleniyor) return
     const ta = yzTextareaRef.current
     if (!ta) return
     ta.style.height = 'auto'
     ta.style.height = `${ta.scrollHeight}px`
-  }, [yzCikti])
+  }, [yzCikti, yzYukleniyor])
 
-  // İçerik güncellenirken kullanıcı zaten alttaysa otomatik olarak aşağı kaydır
-  // (iş analizi doküman scroll davranışının aynısı)
+  // İç kapsayıcıyı aşağı kaydır — iş analizi dokümanıyla aynı davranış
   useEffect(() => {
     const el = yzScrollRef.current
     if (!el || !yzYukleniyor) return
@@ -108,9 +111,15 @@ export default function Adim1Formu() {
     }
   }, [state]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Scroll textarea into view and to top when content appears
+  // Sayfa düzeyinde scrollIntoView — yalnızca içerik ilk kez belirdiğinde,
+  // her chunk güncellemesinde değil
   useEffect(() => {
-    if (!yzCikti) return
+    if (!yzCikti) {
+      didScrollIntoViewRef.current = false
+      return
+    }
+    if (didScrollIntoViewRef.current) return
+    didScrollIntoViewRef.current = true
     const el = yzContainerRef.current
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
   }, [yzCikti])
