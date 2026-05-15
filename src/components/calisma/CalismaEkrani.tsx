@@ -893,6 +893,14 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
         return
       }
 
+      // Placeholder replace: regex ile esnek boşluk eşleşmesi + $ işaretini korur
+      function fillPlaceholder(html: string, id: string, content: string): string {
+        return html.replace(
+          new RegExp(`<!--\\s*SCREEN_CONTENT_${id}\\s*-->`, 'g'),
+          () => content,
+        )
+      }
+
       // 2. Batch ekran içerikleri
       const batches: string[][] = []
       for (let i = 0; i < screenIds.length; i += 2) batches.push(screenIds.slice(i, i + 2))
@@ -940,7 +948,7 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
           if (projeId) {
             let partialHtml = skeleton
             for (const [id, content] of Object.entries(contentMap)) {
-              partialHtml = partialHtml.replace(`<!-- SCREEN_CONTENT_${id} -->`, content)
+              partialHtml = fillPlaceholder(partialHtml, id, content)
             }
             const supabase = createClient()
             await supabase.from('dokumanlar').upsert(
@@ -969,12 +977,13 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
       // 3. Final birleştirme
       let htmlIcerik = skeleton
       for (const [id, content] of Object.entries(contentMap)) {
-        htmlIcerik = htmlIcerik.replace(`<!-- SCREEN_CONTENT_${id} -->`, content)
+        htmlIcerik = fillPlaceholder(htmlIcerik, id, content)
       }
       for (const id of allFailed) {
-        htmlIcerik = htmlIcerik.replace(
-          `<!-- SCREEN_CONTENT_${id} -->`,
-          `<div style="padding:40px;text-align:center;color:#991B1B;background:#FEE2E2;border-radius:8px;">Bu ekran üretilemedi. Sistem yöneticisine başvurun: destek@kurgemx.com</div>`,
+        htmlIcerik = fillPlaceholder(
+          htmlIcerik,
+          id,
+          '<div style="padding:40px;text-align:center;color:#991B1B;background:#FEE2E2;border-radius:8px;">Bu ekran üretilemedi. Sistem yöneticisine başvurun: destek@kurgemx.com</div>',
         )
       }
       htmlIcerik = deduplicateNavScript(htmlIcerik)

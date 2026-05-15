@@ -113,7 +113,8 @@ Rules:
 
     const raw = response.content[0].type === 'text' ? response.content[0].text : ''
     const screens: Record<string, string> = {}
-    const re = /SCREEN:([A-Za-z0-9_-]+)\n([\s\S]*?)\/SCREEN/g
+    // \s* after : handles space after colon; [ \t]* handles trailing whitespace before newline
+    const re = /SCREEN:\s*([A-Za-z0-9_-]+)[ \t]*\n([\s\S]*?)\/SCREEN/g
     let m
     while ((m = re.exec(raw)) !== null) {
       screens[m[1].trim()] = m[2].trim()
