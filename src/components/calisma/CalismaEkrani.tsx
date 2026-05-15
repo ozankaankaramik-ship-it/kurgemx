@@ -895,21 +895,23 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
 
       // 2. Batch ekran içerikleri
       const batches: string[][] = []
-      for (let i = 0; i < screenIds.length; i += 3) batches.push(screenIds.slice(i, i + 3))
+      for (let i = 0; i < screenIds.length; i += 2) batches.push(screenIds.slice(i, i + 2))
 
       const contentMap: Record<string, string> = {}
       const allFailed: string[] = []
 
       for (let i = 0; i < batches.length; i++) {
         const batch = batches[i]
-        const startNum = i * 3 + 1
-        const endNum = Math.min((i + 1) * 3, screenIds.length)
+        const startNum = i * 2 + 1
+        const endNum = Math.min((i + 1) * 2, screenIds.length)
         setAdim4StreamMsg(
           isTR ? `Ekranlar ${startNum}-${endNum} oluşturuluyor...` : `Generating screens ${startNum}-${endNum}...`
         )
 
         let remaining = [...batch]
-        for (let attempt = 0; attempt < 2 && remaining.length > 0; attempt++) {
+        for (let attempt = 0; attempt <= 2 && remaining.length > 0; attempt++) {
+          if (attempt === 1) await new Promise(r => setTimeout(r, 3000))
+          if (attempt === 2) await new Promise(r => setTimeout(r, 8000))
           try {
             const batchRes = await fetch('/api/ai/prototip-batch', {
               method: 'POST',
@@ -928,30 +930,34 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
             Object.assign(contentMap, data.screens)
             remaining = data.failedScreens ?? []
           } catch {
-            // retry if attempt < 1
+            // devam et
           }
         }
         if (remaining.length > 0) allFailed.push(...remaining)
 
-        // Ara kayıt
-        if (projeId) {
-          let partialHtml = skeleton
-          for (const [id, content] of Object.entries(contentMap)) {
-            partialHtml = partialHtml.replace(`<!-- SCREEN_CONTENT_${id} -->`, content)
+        // Ara kayıt — hata fırlatırsa orkestrasyon durmasın
+        try {
+          if (projeId) {
+            let partialHtml = skeleton
+            for (const [id, content] of Object.entries(contentMap)) {
+              partialHtml = partialHtml.replace(`<!-- SCREEN_CONTENT_${id} -->`, content)
+            }
+            const supabase = createClient()
+            await supabase.from('dokumanlar').upsert(
+              {
+                proje_id: projeId,
+                tip_id: DOKUMAN_TIPLERI.prototip,
+                baslik: projektDili === 'TR' ? `${ad} — Prototip` : `${ad} — Prototype`,
+                icerik: partialHtml,
+                dil: projektDili ?? 'TR',
+                uretim_suresi: Math.round((Date.now() - startTime4) / 1000),
+                token_tahmini: Math.round(partialHtml.length / 4),
+              },
+              { onConflict: 'proje_id,tip_id' },
+            )
           }
-          const supabase = createClient()
-          await supabase.from('dokumanlar').upsert(
-            {
-              proje_id: projeId,
-              tip_id: DOKUMAN_TIPLERI.prototip,
-              baslik: projektDili === 'TR' ? `${ad} — Prototip` : `${ad} — Prototype`,
-              icerik: partialHtml,
-              dil: projektDili ?? 'TR',
-              uretim_suresi: Math.round((Date.now() - startTime4) / 1000),
-              token_tahmini: Math.round(partialHtml.length / 4),
-            },
-            { onConflict: 'proje_id,tip_id' },
-          )
+        } catch (saveErr) {
+          console.error('[generatePrototype] ara kayıt hatası:', saveErr)
         }
 
         setAdim4ProgressList(prev => [
@@ -968,11 +974,18 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
       for (const id of allFailed) {
         htmlIcerik = htmlIcerik.replace(
           `<!-- SCREEN_CONTENT_${id} -->`,
-          `<div style="padding:24px;color:#9ca3af;font-size:13px">${isTR ? 'Bu ekran üretilemedi.' : 'This screen could not be generated.'}</div>`,
+          `<div style="padding:40px;text-align:center;color:#991B1B;background:#FEE2E2;border-radius:8px;">Bu ekran üretilemedi. Sistem yöneticisine başvurun: destek@kurgemx.com</div>`,
         )
       }
       htmlIcerik = deduplicateNavScript(htmlIcerik)
-      await doSave(htmlIcerik)
+      try {
+        await doSave(htmlIcerik)
+      } catch (saveErr) {
+        console.error('[generatePrototype] final kayıt hatası:', saveErr)
+        setAdim4Tarih(new Date().toISOString())
+        setAdim4Metrigi({ sure: Math.round((Date.now() - startTime4) / 1000), token: Math.round(htmlIcerik.length / 4) })
+        ctx.setDokuman('prototype', htmlIcerik)
+      }
       if (allFailed.length > 0) setAdim4FailedScreens(allFailed)
     } catch (err) {
       console.error('[generatePrototype] hata:', err)
