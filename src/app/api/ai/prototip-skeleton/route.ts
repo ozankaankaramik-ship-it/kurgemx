@@ -8,7 +8,7 @@ import { PROTOTIP_BASE_CSS } from '@/lib/prototip-base-css'
 
 export const maxDuration = 300
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY, maxRetries: 4 })
+const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY, maxRetries: 0 })
 
 function injectBaseCSS(html: string, css: string): string {
   const tag = `<style>\n${css}\n</style>`

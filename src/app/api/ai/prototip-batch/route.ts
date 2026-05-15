@@ -3,7 +3,7 @@ import { SISTEM } from '@/lib/prototip-helpers'
 
 export const maxDuration = 300
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY, maxRetries: 4 })
+const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY, maxRetries: 0 })
 
 interface BatchScreen { id: string; name: string }
 
@@ -40,7 +40,6 @@ export async function POST(req: Request) {
   }
 
   const screenList = ekranlar.map(e => `- ${e.id}: ${e.name}`).join('\n')
-  const cssSection = skeletonCSS ? `\nMevcut CSS:\n${skeletonCSS}\n` : ''
 
   const prompt = isTR
     ? `Proje: ${projeAdi}
@@ -49,7 +48,7 @@ Açıklama: ${detayliAciklama}
 
 Hikayeler:
 ${hikayelerMetni}
-${cssSection}
+
 Aşağıdaki ekranların iç HTML içeriğini üret. Hikayenin işlevine uygun UI kullan:
 - Liste/tablo → veri tablosu (prototip.md tablo stili)
 - Form → doldurulabilir form (prototip.md form stili)
@@ -76,7 +75,7 @@ Output language: English
 
 Stories:
 ${hikayelerMetni}
-${cssSection}
+
 Generate the inner HTML content for the following screens. Use appropriate UI for each screen's function:
 - List/table → data table (prototip.md table style)
 - Form → fillable form (prototip.md form style)
