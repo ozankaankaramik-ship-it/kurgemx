@@ -50,7 +50,8 @@
       "Bash(Select-String \"prototip\")",
       "Bash(findstr \"prototip\")",
       "Bash(mkdir -p /tmp)",
-      "Bash(npx vercel *)"
+      "Bash(npx vercel *)",
+      "Bash(Get-ChildItem -Recurse -Path \"C:\\\\Users\\\\ozank\\\\Documents\\\\İşAnaliziAjan\\\\kurgemx\\\\src\" -Filter \"*.tsx\")"
     ]
   },
   "hooks": {
