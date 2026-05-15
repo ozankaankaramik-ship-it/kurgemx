@@ -555,6 +555,8 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
   const [adim4MesajIdx, setAdim4MesajIdx] = useState(0)
   const adim4IntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const [adim4StreamMsg, setAdim4StreamMsg] = useState<string | null>(null)
+  const [adim4ProgressList, setAdim4ProgressList] = useState<string[]>([])
+  const [adim4FailedScreens, setAdim4FailedScreens] = useState<string[]>([])
   const [adim4Tarih, setAdim4Tarih] = useState<string | null>(ctx.dokuman.prototipTarih ?? null)
   const [adim2Metrigi, setAdim2Metrigi] = useState<{sure: number; token: number} | null>(null)
   const [adim3Metrigi, setAdim3Metrigi] = useState<{sure: number; token: number} | null>(null)
@@ -831,66 +833,19 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
     setAdim4HataMesaji(null)
     setAdim4MesajIdx(0)
     setAdim4StreamMsg(null)
+    setAdim4ProgressList([])
+    setAdim4FailedScreens([])
 
+    const isTR = !projektDili || projektDili === 'TR'
+    const hikayeler = storyMapData.hikayeHaritasi?.hikayeler ?? []
+    const positiveAcler: Record<string, string[]> = isAnaliziData?.icerik
+      ? parsePositiveAcler(isAnaliziData.icerik)
+      : {}
     const startTime4 = Date.now()
-    try {
-      const positiveAcler: Record<string, string[]> = isAnaliziData?.icerik
-        ? parsePositiveAcler(isAnaliziData.icerik)
-        : {}
 
-      const hikayeler = storyMapData.hikayeHaritasi?.hikayeler ?? []
-
-      const res = await fetch('/api/ai/prototip', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          projeAdi: ad,
-          detayliAciklama: detailedDesc,
-          hikayeler,
-          positiveAcler,
-          projeDili: projektDili,
-          projeBuyuklugu: ctx.projeBuyuklugu ?? 'Orta',
-          arayuzDili: locale,
-        }),
-      })
-
-      if (!res.ok) {
-        const errData = await res.json().catch(() => ({}))
-        throw new Error(
-          (errData as { detail?: string; error?: string }).detail ??
-            (errData as { error?: string }).error ??
-            `HTTP ${res.status}`,
-        )
-      }
-
-      if (!res.body) throw new Error('no_body')
-
-      const reader = res.body.getReader()
-      const decoder = new TextDecoder()
-      let rawAccumulated = ''
-      const PROGRESS_RE = /<!-- PROTOTIP_PROGRESS: (.*?) -->/g
-
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
-        rawAccumulated += decoder.decode(value, { stream: true })
-        // Progress marker'larını çıkar ve ilerleme mesajını güncelle
-        const matches = [...rawAccumulated.matchAll(PROGRESS_RE)]
-        if (matches.length > 0) {
-          setAdim4StreamMsg(String(matches[matches.length - 1][1]))
-        }
-      }
-      rawAccumulated += decoder.decode()
-
-      // Progress marker'larını temizle → HTML
-      let htmlIcerik = rawAccumulated.replace(/<!-- PROTOTIP_PROGRESS: .*? -->\n?/g, '').trim()
-      htmlIcerik = htmlIcerik.replace(/^```html\s*/i, '').replace(/\s*```\s*$/, '').trim()
-      // Navigasyonu patch et — iskelet JS'ine ek olarak garantili override
-      htmlIcerik = patchPrototipNavigasyon(htmlIcerik)
-
+    async function doSave(htmlIcerik: string) {
       const sure4 = Math.round((Date.now() - startTime4) / 1000)
       const token4 = Math.round(htmlIcerik.length / 4)
-
       if (projeId) {
         const supabase = createClient()
         const { error: upsertError } = await supabase
@@ -907,14 +862,127 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
             },
             { onConflict: 'proje_id,tip_id' },
           )
-        if (upsertError) {
-          console.error('[generatePrototype] kayıt hatası:', upsertError)
-        }
+        if (upsertError) console.error('[generatePrototype] kayıt hatası:', upsertError)
       }
-
       setAdim4Tarih(new Date().toISOString())
       setAdim4Metrigi({ sure: sure4, token: token4 })
       ctx.setDokuman('prototype', htmlIcerik)
+    }
+
+    try {
+      // 1. Skeleton
+      setAdim4StreamMsg(isTR ? 'İskelet oluşturuluyor...' : 'Building skeleton...')
+      const skelRes = await fetch('/api/ai/prototip-skeleton', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          projeAdi: ad,
+          detayliAciklama: detailedDesc,
+          hikayeler,
+          positiveAcler,
+          projeDili: projektDili,
+          arayuzDili: locale,
+        }),
+      })
+      if (!skelRes.ok) {
+        const errData = await skelRes.json().catch(() => ({}))
+        throw new Error((errData as { error?: string }).error ?? `HTTP ${skelRes.status}`)
+      }
+      const { skeleton, screenIds, screenNames, skeletonCSS, hikayelerMetni } = await skelRes.json() as {
+        skeleton: string
+        screenIds: string[]
+        screenNames: Record<string, string>
+        skeletonCSS: string
+        hikayelerMetni: string
+      }
+      setAdim4ProgressList(prev => [...prev, isTR ? 'Navigasyon hazırlandı' : 'Navigation ready'])
+
+      if (screenIds.length === 0) {
+        await doSave(patchPrototipNavigasyon(skeleton))
+        return
+      }
+
+      // 2. Batch ekran içerikleri
+      const batches: string[][] = []
+      for (let i = 0; i < screenIds.length; i += 3) batches.push(screenIds.slice(i, i + 3))
+
+      const contentMap: Record<string, string> = {}
+      const allFailed: string[] = []
+
+      for (let i = 0; i < batches.length; i++) {
+        const batch = batches[i]
+        const startNum = i * 3 + 1
+        const endNum = Math.min((i + 1) * 3, screenIds.length)
+        setAdim4StreamMsg(
+          isTR ? `Ekranlar ${startNum}-${endNum} oluşturuluyor...` : `Generating screens ${startNum}-${endNum}...`
+        )
+
+        let remaining = [...batch]
+        for (let attempt = 0; attempt < 2 && remaining.length > 0; attempt++) {
+          try {
+            const batchRes = await fetch('/api/ai/prototip-batch', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                ekranlar: remaining.map(id => ({ id, name: screenNames[id] ?? id })),
+                skeletonCSS,
+                projeAdi: ad,
+                detayliAciklama: detailedDesc,
+                hikayelerMetni,
+                projeDili: projektDili,
+              }),
+            })
+            if (!batchRes.ok) continue
+            const data = await batchRes.json() as { screens: Record<string, string>; failedScreens: string[] }
+            Object.assign(contentMap, data.screens)
+            remaining = data.failedScreens ?? []
+          } catch {
+            // retry if attempt < 1
+          }
+        }
+        if (remaining.length > 0) allFailed.push(...remaining)
+
+        // Ara kayıt
+        if (projeId) {
+          let partialHtml = skeleton
+          for (const [id, content] of Object.entries(contentMap)) {
+            partialHtml = partialHtml.replace(`<!-- SCREEN_CONTENT_${id} -->`, content)
+          }
+          const supabase = createClient()
+          await supabase.from('dokumanlar').upsert(
+            {
+              proje_id: projeId,
+              tip_id: DOKUMAN_TIPLERI.prototip,
+              baslik: projektDili === 'TR' ? `${ad} — Prototip` : `${ad} — Prototype`,
+              icerik: partialHtml,
+              dil: projektDili ?? 'TR',
+              uretim_suresi: Math.round((Date.now() - startTime4) / 1000),
+              token_tahmini: Math.round(partialHtml.length / 4),
+            },
+            { onConflict: 'proje_id,tip_id' },
+          )
+        }
+
+        setAdim4ProgressList(prev => [
+          ...prev,
+          isTR ? `Ekranlar ${startNum}-${endNum} hazır` : `Screens ${startNum}-${endNum} ready`,
+        ])
+      }
+
+      // 3. Final birleştirme
+      let htmlIcerik = skeleton
+      for (const [id, content] of Object.entries(contentMap)) {
+        htmlIcerik = htmlIcerik.replace(`<!-- SCREEN_CONTENT_${id} -->`, content)
+      }
+      for (const id of allFailed) {
+        htmlIcerik = htmlIcerik.replace(
+          `<!-- SCREEN_CONTENT_${id} -->`,
+          `<div style="padding:24px;color:#9ca3af;font-size:13px">${isTR ? 'Bu ekran üretilemedi.' : 'This screen could not be generated.'}</div>`,
+        )
+      }
+      htmlIcerik = patchPrototipNavigasyon(htmlIcerik)
+      await doSave(htmlIcerik)
+      if (allFailed.length > 0) setAdim4FailedScreens(allFailed)
     } catch (err) {
       console.error('[generatePrototype] hata:', err)
       setAdim4HataMesaji(err instanceof Error ? err.message : String(err))
@@ -1551,11 +1619,32 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
                     )}
                   </div>
                   {adim4Yukleniyor && <ProgressBar />}
+                  {adim4Yukleniyor && adim4ProgressList.length > 0 && (
+                    <div style={{ fontSize: 11, display: 'flex', flexDirection: 'column', gap: 3, marginTop: 4 }}>
+                      {adim4ProgressList.map((step, i) => (
+                        <span key={i} style={{ color: '#2E75B6' }}>✓ {step}</span>
+                      ))}
+                      {adim4StreamMsg && (
+                        <span style={{ color: '#9CA3AF' }}>⟳ {adim4StreamMsg}</span>
+                      )}
+                    </div>
+                  )}
                   {adim4Yukleniyor && (
                     <p style={{ fontSize: 12, color: '#9CA3AF', fontStyle: 'italic' }}>{t('uretimNotu')}</p>
                   )}
                   {adim4Hata && (
                     <p className="text-xs text-red-500">{adim4HataMesaji ?? t('adim1.hatalar.genel')}</p>
+                  )}
+                  {adim4FailedScreens.length > 0 && !adim4Yukleniyor && (
+                    <p className="text-xs text-amber-600">
+                      {locale === 'tr'
+                        ? `${adim4FailedScreens.length} ekran üretilemedi.`
+                        : `${adim4FailedScreens.length} screen(s) could not be generated.`}
+                      {' '}
+                      <button onClick={generatePrototype} className="underline hover:no-underline">
+                        {locale === 'tr' ? 'Tekrar dene' : 'Try again'}
+                      </button>
+                    </p>
                   )}
                   {adim4Metrigi && ctx.dokuman.prototype && !adim4Yukleniyor && (
                     <p style={{ fontSize: 11, opacity: 0.4, fontStyle: 'italic' }} className="text-gray-500">
