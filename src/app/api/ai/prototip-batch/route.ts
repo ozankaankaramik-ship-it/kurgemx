@@ -68,7 +68,8 @@ ${screenList}
 Kurallar:
 - Prototip.md tasarım standardına uy (renkler, butonlar, tablolar)
 - Gerçekçi Türkçe örnek veriler kullan
-- Her ekran bağımsız çalışmalı`
+- Her ekran bağımsız çalışmalı
+- Tablolarda maksimum 3 satır, liste ve bildirim ekranlarında maksimum 3 item üret`
     : `Project: ${projeAdi}
 Description: ${detayliAciklama}
 Output language: English
@@ -94,7 +95,8 @@ ${screenList}
 Rules:
 - Follow prototip.md design standards (colors, buttons, tables)
 - Use realistic English example data
-- Each screen must work independently`
+- Each screen must work independently
+- Use maximum 3 rows in tables, maximum 3 items in lists and notification screens`
 
   try {
     const response = await client.messages.create({

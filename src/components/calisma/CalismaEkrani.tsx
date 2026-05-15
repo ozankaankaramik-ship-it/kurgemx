@@ -148,48 +148,39 @@ function formatSure(saniye: number, dil: string): string {
   return dil === 'TR' ? `${dak} dak. ${san} san.` : `${dak} min ${san} sec`
 }
 
-// Modelin ürettiği HTML'e garantili navigasyon script'i enjekte eder.
-// Model farklı bir pattern yazmış olsa bile bu script override eder.
-function patchPrototipNavigasyon(html: string): string {
-  const script = `
-<script>
+// showScreen içeren tüm script kopyalarını siler, sona tek temiz kopya ekler.
+function deduplicateNavScript(html: string): string {
+  const CANONICAL = `<script>
 (function(){
   function showScreen(id){
     document.querySelectorAll('.screen').forEach(function(s){s.style.display='none';});
-    var el=document.getElementById(id);
-    if(el) el.style.display='block';
+    var el=document.getElementById(id);if(el)el.style.display='block';
     document.querySelectorAll('[data-screen]').forEach(function(n){n.classList.remove('active');});
-    var nav=document.querySelector('[data-screen="'+id+'"]');
-    if(nav) nav.classList.add('active');
+    var nav=document.querySelector('[data-screen="'+id+'"]');if(nav)nav.classList.add('active');
   }
   window.showScreen=showScreen;
-
   document.addEventListener('DOMContentLoaded',function(){
     var screens=document.querySelectorAll('.screen');
-    var navItems=document.querySelectorAll('[data-screen]');
-
     screens.forEach(function(s){s.style.display='none';});
-
     if(screens.length>0){
-      screens[0].style.display='block';
-      var firstId=screens[0].id;
-      var firstNav=document.querySelector('[data-screen="'+firstId+'"]');
-      if(firstNav) firstNav.classList.add('active');
+      var first=screens[0];first.style.display='block';
+      var n=document.querySelector('[data-screen="'+first.id+'"]');if(n)n.classList.add('active');
     }
-
-    navItems.forEach(function(nav){
+    document.querySelectorAll('[data-screen]').forEach(function(nav){
       nav.addEventListener('click',function(e){
         e.preventDefault();
         var sid=nav.getAttribute('data-screen');
-        if(sid) showScreen(sid);
+        if(sid){showScreen(sid);var sb=document.querySelector('.sidebar');if(sb)sb.classList.remove('open');}
       });
     });
+    var ham=document.querySelector('.hamburger');
+    if(ham){ham.addEventListener('click',function(){var sb=document.querySelector('.sidebar');if(sb)sb.classList.toggle('open');});}
   });
 })();
 </script>`
-
-  if (html.includes('</body>')) return html.replace('</body>', script + '\n</body>')
-  return html + script
+  const stripped = html.replace(/<script\b[^>]*>[\s\S]*?showScreen[\s\S]*?<\/script>/gi, '')
+  if (stripped.includes('</body>')) return stripped.replace('</body>', CANONICAL + '\n</body>')
+  return stripped + '\n' + CANONICAL
 }
 
 async function exportToExcel(data: StoryMapData, projeAdi: string) {
@@ -898,7 +889,7 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
       setAdim4ProgressList(prev => [...prev, isTR ? 'Navigasyon hazırlandı' : 'Navigation ready'])
 
       if (screenIds.length === 0) {
-        await doSave(patchPrototipNavigasyon(skeleton))
+        await doSave(deduplicateNavScript(skeleton))
         return
       }
 
@@ -980,7 +971,7 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
           `<div style="padding:24px;color:#9ca3af;font-size:13px">${isTR ? 'Bu ekran üretilemedi.' : 'This screen could not be generated.'}</div>`,
         )
       }
-      htmlIcerik = patchPrototipNavigasyon(htmlIcerik)
+      htmlIcerik = deduplicateNavScript(htmlIcerik)
       await doSave(htmlIcerik)
       if (allFailed.length > 0) setAdim4FailedScreens(allFailed)
     } catch (err) {

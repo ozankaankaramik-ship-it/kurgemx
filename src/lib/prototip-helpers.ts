@@ -30,9 +30,16 @@ export const SHARED_NAV_JS = `<script>
     }
     document.querySelectorAll('[data-screen]').forEach(function(nav){
       nav.addEventListener('click',function(e){
-        e.preventDefault();var sid=nav.getAttribute('data-screen');if(sid)showScreen(sid);
+        e.preventDefault();
+        var sid=nav.getAttribute('data-screen');
+        if(sid){
+          showScreen(sid);
+          var sb=document.querySelector('.sidebar');if(sb)sb.classList.remove('open');
+        }
       });
     });
+    var ham=document.querySelector('.hamburger');
+    if(ham){ham.addEventListener('click',function(){var sb=document.querySelector('.sidebar');if(sb)sb.classList.toggle('open');});}
   });
 })();
 </script>`
@@ -51,11 +58,6 @@ export function extractScreenName(skeleton: string, screenId: string): string {
   const re = new RegExp(`data-screen=["']${screenId}["'][^>]*>\\s*([^<]+)`, 'i')
   const m = skeleton.match(re)
   return m ? m[1].trim() : screenId
-}
-
-export function extractSkeletonCSS(skeleton: string): string {
-  const m = skeleton.match(/<style[^>]*>([\s\S]*?)<\/style>/i)
-  return m ? m[1].trim() : ''
 }
 
 export function buildHikayelerMetni(

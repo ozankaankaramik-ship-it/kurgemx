@@ -1,13 +1,26 @@
 import Anthropic from '@anthropic-ai/sdk'
 import {
   SISTEM, SHARED_NAV_JS,
-  buildHikayelerMetni, extractScreenIds, extractScreenName, extractSkeletonCSS,
+  buildHikayelerMetni, extractScreenIds, extractScreenName,
   type HikayeItem,
 } from '@/lib/prototip-helpers'
+import { PROTOTIP_BASE_CSS } from '@/lib/prototip-base-css'
 
 export const maxDuration = 300
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY, maxRetries: 4 })
+
+function injectBaseCSS(html: string, css: string): string {
+  const tag = `<style>\n${css}\n</style>`
+  if (html.includes('</head>')) return html.replace('</head>', `${tag}\n</head>`)
+  if (html.includes('<body')) return html.replace('<body', `${tag}\n<body`)
+  return tag + '\n' + html
+}
+
+function injectNavScript(html: string, script: string): string {
+  if (html.includes('</body>')) return html.replace('</body>', `${script}\n</body>`)
+  return html + '\n' + script
+}
 
 async function generateSkeleton(
   projeAdi: string,
@@ -23,35 +36,43 @@ Açıklama: ${detayliAciklama}
 Hikayeler:
 ${hikayelerMetni}
 
-Bu proje için HTML prototip iskeletini üret.
+Bu proje için HTML prototip iskeletini üret. AŞAĞIDAKI ŞABLONU DOLDUR:
 
-TOKEN LİMİTİ VAR — ŞU SIRAYA KESİNLİKLE UY:
-1. <html><head> — sadece <meta charset> + <title>. CSS YOK.
-2. <body> açılışı
-3. Sol sidebar nav (maks 10 item, data-screen, footer: sol=bugünün tarihi, sağ="KurgemX")
-4. Her ekran için BOŞ div — SCREEN_CONTENT placeholderı ile
-5. Aşağıdaki script bloğunu AYNEN koy (değiştirme)
-6. <style> bloğu — sidebar+screen+nav CSS, MAKSİMUM 40 SATIR
-7. </body></html>
+<html><head><meta charset="UTF-8"><title>${projeAdi}</title></head>
+<body>
+<div class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">${projeAdi}</div>
+    <button class="hamburger"><span></span><span></span><span></span></button>
+  </div>
+  <nav class="sidebar-nav">
+    [NAV GRUPLARI VE ITEM'LAR]
+  </nav>
+  <div class="sidebar-footer"><span>GÜN AY YIL</span><span>KurgemX</span></div>
+</div>
+<main class="main">
+  [EKRAN DIV'LERİ]
+</main>
+</body></html>
 
-Nav item kalıbı:
-<a class="nav-item" data-screen="SCREEN_ID" href="#">Ekran Adı</a>
+Nav group kalıbı:
+<div class="nav-group">
+  <div class="nav-group-label">Grup Adı</div>
+  <a class="nav-item" data-screen="SCREEN_ID" href="#">Ekran Adı</a>
+</div>
 
 Ekran div kalıbı:
-<div id="SCREEN_ID" class="screen" style="display:none">
+<div id="SCREEN_ID" class="screen">
 <!-- SCREEN_CONTENT_SCREEN_ID -->
 </div>
 
-Script bloğu (adım 5 — AYNEN koy):
-${SHARED_NAV_JS}
-
 KRİTİK KURALLAR:
-- Nav itemlar VE screen placeholder'lar CSS'ten önce gelir — CSS sona kalır
+- CSS ve JavaScript EKLEME — bunlar ayrıca programatik olarak eklenecek
 - SCREEN_ID: küçük harf, tire ile ayrılmış (ör: kullanici-listesi, urun-detay)
 - Her nav-item data-screen değeri tam eşleşen bir div.screen id'siyle eşleşmeli
 - Ekran div'lerinde SADECE <!-- SCREEN_CONTENT_SCREEN_ID --> olsun
-- Tüm ekranlar style="display:none"
-- CSS maksimum 40 satır — temel layout yeterli, detay renk/gölge yok
+- Maks 10 nav item, hikayeleri mantıksal gruplara böl
+- sidebar-footer'da sol=bugünün tarihi (GG.AA.YYYY), sağ="KurgemX"
 
 Yalnızca HTML döndür.`
     : `Project: ${projeAdi}
@@ -61,35 +82,43 @@ Output language: English
 Stories:
 ${hikayelerMetni}
 
-Generate the HTML skeleton for this prototype.
+Generate the HTML prototype skeleton. FILL IN THE TEMPLATE BELOW:
 
-TOKEN LIMIT — FOLLOW THIS ORDER STRICTLY:
-1. <html><head> — only <meta charset> + <title>. NO CSS.
-2. <body> open
-3. Left sidebar nav (max 10 items, data-screen, footer: left=today's date, right="KurgemX")
-4. Empty screen div for each screen — with SCREEN_CONTENT placeholder
-5. Include the script block below EXACTLY as shown (do not modify)
-6. <style> block — sidebar+screen+nav CSS, MAXIMUM 40 LINES
-7. </body></html>
+<html><head><meta charset="UTF-8"><title>${projeAdi}</title></head>
+<body>
+<div class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">${projeAdi}</div>
+    <button class="hamburger"><span></span><span></span><span></span></button>
+  </div>
+  <nav class="sidebar-nav">
+    [NAV GROUPS AND ITEMS]
+  </nav>
+  <div class="sidebar-footer"><span>DAY MONTH YEAR</span><span>KurgemX</span></div>
+</div>
+<main class="main">
+  [SCREEN DIVS]
+</main>
+</body></html>
 
-Nav item pattern:
-<a class="nav-item" data-screen="SCREEN_ID" href="#">Screen Name</a>
+Nav group pattern:
+<div class="nav-group">
+  <div class="nav-group-label">Group Name</div>
+  <a class="nav-item" data-screen="SCREEN_ID" href="#">Screen Name</a>
+</div>
 
 Screen div pattern:
-<div id="SCREEN_ID" class="screen" style="display:none">
+<div id="SCREEN_ID" class="screen">
 <!-- SCREEN_CONTENT_SCREEN_ID -->
 </div>
 
-Script block (step 5 — include EXACTLY):
-${SHARED_NAV_JS}
-
 CRITICAL RULES:
-- Nav items AND screen placeholders come BEFORE CSS — CSS goes last
+- Do NOT add CSS or JavaScript — they will be injected programmatically
 - SCREEN_ID: lowercase, hyphen-separated (e.g., user-list, product-detail)
 - Every nav-item data-screen value must match a div.screen id exactly
 - Screen divs must contain ONLY <!-- SCREEN_CONTENT_SCREEN_ID -->
-- All screens start with style="display:none"
-- CSS maximum 40 lines — basic layout only, no detail colors/shadows
+- Max 10 nav items, group screens logically
+- sidebar-footer: left=today's date (DD.MM.YYYY), right="KurgemX"
 
 Return only HTML.`
 
@@ -142,17 +171,27 @@ export async function POST(req: Request) {
 
   try {
     const hikayelerMetni = buildHikayelerMetni(hikayeler, positiveAcler, isTR)
-    const skeleton = await generateSkeleton(projeAdi, detayliAciklama, hikayelerMetni, isTR)
+    let skeleton = await generateSkeleton(projeAdi, detayliAciklama, hikayelerMetni, isTR)
+
+    // Programatik CSS ve JS injection — Claude üretmez, biz enjekte ederiz
+    skeleton = injectBaseCSS(skeleton, PROTOTIP_BASE_CSS)
+    skeleton = injectNavScript(skeleton, SHARED_NAV_JS)
+
     const screenIds = extractScreenIds(skeleton)
     const screenNames: Record<string, string> = {}
     for (const id of screenIds) {
       screenNames[id] = extractScreenName(skeleton, id)
     }
-    const skeletonCSS = extractSkeletonCSS(skeleton)
 
-    console.log('[prototip-skeleton] hazır — screenIds:', screenIds, 'CSS uzunluğu:', skeletonCSS.length)
+    console.log('[prototip-skeleton] hazır — screenIds:', screenIds)
 
-    return Response.json({ skeleton, screenIds, screenNames, skeletonCSS, hikayelerMetni })
+    return Response.json({
+      skeleton,
+      screenIds,
+      screenNames,
+      skeletonCSS: PROTOTIP_BASE_CSS,
+      hikayelerMetni,
+    })
   } catch (err) {
     console.error('[prototip-skeleton] HATA:', err instanceof Error ? err.message : String(err))
     return Response.json({ error: 'generation_failed' }, { status: 500 })
