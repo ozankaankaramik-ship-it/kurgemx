@@ -47,10 +47,10 @@ Her hikaye için kapsam tablosu oluşturulmaz.
 > - **ST:** Story — Hikaye
 > - **AC:** Acceptance Criteria — Kabul Kriteri *(Hikaye bazında ilgili hikayenin altında sıralanmıştır)*
 > - **BR:** Business Rule — İş Kuralı *(Varsa ilgili AC altında belirtilmiştir)*
-> - **[P]:** Positive — Başarılı / mutlu yol kriteri
-> - **[N]:** Negative — Hata / olumsuz durum kriteri
-> - **[B]:** Boundary — Sınır / kenar durum
-> - **[S]:** Security — Güvenlik ve doğrulama
+> - **P:** Positive — Başarılı / mutlu yol kriteri
+> - **N:** Negative — Hata / olumsuz durum kriteri
+> - **B:** Boundary — Sınır / kenar durum
+> - **S:** Security — Güvenlik ve doğrulama
 
 Release'ler alt bölümler halinde gruplandırılır:
 
@@ -132,10 +132,10 @@ FAYDA:   Böylece [sonuç/değer] gerçekleştirebilirim
 - AC → Acceptance Criteria, BR → Business Rule, TC → Test Case
 
 ### Kriter Tipleri
-- `[P]` — başarılı / mutlu yol kriterleri (en az 1)
-- `[N]` — hata kriterleri (en az 1)
-- `[B]` — sınır / kenar durumlar (gerektiğinde)
-- `[S]` — güvenlik ve doğrulama (KVKK içeren hikayelerde zorunlu)
+- `P` — başarılı / mutlu yol kriterleri (en az 1)
+- `N` — hata kriterleri (en az 1)
+- `B` — sınır / kenar durumlar (gerektiğinde)
+- `S` — güvenlik ve doğrulama (KVKK içeren hikayelerde zorunlu)
 
 ### Kriter Başına Minimum / Maksimum
 - Her hikaye için: **minimum 2, maksimum 6** kabul kriteri
@@ -155,7 +155,7 @@ FAYDA:   Böylece [sonuç/değer] gerçekleştirebilirim
 ### Format
 
 ```
-AC-001 [P] : [Maksimum 15 kelime. "Ne olur" sorusunu yanıtlar. Teknik detay, rol listesi ve sayısal limit içermez.]
+AC-001 P : [Maksimum 15 kelime. "Ne olur" sorusunu yanıtlar. Teknik detay, rol listesi ve sayısal limit içermez.]
 
 BR-001 : [Maksimum 2 cümle. Sayısal limitler ve kısıtlar burada belirtilir. Başlık yazılmaz.]
 ```
@@ -163,8 +163,8 @@ BR-001 : [Maksimum 2 cümle. Sayısal limitler ve kısıtlar burada belirtilir. 
 ### Örnek
 
 ```
-AC-001 [P] : Doğru kimlik bilgileriyle giriş yapılır, ana panele yönlendirilir.
-AC-002 [N] : Yanlış şifre girildiğinde giriş reddedilir ve hata mesajı gösterilir.
+AC-001 P : Doğru kimlik bilgileriyle giriş yapılır, ana panele yönlendirilir.
+AC-002 N : Yanlış şifre girildiğinde giriş reddedilir ve hata mesajı gösterilir.
 BR-001 : 5 ardışık hatalı girişte hesap 15 dakika kilitlenir.
 ```
 
@@ -175,7 +175,7 @@ BR-001 : 5 ardışık hatalı girişte hesap 15 dakika kilitlenir.
    e-posta ve şifre ile giriş yaptıktan sonra OTP kodunu
    girmeden sisteme erişemez. (22 kelime)
 
-✅ AC-001 [S] : Yetkili roller şifre sonrası OTP doğrulaması olmadan giremez. (9 kelime)
+✅ AC-001 S : Yetkili roller şifre sonrası OTP doğrulaması olmadan giremez. (9 kelime)
 ```
 
 ---
