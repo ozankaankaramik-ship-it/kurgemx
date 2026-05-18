@@ -1,6 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk'
 import {
-  SISTEM, SHARED_NAV_JS,
+  SISTEM,
   buildHikayelerMetni, extractScreenIds, extractScreenName,
   type HikayeItem,
 } from '@/lib/prototip-helpers'
@@ -17,10 +17,6 @@ function injectBaseCSS(html: string, css: string): string {
   return tag + '\n' + html
 }
 
-function injectNavScript(html: string, script: string): string {
-  if (html.includes('</body>')) return html.replace('</body>', `${script}\n</body>`)
-  return html + '\n' + script
-}
 
 async function generateSkeleton(
   projeAdi: string,
@@ -68,7 +64,7 @@ Ekran div kalıbı:
 
 KRİTİK KURALLAR:
 - CSS ve JavaScript EKLEME — bunlar ayrıca programatik olarak eklenecek
-- SCREEN_ID: küçük harf, tire ile ayrılmış (ör: kullanici-listesi, urun-detay)
+- SCREEN_ID: YALNIZCA a-z İngiliz harfi, 0-9 rakam ve tire (-) — Türkçe harf veya özel karakter YASAK (yanlış: anket-yanıtla → doğru: anket-yanitla)
 - Her nav-item data-screen değeri tam eşleşen bir div.screen id'siyle eşleşmeli
 - Ekran div'lerinde SADECE <!-- SCREEN_CONTENT_SCREEN_ID --> olsun
 - Maks 10 nav item, hikayeleri mantıksal gruplara böl
@@ -114,7 +110,7 @@ Screen div pattern:
 
 CRITICAL RULES:
 - Do NOT add CSS or JavaScript — they will be injected programmatically
-- SCREEN_ID: lowercase, hyphen-separated (e.g., user-list, product-detail)
+- SCREEN_ID: ASCII only — a-z letters, 0-9 digits, hyphens (-); no accented/special characters (wrong: anket-yanıtla → correct: anket-yanitla)
 - Every nav-item data-screen value must match a div.screen id exactly
 - Screen divs must contain ONLY <!-- SCREEN_CONTENT_SCREEN_ID -->
 - Max 10 nav items, group screens logically
@@ -174,9 +170,8 @@ export async function POST(req: Request) {
     let skeleton = await generateSkeleton(projeAdi, detayliAciklama, hikayelerMetni, isTR)
     console.log('[skeleton-html]', skeleton.substring(0, 3000))
 
-    // Programatik CSS ve JS injection — Claude üretmez, biz enjekte ederiz
+    // CSS programatik enjekte edilir; nav JS client tarafında deduplicateNavScript ile eklenir
     skeleton = injectBaseCSS(skeleton, PROTOTIP_BASE_CSS)
-    skeleton = injectNavScript(skeleton, SHARED_NAV_JS)
 
     const screenIds = extractScreenIds(skeleton)
     const screenNames: Record<string, string> = {}
