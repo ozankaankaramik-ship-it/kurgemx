@@ -1209,8 +1209,12 @@ function EkranIci({
     setAdim5ProgressList([])
 
     const hikayeler = storyMapData.hikayeHaritasi?.hikayeler ?? []
-    const allAcler = parseAllAcler(isAnaliziData.icerik)
-    console.log('[test-senaryosu] icerik (ilk 500 karakter):', isAnaliziData.icerik?.substring(0, 500))
+    const icerik = isAnaliziData.icerik
+    const acSatırlari = icerik.match(/AC-\d+/g)
+    console.log('[test-senaryosu] AC referansları:', acSatırlari?.slice(0, 10))
+    console.log('[test-senaryosu] icerik 2000-3000:', icerik.substring(2000, 3000))
+    const allAcler = parseAllAcler(icerik)
+    console.log('[test-senaryosu] icerik (ilk 500 karakter):', icerik?.substring(0, 500))
     console.log('[test-senaryosu] parseAllAcler sonucu (allAcler):', allAcler)
     const surumler = (['R1', 'R2', 'R3'] as const).filter(r => hikayeler.some(h => h.surum === r))
     const allTestCases: TestCaseItem[] = []
