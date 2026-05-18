@@ -123,16 +123,7 @@ function parseAllAcler(icerik: string): Array<{ hikayeNo: string; no: string; ti
       line.match(/^#{1,6}\s+.*?\b(ST\d+)\b/) ??
       line.match(/^\*{1,2}(ST\d+)(?:\s|[*:\-—]|$)/) ??
       line.match(/^(ST\d+)[:\s—\-|]/)
-    if (heading) {
-      currentStory = heading[1]
-      console.log('[heading]', line.trim(), '→', currentStory)
-    }
-    const trimmed = line.trim()
-    if (trimmed.includes('AC-')) {
-      const ac = trimmed.match(/\bAC[-–]?(\d+)\s*(?:\\?\[)?([PNSBpnsb])(?:\\?\])?\s*[:\s]+(.+)/)
-      console.log('[ac-test]', JSON.stringify(trimmed.substring(0, 80)), '→', ac ? 'MATCH' : 'NO MATCH')
-    }
-
+    if (heading) currentStory = heading[1]
     if (!currentStory) continue
 
     const ac = line.match(/\bAC[-–]?(\d+)\s*(?:\\?\[)?([PNSBpnsb])(?:\\?\])?\s*[:\s]+(.+)/)
@@ -156,8 +147,8 @@ interface IsAnaliziData {
 }
 
 interface TestCaseItem {
-  no: string; hikaye: string; acNo: string; acMetni: string; release: string
-  tip: string; baslik: string; onKosul: string; adimlar: string[]; beklenenSonuc: string; durum: string
+  no: string; ac_no: string; ac_metni: string; ac_tip: string; release: string
+  test_on_kosul: string; test_adimlar: string[]; beklenen_sonuc: string; durum: string
 }
 
 interface StoryMapData {
@@ -512,7 +503,7 @@ async function exportTestExcel(testCases: TestCaseItem[], projeAdi: string, proj
   }
 
   const today = new Date().toISOString().split('T')[0]
-  const NUM_COLS = 11
+  const NUM_COLS = 9
   const ws: Record<string, unknown> = {}
   const merges: unknown[] = []
   const rows: { hpx: number }[] = []
@@ -543,8 +534,8 @@ async function exportTestExcel(testCases: TestCaseItem[], projeAdi: string, proj
 
   // Row 4: headers
   const colKeys = isTR
-    ? ['TC No', 'Hikaye', 'AC No', 'AC Metni', 'Release', 'Tip', 'Başlık', 'Ön Koşul', 'Adımlar', 'Beklenen Sonuç', 'Durum']
-    : ['TC No', 'Story', 'AC No', 'AC Text', 'Release', 'Type', 'Title', 'Precondition', 'Steps', 'Expected Result', 'Status']
+    ? ['TC No', 'Sürüm', 'AC No', 'AC Metni', 'AC Tip', 'Test Ön Koşul', 'Test Adımları', 'Beklenen Sonuç', 'Durum']
+    : ['TC No', 'Release', 'AC No', 'AC Description', 'AC Type', 'Precondition', 'Test Steps', 'Expected Result', 'Status']
   colKeys.forEach((k, i) => { ws[enc(4, i)] = hdr(k) })
   rows.push({ hpx: 32 })
 
@@ -552,8 +543,8 @@ async function exportTestExcel(testCases: TestCaseItem[], projeAdi: string, proj
   let writtenCount = 0
   testCases.forEach((tc, ri) => {
     const r = 5 + ri
-    const adimlarText = Array.isArray(tc.adimlar) ? tc.adimlar.join('\n') : String(tc.adimlar ?? '')
-    const vals = [tc.no, tc.hikaye, tc.acNo, tc.acMetni, tc.release, tc.tip, tc.baslik, tc.onKosul, adimlarText, tc.beklenenSonuc, tc.durum]
+    const adimlarText = Array.isArray(tc.test_adimlar) ? tc.test_adimlar.join('\n') : String(tc.test_adimlar ?? '')
+    const vals = [tc.no, tc.release, tc.ac_no, tc.ac_metni, tc.ac_tip, tc.test_on_kosul, adimlarText, tc.beklenen_sonuc, tc.durum]
     vals.forEach((v, ci) => {
       ws[enc(r, ci)] = cell(String(v ?? ''), { font: { sz: 9, color: { rgb: '374151' } }, alignment: { vertical: 'top', wrapText: true } })
     })
@@ -574,7 +565,7 @@ async function exportTestExcel(testCases: TestCaseItem[], projeAdi: string, proj
   ws['!ref'] = XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: footerRow, c: NUM_COLS - 1 } }) // footerRow = 5 + writtenCount
   ws['!merges'] = merges
   ws['!rows'] = rows
-  ws['!cols'] = [{ wch: 12 }, { wch: 8 }, { wch: 10 }, { wch: 30 }, { wch: 8 }, { wch: 12 }, { wch: 25 }, { wch: 22 }, { wch: 35 }, { wch: 30 }, { wch: 10 }]
+  ws['!cols'] = [{ wch: 12 }, { wch: 8 }, { wch: 10 }, { wch: 35 }, { wch: 10 }, { wch: 25 }, { wch: 40 }, { wch: 30 }, { wch: 10 }]
   ws['!views'] = [{ state: 'frozen', ySplit: 5 }]
   XLSX.utils.book_append_sheet(wb, ws, isTR ? 'Test Senaryoları' : 'Test Scenarios')
 
@@ -1214,14 +1205,7 @@ function EkranIci({
     setAdim5ProgressList([])
 
     const hikayeler = storyMapData.hikayeHaritasi?.hikayeler ?? []
-    const icerik = isAnaliziData.icerik
-    console.log('[test-senaryosu] icerik uzunlugu:', icerik.length)
-    const acSatırlari = icerik.match(/AC-\d+/g)
-    console.log('[test-senaryosu] AC referansları:', acSatırlari?.slice(0, 10))
-    console.log('[test-senaryosu] icerik 2000-3000:', icerik.substring(2000, 3000))
-    const allAcler = parseAllAcler(icerik)
-    console.log('[test-senaryosu] icerik (ilk 500 karakter):', icerik?.substring(0, 500))
-    console.log('[test-senaryosu] parseAllAcler sonucu (allAcler):', allAcler)
+    const allAcler = parseAllAcler(isAnaliziData.icerik)
     const surumler = (['R1', 'R2', 'R3'] as const).filter(r => hikayeler.some(h => h.surum === r))
     const allTestCases: TestCaseItem[] = []
     const startTime = Date.now()
@@ -1230,8 +1214,6 @@ function EkranIci({
       for (const release of surumler) {
         const releaseHikayeler = hikayeler.filter(h => h.surum === release)
         const releaseAcler = allAcler.filter(ac => releaseHikayeler.some(h => h.no === ac.hikayeNo))
-        console.log(`[test-senaryosu] ${release} hikayeNolari:`, releaseHikayeler.map(h => h.no))
-        console.log(`[test-senaryosu] ${release} acler (gönderilecek):`, releaseAcler)
 
         setAdim5StreamMsg(locale === 'tr'
           ? `${release} test case'leri oluşturuluyor...`
@@ -2090,9 +2072,9 @@ function EkranIci({
                             {testCases.length > 0
                               ? testCases.slice(0, 5).map((tc, i) => (
                                   <tr key={i}>
-                                    <td className="px-4 py-3 text-xs text-gray-600">{tc.baslik}</td>
-                                    <td className="px-4 py-3 text-xs text-gray-500">{Array.isArray(tc.adimlar) ? tc.adimlar.slice(0, 2).join(' → ') : String(tc.adimlar ?? '')}</td>
-                                    <td className="px-4 py-3 text-xs text-gray-500">{tc.beklenenSonuc}</td>
+                                    <td className="px-4 py-3 text-xs text-gray-600">{tc.no}</td>
+                                    <td className="px-4 py-3 text-xs text-gray-500">{Array.isArray(tc.test_adimlar) ? tc.test_adimlar.slice(0, 2).join(' → ') : String(tc.test_adimlar ?? '')}</td>
+                                    <td className="px-4 py-3 text-xs text-gray-500">{tc.beklenen_sonuc}</td>
                                   </tr>
                                 ))
                               : (

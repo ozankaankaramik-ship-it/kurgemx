@@ -41,7 +41,7 @@ function buildPrompt(
       const list = acByStory[h.no] ?? []
       if (!list.length) return `${h.no} — ${h.ad}: (${isTR ? 'AC yok' : 'no ACs'})`
       const tipChar: Record<string, string> = { positive: 'P', negative: 'N', security: 'S', boundary: 'B' }
-      return `${h.no} — ${h.ad}:\n` + list.map(ac => `  ${ac.no} [${tipChar[ac.tip] ?? 'P'}]: ${ac.metin}`).join('\n')
+      return `${h.no} — ${h.ad}:\n` + list.map(ac => `  ${ac.no} ${tipChar[ac.tip] ?? 'P'}: ${ac.metin}`).join('\n')
     })
     .join('\n\n')
 
@@ -49,15 +49,13 @@ function buildPrompt(
   "testCases": [
     {
       "no": "TC-ST1-01",
-      "hikaye": "ST1",
-      "acNo": "AC-001",
-      "acMetni": "[AC-001'in tam metni buraya]",
+      "ac_no": "AC-001",
+      "ac_metni": "[AC-001'in tam metni buraya]",
+      "ac_tip": "positive",
       "release": "${release}",
-      "tip": "positive",
-      "baslik": "...",
-      "onKosul": "...",
-      "adimlar": ["1. ...", "2. ...", "3. ..."],
-      "beklenenSonuc": "...",
+      "test_on_kosul": "...",
+      "test_adimlar": ["1. ...", "2. ...", "3. ..."],
+      "beklenen_sonuc": "...",
       "durum": "pending"
     }
   ]
@@ -79,12 +77,12 @@ Yukarıdaki her AC için test case üret.
 
 KURALLAR:
 - Her AC için minimum 1, maksimum 2 TC üret
-- tip alanı: AC tipi [P]→positive, [N]→negative, [S]→security, [B]→boundary
+- ac_tip: positive / negative / security / boundary
 - TC numaralama: TC-ST1-01, TC-ST1-02 (hikaye numarası değişince sıfırla)
 - Her TC mutlaka yukarıdaki KABUL KRİTERLERİ listesindeki bir AC'den türetilmeli
-- acNo: o TC'nin türetildiği AC'nin numarasını birebir kopyala (örn: "AC-001") — yeni numara üretme, format değiştirme
-- acMetni: o TC'nin türetildiği AC'nin tam metnini birebir kopyala — özetleme veya değiştirme
-- adimlar dizisi: her adım "1. ...", "2. ..." formatında
+- ac_no: o TC'nin türetildiği AC'nin numarasını birebir kopyala (örn: "AC-001") — yeni numara üretme, format değiştirme
+- ac_metni: o TC'nin türetildiği AC'nin tam metnini birebir kopyala — özetleme veya değiştirme
+- test_adimlar dizisi: her adım "1. ...", "2. ..." formatında
 - durum her zaman "pending"
 - Tüm metin alanları Türkçe
 
@@ -106,12 +104,12 @@ Generate test cases for each AC above.
 
 RULES:
 - Generate minimum 1, maximum 2 TCs per AC
-- tip field: AC type [P]→positive, [N]→negative, [S]→security, [B]→boundary
+- ac_tip: positive / negative / security / boundary
 - TC numbering: TC-ST1-01, TC-ST1-02 (reset when story number changes)
 - Every TC must be derived from one of the ACs in the ACCEPTANCE CRITERIA list above
-- acNo: copy the AC number of that AC exactly as listed (e.g. "AC-001") — do not generate a new number or change the format
-- acMetni: copy the exact full text of that AC — do not summarize or modify it
-- adimlar array: each step in "1. ...", "2. ..." format
+- ac_no: copy the AC number of that AC exactly as listed (e.g. "AC-001") — do not generate a new number or change the format
+- ac_metni: copy the exact full text of that AC — do not summarize or modify it
+- test_adimlar array: each step in "1. ...", "2. ..." format
 - durum always "pending"
 - All text fields in English
 
@@ -144,7 +142,6 @@ export async function POST(req: Request) {
   const projeBuyuklugu = (body.projeBuyuklugu ?? 'Orta').trim()
   const hikayeler = body.hikayeler ?? []
   const acler = body.acler ?? []
-  console.log('[test-senaryosu] acler:', acler)
   const isTR = projeDili === 'TR'
 
   if (!projeAdi || !detayliAciklama || !RELEASES.has(release)) {
@@ -167,8 +164,6 @@ export async function POST(req: Request) {
       system: [{ type: 'text', text: SISTEM, cache_control: { type: 'ephemeral' } }],
       messages: [{ role: 'user', content: prompt }],
     })
-
-    console.log(`[test-senaryosu] release=${release} stop=${response.stop_reason} tokens=${response.usage?.output_tokens}`)
 
     const raw = response.content[0].type === 'text' ? response.content[0].text : ''
     const cleaned = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim()
