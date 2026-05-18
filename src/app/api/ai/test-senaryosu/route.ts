@@ -144,6 +144,7 @@ export async function POST(req: Request) {
   const projeBuyuklugu = (body.projeBuyuklugu ?? 'Orta').trim()
   const hikayeler = body.hikayeler ?? []
   const acler = body.acler ?? []
+  console.log('[test-senaryosu] acler:', acler)
   const isTR = projeDili === 'TR'
 
   if (!projeAdi || !detayliAciklama || !RELEASES.has(release)) {

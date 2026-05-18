@@ -95,9 +95,9 @@ function parsePositiveAcler(icerik: string): Record<string, string[]> {
 
   for (const line of lines) {
     const headingMatch =
-      line.match(/^#{1,4}\s+.*?\b(ST\d+)\b/) ??
-      line.match(/^\*{1,2}(ST\d+)\*{1,2}/) ??
-      line.match(/^(ST\d+)\s+[—\-|]/)
+      line.match(/^#{1,6}\s+.*?\b(ST\d+)\b/) ??
+      line.match(/^\*{1,2}(ST\d+)(?:\s|[*:\-—]|$)/) ??
+      line.match(/^(ST\d+)[:\s—\-|]/)
     if (headingMatch) currentStory = headingMatch[1]
 
     if (currentStory && /\[P\]/.test(line)) {
@@ -124,9 +124,9 @@ function parseAllAcler(icerik: string): Array<{ hikayeNo: string; no: string; ti
 
   for (const line of icerik.split('\n')) {
     const heading =
-      line.match(/^#{1,4}\s+.*?\b(ST\d+)\b/) ??
-      line.match(/^\*{1,2}(ST\d+)\*{1,2}/) ??
-      line.match(/^(ST\d+)\s+[—\-|]/)
+      line.match(/^#{1,6}\s+.*?\b(ST\d+)\b/) ??
+      line.match(/^\*{1,2}(ST\d+)(?:\s|[*:\-—]|$)/) ??
+      line.match(/^(ST\d+)[:\s—\-|]/)
     if (heading) currentStory = heading[1]
     if (!currentStory) continue
 
@@ -1210,6 +1210,8 @@ function EkranIci({
 
     const hikayeler = storyMapData.hikayeHaritasi?.hikayeler ?? []
     const allAcler = parseAllAcler(isAnaliziData.icerik)
+    console.log('[test-senaryosu] icerik (ilk 500 karakter):', isAnaliziData.icerik?.substring(0, 500))
+    console.log('[test-senaryosu] parseAllAcler sonucu (allAcler):', allAcler)
     const surumler = (['R1', 'R2', 'R3'] as const).filter(r => hikayeler.some(h => h.surum === r))
     const allTestCases: TestCaseItem[] = []
     const startTime = Date.now()
@@ -1218,6 +1220,8 @@ function EkranIci({
       for (const release of surumler) {
         const releaseHikayeler = hikayeler.filter(h => h.surum === release)
         const releaseAcler = allAcler.filter(ac => releaseHikayeler.some(h => h.no === ac.hikayeNo))
+        console.log(`[test-senaryosu] ${release} hikayeNolari:`, releaseHikayeler.map(h => h.no))
+        console.log(`[test-senaryosu] ${release} acler (gönderilecek):`, releaseAcler)
 
         setAdim5StreamMsg(locale === 'tr'
           ? `${release} test case'leri oluşturuluyor...`
