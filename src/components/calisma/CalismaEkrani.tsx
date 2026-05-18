@@ -1213,6 +1213,7 @@ function EkranIci({
 
     const hikayeler = storyMapData.hikayeHaritasi?.hikayeler ?? []
     const icerik = isAnaliziData.icerik
+    console.log('[test-senaryosu] icerik uzunlugu:', icerik.length)
     const acSatırlari = icerik.match(/AC-\d+/g)
     console.log('[test-senaryosu] AC referansları:', acSatırlari?.slice(0, 10))
     console.log('[test-senaryosu] icerik 2000-3000:', icerik.substring(2000, 3000))
