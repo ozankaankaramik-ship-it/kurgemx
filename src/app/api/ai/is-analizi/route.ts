@@ -184,8 +184,8 @@ function releasePrompt(
       : `This response is Section 2's "${release === 'R2' ? '2.2' : '2.3'} ${release} — ${label}" sub-section. Start ONLY with "### ${release === 'R2' ? '2.2' : '2.3'} ${release} — ${label}"; do NOT repeat the "## Section 2" heading or the legend.`
 
   const numerasyon = isTR
-    ? `\n\nNUMARALANDIRMA KURALI:\n- Kabul kriterleri (AC) numaraları AC-${String(acBaslangic).padStart(3, '0')}'tan başla, sırayla artır.\n- İş kuralı (BR) numaraları BR-${String(brBaslangic).padStart(3, '0')}'tan başla, sırayla artır.\n- ST (hikaye) numaraları hikaye haritasındaki değerlerle aynı kalır, değiştirme.`
-    : `\n\nNUMBERING RULE:\n- Acceptance criteria (AC) numbers start at AC-${String(acBaslangic).padStart(3, '0')} and increment sequentially.\n- Business rule (BR) numbers start at BR-${String(brBaslangic).padStart(3, '0')} and increment sequentially.\n- ST (story) numbers must match the story map exactly — do not change them.`
+    ? `\n\nNUMARALANDIRMA KURALI:\n- Kabul kriterleri (AC) numaraları AC-${String(acBaslangic).padStart(3, '0')}'tan başla, sırayla artır.\n- İş kuralı (BR) numaraları BR-${String(brBaslangic).padStart(3, '0')}'tan başla, sırayla artır.\n- ST (hikaye) numaraları hikaye haritasındaki değerlerle aynı kalır, değiştirme.\n- Tip etiketlerindeki köşeli parantezleri escape etme — [P] yaz, \\[P\\] değil.`
+    : `\n\nNUMBERING RULE:\n- Acceptance criteria (AC) numbers start at AC-${String(acBaslangic).padStart(3, '0')} and increment sequentially.\n- Business rule (BR) numbers start at BR-${String(brBaslangic).padStart(3, '0')} and increment sequentially.\n- ST (story) numbers must match the story map exactly — do not change them.\n- Do not escape brackets in type labels — write [P], not \\[P\\].`
 
   const kapsamUyarisi = isTR
     ? `\n\nKAPSAM KURALI:\n- Diğer release'lere veya Bölüm 3/4/5'e referans verme.\n- Ekran tasarımı notu, kısaltmalar tablosu, footer YAZMA — bunlar son istekte gelecek.`
