@@ -100,11 +100,11 @@ function parsePositiveAcler(icerik: string): Record<string, string[]> {
       line.match(/^(ST\d+)[:\s—\-|]/)
     if (headingMatch) currentStory = headingMatch[1]
 
-    if (currentStory && /\[P\]/.test(line)) {
+    if (currentStory && /\\?\[P\]/.test(line)) {
       const text = line
         .replace(/^[-*•·]\s*/, '')
         .replace(/AC[-–]?\d*\s*/i, '')
-        .replace(/\[P\]/g, '')
+        .replace(/\\?\[P\]/g, '')
         .replace(/\|.*$/, '')
         .trim()
       if (text.length > 5) {
@@ -130,7 +130,7 @@ function parseAllAcler(icerik: string): Array<{ hikayeNo: string; no: string; ti
     if (heading) currentStory = heading[1]
     if (!currentStory) continue
 
-    const ac = line.match(/\bAC[-–]?(\d+)\s*\[([PNSBpnsb])\][:\s]+(.+)/)
+    const ac = line.match(/\bAC[-–]?(\d+)\s*\\?\[([PNSBpnsb])\][:\s]+(.+)/)
     if (ac) {
       result.push({
         hikayeNo: currentStory,
