@@ -172,6 +172,7 @@ export async function POST(req: Request) {
   try {
     const hikayelerMetni = buildHikayelerMetni(hikayeler, positiveAcler, isTR)
     let skeleton = await generateSkeleton(projeAdi, detayliAciklama, hikayelerMetni, isTR)
+    console.log('[skeleton-html]', skeleton.substring(0, 3000))
 
     // Programatik CSS ve JS injection — Claude üretmez, biz enjekte ederiz
     skeleton = injectBaseCSS(skeleton, PROTOTIP_BASE_CSS)

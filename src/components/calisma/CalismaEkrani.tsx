@@ -974,7 +974,9 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
         ])
       }
 
+      console.log('[contentMap keys]', Object.keys(contentMap))
       // 3. Final birleştirme
+      console.log('[placeholder check]', skeleton.includes('SCREEN_CONTENT'))
       let htmlIcerik = skeleton
       for (const [id, content] of Object.entries(contentMap)) {
         htmlIcerik = fillPlaceholder(htmlIcerik, id, content)
