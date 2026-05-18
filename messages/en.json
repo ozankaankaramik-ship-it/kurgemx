@@ -306,8 +306,10 @@
       "step1Desc": "Enter your project name and a brief description. AI will expand it into a detailed project overview.",
       "step2Title": "Generate Story Map",
       "step2Desc": "AI creates a complete story map with epics, user stories, sprints, and release planning.",
-      "step3Title": "Export & Share",
-      "step3Desc": "Export your story map to Excel, share with your team, and start building."
+      "step3Title": "Generate Analysis & Prototype",
+      "step3Desc": "Turn your stories into business analysis documents, a clickable prototype, and test scenarios in one click.",
+      "step4Title": "Export & Share",
+      "step4Desc": "Export your story map to Excel, share with your team, and start building."
     },
     "features": {
       "title": "Everything You Need",

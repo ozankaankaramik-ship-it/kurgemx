@@ -306,8 +306,10 @@
       "step1Desc": "Proje adınızı ve kısa bir açıklama girin. Yapay zekamız bunu detaylı bir proje özetine dönüştürür.",
       "step2Title": "Hikaye Haritası Oluşturun",
       "step2Desc": "Yapay zeka destanlar, kullanıcı hikayeleri, sprint'ler ve sürüm planlaması ile eksiksiz hikaye haritası oluşturur.",
-      "step3Title": "Dışa Aktarın ve Paylaşın",
-      "step3Desc": "Hikaye haritanızı Excel'e aktarın, ekibinizle paylaşın ve geliştirmeye başlayın."
+      "step3Title": "Analiz ve Prototip Üretin",
+      "step3Desc": "Hikayelerinizden iş analizi dokümanlarını, tıklanabilir prototipi ve test senaryolarını tek tıkla oluşturun.",
+      "step4Title": "Dışa Aktarın ve Paylaşın",
+      "step4Desc": "Hikaye haritanızı Excel'e aktarın, ekibinizle paylaşın ve geliştirmeye başlayın."
     },
     "features": {
       "title": "İhtiyacınız Olan Her Şey",

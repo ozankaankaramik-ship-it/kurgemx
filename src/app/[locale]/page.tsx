@@ -109,6 +109,7 @@ export default async function HomePage() {
     { title: t("howItWorks.step1Title"), desc: t("howItWorks.step1Desc") },
     { title: t("howItWorks.step2Title"), desc: t("howItWorks.step2Desc") },
     { title: t("howItWorks.step3Title"), desc: t("howItWorks.step3Desc") },
+    { title: t("howItWorks.step4Title"), desc: t("howItWorks.step4Desc") },
   ]
 
   return (
@@ -147,7 +148,7 @@ export default async function HomePage() {
           <h2 className="text-xl font-semibold text-[#1F3864] text-center mb-12">
             {t("howItWorks.title")}
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
             {steps.map((step, i) => (
               <div key={i} className="flex flex-col items-center text-center">
                 <div
