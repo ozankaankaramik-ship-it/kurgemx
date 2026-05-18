@@ -60,6 +60,7 @@ export interface InitialProje {
   isAnaliziStr?: string | null
   prototipIcerik?: string | null
   prototipTarih?: string | null
+  testSenaryosuIcerik?: string | null
 }
 
 const ProjeContext = createContext<ProjeContextValue | null>(null)
@@ -93,6 +94,7 @@ export function ProjeProvider({ children, initialProje }: { children: ReactNode;
     isAnalizi: initialProje?.isAnaliziStr ?? null,
     prototype: initialProje?.prototipIcerik ?? null,
     prototipTarih: initialProje?.prototipTarih ?? null,
+    testScenarios: initialProje?.testSenaryosuIcerik ?? null,
   })
 
   function setProje(id: string, projeAd: string, short: string | null, detailed: string, dil?: string | null) {

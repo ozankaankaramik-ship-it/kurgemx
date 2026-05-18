@@ -249,6 +249,8 @@
       "baslik": "Test Senaryosu",
       "uret": "Test Senaryosu Oluştur (.xlsx)",
       "olusturuluyor": "Test senaryoları oluşturuluyor...",
+      "indir": "İndir (.xlsx)",
+      "olusturuldu": "test case oluşturuldu",
       "sutun1": "Senaryo",
       "sutun2": "Adımlar",
       "sutun3": "Beklenen Sonuç",

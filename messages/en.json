@@ -249,6 +249,8 @@
       "baslik": "Test Scenarios",
       "uret": "Generate Test Scenarios (.xlsx)",
       "olusturuluyor": "Generating test scenarios...",
+      "indir": "Download (.xlsx)",
+      "olusturuldu": "test cases generated",
       "sutun1": "Scenario",
       "sutun2": "Steps",
       "sutun3": "Expected Result",

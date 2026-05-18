@@ -117,11 +117,42 @@ function parsePositiveAcler(icerik: string): Record<string, string[]> {
   return result
 }
 
+function parseAllAcler(icerik: string): Array<{ hikayeNo: string; no: string; tip: string; metin: string }> {
+  const result: Array<{ hikayeNo: string; no: string; tip: string; metin: string }> = []
+  const TIP_MAP: Record<string, string> = { P: 'positive', N: 'negative', S: 'security', B: 'boundary' }
+  let currentStory: string | null = null
+
+  for (const line of icerik.split('\n')) {
+    const heading =
+      line.match(/^#{1,4}\s+.*?\b(ST\d+)\b/) ??
+      line.match(/^\*{1,2}(ST\d+)\*{1,2}/) ??
+      line.match(/^(ST\d+)\s+[—\-|]/)
+    if (heading) currentStory = heading[1]
+    if (!currentStory) continue
+
+    const ac = line.match(/\bAC[-–]?(\d+)\s*\[([PNSBpnsb])\][:\s]+(.+)/)
+    if (ac) {
+      result.push({
+        hikayeNo: currentStory,
+        no: `AC-${String(ac[1]).padStart(3, '0')}`,
+        tip: TIP_MAP[ac[2].toUpperCase()] ?? 'positive',
+        metin: ac[3].replace(/\|.*$/, '').trim(),
+      })
+    }
+  }
+  return result
+}
+
 interface IsAnaliziData {
   baslik: string
   tarih: string
   versiyon: string
   icerik: string
+}
+
+interface TestCaseItem {
+  no: string; hikaye: string; acNo: string; acMetni: string; release: string
+  tip: string; baslik: string; onKosul: string; adimlar: string[]; beklenenSonuc: string; durum: string
 }
 
 interface StoryMapData {
@@ -456,6 +487,101 @@ async function exportToExcel(data: StoryMapData, projeAdi: string) {
   XLSX.writeFile(wb, `story-map-${projeAdi.toLowerCase().replace(/\s+/g, '-')}.xlsx`)
 }
 
+async function exportTestExcel(testCases: TestCaseItem[], projeAdi: string, projektDili: string | null) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const XLSX = (await import('xlsx-js-style')) as any
+  const wb = XLSX.utils.book_new()
+  const isTR = projektDili === 'TR'
+
+  const DARK_BLUE = '1F3864'
+  const LIGHT_BLUE = 'D6E4F0'
+  const WHITE = 'FFFFFF'
+  const THIN = { top: { style: 'thin', color: { rgb: 'D1D5DB' } }, bottom: { style: 'thin', color: { rgb: 'D1D5DB' } }, left: { style: 'thin', color: { rgb: 'D1D5DB' } }, right: { style: 'thin', color: { rgb: 'D1D5DB' } } }
+
+  function enc(r: number, c: number) { return XLSX.utils.encode_cell({ r, c }) }
+  function cell(v: string, s: Record<string, unknown> = {}) {
+    return { v, t: 's', s: { border: THIN, ...s } }
+  }
+  function hdr(v: string) {
+    return cell(v, { font: { bold: true, sz: 10, color: { rgb: WHITE } }, fill: { patternType: 'solid', fgColor: { rgb: DARK_BLUE } }, alignment: { horizontal: 'center', vertical: 'center', wrapText: true } })
+  }
+
+  const today = new Date().toISOString().split('T')[0]
+  const NUM_COLS = 11
+  const ws: Record<string, unknown> = {}
+  const merges: unknown[] = []
+  const rows: { hpx: number }[] = []
+
+  // Row 0: title + prepared by
+  const title = isTR ? `${projeAdi} — Test Senaryoları` : `${projeAdi} — Test Scenarios`
+  const prepBy = isTR ? 'Hazırlayan: KurgemX' : 'Prepared by: KurgemX'
+  ws[enc(0, 0)] = cell(title, { font: { bold: true, sz: 12, color: { rgb: WHITE } }, fill: { patternType: 'solid', fgColor: { rgb: DARK_BLUE } }, alignment: { horizontal: 'left', vertical: 'center' } })
+  for (let i = 1; i < NUM_COLS - 1; i++) ws[enc(0, i)] = cell('', { fill: { patternType: 'solid', fgColor: { rgb: DARK_BLUE } } })
+  ws[enc(0, NUM_COLS - 1)] = cell(prepBy, { font: { sz: 10, color: { rgb: WHITE } }, fill: { patternType: 'solid', fgColor: { rgb: DARK_BLUE } }, alignment: { horizontal: 'right', vertical: 'center' } })
+  merges.push({ s: { r: 0, c: 0 }, e: { r: 0, c: NUM_COLS - 2 } })
+  rows.push({ hpx: 36 })
+
+  // Row 1: date + total
+  const dateLine = isTR ? `Tarih: ${today}  |  Toplam TC: ${testCases.length}` : `Date: ${today}  |  Total TC: ${testCases.length}`
+  ws[enc(1, 0)] = cell(dateLine, { font: { italic: true, sz: 10, color: { rgb: DARK_BLUE } }, fill: { patternType: 'solid', fgColor: { rgb: LIGHT_BLUE } }, alignment: { horizontal: 'left', vertical: 'center' } })
+  for (let i = 1; i < NUM_COLS; i++) ws[enc(1, i)] = cell('', { fill: { patternType: 'solid', fgColor: { rgb: LIGHT_BLUE } } })
+  merges.push({ s: { r: 1, c: 0 }, e: { r: 1, c: NUM_COLS - 1 } })
+  rows.push({ hpx: 22 })
+
+  // Row 2: abbreviations
+  const abbrev = isTR
+    ? 'Kısaltmalar: TC — Test Senaryosu  |  AC — Kabul Kriteri  |  ST — Hikaye  |  R — Sürüm'
+    : 'Abbreviations: TC — Test Case  |  AC — Acceptance Criteria  |  ST — Story  |  R — Release'
+  ws[enc(2, 0)] = cell(abbrev, { font: { italic: true, sz: 9, color: { rgb: '6B7280' } }, fill: { patternType: 'solid', fgColor: { rgb: 'F9FAFB' } }, alignment: { horizontal: 'left', vertical: 'center' } })
+  for (let i = 1; i < NUM_COLS; i++) ws[enc(2, i)] = cell('', { fill: { patternType: 'solid', fgColor: { rgb: 'F9FAFB' } } })
+  merges.push({ s: { r: 2, c: 0 }, e: { r: 2, c: NUM_COLS - 1 } })
+  rows.push({ hpx: 20 })
+
+  // Row 3: empty
+  rows.push({ hpx: 10 })
+
+  // Row 4: headers
+  const colKeys = isTR
+    ? ['TC No', 'Hikaye', 'AC No', 'AC Metni', 'Release', 'Tip', 'Başlık', 'Ön Koşul', 'Adımlar', 'Beklenen Sonuç', 'Durum']
+    : ['TC No', 'Story', 'AC No', 'AC Text', 'Release', 'Type', 'Title', 'Precondition', 'Steps', 'Expected Result', 'Status']
+  colKeys.forEach((k, i) => { ws[enc(4, i)] = hdr(k) })
+  rows.push({ hpx: 32 })
+
+  // Rows 5+: data
+  testCases.forEach((tc, ri) => {
+    const r = 5 + ri
+    const adimlarText = Array.isArray(tc.adimlar) ? tc.adimlar.join('\n') : String(tc.adimlar ?? '')
+    const vals = [tc.no, tc.hikaye, tc.acNo, tc.acMetni, tc.release, tc.tip, tc.baslik, tc.onKosul, adimlarText, tc.beklenenSonuc, tc.durum]
+    vals.forEach((v, ci) => {
+      ws[enc(r, ci)] = cell(String(v ?? ''), { font: { sz: 9, color: { rgb: '374151' } }, alignment: { vertical: 'top', wrapText: true } })
+    })
+    rows.push({ hpx: Math.max(20, adimlarText.split('\n').length * 16) })
+  })
+
+  const footerRow = 5 + testCases.length
+  ws[enc(footerRow, 0)] = { v: 'Created with KurgemX • kurgemx.com', t: 's', s: { font: { italic: true, sz: 8, color: { rgb: '9CA3AF' } } } }
+  merges.push({ s: { r: footerRow, c: 0 }, e: { r: footerRow, c: NUM_COLS - 1 } })
+  rows.push({ hpx: 14 })
+
+  ws['!ref'] = XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: footerRow, c: NUM_COLS - 1 } })
+  ws['!merges'] = merges
+  ws['!rows'] = rows
+  ws['!cols'] = [{ wch: 12 }, { wch: 8 }, { wch: 10 }, { wch: 30 }, { wch: 8 }, { wch: 12 }, { wch: 25 }, { wch: 22 }, { wch: 35 }, { wch: 30 }, { wch: 10 }]
+  ws['!views'] = [{ state: 'frozen', ySplit: 5 }]
+  XLSX.utils.book_append_sheet(wb, ws, isTR ? 'Test Senaryoları' : 'Test Scenarios')
+
+  const buf = XLSX.write(wb, { bookType: 'xlsx', type: 'array' })
+  const blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `test-senaryosu-${projeAdi.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/gi, '').slice(0, 50)}.xlsx`
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  URL.revokeObjectURL(url)
+}
+
 
 type DokumanRow = { tip_id: string; icerik: unknown; created_at: string; uretim_suresi?: number | null; token_tahmini?: number | null }
 type BatchDetay = { toplamSure: number; toplamToken: number; batches: Array<{ ekranlar: string[]; sure: number; token: number }> }
@@ -475,6 +601,7 @@ export default function CalismaEkrani({
   const storyMapRow = mevcutDokumanlar.find(d => d.tip_id === DOKUMAN_TIPLERI.hikaye_haritasi) ?? null
   const isAnaliziRow = mevcutDokumanlar.find(d => d.tip_id === DOKUMAN_TIPLERI.is_analizi) ?? null
   const prototipRow = mevcutDokumanlar.find(d => d.tip_id === DOKUMAN_TIPLERI.prototip) ?? null
+  const testSenaryosuRow = mevcutDokumanlar.find(d => d.tip_id === DOKUMAN_TIPLERI.test_senaryosu) ?? null
 
   const toMetrik = (row: DokumanRow | null) =>
     row?.uretim_suresi != null && row?.token_tahmini != null
@@ -483,6 +610,7 @@ export default function CalismaEkrani({
   const storyMapMetrik = toMetrik(storyMapRow)
   const isAnaliziMetrik = toMetrik(isAnaliziRow)
   const prototipMetrik = toMetrik(prototipRow)
+  const testSenaryosuMetrik = toMetrik(testSenaryosuRow)
 
   let initialAdim4BatchDetay: BatchDetay | null = null
   if (typeof prototipRow?.icerik === 'string') {
@@ -511,6 +639,9 @@ export default function CalismaEkrani({
           ? (typeof prototipRow.icerik === 'string' ? prototipRow.icerik : null)
           : null,
         prototipTarih: prototipRow?.created_at ?? null,
+        testSenaryosuIcerik: testSenaryosuRow
+          ? (typeof testSenaryosuRow.icerik === 'string' ? testSenaryosuRow.icerik : null)
+          : null,
       }
     : undefined
 
@@ -523,6 +654,7 @@ export default function CalismaEkrani({
         initialAdim3Metrigi={isAnaliziMetrik}
         initialAdim4Metrigi={prototipMetrik}
         initialAdim4BatchDetay={initialAdim4BatchDetay}
+        initialAdim5Metrigi={testSenaryosuMetrik}
       />
     </ProjeProvider>
   )
@@ -536,6 +668,7 @@ function EkranIci({
   initialAdim3Metrigi = null,
   initialAdim4Metrigi = null,
   initialAdim4BatchDetay = null,
+  initialAdim5Metrigi = null,
 }: {
   backHref?: string
   backLabel?: string
@@ -543,6 +676,7 @@ function EkranIci({
   initialAdim3Metrigi?: { sure: number; token: number } | null
   initialAdim4Metrigi?: { sure: number; token: number } | null
   initialAdim4BatchDetay?: BatchDetay | null
+  initialAdim5Metrigi?: { sure: number; token: number } | null
 }) {
   const t = useTranslations('calismaEkrani')
   const locale = useLocale()
@@ -591,6 +725,9 @@ function EkranIci({
   const [adim4BatchDetay, setAdim4BatchDetay] = useState<BatchDetay | null>(initialAdim4BatchDetay)
   const [adim5Yukleniyor, setAdim5Yukleniyor] = useState(false)
   const [adim5Hata, setAdim5Hata] = useState(false)
+  const [adim5StreamMsg, setAdim5StreamMsg] = useState<string | null>(null)
+  const [adim5ProgressList, setAdim5ProgressList] = useState<string[]>([])
+  const [adim5Metrigi, setAdim5Metrigi] = useState<{sure: number; token: number} | null>(initialAdim5Metrigi)
   const [kapsamYukleniyor, setKapsamYukleniyor] = useState(false)
   const [kapsamHata, setKapsamHata] = useState(false)
   const [mimariYukleniyor, setMimariYukleniyor] = useState(false)
@@ -613,6 +750,7 @@ function EkranIci({
 
   const adim2Aktif = projeId !== null
   const adim3Aktif = storyMapData !== null
+  const adim5Aktif = isAnaliziData !== null
 
   async function generateStoryMap() {
     if (!detailedDesc) return
@@ -1061,14 +1199,82 @@ function EkranIci({
   }
 
   async function generateTestScenarios() {
+    if (!isAnaliziData || !storyMapData) return
     setAdim5Yukleniyor(true)
     setAdim5Hata(false)
+    setAdim5StreamMsg(null)
+    setAdim5ProgressList([])
+
+    const hikayeler = storyMapData.hikayeHaritasi?.hikayeler ?? []
+    const allAcler = parseAllAcler(isAnaliziData.icerik)
+    const surumler = (['R1', 'R2', 'R3'] as const).filter(r => hikayeler.some(h => h.surum === r))
+    const allTestCases: TestCaseItem[] = []
+    const startTime = Date.now()
+
     try {
-      // TODO: /api/ai/test-senaryosu endpoint'i eklendiğinde buraya gelecek
-      await new Promise(r => setTimeout(r, 500))
-    } catch {
+      for (const release of surumler) {
+        const releaseHikayeler = hikayeler.filter(h => h.surum === release)
+        const releaseAcler = allAcler.filter(ac => releaseHikayeler.some(h => h.no === ac.hikayeNo))
+
+        setAdim5StreamMsg(locale === 'tr'
+          ? `${release} test case'leri oluşturuluyor...`
+          : `Generating ${release} test cases...`)
+
+        const res = await fetch('/api/ai/test-senaryosu', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            projeAdi: ad,
+            detayliAciklama: detailedDesc,
+            projeDili: projektDili,
+            release,
+            projeBuyuklugu: ctx.projeBuyuklugu ?? 'Orta',
+            hikayeler: releaseHikayeler.map(h => ({ no: h.no, ad: h.ad, destan: h.destan, sprint: h.sprint })),
+            acler: releaseAcler,
+          }),
+        })
+
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}))
+          throw new Error((errData as { error?: string }).error ?? `HTTP ${res.status} (${release})`)
+        }
+
+        const data = await res.json() as { testCases: TestCaseItem[]; release: string }
+        allTestCases.push(...(data.testCases ?? []))
+        const tcCount = data.testCases?.length ?? 0
+        setAdim5ProgressList(prev => [...prev,
+          locale === 'tr' ? `${release} tamamlandı ✓ (${tcCount} TC)` : `${release} complete ✓ (${tcCount} TCs)`
+        ])
+      }
+
+      const icerik = JSON.stringify({ test_cases: allTestCases })
+      const sure5 = Math.round((Date.now() - startTime) / 1000)
+      const token5 = Math.round(icerik.length / 4)
+
+      if (projeId) {
+        const supabase = createClient()
+        const { error: upsertError } = await supabase.from('dokumanlar').upsert(
+          {
+            proje_id: projeId,
+            tip_id: DOKUMAN_TIPLERI.test_senaryosu,
+            baslik: projektDili === 'TR' ? `${ad} — Test Senaryoları` : `${ad} — Test Scenarios`,
+            icerik,
+            dil: projektDili ?? 'TR',
+            uretim_suresi: sure5,
+            token_tahmini: token5,
+          },
+          { onConflict: 'proje_id,tip_id' },
+        )
+        if (upsertError) console.error('[generateTestScenarios] kayıt hatası:', upsertError)
+      }
+
+      setAdim5Metrigi({ sure: sure5, token: token5 })
+      ctx.setDokuman('testScenarios', icerik)
+    } catch (err) {
+      console.error('[generateTestScenarios] hata:', err)
       setAdim5Hata(true)
     } finally {
+      setAdim5StreamMsg(null)
       setAdim5Yukleniyor(false)
     }
   }
@@ -1793,55 +1999,104 @@ function EkranIci({
             </div>
           </div>
 
-          {/* ── Adım 5 — Pasif ── */}
+          {/* ── Adım 5 ── */}
           <div className="flex gap-6">
             <div className="flex flex-col items-center">
-              <div className="w-9 h-9 rounded-full bg-gray-200 text-gray-400 flex items-center justify-center text-sm font-bold shrink-0">5</div>
+              <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold shrink-0 ${adim5Aktif ? 'bg-[#1F3864] text-white' : 'bg-gray-200 text-gray-400'}`}>5</div>
             </div>
             <div className="flex-1 pb-10 min-w-0">
-              <h2 className="text-base font-semibold text-gray-400 mb-4">{t('adim5.baslik')}</h2>
-              <div className="bg-white border border-gray-100 rounded-xl p-6">
-                <div className="space-y-2 mb-5">
-                  <GenerateButton
-                    label={t('adim5.uret')}
-                    loadingLabel={t('adim5.olusturuluyor')}
-                    regenerateLabel={t('yenidenOlustur')}
-                    disabled={!adim3Aktif}
-                    loading={adim5Yukleniyor}
-                    hasContent={false}
-                    onClick={generateTestScenarios}
-                  />
-                  {adim5Yukleniyor && <ProgressBar />}
-                  {adim5Hata && <p className="text-xs text-red-500">{t('adim1.hatalar.genel')}</p>}
-                </div>
-                <div className="rounded-lg border border-gray-100 overflow-hidden">
-                  <table className="w-full text-sm text-left">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-4 py-2.5 text-xs font-semibold text-gray-300 uppercase tracking-wide w-1/4">{t('adim5.sutun1')}</th>
-                        <th className="px-4 py-2.5 text-xs font-semibold text-gray-300 uppercase tracking-wide w-1/2">{t('adim5.sutun2')}</th>
-                        <th className="px-4 py-2.5 text-xs font-semibold text-gray-300 uppercase tracking-wide w-1/4">{t('adim5.sutun3')}</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-50">
-                      <tr>
-                        <td className="px-4 py-3 text-gray-300">{t('adim5.ornekS1')}</td>
-                        <td className="px-4 py-3 text-gray-300">{t('adim5.ornekA1')}</td>
-                        <td className="px-4 py-3 text-gray-300">{t('adim5.ornekB1')}</td>
-                      </tr>
-                      <tr>
-                        <td className="px-4 py-3 text-gray-300">{t('adim5.ornekS2')}</td>
-                        <td className="px-4 py-3 text-gray-300">{t('adim5.ornekA2')}</td>
-                        <td className="px-4 py-3 text-gray-300">{t('adim5.ornekB2')}</td>
-                      </tr>
-                      <tr>
-                        <td className="px-4 py-3 text-gray-300">{t('adim5.ornekS3')}</td>
-                        <td className="px-4 py-3 text-gray-300">{t('adim5.ornekA3')}</td>
-                        <td className="px-4 py-3 text-gray-300">{t('adim5.ornekB3')}</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
+              <h2 className={`text-base font-semibold mb-4 ${adim5Aktif ? 'text-[#1F3864]' : 'text-gray-400'}`}>{t('adim5.baslik')}</h2>
+              <div className={`rounded-xl p-6 ${adim5Aktif ? 'bg-[#EEF4FB] border border-blue-100' : 'bg-white border border-gray-100'}`}>
+                {(() => {
+                  const testCases: TestCaseItem[] = (() => {
+                    try { return (JSON.parse(ctx.dokuman.testScenarios ?? '{}') as { test_cases: TestCaseItem[] }).test_cases ?? [] }
+                    catch { return [] }
+                  })()
+                  return (
+                    <>
+                      <div className="space-y-2 mb-4">
+                        <div className="flex items-center gap-3 flex-wrap">
+                          <GenerateButton
+                            label={t('adim5.uret')}
+                            loadingLabel={adim5StreamMsg ?? t('adim5.olusturuluyor')}
+                            regenerateLabel={t('yenidenOlustur')}
+                            disabled={isAnaliziData === null}
+                            loading={adim5Yukleniyor}
+                            hasContent={testCases.length > 0}
+                            onClick={generateTestScenarios}
+                          />
+                          {testCases.length > 0 && !adim5Yukleniyor && (
+                            <button
+                              onClick={() => exportTestExcel(testCases, ad, projektDili)}
+                              className="inline-flex items-center gap-1.5 rounded-md h-[34px] px-3.5 text-xs font-medium border-[0.5px] border-[#2E75B6]/50 text-[#1F3864] hover:bg-[#EEF4FB] transition"
+                            >
+                              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                                <path d="M8 1v9M4 7l4 4 4-4M2 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                              </svg>
+                              {t('adim5.indir')}
+                            </button>
+                          )}
+                        </div>
+                        {adim5Yukleniyor && <ProgressBar />}
+                        {adim5Yukleniyor && adim5ProgressList.length > 0 && (
+                          <div style={{ fontSize: 11, display: 'flex', flexDirection: 'column', gap: 3, marginTop: 4 }}>
+                            {adim5ProgressList.map((step, i) => (
+                              <span key={i} style={{ color: '#2E75B6' }}>✓ {step}</span>
+                            ))}
+                            {adim5StreamMsg && (
+                              <span style={{ color: '#9CA3AF' }}>⟳ {adim5StreamMsg}</span>
+                            )}
+                          </div>
+                        )}
+                        {adim5Hata && <p className="text-xs text-red-500">{t('adim1.hatalar.genel')}</p>}
+                        {testCases.length > 0 && !adim5Yukleniyor && (
+                          <p style={{ fontSize: 11, opacity: 0.5, fontStyle: 'italic' }} className="text-gray-500">
+                            ✓ {testCases.length} {t('adim5.olusturuldu')}
+                          </p>
+                        )}
+                        {adim5Metrigi && testCases.length > 0 && !adim5Yukleniyor && (
+                          <p style={{ fontSize: 11, opacity: 0.4, fontStyle: 'italic' }} className="text-gray-500">
+                            {t('uretimMetrigi', { sure: formatSure(adim5Metrigi.sure, projektDili ?? 'TR'), token: adim5Metrigi.token.toLocaleString() })}
+                          </p>
+                        )}
+                      </div>
+                      <div className="rounded-lg border border-gray-100 overflow-hidden">
+                        <table className="w-full text-sm text-left">
+                          <thead className="bg-gray-50">
+                            <tr>
+                              <th className="px-4 py-2.5 text-xs font-semibold text-gray-400 uppercase tracking-wide w-1/4">{t('adim5.sutun1')}</th>
+                              <th className="px-4 py-2.5 text-xs font-semibold text-gray-400 uppercase tracking-wide w-1/2">{t('adim5.sutun2')}</th>
+                              <th className="px-4 py-2.5 text-xs font-semibold text-gray-400 uppercase tracking-wide w-1/4">{t('adim5.sutun3')}</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-gray-50">
+                            {testCases.length > 0
+                              ? testCases.slice(0, 5).map((tc, i) => (
+                                  <tr key={i}>
+                                    <td className="px-4 py-3 text-xs text-gray-600">{tc.baslik}</td>
+                                    <td className="px-4 py-3 text-xs text-gray-500">{Array.isArray(tc.adimlar) ? tc.adimlar.slice(0, 2).join(' → ') : String(tc.adimlar ?? '')}</td>
+                                    <td className="px-4 py-3 text-xs text-gray-500">{tc.beklenenSonuc}</td>
+                                  </tr>
+                                ))
+                              : (
+                                <>
+                                  <tr><td className="px-4 py-3 text-gray-300">{t('adim5.ornekS1')}</td><td className="px-4 py-3 text-gray-300">{t('adim5.ornekA1')}</td><td className="px-4 py-3 text-gray-300">{t('adim5.ornekB1')}</td></tr>
+                                  <tr><td className="px-4 py-3 text-gray-300">{t('adim5.ornekS2')}</td><td className="px-4 py-3 text-gray-300">{t('adim5.ornekA2')}</td><td className="px-4 py-3 text-gray-300">{t('adim5.ornekB2')}</td></tr>
+                                  <tr><td className="px-4 py-3 text-gray-300">{t('adim5.ornekS3')}</td><td className="px-4 py-3 text-gray-300">{t('adim5.ornekA3')}</td><td className="px-4 py-3 text-gray-300">{t('adim5.ornekB3')}</td></tr>
+                                </>
+                              )
+                            }
+                          </tbody>
+                        </table>
+                        {testCases.length > 5 && !adim5Yukleniyor && (
+                          <p className="px-4 py-2 text-xs text-gray-400 bg-gray-50">
+                            {locale === 'tr' ? `+${testCases.length - 5} test case daha — tam liste için Excel'i indirin` : `+${testCases.length - 5} more test cases — download Excel for full list`}
+                          </p>
+                        )}
+                      </div>
+                    </>
+                  )
+                })()}
               </div>
             </div>
           </div>
