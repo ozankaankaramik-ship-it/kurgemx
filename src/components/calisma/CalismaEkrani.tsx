@@ -178,7 +178,7 @@ function deduplicateNavScript(html: string): string {
   });
 })();
 </script>`
-  const stripped = html.replace(/<script\b[^>]*>[\s\S]*?showScreen[\s\S]*?<\/script>/gi, '')
+  const stripped = html.replace(/<script\b[^>]*>(?:(?!<\/script>)[\s\S])*showScreen(?:(?!<\/script>)[\s\S])*<\/script>/gi, '')
   if (stripped.includes('</body>')) return stripped.replace('</body>', CANONICAL + '\n</body>')
   return stripped + '\n' + CANONICAL
 }
