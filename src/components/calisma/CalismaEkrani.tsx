@@ -127,7 +127,10 @@ function parseAllAcler(icerik: string): Array<{ hikayeNo: string; no: string; ti
       line.match(/^#{1,6}\s+.*?\b(ST\d+)\b/) ??
       line.match(/^\*{1,2}(ST\d+)(?:\s|[*:\-—]|$)/) ??
       line.match(/^(ST\d+)[:\s—\-|]/)
-    if (heading) currentStory = heading[1]
+    if (heading) {
+      currentStory = heading[1]
+      console.log('[heading]', line.trim(), '→', currentStory)
+    }
     if (!currentStory) continue
 
     const ac = line.match(/\bAC[-–]?(\d+)\s*\\?\[([PNSBpnsb])\][:\s]+(.+)/)
