@@ -1682,6 +1682,15 @@ function EkranIci({
                           </svg>
                           {t('adim4.yeniSekme')}
                         </button>
+                        <button
+                          onClick={generatePrototype}
+                          className="inline-flex items-center gap-1.5 rounded-md h-[34px] px-3.5 text-xs font-medium border-[0.5px] border-[#2E75B6]/50 text-[#1F3864] hover:bg-[#EEF4FB] transition"
+                        >
+                          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                            <path d="M1 8a7 7 0 1012-5M13 1v3h-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                          {t('adim4.yenidenUret')}
+                        </button>
                       </>
                     )}
                   </div>

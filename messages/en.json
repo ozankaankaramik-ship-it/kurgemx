@@ -242,7 +242,8 @@
       "indir": "Download (.html)",
       "yeniSekme": "Open in New Tab",
       "prototipOlusturuldu": "✓ Prototype generated",
-      "isAnaliziGerekli": "Business Analysis Document must be generated first"
+      "isAnaliziGerekli": "Business Analysis Document must be generated first",
+      "yenidenUret": "Regenerate"
     },
     "adim5": {
       "baslik": "Test Scenarios",

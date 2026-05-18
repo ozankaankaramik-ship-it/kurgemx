@@ -242,7 +242,8 @@
       "indir": "İndir (.html)",
       "yeniSekme": "Yeni Sekmede Aç",
       "prototipOlusturuldu": "✓ Prototip oluşturuldu",
-      "isAnaliziGerekli": "Önce İş Analizi Dokümanı oluşturulmalıdır"
+      "isAnaliziGerekli": "Önce İş Analizi Dokümanı oluşturulmalıdır",
+      "yenidenUret": "Yeniden Üret"
     },
     "adim5": {
       "baslik": "Test Senaryosu",
