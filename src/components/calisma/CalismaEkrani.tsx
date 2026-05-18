@@ -458,6 +458,7 @@ async function exportToExcel(data: StoryMapData, projeAdi: string) {
 
 
 type DokumanRow = { tip_id: string; icerik: unknown; created_at: string; uretim_suresi?: number | null; token_tahmini?: number | null }
+type BatchDetay = { toplamSure: number; toplamToken: number; batches: Array<{ ekranlar: string[]; sure: number; token: number }> }
 
 // Dış bileşen: ProjeProvider sağlar
 export default function CalismaEkrani({
@@ -474,6 +475,20 @@ export default function CalismaEkrani({
   const storyMapRow = mevcutDokumanlar.find(d => d.tip_id === DOKUMAN_TIPLERI.hikaye_haritasi) ?? null
   const isAnaliziRow = mevcutDokumanlar.find(d => d.tip_id === DOKUMAN_TIPLERI.is_analizi) ?? null
   const prototipRow = mevcutDokumanlar.find(d => d.tip_id === DOKUMAN_TIPLERI.prototip) ?? null
+
+  const toMetrik = (row: DokumanRow | null) =>
+    row?.uretim_suresi != null && row?.token_tahmini != null
+      ? { sure: row.uretim_suresi as number, token: row.token_tahmini as number }
+      : null
+  const storyMapMetrik = toMetrik(storyMapRow)
+  const isAnaliziMetrik = toMetrik(isAnaliziRow)
+  const prototipMetrik = toMetrik(prototipRow)
+
+  let initialAdim4BatchDetay: BatchDetay | null = null
+  if (typeof prototipRow?.icerik === 'string') {
+    const m = prototipRow.icerik.match(/<!--\s*kurgemx-metrics:(.+?)-->/)
+    if (m) { try { initialAdim4BatchDetay = JSON.parse(m[1]) as BatchDetay } catch { /* ignore */ } }
+  }
 
   const isAnaliziStr: string | null = isAnaliziRow
     ? JSON.stringify({
@@ -501,13 +516,34 @@ export default function CalismaEkrani({
 
   return (
     <ProjeProvider initialProje={enrichedInitialProje}>
-      <EkranIci backHref={backHref} backLabel={backLabel} />
+      <EkranIci
+        backHref={backHref}
+        backLabel={backLabel}
+        initialAdim2Metrigi={storyMapMetrik}
+        initialAdim3Metrigi={isAnaliziMetrik}
+        initialAdim4Metrigi={prototipMetrik}
+        initialAdim4BatchDetay={initialAdim4BatchDetay}
+      />
     </ProjeProvider>
   )
 }
 
 // İç bileşen: context'i kullanır
-function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: string }) {
+function EkranIci({
+  backHref,
+  backLabel,
+  initialAdim2Metrigi = null,
+  initialAdim3Metrigi = null,
+  initialAdim4Metrigi = null,
+  initialAdim4BatchDetay = null,
+}: {
+  backHref?: string
+  backLabel?: string
+  initialAdim2Metrigi?: { sure: number; token: number } | null
+  initialAdim3Metrigi?: { sure: number; token: number } | null
+  initialAdim4Metrigi?: { sure: number; token: number } | null
+  initialAdim4BatchDetay?: BatchDetay | null
+}) {
   const t = useTranslations('calismaEkrani')
   const locale = useLocale()
   const ctx = useProje()
@@ -549,9 +585,10 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
   const [adim4ProgressList, setAdim4ProgressList] = useState<string[]>([])
   const [adim4FailedScreens, setAdim4FailedScreens] = useState<string[]>([])
   const [adim4Tarih, setAdim4Tarih] = useState<string | null>(ctx.dokuman.prototipTarih ?? null)
-  const [adim2Metrigi, setAdim2Metrigi] = useState<{sure: number; token: number} | null>(null)
-  const [adim3Metrigi, setAdim3Metrigi] = useState<{sure: number; token: number} | null>(null)
-  const [adim4Metrigi, setAdim4Metrigi] = useState<{sure: number; token: number} | null>(null)
+  const [adim2Metrigi, setAdim2Metrigi] = useState<{sure: number; token: number} | null>(initialAdim2Metrigi)
+  const [adim3Metrigi, setAdim3Metrigi] = useState<{sure: number; token: number} | null>(initialAdim3Metrigi)
+  const [adim4Metrigi, setAdim4Metrigi] = useState<{sure: number; token: number} | null>(initialAdim4Metrigi)
+  const [adim4BatchDetay, setAdim4BatchDetay] = useState<BatchDetay | null>(initialAdim4BatchDetay)
   const [adim5Yukleniyor, setAdim5Yukleniyor] = useState(false)
   const [adim5Hata, setAdim5Hata] = useState(false)
   const [kapsamYukleniyor, setKapsamYukleniyor] = useState(false)
@@ -862,7 +899,7 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
 
     try {
       // 1. Skeleton
-      setAdim4StreamMsg(isTR ? 'İskelet oluşturuluyor...' : 'Building skeleton...')
+      setAdim4StreamMsg(locale === 'tr' ? 'İskelet oluşturuluyor...' : 'Building skeleton...')
       const skelRes = await fetch('/api/ai/prototip-skeleton', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -886,7 +923,7 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
         skeletonCSS: string
         hikayelerMetni: string
       }
-      setAdim4ProgressList(prev => [...prev, isTR ? 'Navigasyon hazırlandı' : 'Navigation ready'])
+      setAdim4ProgressList(prev => [...prev, locale === 'tr' ? 'Navigasyon hazırlandı ✓' : 'Navigation ready ✓'])
 
       if (screenIds.length === 0) {
         await doSave(deduplicateNavScript(skeleton))
@@ -907,14 +944,16 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
 
       const contentMap: Record<string, string> = {}
       const allFailed: string[] = []
+      const batchMetrikler: Array<{ ekranlar: string[]; sure: number; token: number }> = []
 
       for (let i = 0; i < batches.length; i++) {
         const batch = batches[i]
         const startNum = i * 2 + 1
         const endNum = Math.min((i + 1) * 2, screenIds.length)
         setAdim4StreamMsg(
-          isTR ? `Ekranlar ${startNum}-${endNum} oluşturuluyor...` : `Generating screens ${startNum}-${endNum}...`
+          locale === 'tr' ? `Ekranlar ${startNum}-${endNum} oluşturuluyor...` : `Generating screens ${startNum}-${endNum}...`
         )
+        const batchStartTime = Date.now()
 
         let remaining = [...batch]
         for (let attempt = 0; attempt <= 2 && remaining.length > 0; attempt++) {
@@ -943,6 +982,12 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
         }
         if (remaining.length > 0) allFailed.push(...remaining)
 
+        batchMetrikler.push({
+          ekranlar: batch,
+          sure: Math.round((Date.now() - batchStartTime) / 1000),
+          token: Math.round(batch.reduce((s, id) => s + (contentMap[id]?.length ?? 0), 0) / 4),
+        })
+
         // Ara kayıt — hata fırlatırsa orkestrasyon durmasın
         try {
           if (projeId) {
@@ -970,7 +1015,7 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
 
         setAdim4ProgressList(prev => [
           ...prev,
-          isTR ? `Ekranlar ${startNum}-${endNum} hazır` : `Screens ${startNum}-${endNum} ready`,
+          locale === 'tr' ? `Ekranlar ${startNum}-${endNum} hazır ✓` : `Screens ${startNum}-${endNum} ready ✓`,
         ])
       }
 
@@ -989,6 +1034,13 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
         )
       }
       htmlIcerik = deduplicateNavScript(htmlIcerik)
+      const batchDetay: BatchDetay = {
+        toplamSure: Math.round((Date.now() - startTime4) / 1000),
+        toplamToken: Math.round(htmlIcerik.length / 4),
+        batches: batchMetrikler,
+      }
+      htmlIcerik += `\n<!-- kurgemx-metrics:${JSON.stringify(batchDetay)} -->`
+      setAdim4BatchDetay(batchDetay)
       try {
         await doSave(htmlIcerik)
       } catch (saveErr) {
@@ -1665,6 +1717,15 @@ function EkranIci({ backHref, backLabel }: { backHref?: string; backLabel?: stri
                     <p style={{ fontSize: 11, opacity: 0.4, fontStyle: 'italic' }} className="text-gray-500">
                       {t('uretimMetrigi', { sure: formatSure(adim4Metrigi.sure, projektDili ?? 'TR'), token: adim4Metrigi.token.toLocaleString() })}
                     </p>
+                  )}
+                  {adim4BatchDetay && ctx.dokuman.prototype && !adim4Yukleniyor && (
+                    <div className="mt-1 space-y-0.5">
+                      {adim4BatchDetay.batches.map((b, idx) => (
+                        <p key={idx} style={{ fontSize: 10, opacity: 0.35, fontStyle: 'italic' }} className="text-gray-500">
+                          {b.ekranlar.join(', ')} — {formatSure(b.sure, projektDili ?? 'TR')} / {b.token.toLocaleString()} token
+                        </p>
+                      ))}
+                    </div>
                   )}
                 </div>
                 {!ctx.dokuman.prototype && (
