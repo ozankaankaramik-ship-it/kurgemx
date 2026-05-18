@@ -10,7 +10,7 @@ interface HikayeInput { no: string; ad: string; destan: string; sprint: string }
 interface AcInput { hikayeNo: string; no: string; tip: string; metin: string }
 
 const RELEASES = new Set(['R1', 'R2', 'R3'])
-const MAX_TOKENS: Record<string, number> = { Küçük: 6000, Orta: 12000, Büyük: 20000 }
+const MAX_TOKENS: Record<string, number> = { Küçük: 18000, Orta: 24000, Büyük: 32000 }
 
 function releaseLabel(r: string, isTR: boolean) {
   if (r === 'R1') return 'MVP'
@@ -81,6 +81,7 @@ KURALLAR:
 - Her AC için minimum 1, maksimum 2 TC üret
 - tip alanı: AC tipi [P]→positive, [N]→negative, [S]→security, [B]→boundary
 - TC numaralama: TC-ST1-01, TC-ST1-02 (hikaye numarası değişince sıfırla)
+- acNo alanına input olarak gelen AC numarasını olduğu gibi yaz — yeni numara üretme, format değiştirme
 - adimlar dizisi: her adım "1. ...", "2. ..." formatında
 - durum her zaman "pending"
 - Tüm metin alanları Türkçe
@@ -105,6 +106,7 @@ RULES:
 - Generate minimum 1, maximum 2 TCs per AC
 - tip field: AC type [P]→positive, [N]→negative, [S]→security, [B]→boundary
 - TC numbering: TC-ST1-01, TC-ST1-02 (reset when story number changes)
+- acNo field: copy the AC number exactly as provided in the input — do not generate a new number or change the format
 - adimlar array: each step in "1. ...", "2. ..." format
 - durum always "pending"
 - All text fields in English
