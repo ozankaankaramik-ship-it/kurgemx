@@ -69,20 +69,18 @@ Her hikaye için **5 TC** hedeflenir:
 ## Test Case Formatı
 
 ```
-Test Case No: TC-[HikayeNo]-[SıraNo]  örn: TC-ST6-01
-AC No:        AC-[SıraNo]  örn: AC-001
-AC Metni:     [AC'nin olduğu gibi tam metni]
-Başlık:       [Kısa açıklama]
-Tip:          positive / negative / security / boundary / performance
-Hikaye:       ST[No]
-Release:      R1 / R2 / R3
-Ön Koşul:     [Başlangıç durumu]
-Adımlar:
+Test Case No:   TC-[HikayeNo]-[SıraNo]  örn: TC-ST6-01
+AC No:          AC-[SıraNo]  örn: AC-001
+AC Metni:       [AC'nin olduğu gibi tam metni]
+AC Tip:         positive / negative / security / boundary / performance
+Release:        R1 / R2 / R3
+Test Ön Koşul:  [Başlangıç durumu]
+Test Adımlar:
   1. [Adım]
   2. [Adım]
   ...
 Beklenen Sonuç: [Ne olması gerektiği]
-Durum:        pending
+Durum:          pending
 ```
 
 ---
@@ -136,11 +134,11 @@ Abbreviations: TC — Test Case  |  AC — Acceptance Criteria  |  ST — Story 
 
 ### Sütun Sırası
 
-| TC No | Hikaye | AC No | AC Metni | Release | Tip | Başlık | Ön Koşul | Adımlar | Beklenen Sonuç | Durum |
-|-------|--------|-------|----------|---------|-----|--------|----------|---------|----------------|-------|
+| TC No | Release | AC No | AC Metni | AC Tip | Test Ön Koşul | Test Adımlar | Beklenen Sonuç | Durum |
+|-------|---------|-------|----------|--------|---------------|--------------|----------------|-------|
 
 - Durum sütunu: pending / passed / failed / blocked
-- Release sütunu: R1 / R2 / R3 — kullanıcı Excel filtresiyle ayırabilir
+- Release ve AC Tip sütunları Excel filtresiyle ayrılabilir
 
 ---
 
@@ -156,14 +154,12 @@ Test case'leri dokümanın `icerik` alanında JSON formatında tutulur.
       "no": "TC-ST1-01",
       "ac_no": "AC-001",
       "ac_metni": "...",
-      "title": "...",
-      "type": "positive",
-      "story_id": "ST1",
+      "ac_tip": "positive",
       "release": "R1",
-      "precondition": "...",
-      "steps": ["...", "..."],
-      "expected_result": "...",
-      "status": "pending"
+      "test_on_kosul": "...",
+      "test_adimlar": ["...", "..."],
+      "beklenen_sonuc": "...",
+      "durum": "pending"
     }
   ]
 }
