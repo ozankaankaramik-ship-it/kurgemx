@@ -521,12 +521,9 @@ async function exportTestExcel(testCases: TestCaseItem[], projeAdi: string, proj
   merges.push({ s: { r: 0, c: 0 }, e: { r: 0, c: NUM_COLS - 2 } })
   rows.push({ hpx: 36 })
 
-  // Row 1: date + total
-  const dateLine = isTR ? `Tarih: ${today}  |  Toplam TC: ${testCases.length}` : `Date: ${today}  |  Total TC: ${testCases.length}`
-  ws[enc(1, 0)] = cell(dateLine, { font: { italic: true, sz: 10, color: { rgb: DARK_BLUE } }, fill: { patternType: 'solid', fgColor: { rgb: LIGHT_BLUE } }, alignment: { horizontal: 'left', vertical: 'center' } })
-  for (let i = 1; i < NUM_COLS; i++) ws[enc(1, i)] = cell('', { fill: { patternType: 'solid', fgColor: { rgb: LIGHT_BLUE } } })
-  merges.push({ s: { r: 1, c: 0 }, e: { r: 1, c: NUM_COLS - 1 } })
+  // Row 1: placeholder — dateLine yazılacak ama TC sayısı data'dan sonra hesaplanacak
   rows.push({ hpx: 22 })
+  merges.push({ s: { r: 1, c: 0 }, e: { r: 1, c: NUM_COLS - 1 } })
 
   // Row 2: abbreviations
   const abbrev = isTR
@@ -534,7 +531,6 @@ async function exportTestExcel(testCases: TestCaseItem[], projeAdi: string, proj
     : 'Abbreviations: TC — Test Case  |  AC — Acceptance Criteria  |  ST — Story  |  R — Release'
   ws[enc(2, 0)] = cell(abbrev, { font: { italic: true, sz: 9, color: { rgb: '6B7280' } }, fill: { patternType: 'solid', fgColor: { rgb: 'F9FAFB' } }, alignment: { horizontal: 'left', vertical: 'center' } })
   for (let i = 1; i < NUM_COLS; i++) ws[enc(2, i)] = cell('', { fill: { patternType: 'solid', fgColor: { rgb: 'F9FAFB' } } })
-  merges.push({ s: { r: 2, c: 0 }, e: { r: 2, c: NUM_COLS - 1 } })
   rows.push({ hpx: 20 })
 
   // Row 3: empty
@@ -547,7 +543,8 @@ async function exportTestExcel(testCases: TestCaseItem[], projeAdi: string, proj
   colKeys.forEach((k, i) => { ws[enc(4, i)] = hdr(k) })
   rows.push({ hpx: 32 })
 
-  // Rows 5+: data
+  // Rows 5+: data — önce yaz, sonra say
+  let writtenCount = 0
   testCases.forEach((tc, ri) => {
     const r = 5 + ri
     const adimlarText = Array.isArray(tc.adimlar) ? tc.adimlar.join('\n') : String(tc.adimlar ?? '')
@@ -556,14 +553,20 @@ async function exportTestExcel(testCases: TestCaseItem[], projeAdi: string, proj
       ws[enc(r, ci)] = cell(String(v ?? ''), { font: { sz: 9, color: { rgb: '374151' } }, alignment: { vertical: 'top', wrapText: true } })
     })
     rows.push({ hpx: Math.max(20, adimlarText.split('\n').length * 16) })
+    writtenCount++
   })
 
-  const footerRow = 5 + testCases.length
+  // Row 1: dateLine — gerçek yazılan satır sayısıyla doldur
+  const dateLine = isTR ? `Tarih: ${today}  |  Toplam TC: ${writtenCount}` : `Date: ${today}  |  Total TC: ${writtenCount}`
+  ws[enc(1, 0)] = cell(dateLine, { font: { italic: true, sz: 10, color: { rgb: DARK_BLUE } }, fill: { patternType: 'solid', fgColor: { rgb: LIGHT_BLUE } }, alignment: { horizontal: 'left', vertical: 'center' } })
+  for (let i = 1; i < NUM_COLS; i++) ws[enc(1, i)] = cell('', { fill: { patternType: 'solid', fgColor: { rgb: LIGHT_BLUE } } })
+
+  const footerRow = 5 + writtenCount
   ws[enc(footerRow, 0)] = { v: 'Created with KurgemX • kurgemx.com', t: 's', s: { font: { italic: true, sz: 8, color: { rgb: '9CA3AF' } } } }
   merges.push({ s: { r: footerRow, c: 0 }, e: { r: footerRow, c: NUM_COLS - 1 } })
   rows.push({ hpx: 14 })
 
-  ws['!ref'] = XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: footerRow, c: NUM_COLS - 1 } })
+  ws['!ref'] = XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: footerRow, c: NUM_COLS - 1 } }) // footerRow = 5 + writtenCount
   ws['!merges'] = merges
   ws['!rows'] = rows
   ws['!cols'] = [{ wch: 12 }, { wch: 8 }, { wch: 10 }, { wch: 30 }, { wch: 8 }, { wch: 12 }, { wch: 25 }, { wch: 22 }, { wch: 35 }, { wch: 30 }, { wch: 10 }]

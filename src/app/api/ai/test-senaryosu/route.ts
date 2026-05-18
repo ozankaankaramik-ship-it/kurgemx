@@ -51,7 +51,7 @@ function buildPrompt(
       "no": "TC-ST1-01",
       "hikaye": "ST1",
       "acNo": "AC-001",
-      "acMetni": "...",
+      "acMetni": "[AC-001'in tam metni buraya]",
       "release": "${release}",
       "tip": "positive",
       "baslik": "...",
@@ -81,7 +81,9 @@ KURALLAR:
 - Her AC için minimum 1, maksimum 2 TC üret
 - tip alanı: AC tipi [P]→positive, [N]→negative, [S]→security, [B]→boundary
 - TC numaralama: TC-ST1-01, TC-ST1-02 (hikaye numarası değişince sıfırla)
-- acNo alanına input olarak gelen AC numarasını olduğu gibi yaz — yeni numara üretme, format değiştirme
+- Her TC mutlaka yukarıdaki KABUL KRİTERLERİ listesindeki bir AC'den türetilmeli
+- acNo: o TC'nin türetildiği AC'nin numarasını birebir kopyala (örn: "AC-001") — yeni numara üretme, format değiştirme
+- acMetni: o TC'nin türetildiği AC'nin tam metnini birebir kopyala — özetleme veya değiştirme
 - adimlar dizisi: her adım "1. ...", "2. ..." formatında
 - durum her zaman "pending"
 - Tüm metin alanları Türkçe
@@ -106,7 +108,9 @@ RULES:
 - Generate minimum 1, maximum 2 TCs per AC
 - tip field: AC type [P]→positive, [N]→negative, [S]→security, [B]→boundary
 - TC numbering: TC-ST1-01, TC-ST1-02 (reset when story number changes)
-- acNo field: copy the AC number exactly as provided in the input — do not generate a new number or change the format
+- Every TC must be derived from one of the ACs in the ACCEPTANCE CRITERIA list above
+- acNo: copy the AC number of that AC exactly as listed (e.g. "AC-001") — do not generate a new number or change the format
+- acMetni: copy the exact full text of that AC — do not summarize or modify it
 - adimlar array: each step in "1. ...", "2. ..." format
 - durum always "pending"
 - All text fields in English
