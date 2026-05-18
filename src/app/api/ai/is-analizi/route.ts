@@ -184,8 +184,8 @@ function releasePrompt(
       : `This response is Section 2's "${release === 'R2' ? '2.2' : '2.3'} ${release} — ${label}" sub-section. Start ONLY with "### ${release === 'R2' ? '2.2' : '2.3'} ${release} — ${label}"; do NOT repeat the "## Section 2" heading or the legend.`
 
   const numerasyon = isTR
-    ? `\n\nNUMARALANDIRMA KURALI:\n- Kabul kriterleri (AC) numaraları AC-${String(acBaslangic).padStart(3, '0')}'tan başla, sırayla artır.\n- İş kuralı (BR) numaraları BR-${String(brBaslangic).padStart(3, '0')}'tan başla, sırayla artır.\n- ST (hikaye) numaraları hikaye haritasındaki değerlerle aynı kalır, değiştirme.\n- Tip etiketlerindeki köşeli parantezleri escape etme — [P] yaz, \\[P\\] değil.`
-    : `\n\nNUMBERING RULE:\n- Acceptance criteria (AC) numbers start at AC-${String(acBaslangic).padStart(3, '0')} and increment sequentially.\n- Business rule (BR) numbers start at BR-${String(brBaslangic).padStart(3, '0')} and increment sequentially.\n- ST (story) numbers must match the story map exactly — do not change them.\n- Do not escape brackets in type labels — write [P], not \\[P\\].`
+    ? `\n\nNUMARALANDIRMA KURALI:\n- Kabul kriterleri (AC) numaraları AC-${String(acBaslangic).padStart(3, '0')}'tan başla, sırayla artır.\n- İş kuralı (BR) numaraları BR-${String(brBaslangic).padStart(3, '0')}'tan başla, sırayla artır.\n- ST (hikaye) numaraları hikaye haritasındaki değerlerle aynı kalır, değiştirme.\n- AC formatı: "AC-001 P : Metin" — tip etiketi köşeli parantez olmadan, sadece harf (P, N, B, S).`
+    : `\n\nNUMBERING RULE:\n- Acceptance criteria (AC) numbers start at AC-${String(acBaslangic).padStart(3, '0')} and increment sequentially.\n- Business rule (BR) numbers start at BR-${String(brBaslangic).padStart(3, '0')} and increment sequentially.\n- ST (story) numbers must match the story map exactly — do not change them.\n- AC format: "AC-001 P : Text" — type label without brackets, letter only (P, N, B, S).`
 
   const kapsamUyarisi = isTR
     ? `\n\nKAPSAM KURALI:\n- Diğer release'lere veya Bölüm 3/4/5'e referans verme.\n- Ekran tasarımı notu, kısaltmalar tablosu, footer YAZMA — bunlar son istekte gelecek.`
@@ -198,7 +198,7 @@ ${bolum2Acilis}
 
 Her ${release} hikayesi için standarda göre şunları üret:
 1. Kullanıcı hikayesi (AKTÖR / İHTİYAÇ / FAYDA formatında)
-2. Kabul kriterleri (her hikaye için min 2, max 6; başlık yazma; max 15 kelime; en az 1 [P] ve 1 [N])
+2. Kabul kriterleri (her hikaye için min 2, max 6; başlık yazma; max 15 kelime; en az 1 P ve 1 N)
 3. İş kuralları (gerekliyse, ilgili AC'nin hemen altında)${numerasyon}${kapsamUyarisi}
 
 Proje Adı: ${projeAdi}
@@ -217,7 +217,7 @@ ${bolum2Acilis}
 
 For each ${release} story produce (per the standard):
 1. User story (ACTOR / NEED / BENEFIT format)
-2. Acceptance criteria (min 2, max 6 per story; no headings; max 15 words; at least 1 [P] and 1 [N])
+2. Acceptance criteria (min 2, max 6 per story; no headings; max 15 words; at least 1 P and 1 N)
 3. Business rules (when necessary, immediately below the related AC)${numerasyon}${kapsamUyarisi}
 
 Project Name: ${projeAdi}

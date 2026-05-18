@@ -100,13 +100,9 @@ function parsePositiveAcler(icerik: string): Record<string, string[]> {
       line.match(/^(ST\d+)[:\s—\-|]/)
     if (headingMatch) currentStory = headingMatch[1]
 
-    if (currentStory && /\\?\[P\]/.test(line)) {
-      const text = line
-        .replace(/^[-*•·]\s*/, '')
-        .replace(/AC[-–]?\d*\s*/i, '')
-        .replace(/\\?\[P\]/g, '')
-        .replace(/\|.*$/, '')
-        .trim()
+    const acM = line.match(/\bAC[-–]?(\d+)\s*(?:\\?\[)?([PNSBpnsb])(?:\\?\])?\s*[:\s]+(.+)/)
+    if (currentStory && acM && acM[2].toUpperCase() === 'P') {
+      const text = acM[3].replace(/\|.*$/, '').trim()
       if (text.length > 5) {
         if (!result[currentStory]) result[currentStory] = []
         result[currentStory].push(text)
@@ -133,13 +129,13 @@ function parseAllAcler(icerik: string): Array<{ hikayeNo: string; no: string; ti
     }
     const trimmed = line.trim()
     if (trimmed.includes('AC-')) {
-      const ac = trimmed.match(/\bAC[-–]?(\d+)\s*\\?\[([PNSBpnsb])\][:\s]+(.+)/)
+      const ac = trimmed.match(/\bAC[-–]?(\d+)\s*(?:\\?\[)?([PNSBpnsb])(?:\\?\])?\s*[:\s]+(.+)/)
       console.log('[ac-test]', JSON.stringify(trimmed.substring(0, 80)), '→', ac ? 'MATCH' : 'NO MATCH')
     }
 
     if (!currentStory) continue
 
-    const ac = line.match(/\bAC[-–]?(\d+)\s*\\?\[([PNSBpnsb])\][:\s]+(.+)/)
+    const ac = line.match(/\bAC[-–]?(\d+)\s*(?:\\?\[)?([PNSBpnsb])(?:\\?\])?\s*[:\s]+(.+)/)
     if (ac) {
       result.push({
         hikayeNo: currentStory,
