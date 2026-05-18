@@ -24,8 +24,8 @@ Bu dosyayı okumadan önce `genel.md` dosyasını oku ve oradaki kuralları da u
 
 ## Gruplama Kuralı
 
-- Test senaryoları release bazında gruplandırılır: R1, R2, R3
-- Her release için ayrı Excel sheet oluşturulur
+- Test senaryoları tek bir Excel dosyasında, tek sheet'te üretilir
+- Release bilgisi ayrı bir kolon olarak gösterilir — kullanıcı filtreler
 - Tek bir iş analizi dokümanı → tek bir test senaryosu Excel dosyası
 
 ---
@@ -70,9 +70,12 @@ Her hikaye için **5 TC** hedeflenir:
 
 ```
 Test Case No: TC-[HikayeNo]-[SıraNo]  örn: TC-ST6-01
+AC No:        AC-[SıraNo]  örn: AC-001
+AC Metni:     [AC'nin olduğu gibi tam metni]
 Başlık:       [Kısa açıklama]
-Tip:          positive / negative / performance / security
+Tip:          positive / negative / security / boundary / performance
 Hikaye:       ST[No]
+Release:      R1 / R2 / R3
 Ön Koşul:     [Başlangıç durumu]
 Adımlar:
   1. [Adım]
@@ -84,22 +87,60 @@ Durum:        pending
 
 ---
 
+## AC — TC Eşleştirme Kuralı
+
+Her test case, türetildiği kabul kriterinin numarasıyla eşleştirilir:
+
+| AC Tipi | TC Tipi |
+|---------|---------|
+| AC [Positive] | positive TC |
+| AC [Negative] | negative TC |
+| AC [Security] | security TC |
+| AC [Boundary] | boundary TC |
+
+- Bir AC'den birden fazla TC türetilebilir
+- Her TC mutlaka bir AC ile ilişkilendirilir
+
+---
+
 ## Çıktı Formatı
 
 - Test senaryosu Excel (.xlsx) formatında üretilir
+- Tek sheet, tüm release'ler bir arada
 - Her test case bir satır olarak gösterilir
-- Sütunlar: Test Case No | Başlık | Tip | Hikaye | Ön Koşul | Adımlar | Beklenen Sonuç | Durum
-- Tip sütununa göre renk kodlaması:
-  - Positive: Yeşil
-  - Negative: Kırmızı
-  - Security: Mor
-  - Boundary: Turuncu
-  - Performance: Mavi
+- Renk kodlaması uygulanmaz
+
+### Üst Bilgi Alanı
+
+Excel'in en üstüne şu bilgiler eklenir, sonra boş satır, sonra tablo başlar:
+
+**Türkçe projede:**
+```
+[Proje Adı] — Test Senaryoları                   Hazırlayan: KurgemX
+Tarih: [YYYY-MM-DD]  |  Toplam TC: [N]
+Kısaltmalar: TC — Test Senaryosu  |  AC — Kabul Kriteri  |  ST — Hikaye  |  R — Sürüm
+```
+
+**İngilizce projede:**
+```
+[Proje Adı] — Test Scenarios                     Prepared by: KurgemX
+Date: [YYYY-MM-DD]  |  Total TC: [N]
+Abbreviations: TC — Test Case  |  AC — Acceptance Criteria  |  ST — Story  |  R — Release
+```
+
+- Proje adı ve "Hazırlayan/Prepared by: KurgemX" aynı satırda, sağa hizalanmış
+- İkinci satırda tarih ve toplam TC sayısı
+- Üçüncü satırda kısaltmalar
+- Tüm başlık ve etiketler projeDili parametresine göre Türkçe veya İngilizce üretilir
+- Üst bilgi alanı düz metin hücresi olarak üretilir, tablo formatında değil
+
+### Sütun Sırası
+
+| TC No | Hikaye | AC No | AC Metni | Release | Tip | Başlık | Ön Koşul | Adımlar | Beklenen Sonuç | Durum |
+|-------|--------|-------|----------|---------|-----|--------|----------|---------|----------------|-------|
+
 - Durum sütunu: pending / passed / failed / blocked
-- **3 sheet — release bazında:**
-  - Sheet 1: R1 — MVP
-  - Sheet 2: R2 — İyileştirme
-  - Sheet 3: R3 — Gelişmiş
+- Release sütunu: R1 / R2 / R3 — kullanıcı Excel filtresiyle ayırabilir
 
 ---
 
@@ -112,10 +153,13 @@ Test case'leri dokümanın `icerik` alanında JSON formatında tutulur.
 {
   "test_cases": [
     {
-      "no": "TC-ST6-01",
+      "no": "TC-ST1-01",
+      "ac_no": "AC-001",
+      "ac_metni": "...",
       "title": "...",
       "type": "positive",
-      "story_id": "ST6",
+      "story_id": "ST1",
+      "release": "R1",
       "precondition": "...",
       "steps": ["...", "..."],
       "expected_result": "...",
