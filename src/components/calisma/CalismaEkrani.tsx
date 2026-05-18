@@ -2143,7 +2143,7 @@ function EkranIci({
         </div>
       </div>
       {projeId && (
-        <p className="fixed bottom-2 right-3 text-[10px] text-gray-400 select-all pointer-events-none">
+        <p className="fixed bottom-2 right-3 text-[10px] text-gray-400 select-all cursor-text">
           {projeId}
         </p>
       )}
