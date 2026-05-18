@@ -131,6 +131,12 @@ function parseAllAcler(icerik: string): Array<{ hikayeNo: string; no: string; ti
       currentStory = heading[1]
       console.log('[heading]', line.trim(), '→', currentStory)
     }
+    const trimmed = line.trim()
+    if (trimmed.includes('AC-')) {
+      const ac = trimmed.match(/\bAC[-–]?(\d+)\s*\\?\[([PNSBpnsb])\][:\s]+(.+)/)
+      console.log('[ac-test]', JSON.stringify(trimmed.substring(0, 80)), '→', ac ? 'MATCH' : 'NO MATCH')
+    }
+
     if (!currentStory) continue
 
     const ac = line.match(/\bAC[-–]?(\d+)\s*\\?\[([PNSBpnsb])\][:\s]+(.+)/)
