@@ -173,7 +173,6 @@ export async function POST(req: Request) {
     try {
       parsed = JSON.parse(cleaned)
     } catch {
-      console.error('[test-senaryosu] JSON parse hatası, raw:', cleaned.substring(0, 300))
       return Response.json({ error: 'parse_failed' }, { status: 500 })
     }
 
@@ -181,7 +180,6 @@ export async function POST(req: Request) {
     const testCases = (parsed.testCases ?? []).map((tc: any) => ({ ...tc, durum: 'pending' }))
     return Response.json({ testCases, release })
   } catch (err) {
-    console.error('[test-senaryosu] HATA:', err instanceof Error ? err.message : String(err))
     return Response.json({ error: 'generation_failed' }, { status: 500 })
   }
 }

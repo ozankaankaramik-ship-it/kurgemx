@@ -751,6 +751,30 @@ function EkranIci({
   const adim3Aktif = storyMapData !== null
   const adim5Aktif = isAnaliziData !== null
 
+  const [storyMapTarihStr, setStoryMapTarihStr] = useState<string>('')
+  const [isAnaliziTarihStr, setIsAnaliziTarihStr] = useState<string>('')
+  const [adim4TarihStr, setAdim4TarihStr] = useState<string>('')
+
+  useEffect(() => {
+    const l = projektDili === 'TR' ? 'tr-TR' : 'en-US'
+    const o: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'long', year: 'numeric' }
+    setStoryMapTarihStr(new Date(ctx.dokuman.storyMapTarih ?? new Date()).toLocaleDateString(l, o))
+  }, [ctx.dokuman.storyMapTarih, projektDili])
+
+  useEffect(() => {
+    if (!isAnaliziData) { setIsAnaliziTarihStr(''); return }
+    const l = projektDili === 'TR' ? 'tr-TR' : 'en-US'
+    const o: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'long', year: 'numeric' }
+    setIsAnaliziTarihStr(new Date(isAnaliziData.tarih).toLocaleDateString(l, o))
+  }, [isAnaliziData, projektDili])
+
+  useEffect(() => {
+    if (!adim4Tarih) { setAdim4TarihStr(''); return }
+    const l = projektDili === 'TR' ? 'tr-TR' : 'en-US'
+    const o: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'long', year: 'numeric' }
+    setAdim4TarihStr(new Date(adim4Tarih).toLocaleDateString(l, o))
+  }, [adim4Tarih, projektDili])
+
   async function generateStoryMap() {
     if (!detailedDesc) return
     setAdim2Yukleniyor(true)
@@ -805,7 +829,6 @@ function EkranIci({
           uretim_suresi: sure2,
           token_tahmini: token2,
         }
-        console.log('[generateStoryMap] Kaydedilecek veri:', JSON.stringify(upsertData, null, 2))
         const { error: upsertError } = await supabase
           .from('dokumanlar')
           .upsert(upsertData, { onConflict: 'proje_id,tip_id' })
@@ -1156,9 +1179,7 @@ function EkranIci({
         ])
       }
 
-      console.log('[contentMap keys]', Object.keys(contentMap))
       // 3. Final birleştirme
-      console.log('[placeholder check]', skeleton.includes('SCREEN_CONTENT'))
       let htmlIcerik = skeleton
       for (const [id, content] of Object.entries(contentMap)) {
         htmlIcerik = fillPlaceholder(htmlIcerik, id, content)
@@ -1410,10 +1431,7 @@ function EkranIci({
                     {storyMapData && !adim2Yukleniyor ? (
                       <p className="text-xs text-gray-500 italic">
                         {t('adim2.hikayeHaritasiTarih')}{' '}
-                        {new Date(ctx.dokuman.storyMapTarih ?? new Date()).toLocaleDateString(
-                          projektDili === 'TR' ? 'tr-TR' : 'en-US',
-                          { day: 'numeric', month: 'long', year: 'numeric' }
-                        )}
+                        {storyMapTarihStr}
                       </p>
                     ) : (
                       <GenerateButton
@@ -1697,10 +1715,7 @@ function EkranIci({
                     {isAnaliziData && !adim3Yukleniyor ? (
                       <p className="text-xs text-gray-500 italic">
                         {t('adim3.belgeTarih')}{' '}
-                        {new Date(isAnaliziData.tarih).toLocaleDateString(
-                          projektDili === 'TR' ? 'tr-TR' : 'en-US',
-                          { day: 'numeric', month: 'long', year: 'numeric' }
-                        )}
+                        {isAnaliziTarihStr}
                       </p>
                     ) : (
                       <GenerateButton
@@ -1834,10 +1849,7 @@ function EkranIci({
                       <p className="text-xs text-gray-500 italic">
                         {t('adim4.prototipOlusturuldu')}
                         {adim4Tarih && (
-                          <>{' — '}{new Date(adim4Tarih).toLocaleDateString(
-                            projektDili === 'TR' ? 'tr-TR' : 'en-US',
-                            { day: 'numeric', month: 'long', year: 'numeric' }
-                          )}</>
+                          <>{' — '}{adim4TarihStr}</>
                         )}
                       </p>
                     ) : (
