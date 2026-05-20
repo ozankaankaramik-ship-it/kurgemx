@@ -343,6 +343,48 @@
     "allProjects": "All Projects",
     "created": "Created"
   },
+  "footer": {
+    "copyright": "© 2026 Ozan Kaan Karamık. All rights reserved.",
+    "brand": "A registered trademark of Kurumsal Gelişim Merkezi (KURGEM).",
+    "about": "About",
+    "pricing": "Pricing",
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy",
+    "refund": "Refund Policy",
+    "salesAgreement": "Distance Sales Agreement",
+    "payment": "Secure Payment"
+  },
+  "about": {
+    "baslik": "About Us",
+    "altBaslik": "The right address for AI-powered business analysis",
+    "s1Baslik": "What is KurgemX?",
+    "s1Icerik": "KurgemX is a registered trademark of Kurumsal Gelişim Merkezi (KURGEM). Developed by a team of business analysis, project management, and software development experts with over 25 years of industry experience, KurgemX is an AI-powered business analysis platform for business analysts and software teams.",
+    "s2Baslik": "What We Do",
+    "s2Icerik": "KurgemX automates story map, business analysis document, prototype, and test scenario generation using AI. With Turkish language support and TRY pricing, KurgemX is a pioneer in the Turkish market.",
+    "s3Baslik": "Our Mission",
+    "s3Icerik": "To accelerate business analysis processes, improve quality, and enable software teams to work more efficiently.",
+    "iletisimBaslik": "Contact",
+    "iletisim": "Contact"
+  },
+  "salesAgreement": {
+    "baslik": "Distance Sales Agreement",
+    "kanun": "Pursuant to Turkish Consumer Protection Law No. 6502",
+    "sonGuncelleme": "Last updated: May 20, 2026",
+    "saticiBaslik": "Seller Information",
+    "s2Baslik": "2. Subject of Service",
+    "s2Icerik": "This agreement governs the terms under which the buyer subscribes digitally to the KurgemX platform. The service is a digital SaaS (Software as a Service) offering that includes story mapping, business analysis document creation, prototyping, and test scenario generation features.",
+    "s3Baslik": "3. Pricing",
+    "s3Icerik": "Freemium: $0 — 1 small project per month, max 5 stories\nStarter: $9/month — 3 projects per month, max 15 stories\nPro: $29/month — 10 projects per month, max 40 stories\nListed prices include applicable taxes. Prices are in USD; the exchange rate at the time of payment applies.",
+    "s4Baslik": "4. Payment Terms",
+    "s4Icerik": "Paid subscriptions are charged in advance on a monthly billing cycle. Payment is collected automatically via the credit or debit card provided at registration. Subscriptions may be suspended in the event of payment failure.",
+    "s5Baslik": "5. Right of Withdrawal",
+    "s5Icerik": "Under Article 49 of Turkish Consumer Protection Law No. 6502, consumers have the right to withdraw within 14 days of a distance contract. However, where the buyer has requested and explicitly consented to the commencement of service performance before the withdrawal period expires, the right of withdrawal cannot be exercised. Since service performance begins at the moment of subscription activation, the buyer provides explicit consent to this during activation. Accordingly, the right of withdrawal does not apply to this digital content service.",
+    "s6Baslik": "6. Cancellation and Refunds",
+    "s6Icerik": "The buyer may cancel their subscription at any time. Cancellation takes effect at the end of the current billing period; access to all features continues until that date. No refunds are issued for unused time. The Freemium plan is free of charge and therefore not subject to refund.",
+    "s7Baslik": "7. Dispute Resolution",
+    "s7Icerik": "Turkish law governs any disputes arising from this agreement. Istanbul courts and enforcement offices have jurisdiction.",
+    "iletisim": "Contact"
+  },
   "pricing": {
     "baslik": "Pricing",
     "altBaslik": "Choose the plan that fits your project. No credit card required.",

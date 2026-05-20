@@ -187,21 +187,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── Footer ── */}
-      <footer className="px-4 py-6" style={{ backgroundColor: "#1F3864" }}>
-        <div className="max-w-4xl mx-auto flex items-center justify-between">
-          <p className="text-[13px] text-white/70">{t("footer.copyright")}</p>
-          <div className="flex gap-5">
-            <a href="#" className="text-[13px] text-white/70 hover:text-white transition-colors">
-              {t("footer.privacy")}
-            </a>
-            <a href="#" className="text-[13px] text-white/70 hover:text-white transition-colors">
-              {t("footer.terms")}
-            </a>
-          </div>
-        </div>
-      </footer>
-
     </div>
   )
 }

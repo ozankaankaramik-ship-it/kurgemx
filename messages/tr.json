@@ -343,6 +343,48 @@
     "allProjects": "Tüm Projeler",
     "created": "Oluşturuldu"
   },
+  "footer": {
+    "copyright": "© 2026 Ozan Kaan Karamık. Tüm hakları saklıdır.",
+    "brand": "Kurumsal Gelişim Merkezi (KURGEM)'in tescilli markasıdır.",
+    "about": "Hakkımızda",
+    "pricing": "Fiyatlandırma",
+    "terms": "Kullanım Koşulları",
+    "privacy": "Gizlilik Politikası",
+    "refund": "İade Politikası",
+    "salesAgreement": "Mesafeli Satış Sözleşmesi",
+    "payment": "Güvenli Ödeme"
+  },
+  "about": {
+    "baslik": "Hakkımızda",
+    "altBaslik": "Yapay zeka destekli iş analizi için doğru adres",
+    "s1Baslik": "KurgemX Nedir?",
+    "s1Icerik": "KurgemX, Kurumsal Gelişim Merkezi (KURGEM)'in tescilli markasıdır. 25 yılı aşkın sektör deneyimine sahip iş analizi, proje yönetimi ve yazılım geliştirme uzmanlarından oluşan ekibimiz tarafından geliştirilen KurgemX, iş analistleri ve yazılım ekipleri için yapay zeka destekli bir iş analizi platformudur.",
+    "s2Baslik": "Ne Yapıyoruz?",
+    "s2Icerik": "Hikaye haritası, iş analizi dokümanı, prototip ve test senaryosu üretimini yapay zeka ile otomatikleştiren KurgemX, Türkçe dil desteği ve TRY fiyatlandırmasıyla Türkiye pazarında öncü konumdadır.",
+    "s3Baslik": "Misyonumuz",
+    "s3Icerik": "İş analizi süreçlerini hızlandırmak, kaliteyi artırmak ve yazılım ekiplerinin daha verimli çalışmasını sağlamak.",
+    "iletisimBaslik": "İletişim",
+    "iletisim": "İletişim"
+  },
+  "salesAgreement": {
+    "baslik": "Mesafeli Satış Sözleşmesi",
+    "kanun": "6502 Sayılı Tüketicinin Korunması Hakkında Kanun Kapsamında",
+    "sonGuncelleme": "Son güncelleme: 20 Mayıs 2026",
+    "saticiBaslik": "Satıcı Bilgileri",
+    "s2Baslik": "2. Hizmetin Konusu",
+    "s2Icerik": "İşbu sözleşme, alıcının KurgemX platformuna dijital abonelik satın almasına ilişkin koşulları düzenlemektedir. Hizmet; hikaye haritası, iş analizi dokümanı, prototip ve test senaryosu oluşturma özelliklerini içeren SaaS (Yazılım Hizmet Olarak) modelinde sunulan dijital bir hizmettir.",
+    "s3Baslik": "3. Fiyatlandırma",
+    "s3Icerik": "Freemium: $0 — Aylık 1 küçük proje, maks. 5 hikaye\nStarter: $9/ay — Aylık 3 proje, maks. 15 hikaye\nPro: $29/ay — Aylık 10 proje, maks. 40 hikaye\nBelirtilen fiyatlar KDV dahildir. Fiyatlar USD cinsinden olup ödeme anındaki kur esas alınır.",
+    "s4Baslik": "4. Ödeme Koşulları",
+    "s4Icerik": "Ücretli abonelikler aylık dönemler halinde peşin olarak tahsil edilir. Ödeme, kayıt sırasında girilen kredi veya banka kartı aracılığıyla otomatik olarak alınır. Başarısız ödemelerde abonelik askıya alınabilir.",
+    "s5Baslik": "5. Cayma Hakkı",
+    "s5Icerik": "6502 Sayılı Kanun'un 49. maddesi uyarınca mesafeli sözleşmelerde tüketici 14 gün içinde cayma hakkına sahiptir. Ancak alıcının talebi ve onayı ile hizmetin ifasına başlanmış olması halinde cayma hakkı kullanılamaz. Abonelik aktivasyonu anında hizmet ifası başladığından, alıcı aktivasyon sırasında bu hususa dair açık onay vermektedir. Bu nedenle dijital içerik niteliğindeki bu hizmet için cayma hakkı uygulanmaz.",
+    "s6Baslik": "6. Abonelik İptali ve İade",
+    "s6Icerik": "Alıcı aboneliğini istediği zaman iptal edebilir. İptal, mevcut fatura döneminin sonunda geçerli olur; bu tarihe kadar tüm özelliklere erişim devam eder. Kullanılmayan süre için iade yapılmaz. Freemium plan ücretsiz olduğundan iade kapsamı dışındadır.",
+    "s7Baslik": "7. Uyuşmazlık Çözümü",
+    "s7Icerik": "İşbu sözleşmeden doğan uyuşmazlıklarda Türk hukuku uygulanır. İstanbul mahkemeleri ve icra daireleri yetkilidir.",
+    "iletisim": "İletişim"
+  },
   "pricing": {
     "baslik": "Fiyatlandırma",
     "altBaslik": "Projenize uygun planı seçin. Kredi kartı gerektirmez.",
