@@ -342,5 +342,98 @@
     "newProject": "New Project",
     "allProjects": "All Projects",
     "created": "Created"
+  },
+  "pricing": {
+    "baslik": "Pricing",
+    "altBaslik": "Choose the plan that fits your project. No credit card required.",
+    "aylik": "/ month",
+    "popular": "Most Popular",
+    "dahil": "What's included:",
+    "soruMetni": "Have questions?",
+    "planlar": {
+      "freemium": {
+        "ad": "Freemium",
+        "fiyat": "$0",
+        "aciklama": "For exploring small projects",
+        "ozellikler": [
+          "1 small project per month",
+          "Up to 5 stories",
+          "Story map + analysis document",
+          "Prototype viewing (no download)",
+          "Watermarked export (1 file)"
+        ]
+      },
+      "starter": {
+        "ad": "Starter",
+        "fiyat": "$9",
+        "aciklama": "For growing teams",
+        "ozellikler": [
+          "3 small-medium projects per month",
+          "Up to 15 stories",
+          "All features included",
+          "Prototype download (1 per project)",
+          "Full export"
+        ]
+      },
+      "pro": {
+        "ad": "Pro",
+        "fiyat": "$29",
+        "aciklama": "For professional use",
+        "ozellikler": [
+          "10 projects per month",
+          "Up to 40 stories",
+          "All features unlimited",
+          "Unlimited prototype downloads",
+          "Priority support"
+        ]
+      }
+    }
+  },
+  "terms": {
+    "baslik": "Terms of Service",
+    "sonGuncelleme": "Last updated: May 20, 2025",
+    "giris": "By using KurgemX, you agree to the following terms. Please read carefully.",
+    "s1Baslik": "1. Service Description",
+    "s1Icerik": "KurgemX is a SaaS platform operated by Ozan Kaan Karamık, offering AI-powered business analysis and prototyping services on a subscription basis.",
+    "s2Baslik": "2. Account Responsibility",
+    "s2Icerik": "You are solely responsible for the security of your account and all actions performed through it. You must keep your password secure and immediately notify destek@kurgemx.com of any unauthorized access.",
+    "s3Baslik": "3. AI-Generated Content",
+    "s3Icerik": "The platform uses third-party AI services such as Anthropic's Claude model for content generation. Generated content is informational only and does not constitute professional advice. Evaluating the accuracy and suitability of this content is the user's responsibility.",
+    "s4Baslik": "4. Modifications to the Service",
+    "s4Icerik": "KurgemX reserves the right to modify platform features, pricing, or terms of service with prior notice. Significant changes will be announced by email at least 30 days in advance.",
+    "s5Baslik": "5. Governing Law",
+    "s5Icerik": "These terms are governed by Turkish law. Istanbul courts have jurisdiction over any disputes.",
+    "iletisim": "Contact"
+  },
+  "privacy": {
+    "baslik": "Privacy Policy",
+    "sonGuncelleme": "Last updated: May 20, 2025",
+    "giris": "At KurgemX, we care about your privacy. This policy explains what data we collect and how we use it.",
+    "s1Baslik": "1. Data Collected",
+    "s1Icerik": "We collect name, email address, and project content (stories, acceptance criteria, analysis texts). This data is used solely to provide the service.",
+    "s2Baslik": "2. Data Storage",
+    "s2Icerik": "Your data is stored securely on Supabase infrastructure. Supabase applies industry-standard encryption and security measures.",
+    "s3Baslik": "3. Third-Party Sharing",
+    "s3Icerik": "Project data is sent to the Anthropic API for content generation. Anthropic does not use this data for model training. Your data is not shared with advertisers or other third parties.",
+    "s4Baslik": "4. KVKK Compliance",
+    "s4Icerik": "The platform operates in accordance with Turkey's Personal Data Protection Law (KVKK, Law No. 6698). Explicit consent for data processing is obtained during registration.",
+    "s5Baslik": "5. Right to Deletion",
+    "s5Icerik": "To delete your account and all associated data, send a request to destek@kurgemx.com. Requests are processed within 30 business days.",
+    "iletisim": "Contact"
+  },
+  "refund": {
+    "baslik": "Refund Policy",
+    "sonGuncelleme": "Last updated: May 20, 2025",
+    "giris": "The refund and cancellation policy applicable to KurgemX subscriptions is described below.",
+    "s1Baslik": "1. Access After Cancellation",
+    "s1Icerik": "When you cancel your subscription, you retain full access to all features until the end of the current billing period. Access is not immediately revoked upon cancellation.",
+    "s2Baslik": "2. Next Billing Period",
+    "s2Icerik": "As long as you cancel before the next billing period begins, no charge will be made for the new period.",
+    "s3Baslik": "3. Proration",
+    "s3Icerik": "No refunds are issued for unused time remaining in the current period. Subscription fees are charged in advance at the beginning of each period.",
+    "s4Baslik": "4. Freemium Plan",
+    "s4Icerik": "The refund policy does not apply to the free Freemium plan.",
+    "soruMetni": "For questions,",
+    "iletisim": "Contact"
   }
 }

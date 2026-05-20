@@ -342,5 +342,98 @@
     "newProject": "Yeni Proje",
     "allProjects": "Tüm Projeler",
     "created": "Oluşturuldu"
+  },
+  "pricing": {
+    "baslik": "Fiyatlandırma",
+    "altBaslik": "Projenize uygun planı seçin. Kredi kartı gerektirmez.",
+    "aylik": "/ ay",
+    "popular": "En Popüler",
+    "dahil": "Dahil özellikler:",
+    "soruMetni": "Sorularınız mı var?",
+    "planlar": {
+      "freemium": {
+        "ad": "Freemium",
+        "fiyat": "$0",
+        "aciklama": "Küçük projeleri keşfetmek için",
+        "ozellikler": [
+          "Aylık 1 küçük proje",
+          "Maksimum 5 hikaye",
+          "Hikaye haritası + analiz dokümanı",
+          "Prototip görüntüleme (indirme yok)",
+          "Watermark'lı export (1 adet)"
+        ]
+      },
+      "starter": {
+        "ad": "Starter",
+        "fiyat": "$9",
+        "aciklama": "Büyüyen ekipler için",
+        "ozellikler": [
+          "Aylık 3 küçük-orta proje",
+          "Maksimum 15 hikaye",
+          "Tüm özellikler dahil",
+          "Prototip indirme (proje başına 1)",
+          "Tam export"
+        ]
+      },
+      "pro": {
+        "ad": "Pro",
+        "fiyat": "$29",
+        "aciklama": "Profesyonel kullanım için",
+        "ozellikler": [
+          "Aylık 10 proje",
+          "Maksimum 40 hikaye",
+          "Tüm özellikler sınırsız",
+          "Sınırsız prototip indirme",
+          "Öncelikli destek"
+        ]
+      }
+    }
+  },
+  "terms": {
+    "baslik": "Kullanım Koşulları",
+    "sonGuncelleme": "Son güncelleme: 20 Mayıs 2025",
+    "giris": "KurgemX'i kullanarak aşağıdaki koşulları kabul etmiş sayılırsınız. Lütfen dikkatlice okuyunuz.",
+    "s1Baslik": "1. Hizmet Tanımı",
+    "s1Icerik": "KurgemX, Ozan Kaan Karamık tarafından işletilen, yapay zeka destekli iş analizi ve prototipleme hizmeti sunan bir SaaS platformudur. Hizmet, abonelik modeli ile sunulmaktadır.",
+    "s2Baslik": "2. Hesap Sorumluluğu",
+    "s2Icerik": "Hesabınızın güvenliğinden ve hesabınız aracılığıyla gerçekleştirilen tüm işlemlerden yalnızca siz sorumlusunuzdur. Şifrenizi güvenli tutmanız ve yetkisiz erişim durumunda derhal destek@kurgemx.com adresine bildirim yapmanız gerekmektedir.",
+    "s3Baslik": "3. Yapay Zeka ile Üretilen İçerikler",
+    "s3Icerik": "Platform, içerik üretiminde Anthropic'in Claude modeli gibi üçüncü taraf yapay zeka hizmetlerini kullanır. Üretilen içerikler bilgi amaçlı olup herhangi bir profesyonel tavsiye niteliği taşımaz. Bu içeriklerin doğruluğunu ve uygunluğunu değerlendirmek kullanıcının sorumluluğundadır.",
+    "s4Baslik": "4. Hizmetin Değiştirilmesi",
+    "s4Icerik": "KurgemX, platformun özelliklerini, fiyatlandırmasını veya hizmet koşullarını önceden bildirim yaparak değiştirme hakkını saklı tutar. Önemli değişiklikler en az 30 gün öncesinde e-posta ile duyurulacaktır.",
+    "s5Baslik": "5. Geçerli Hukuk",
+    "s5Icerik": "Bu koşullar Türk hukuku kapsamında değerlendirilir. Anlaşmazlıklarda İstanbul mahkemeleri yetkilidir.",
+    "iletisim": "İletişim"
+  },
+  "privacy": {
+    "baslik": "Gizlilik Politikası",
+    "sonGuncelleme": "Son güncelleme: 20 Mayıs 2025",
+    "giris": "KurgemX olarak gizliliğinize önem veriyoruz. Bu politika, hangi verileri topladığımızı ve nasıl kullandığımızı açıklar.",
+    "s1Baslik": "1. Toplanan Veriler",
+    "s1Icerik": "Ad, e-posta adresi ve proje içerikleri (hikayeler, kabul kriterleri, analiz metinleri) gibi veriler toplanmaktadır. Bu veriler yalnızca hizmetin sunulması amacıyla kullanılır.",
+    "s2Baslik": "2. Veri Depolama",
+    "s2Icerik": "Verileriniz Supabase altyapısında güvenli biçimde saklanmaktadır. Supabase, endüstri standardı şifreleme ve güvenlik önlemleri uygulamaktadır.",
+    "s3Baslik": "3. Üçüncü Taraf Paylaşımı",
+    "s3Icerik": "İçerik üretimi için proje verileriniz Anthropic API'ye iletilmektedir. Anthropic bu verileri model eğitimi amacıyla kullanmaz. Verileriniz reklam amaçlı veya diğer üçüncü taraflarla paylaşılmaz.",
+    "s4Baslik": "4. KVKK Uyumluluğu",
+    "s4Icerik": "Platform, 6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) kapsamında faaliyet göstermektedir. Verilerinizin işlenmesine ilişkin açık rıza, kayıt sürecinde alınmaktadır.",
+    "s5Baslik": "5. Veri Silme Hakkı",
+    "s5Icerik": "Hesabınızı ve tüm verilerinizi silmek için destek@kurgemx.com adresine talep gönderebilirsiniz. Talepler en geç 30 iş günü içinde işleme alınır.",
+    "iletisim": "İletişim"
+  },
+  "refund": {
+    "baslik": "İade Politikası",
+    "sonGuncelleme": "Son güncelleme: 20 Mayıs 2025",
+    "giris": "KurgemX aboneliklerinde geçerli iade ve iptal politikası aşağıda açıklanmıştır.",
+    "s1Baslik": "1. İptal Sonrası Erişim",
+    "s1Icerik": "Aboneliğinizi iptal ettiğinizde, mevcut fatura döneminin sonuna kadar tüm özelliklere erişiminiz devam eder. İptal anında erişiminiz kesilmez.",
+    "s2Baslik": "2. Bir Sonraki Dönem",
+    "s2Icerik": "İptal işlemi, bir sonraki fatura döneminin başlamadan önce yapıldığı sürece, yeni dönem için herhangi bir ücret tahsil edilmez.",
+    "s3Baslik": "3. Kalan Süre İadesi",
+    "s3Icerik": "Kullanılmayan kalan süre için iade yapılmamaktadır. Abonelik ücretleri dönem başında peşin alınmaktadır.",
+    "s4Baslik": "4. Freemium Plan",
+    "s4Icerik": "Ücretsiz Freemium planı için iade politikası geçerli değildir.",
+    "soruMetni": "Sorularınız için",
+    "iletisim": "İletişim"
   }
 }
