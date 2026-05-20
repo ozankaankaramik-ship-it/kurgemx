@@ -5,32 +5,33 @@ import { routing } from "./i18n/routing";
 
 const intlMiddleware = createIntlMiddleware(routing);
 
-const HOME_PATHS = new Set(["/"]);
+function getPreferredLocale(request: NextRequest): "tr" | "en" {
+  const al = request.headers.get("accept-language") ?? "";
+  return al.toLowerCase().includes("tr") ? "tr" : "en";
+}
 
 export default async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Auth callback ve reset-password rotaları intl middleware'den muaf tutulur
-  if (pathname.includes('/auth/callback') || pathname.endsWith('/reset-password')) {
+  // Auth callback ve reset-password: intl middleware'den muaf
+  if (pathname.includes("/auth/callback") || pathname.endsWith("/reset-password")) {
     return NextResponse.next();
   }
 
-  // Ana sayfa isteklerinde kullanıcı durumuna göre yönlendir
-  if (HOME_PATHS.has(pathname)) {
-    // Cookie'leri okumak için geçici bir response oluştur
-    const tempResponse = NextResponse.next();
+  // Root (/) → tarayıcı diline göre yönlendir + auth kontrolü
+  if (pathname === "/") {
+    const locale = getPreferredLocale(request);
+    const refreshedCookies: Array<{ name: string; value: string; options: Record<string, unknown> }> = [];
 
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       {
         cookies: {
-          getAll() {
-            return request.cookies.getAll();
-          },
+          getAll() { return request.cookies.getAll(); },
           setAll(cookiesToSet) {
             cookiesToSet.forEach(({ name, value, options }) => {
-              tempResponse.cookies.set(name, value, options);
+              refreshedCookies.push({ name, value, options: options as Record<string, unknown> });
             });
           },
         },
@@ -38,11 +39,19 @@ export default async function proxy(request: NextRequest) {
     );
 
     const { data: { user } } = await supabase.auth.getUser();
-    const destination = user ? "/en" : "/en/login";
-    return NextResponse.redirect(new URL(destination, request.url));
+
+    // Giriş yapmış → /projeler (locale ile)
+    // Giriş yapmamış → landing page (locale ile) — login'e yönlendirme YOK
+    const dest = user ? `/${locale}/projeler` : `/${locale}`;
+    const response = NextResponse.redirect(new URL(dest, request.url));
+    refreshedCookies.forEach(({ name, value, options }) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      response.cookies.set(name, value, options as any);
+    });
+    return response;
   }
 
-  // next-intl routing (locale redirect/rewrite)
+  // next-intl routing (locale tespiti / rewrite)
   const response = intlMiddleware(request);
 
   // Supabase oturum yenileme — güncel cookie'leri response'a yaz
@@ -51,9 +60,7 @@ export default async function proxy(request: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
+        getAll() { return request.cookies.getAll(); },
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value, options }) => {
             response.cookies.set(name, value, options);
@@ -63,7 +70,6 @@ export default async function proxy(request: NextRequest) {
     }
   );
 
-  // Oturumu kontrol et (gerekirse token yeniler ve cookie'ye yazar)
   await supabase.auth.getUser();
 
   return response;
