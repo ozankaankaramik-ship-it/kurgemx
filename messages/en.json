@@ -387,10 +387,11 @@
   },
   "pricing": {
     "baslik": "Pricing",
-    "altBaslik": "Choose the plan that fits your project. No credit card required.",
+    "altBaslik": "Choose the plan that fits your project.",
     "aylik": "/ month",
     "popular": "Most Popular",
     "dahil": "What's included:",
+    "freemiumNot": "Start for free, no credit card required.",
     "soruMetni": "Have questions?",
     "planlar": {
       "freemium": {

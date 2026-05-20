@@ -81,6 +81,9 @@ export default async function PricingPage() {
                   </li>
                 ))}
               </ul>
+              {plan.key === 'freemium' && (
+                <p className="text-xs text-gray-500 italic mt-4">{t('freemiumNot')}</p>
+              )}
             </div>
           ))}
         </div>

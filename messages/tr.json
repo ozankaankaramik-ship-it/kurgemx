@@ -387,10 +387,11 @@
   },
   "pricing": {
     "baslik": "Fiyatlandırma",
-    "altBaslik": "Projenize uygun planı seçin. Kredi kartı gerektirmez.",
+    "altBaslik": "Projenize uygun planı seçin.",
     "aylik": "/ ay",
     "popular": "En Popüler",
     "dahil": "Dahil özellikler:",
+    "freemiumNot": "Ücretsiz başlayın, kredi kartı gerekmez.",
     "soruMetni": "Sorularınız mı var?",
     "planlar": {
       "freemium": {
