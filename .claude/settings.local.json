@@ -62,7 +62,9 @@
       "Bash(Select-Object Name)",
       "Bash(Get-ChildItem -Recurse -Filter \"*.sql\" -ErrorAction SilentlyContinue)",
       "PowerShell(Get-ChildItem -Path \"src\" -Recurse -Filter \"actions.ts\" | ForEach-Object { $_.FullName })",
-      "PowerShell(Get-ChildItem -Path \"src\\\\app\" -Recurse | Select-Object FullName | Where-Object { $_.FullName -match \"callback|auth|api\" })"
+      "PowerShell(Get-ChildItem -Path \"src\\\\app\" -Recurse | Select-Object FullName | Where-Object { $_.FullName -match \"callback|auth|api\" })",
+      "PowerShell(npx supabase db push 2>&1)",
+      "PowerShell(npx supabase db push --include-all 2>&1)"
     ]
   },
   "hooks": {

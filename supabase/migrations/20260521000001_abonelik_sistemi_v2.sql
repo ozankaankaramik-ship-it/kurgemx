@@ -31,6 +31,7 @@ create table if not exists public.planlar (
 -- RLS: planlar herkese açık (public read)
 alter table public.planlar enable row level security;
 
+drop policy if exists "planlar_select_public" on public.planlar;
 create policy "planlar_select_public"
   on public.planlar
   for select
@@ -58,6 +59,11 @@ on conflict (kod) do nothing;
 -- ============================================================
 -- 3. ABONELİKLER: YENİ ALANLAR
 -- ============================================================
+
+-- Eski check constraint'i kaldır (yeni plan kodlarına izin vermek için)
+alter table public.abonelikler drop constraint if exists abonelikler_plan_check;
+-- Varsayılanı da güncelle
+alter table public.abonelikler alter column plan set default 'freemium';
 
 -- plan_id FK (başta nullable; mevcut verileri aşağıda migrate edeceğiz)
 alter table public.abonelikler
@@ -117,11 +123,13 @@ create table if not exists public.abonelik_gecmisi (
 -- RLS: kullanıcı yalnızca kendi geçmişini görebilir
 alter table public.abonelik_gecmisi enable row level security;
 
+drop policy if exists "abonelik_gecmisi_select_own" on public.abonelik_gecmisi;
 create policy "abonelik_gecmisi_select_own"
   on public.abonelik_gecmisi
   for select
   using (kullanici_id = auth.uid());
 
+drop policy if exists "abonelik_gecmisi_insert_own" on public.abonelik_gecmisi;
 create policy "abonelik_gecmisi_insert_own"
   on public.abonelik_gecmisi
   for insert
