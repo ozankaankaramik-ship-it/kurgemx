@@ -5,7 +5,7 @@ import { useTranslations, useLocale } from 'next-intl'
 import { Link } from '@/i18n/navigation'
 import { sifreSifirla } from '@/lib/auth/actions'
 
-export default function SifreSifirlamaFormu() {
+export default function SifreSifirlamaFormu({ expiredLink = false }: { expiredLink?: boolean }) {
   const t = useTranslations('auth.sifreSifirlama')
   const locale = useLocale()
 
@@ -16,6 +16,14 @@ export default function SifreSifirlamaFormu() {
       <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-8 shadow-sm">
         <h1 className="text-2xl font-bold mb-1">{t('baslik')}</h1>
         <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">{t('altBaslik')}</p>
+
+        {expiredLink && (
+          <div className="mb-5 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {locale === 'tr'
+              ? 'Şifre sıfırlama linkinizin süresi dolmuş. Lütfen yeni bir link talep edin.'
+              : 'Your password reset link has expired. Please request a new one.'}
+          </div>
+        )}
 
         {state?.success ? (
           <p className="text-sm text-green-600 dark:text-green-400 mb-4">{t('basariMesaji')}</p>
