@@ -60,7 +60,9 @@
       "Bash(grep -E \"\\\\.\\(ts|js|tsx|jsx\\)$\")",
       "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\ozank\\\\Documents\\\\İşAnaliziAjan\\\\kurgemx\\\\src\\\\components\" -File)",
       "Bash(Select-Object Name)",
-      "Bash(Get-ChildItem -Recurse -Filter \"*.sql\" -ErrorAction SilentlyContinue)"
+      "Bash(Get-ChildItem -Recurse -Filter \"*.sql\" -ErrorAction SilentlyContinue)",
+      "PowerShell(Get-ChildItem -Path \"src\" -Recurse -Filter \"actions.ts\" | ForEach-Object { $_.FullName })",
+      "PowerShell(Get-ChildItem -Path \"src\\\\app\" -Recurse | Select-Object FullName | Where-Object { $_.FullName -match \"callback|auth|api\" })"
     ]
   },
   "hooks": {
