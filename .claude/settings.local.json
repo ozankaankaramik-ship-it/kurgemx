@@ -64,7 +64,12 @@
       "PowerShell(Get-ChildItem -Path \"src\" -Recurse -Filter \"actions.ts\" | ForEach-Object { $_.FullName })",
       "PowerShell(Get-ChildItem -Path \"src\\\\app\" -Recurse | Select-Object FullName | Where-Object { $_.FullName -match \"callback|auth|api\" })",
       "PowerShell(npx supabase db push 2>&1)",
-      "PowerShell(npx supabase db push --include-all 2>&1)"
+      "PowerShell(npx supabase db push --include-all 2>&1)",
+      "PowerShell($tr = Get-Content \"messages\\\\tr.json\" -Raw | ConvertFrom-Json; $tr.pricing | ConvertTo-Json -Depth 10)",
+      "PowerShell($en = Get-Content \"messages\\\\en.json\" -Raw | ConvertFrom-Json; $en.pricing | ConvertTo-Json -Depth 10)",
+      "PowerShell(Get-Content *)",
+      "PowerShell(git add *)",
+      "PowerShell(git push *)"
     ]
   },
   "hooks": {
