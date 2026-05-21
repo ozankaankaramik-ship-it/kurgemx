@@ -1,6 +1,7 @@
 import { redirect } from '@/i18n/navigation'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
+import { getKullaniciPlan } from '@/lib/abonelik'
 import type { Metadata } from 'next'
 import CalismaEkrani from '@/components/calisma/CalismaEkrani'
 
@@ -17,5 +18,7 @@ export default async function YeniProjePage() {
   const locale = await getLocale()
   if (!user) redirect({ href: '/giris', locale })
 
-  return <CalismaEkrani />
+  const planBilgisi = await getKullaniciPlan(supabase, user!.id)
+
+  return <CalismaEkrani initialPlan={planBilgisi} />
 }

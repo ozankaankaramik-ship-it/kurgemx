@@ -1,5 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { SISTEM } from '@/lib/prototip-helpers'
+import { createClient } from '@/lib/supabase/server'
+import { getKullaniciPlan, planIzinVeriyor } from '@/lib/abonelik'
 
 export const maxDuration = 300
 
@@ -15,6 +17,14 @@ export async function POST(req: Request) {
     detayliAciklama?: string
     hikayelerMetni?: string
     projeDili?: string
+  }
+
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return Response.json({ error: 'UNAUTHORIZED' }, { status: 401 })
+  const pb = await getKullaniciPlan(supabase, user.id)
+  if (!planIzinVeriyor(pb.plan, 'prototip')) {
+    return Response.json({ error: 'PLAN_REQUIRED', requiredPlan: 'analyst' }, { status: 403 })
   }
 
   try {

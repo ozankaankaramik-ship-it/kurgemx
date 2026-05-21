@@ -1,6 +1,7 @@
 'use client'
 
 import { createContext, useContext, useState, type ReactNode } from 'react'
+import type { PlanBilgisi } from '@/lib/abonelik'
 
 export interface DokumanDurumu {
   storyMap: string | null
@@ -29,10 +30,12 @@ interface ProjeContextValue {
   projeBuyuklugu: ProjeBuyuklugu | null
   hikayeSayisiTahmini: number | null
   dokuman: DokumanDurumu
+  kullaniciPlan: PlanBilgisi | null
   setProje: (id: string, ad: string, shortDesc: string | null, detailedDesc: string, dil?: string | null) => void
   setProjeBuyuklugu: (val: ProjeBuyuklugu) => void
   setHikayeSayisiTahmini: (n: number) => void
   setDokuman: (tur: DokumanTur, icerik: string) => void
+  setKullaniciPlan: (p: PlanBilgisi) => void
 }
 
 const BOŞ: DokumanDurumu = {
@@ -77,7 +80,7 @@ function icerikStr(v: unknown): string | null {
   return JSON.stringify(v)
 }
 
-export function ProjeProvider({ children, initialProje }: { children: ReactNode; initialProje?: InitialProje }) {
+export function ProjeProvider({ children, initialProje, initialPlan }: { children: ReactNode; initialProje?: InitialProje; initialPlan?: PlanBilgisi }) {
   const [projeId, setProjeId] = useState<string | null>(initialProje?.id ?? null)
   const [ad, setAd] = useState(initialProje?.ad ?? '')
   const [shortDesc, setShortDesc] = useState<string | null>(null)
@@ -87,6 +90,7 @@ export function ProjeProvider({ children, initialProje }: { children: ReactNode;
     initialProje?.projeBuyuklugu ?? null
   )
   const [hikayeSayisiTahmini, setHikayeSayisiTahminiState] = useState<number | null>(null)
+  const [kullaniciPlan, setKullaniciPlanState] = useState<PlanBilgisi | null>(initialPlan ?? null)
   const [dokuman, setDokumanState] = useState<DokumanDurumu>({
     ...BOŞ,
     storyMap: icerikStr(initialProje?.storyMapIcerik),
@@ -122,7 +126,9 @@ export function ProjeProvider({ children, initialProje }: { children: ReactNode;
       projeId, ad, shortDesc, detailedDesc, projektDili,
       projeBuyuklugu, hikayeSayisiTahmini,
       dokuman,
+      kullaniciPlan,
       setProje, setProjeBuyuklugu, setHikayeSayisiTahmini, setDokuman,
+      setKullaniciPlan: setKullaniciPlanState,
     }}>
       {children}
     </ProjeContext.Provider>

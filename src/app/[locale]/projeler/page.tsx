@@ -1,6 +1,7 @@
 import { redirect } from '@/i18n/navigation'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
+import { getKullaniciPlan } from '@/lib/abonelik'
 import { Link } from '@/i18n/navigation'
 import type { Metadata } from 'next'
 import type { ProjeListeRow } from '@/lib/projects/actions'
@@ -67,11 +68,14 @@ export default async function ProjelerPage() {
 
   const t = await getTranslations('projeler')
 
-  const { data: projeler, error: projelerHata } = await supabase
-    .from('projeler')
-    .select('*')
-    .eq('kullanici_id', user!.id)
-    .order('olusturma_tarihi', { ascending: false })
+  const [{ data: projeler, error: projelerHata }, planBilgisi] = await Promise.all([
+    supabase
+      .from('projeler')
+      .select('*')
+      .eq('kullanici_id', user!.id)
+      .order('olusturma_tarihi', { ascending: false }),
+    getKullaniciPlan(supabase, user!.id),
+  ])
 
   if (projelerHata) {
     console.error('[ProjelerPage] Projeler sorgu hatası:', projelerHata)
@@ -82,6 +86,26 @@ export default async function ProjelerPage() {
   return (
     <main className="flex-1 bg-[#F9FAFB]">
       <div className="max-w-[860px] mx-auto px-4 py-10 w-full">
+
+        {/* Plan bandı — Freemium ve Analyst için */}
+        {(planBilgisi.plan.kod === 'freemium' || planBilgisi.plan.kod === 'analyst') && (
+          <div className="mb-5 flex items-center justify-between rounded-lg bg-[#EEF4FB] border border-blue-100 px-4 py-2.5">
+            <span className="text-xs text-[#1F3864]">
+              <span className="font-semibold">{planBilgisi.plan.ad}</span>
+              {locale === 'tr' ? ' planındasınız' : ' plan active'}
+              {planBilgisi.plan.aylik_proje_limiti !== null && (
+                <span className="text-gray-500 ml-2">
+                  · {locale === 'tr' ? 'Bu ay' : 'This month'}{' '}
+                  {planBilgisi.abonelik?.aylik_proje_sayaci ?? 0}/{planBilgisi.plan.aylik_proje_limiti}{' '}
+                  {locale === 'tr' ? 'proje' : 'project(s)'}
+                </span>
+              )}
+            </span>
+            <Link href="/pricing" className="text-xs font-medium text-[#2E75B6] hover:underline shrink-0 ml-4">
+              {locale === 'tr' ? 'Planı Yükselt →' : 'Upgrade plan →'}
+            </Link>
+          </div>
+        )}
 
         {/* Hata mesajı */}
         {projelerHata && (

@@ -4,6 +4,7 @@ import { useActionState, useEffect, useRef, useState } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
 import { projeOlusturVeDon } from '@/lib/projects/create'
 import { useProje, type ProjeBuyuklugu } from './ProjeContext'
+import { planIzinVeriyor, type PlanOzellik } from '@/lib/abonelik'
 import { ProgressBar } from './GenerateButton'
 
 function SparkleIcon() {
@@ -58,6 +59,7 @@ export default function Adim1Formu() {
   const tc = useTranslations('calismaEkrani')
   const locale = useLocale()
   const ctx = useProje()
+  const kullaniciPlan = ctx.kullaniciPlan
   const [state, formAction, isPending] = useActionState(projeOlusturVeDon, null)
   const [adValue, setAdValue] = useState('')
   const [aciklamaLen, setAciklamaLen] = useState(0)
@@ -100,7 +102,23 @@ export default function Adim1Formu() {
     if (isAtBottom) el.scrollTop = el.scrollHeight
   }, [yzCikti, yzYukleniyor])
 
-  const canSubmit = !isPending && !yzYukleniyor && adValue.trim().length > 0 && yzCikti !== null
+  const limitDolmus: boolean = (() => {
+    if (!kullaniciPlan) return false
+    const { plan, abonelik } = kullaniciPlan
+    if (plan.aylik_proje_limiti === null) return false
+    if (!abonelik) return false
+    return abonelik.aylik_proje_sayaci >= plan.aylik_proje_limiti
+  })()
+
+  const buyuklukIzinli = (secenek: ProjeBuyuklugu): boolean => {
+    if (!kullaniciPlan) return true
+    const ozellik: PlanOzellik | null =
+      secenek === 'Orta' ? 'orta_proje' : secenek === 'Büyük' ? 'buyuk_proje' : null
+    if (!ozellik) return true
+    return planIzinVeriyor(kullaniciPlan.plan, ozellik)
+  }
+
+  const canSubmit = !isPending && !yzYukleniyor && adValue.trim().length > 0 && yzCikti !== null && !limitDolmus
 
   useEffect(() => {
     if (state?.id && yzCikti) {
@@ -203,6 +221,7 @@ export default function Adim1Formu() {
     if (k === 'ad_zorunlu') return t('hatalar.ad_zorunlu')
     if (k === 'ad_uzun') return t('hatalar.ad_uzun')
     if (k === 'yetkisiz') return t('hatalar.yetkisiz')
+    if (k === 'limit_asildi') return null // aşağıda özel olarak render edilecek
     return t('hatalar.genel')
   })()
 
@@ -321,17 +340,29 @@ export default function Adim1Formu() {
                     <div className="grid grid-cols-3 gap-2">
                       {BUYUKLUK_SECENEKLER.map((secenek) => {
                         const isActive = projeBuyuklugu === secenek
+                        const izinli = buyuklukIzinli(secenek)
                         return (
                           <button
                             key={secenek}
                             type="button"
-                            onClick={() => handleBuyuklukSec(secenek)}
-                            className={`flex flex-col items-center rounded-lg border px-2 py-2.5 text-center transition ${
-                              isActive
+                            onClick={izinli ? () => handleBuyuklukSec(secenek) : undefined}
+                            title={!izinli ? (locale === 'tr' ? 'Bu plan için mevcut değil → Planı Yükselt' : 'Not available on your plan → Upgrade') : undefined}
+                            className={`relative flex flex-col items-center rounded-lg border px-2 py-2.5 text-center transition ${
+                              !izinli
+                                ? 'bg-gray-50 border-gray-200 text-gray-400 cursor-not-allowed opacity-60'
+                                : isActive
                                 ? 'bg-[#1F3864] border-[#1F3864] text-white'
                                 : 'bg-white border-gray-300 text-gray-700 hover:border-[#2E75B6] hover:text-[#1F3864]'
                             }`}
                           >
+                            {!izinli && (
+                              <span className="absolute top-1 right-1">
+                                <svg width="10" height="10" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                                  <rect x="3" y="7" width="10" height="8" rx="2" stroke="currentColor" strokeWidth="1.5"/>
+                                  <path d="M5 7V5a3 3 0 116 0v2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                                </svg>
+                              </span>
+                            )}
                             <span className="text-xs font-semibold">
                               {secenek === 'Küçük' ? t('kucuk') : secenek === 'Orta' ? t('orta') : t('buyuk')}
                             </span>
@@ -350,6 +381,17 @@ export default function Adim1Formu() {
         )}
       </div>
 
+      {(limitDolmus || state?.error === 'limit_asildi') && (
+        <p className="text-sm text-amber-600">
+          {locale === 'tr'
+            ? `Bu ay ${kullaniciPlan?.abonelik?.aylik_proje_sayaci ?? '?'}/${kullaniciPlan?.plan.aylik_proje_limiti ?? '?'} proje limitine ulaştınız.`
+            : `You've reached ${kullaniciPlan?.abonelik?.aylik_proje_sayaci ?? '?'}/${kullaniciPlan?.plan.aylik_proje_limiti ?? '?'} projects this month.`}
+          {' '}
+          <a href={`/${locale}/pricing`} className="font-medium underline hover:no-underline">
+            {locale === 'tr' ? 'Planı Yükselt →' : 'Upgrade →'}
+          </a>
+        </p>
+      )}
       {hataMesaji && (
         <p className="text-sm text-red-600">{hataMesaji}</p>
       )}

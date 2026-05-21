@@ -8,6 +8,8 @@ import GenerateButton, { ProgressBar } from './GenerateButton'
 import MarkdownGoster from '@/components/MarkdownGoster'
 import { createClient } from '@/lib/supabase/client'
 import { DOKUMAN_TIPLERI } from '@/lib/dokuman-tipleri'
+import type { PlanBilgisi } from '@/lib/abonelik'
+import { planIzinVeriyor } from '@/lib/abonelik'
 
 interface HikayeItem {
   no: string
@@ -591,11 +593,13 @@ export default function CalismaEkrani({
   backHref,
   backLabel,
   mevcutDokumanlar = [],
+  initialPlan,
 }: {
   initialProje?: InitialProje
   backHref?: string
   backLabel?: string
   mevcutDokumanlar?: DokumanRow[]
+  initialPlan?: PlanBilgisi
 } = {}) {
   const storyMapRow = mevcutDokumanlar.find(d => d.tip_id === DOKUMAN_TIPLERI.hikaye_haritasi) ?? null
   const isAnaliziRow = mevcutDokumanlar.find(d => d.tip_id === DOKUMAN_TIPLERI.is_analizi) ?? null
@@ -645,7 +649,7 @@ export default function CalismaEkrani({
     : undefined
 
   return (
-    <ProjeProvider initialProje={enrichedInitialProje}>
+    <ProjeProvider initialProje={enrichedInitialProje} initialPlan={initialPlan}>
       <EkranIci
         backHref={backHref}
         backLabel={backLabel}
@@ -681,6 +685,13 @@ function EkranIci({
   const locale = useLocale()
   const ctx = useProje()
   const { projeId, ad, shortDesc, detailedDesc, projektDili, projeBuyuklugu } = ctx
+  const planBilgisi = ctx.kullaniciPlan
+  const exportIzni   = planBilgisi ? planIzinVeriyor(planBilgisi.plan, 'export')        : false
+  const prototipIzni = planBilgisi ? planIzinVeriyor(planBilgisi.plan, 'prototip')      : false
+  const testIzni     = planBilgisi ? planIzinVeriyor(planBilgisi.plan, 'test_senaryosu'): false
+  const gosterPlanWidget = planBilgisi
+    ? (planBilgisi.plan.kod === 'freemium' || planBilgisi.plan.kod === 'analyst')
+    : false
 
   // Başarı banner'ı: sadece yeni proje oluşturulduğunda göster
   const initialProjeIdRef = useRef<string | null>(projeId)
@@ -1339,6 +1350,18 @@ function EkranIci({
           </div>
         )}
 
+        {gosterPlanWidget && (
+          <div className="mb-5 flex items-center justify-between rounded-lg bg-[#EEF4FB] border border-blue-100 px-4 py-2.5">
+            <span className="text-xs text-[#1F3864]">
+              <span className="font-semibold">{planBilgisi?.plan.ad}</span>{' '}
+              {locale === 'tr' ? 'planındasınız' : 'plan active'}
+            </span>
+            <a href={`/${locale}/pricing`} className="text-xs font-medium text-[#2E75B6] hover:underline shrink-0">
+              {locale === 'tr' ? 'Planı Yükselt →' : 'Upgrade plan →'}
+            </a>
+          </div>
+        )}
+
         <div>
 
           {/* ── Adım 1 ── */}
@@ -1446,12 +1469,20 @@ function EkranIci({
                     )}
                   {storyMapData && (
                     <button
-                      onClick={() => exportToExcel(storyMapData, ad)}
-                      className="inline-flex items-center gap-1.5 rounded-md h-[34px] px-3.5 text-xs font-medium border-[0.5px] border-[#2E75B6]/50 text-[#1F3864] hover:bg-[#EEF4FB] transition"
+                      onClick={exportIzni ? () => exportToExcel(storyMapData, ad) : () => { window.location.href = `/${locale}/pricing` }}
+                      title={!exportIzni ? (locale === 'tr' ? 'Analyst planında mevcut → Planı Yükselt' : 'Available on Analyst plan → Upgrade') : undefined}
+                      className={`inline-flex items-center gap-1.5 rounded-md h-[34px] px-3.5 text-xs font-medium border-[0.5px] transition ${exportIzni ? 'border-[#2E75B6]/50 text-[#1F3864] hover:bg-[#EEF4FB]' : 'border-gray-200 text-gray-400 opacity-60'}`}
                     >
-                      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                        <path d="M8 1v9M4 7l4 4 4-4M2 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
+                      {exportIzni ? (
+                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                          <path d="M8 1v9M4 7l4 4 4-4M2 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      ) : (
+                        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                          <rect x="3" y="7" width="10" height="8" rx="2" stroke="currentColor" strokeWidth="1.5"/>
+                          <path d="M5 7V5a3 3 0 116 0v2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                        </svg>
+                      )}
                       {t('adim2.exportExcel')}
                     </button>
                   )}
@@ -1730,7 +1761,7 @@ function EkranIci({
                     )}
                     {isAnaliziData && (
                       <button
-                        onClick={async () => {
+                        onClick={!exportIzni ? () => { window.location.href = `/${locale}/pricing` } : async () => {
                           try {
                             const res = await fetch('/api/dokuman/is-analizi-docx', {
                               method: 'POST',
@@ -1772,11 +1803,19 @@ function EkranIci({
                             )
                           }
                         }}
-                        className="inline-flex items-center gap-1.5 rounded-md h-[34px] px-3.5 text-xs font-medium border-[0.5px] border-[#2E75B6]/50 text-[#1F3864] hover:bg-[#EEF4FB] transition"
+                        title={!exportIzni ? (locale === 'tr' ? 'Analyst planında mevcut → Planı Yükselt' : 'Available on Analyst plan → Upgrade') : undefined}
+                        className={`inline-flex items-center gap-1.5 rounded-md h-[34px] px-3.5 text-xs font-medium border-[0.5px] transition ${exportIzni ? 'border-[#2E75B6]/50 text-[#1F3864] hover:bg-[#EEF4FB]' : 'border-gray-200 text-gray-400 opacity-60'}`}
                       >
-                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                          <path d="M8 1v9M4 7l4 4 4-4M2 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
+                        {exportIzni ? (
+                          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                            <path d="M8 1v9M4 7l4 4 4-4M2 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                        ) : (
+                          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                            <rect x="3" y="7" width="10" height="8" rx="2" stroke="currentColor" strokeWidth="1.5"/>
+                            <path d="M5 7V5a3 3 0 116 0v2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                          </svg>
+                        )}
                         {t('adim3.indir')}
                       </button>
                     )}
@@ -1852,6 +1891,18 @@ function EkranIci({
                           <>{' — '}{adim4TarihStr}</>
                         )}
                       </p>
+                    ) : !prototipIzni ? (
+                      <button
+                        onClick={() => { window.location.href = `/${locale}/pricing` }}
+                        className="inline-flex items-center gap-1.5 rounded-md h-[34px] px-3.5 text-xs font-medium border-[0.5px] border-gray-200 text-gray-400 opacity-70"
+                        title={locale === 'tr' ? 'Analyst planında mevcut → Planı Yükselt' : 'Available on Analyst plan → Upgrade'}
+                      >
+                        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                          <rect x="3" y="7" width="10" height="8" rx="2" stroke="currentColor" strokeWidth="1.5"/>
+                          <path d="M5 7V5a3 3 0 116 0v2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                        </svg>
+                        {locale === 'tr' ? 'Analyst planında mevcut' : 'Available on Analyst plan'}
+                      </button>
                     ) : (
                       <div title={isAnaliziData === null ? t('adim4.isAnaliziGerekli') : undefined} style={{ display: 'inline-block' }}>
                         <GenerateButton
@@ -1868,22 +1919,32 @@ function EkranIci({
                     {ctx.dokuman.prototype && !adim4Yukleniyor && (
                       <>
                         <button
-                          onClick={() => {
-                            const blob = new Blob([ctx.dokuman.prototype!], { type: 'text/html;charset=utf-8' })
-                            const url = URL.createObjectURL(blob)
-                            const a = document.createElement('a')
-                            a.href = url
-                            a.download = `prototip-${ad.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/gi, '').slice(0, 50)}.html`
-                            document.body.appendChild(a)
-                            a.click()
-                            document.body.removeChild(a)
-                            URL.revokeObjectURL(url)
-                          }}
-                          className="inline-flex items-center gap-1.5 rounded-md h-[34px] px-3.5 text-xs font-medium border-[0.5px] border-[#2E75B6]/50 text-[#1F3864] hover:bg-[#EEF4FB] transition"
+                          onClick={!exportIzni
+                            ? () => { window.location.href = `/${locale}/pricing` }
+                            : () => {
+                                const blob = new Blob([ctx.dokuman.prototype!], { type: 'text/html;charset=utf-8' })
+                                const url = URL.createObjectURL(blob)
+                                const a = document.createElement('a')
+                                a.href = url
+                                a.download = `prototip-${ad.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/gi, '').slice(0, 50)}.html`
+                                document.body.appendChild(a)
+                                a.click()
+                                document.body.removeChild(a)
+                                URL.revokeObjectURL(url)
+                              }}
+                          title={!exportIzni ? (locale === 'tr' ? 'Analyst planında mevcut → Planı Yükselt' : 'Available on Analyst plan → Upgrade') : undefined}
+                          className={`inline-flex items-center gap-1.5 rounded-md h-[34px] px-3.5 text-xs font-medium border-[0.5px] transition ${exportIzni ? 'border-[#2E75B6]/50 text-[#1F3864] hover:bg-[#EEF4FB]' : 'border-gray-200 text-gray-400 opacity-60'}`}
                         >
-                          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                            <path d="M8 1v9M4 7l4 4 4-4M2 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                          </svg>
+                          {exportIzni ? (
+                            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                              <path d="M8 1v9M4 7l4 4 4-4M2 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                          ) : (
+                            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                              <rect x="3" y="7" width="10" height="8" rx="2" stroke="currentColor" strokeWidth="1.5"/>
+                              <path d="M5 7V5a3 3 0 116 0v2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                            </svg>
+                          )}
                           {t('adim4.indir')}
                         </button>
                         <button
@@ -2027,23 +2088,47 @@ function EkranIci({
                     <>
                       <div className="space-y-2 mb-4">
                         <div className="flex items-center gap-3 flex-wrap">
-                          <GenerateButton
-                            label={t('adim5.uret')}
-                            loadingLabel={adim5StreamMsg ?? t('adim5.olusturuluyor')}
-                            regenerateLabel={t('yenidenOlustur')}
-                            disabled={isAnaliziData === null}
-                            loading={adim5Yukleniyor}
-                            hasContent={testCases.length > 0}
-                            onClick={generateTestScenarios}
-                          />
+                          {!testIzni ? (
+                            <button
+                              onClick={() => { window.location.href = `/${locale}/pricing` }}
+                              className="inline-flex items-center gap-1.5 rounded-md h-[34px] px-3.5 text-xs font-medium border-[0.5px] border-gray-200 text-gray-400 opacity-70"
+                              title={locale === 'tr' ? 'Analyst planında mevcut → Planı Yükselt' : 'Available on Analyst plan → Upgrade'}
+                            >
+                              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                                <rect x="3" y="7" width="10" height="8" rx="2" stroke="currentColor" strokeWidth="1.5"/>
+                                <path d="M5 7V5a3 3 0 116 0v2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                              </svg>
+                              {locale === 'tr' ? 'Analyst planında mevcut' : 'Available on Analyst plan'}
+                            </button>
+                          ) : (
+                            <GenerateButton
+                              label={t('adim5.uret')}
+                              loadingLabel={adim5StreamMsg ?? t('adim5.olusturuluyor')}
+                              regenerateLabel={t('yenidenOlustur')}
+                              disabled={isAnaliziData === null}
+                              loading={adim5Yukleniyor}
+                              hasContent={testCases.length > 0}
+                              onClick={generateTestScenarios}
+                            />
+                          )}
                           {testCases.length > 0 && !adim5Yukleniyor && (
                             <button
-                              onClick={() => exportTestExcel(testCases, ad, projektDili)}
-                              className="inline-flex items-center gap-1.5 rounded-md h-[34px] px-3.5 text-xs font-medium border-[0.5px] border-[#2E75B6]/50 text-[#1F3864] hover:bg-[#EEF4FB] transition"
+                              onClick={!exportIzni
+                                ? () => { window.location.href = `/${locale}/pricing` }
+                                : () => exportTestExcel(testCases, ad, projektDili)}
+                              title={!exportIzni ? (locale === 'tr' ? 'Analyst planında mevcut → Planı Yükselt' : 'Available on Analyst plan → Upgrade') : undefined}
+                              className={`inline-flex items-center gap-1.5 rounded-md h-[34px] px-3.5 text-xs font-medium border-[0.5px] transition ${exportIzni ? 'border-[#2E75B6]/50 text-[#1F3864] hover:bg-[#EEF4FB]' : 'border-gray-200 text-gray-400 opacity-60'}`}
                             >
-                              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                                <path d="M8 1v9M4 7l4 4 4-4M2 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                              </svg>
+                              {exportIzni ? (
+                                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                                  <path d="M8 1v9M4 7l4 4 4-4M2 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
+                              ) : (
+                                <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                                  <rect x="3" y="7" width="10" height="8" rx="2" stroke="currentColor" strokeWidth="1.5"/>
+                                  <path d="M5 7V5a3 3 0 116 0v2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                                </svg>
+                              )}
                               {t('adim5.indir')}
                             </button>
                           )}

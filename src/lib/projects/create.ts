@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 import { getLocale } from 'next-intl/server'
 import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@/lib/supabase/server'
+import { getKullaniciPlan, limiteDoldu } from '@/lib/abonelik'
 
 export type ProjeOlusturState = {
   error?: string
@@ -108,7 +109,7 @@ export async function projeOlustur(
 }
 
 export type ProjeOlusturVeDonState = {
-  error?: string
+  error?: string | 'limit_asildi'
   id?: string
 } | null
 
@@ -129,6 +130,9 @@ export async function projeOlusturVeDon(
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) return { error: 'yetkisiz' }
+
+  const planBilgisi = await getKullaniciPlan(supabase, user.id)
+  if (limiteDoldu(planBilgisi)) return { error: 'limit_asildi' }
 
   const projeId = crypto.randomUUID()
 
