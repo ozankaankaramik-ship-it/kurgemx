@@ -69,7 +69,9 @@
       "PowerShell($en = Get-Content \"messages\\\\en.json\" -Raw | ConvertFrom-Json; $en.pricing | ConvertTo-Json -Depth 10)",
       "PowerShell(Get-Content *)",
       "PowerShell(git add *)",
-      "PowerShell(git push *)"
+      "PowerShell(git push *)",
+      "PowerShell(Get-ChildItem -Path \"src\" -Recurse | Where-Object { $_.Extension -in @\\('.ts', '.tsx'\\) -and $_.FullName -notmatch '\\\\.next' } | Select-Object -ExpandProperty FullName)",
+      "PowerShell(npx tsc --noEmit 2>&1 | Select-Object -First 30)"
     ]
   },
   "hooks": {
