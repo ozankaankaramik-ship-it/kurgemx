@@ -59,7 +59,8 @@
       "Bash(Format-Table -AutoSize)",
       "Bash(grep -E \"\\\\.\\(ts|js|tsx|jsx\\)$\")",
       "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\ozank\\\\Documents\\\\İşAnaliziAjan\\\\kurgemx\\\\src\\\\components\" -File)",
-      "Bash(Select-Object Name)"
+      "Bash(Select-Object Name)",
+      "Bash(Get-ChildItem -Recurse -Filter \"*.sql\" -ErrorAction SilentlyContinue)"
     ]
   },
   "hooks": {
