@@ -117,10 +117,12 @@ export default async function PricingPage() {
                 </th>
 
                 {/* Analyst — En Popüler */}
-                <th className="px-3 py-6 text-center align-top relative border-l-[2px] border-r-[2px] border-t-[2px] border-[#2E75B6]">
-                  <span className="absolute -top-[14px] left-1/2 -translate-x-1/2 bg-[#2E75B6] text-white text-[10px] font-semibold px-3 py-[3px] rounded-full whitespace-nowrap shadow-sm">
-                    {t('enPopuler')}
-                  </span>
+                <th className="px-3 pt-4 pb-6 text-center align-top border-l-[2px] border-r-[2px] border-t-[2px] border-[#2E75B6]">
+                  <div className="flex justify-center mb-3">
+                    <span className="bg-[#2E75B6] text-white text-[10px] font-semibold px-3 py-1 rounded-full whitespace-nowrap">
+                      {t('enPopuler')}
+                    </span>
+                  </div>
                   <p className="text-[10px] font-semibold uppercase tracking-[0.8px] text-[#B5D4F4] mb-1">
                     {t('planlar.analyst.ad')}
                   </p>
