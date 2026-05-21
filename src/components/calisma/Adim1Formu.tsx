@@ -118,7 +118,21 @@ export default function Adim1Formu() {
     return planIzinVeriyor(kullaniciPlan.plan, ozellik)
   }
 
-  const canSubmit = !isPending && !yzYukleniyor && adValue.trim().length > 0 && yzCikti !== null && !limitDolmus
+  const buyuklukHatasi = projeBuyuklugu !== null && !buyuklukIzinli(projeBuyuklugu)
+
+  const buyuklukEtiketi = (b: ProjeBuyuklugu) => {
+    if (locale === 'tr') return b === 'Büyük' ? 'Büyük' : b === 'Orta' ? 'Orta' : 'Küçük'
+    return b === 'Büyük' ? 'Large' : b === 'Orta' ? 'Medium' : 'Small'
+  }
+
+  const maxIzinliStr = (() => {
+    if (!kullaniciPlan) return locale === 'tr' ? 'Küçük' : 'Small'
+    const p = kullaniciPlan.plan
+    if (p.orta_proje) return locale === 'tr' ? 'Küçük veya Orta' : 'Small or Medium'
+    return locale === 'tr' ? 'Küçük' : 'Small'
+  })()
+
+  const canSubmit = !isPending && !yzYukleniyor && adValue.trim().length > 0 && yzCikti !== null && !limitDolmus && !buyuklukHatasi
 
   useEffect(() => {
     if (state?.id && yzCikti) {
@@ -337,6 +351,28 @@ export default function Adim1Formu() {
                 {!yzYukleniyor && projeBuyuklugu && (
                   <div className="mt-4">
                     <p className="text-xs font-semibold text-[#2E75B6] mb-2">{t('projeBuyuklugu')}</p>
+
+                    {buyuklukHatasi && projeBuyuklugu && (
+                      <div className="mb-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-800">
+                        <p>
+                          {locale === 'tr' ? (
+                            <>
+                              YZ tahmini: <strong>{buyuklukEtiketi(projeBuyuklugu)}</strong> proje &middot; Mevcut planınız (<strong>{kullaniciPlan?.plan.ad ?? 'Freemium'}</strong>) bu boyutu desteklemiyor.{' '}
+                              <strong>{maxIzinliStr}</strong> proje olarak devam edebilir veya planınızı yükseltebilirsiniz.
+                            </>
+                          ) : (
+                            <>
+                              AI estimate: <strong>{buyuklukEtiketi(projeBuyuklugu)}</strong> project &middot; Your current plan (<strong>{kullaniciPlan?.plan.ad ?? 'Freemium'}</strong>) doesn&apos;t support this size.{' '}
+                              You can continue with a <strong>{maxIzinliStr}</strong> project or upgrade your plan.
+                            </>
+                          )}
+                        </p>
+                        <a href={`/${locale}/pricing`} className="mt-1.5 inline-block font-medium text-amber-700 underline hover:no-underline">
+                          {locale === 'tr' ? 'Planları Gör →' : 'View Plans →'}
+                        </a>
+                      </div>
+                    )}
+
                     <div className="grid grid-cols-3 gap-2">
                       {BUYUKLUK_SECENEKLER.map((secenek) => {
                         const isActive = projeBuyuklugu === secenek
@@ -390,6 +426,13 @@ export default function Adim1Formu() {
           <a href={`/${locale}/pricing`} className="font-medium underline hover:no-underline">
             {locale === 'tr' ? 'Planı Yükselt →' : 'Upgrade →'}
           </a>
+        </p>
+      )}
+      {buyuklukHatasi && (
+        <p className="text-sm text-red-600">
+          {locale === 'tr'
+            ? 'Bu proje büyüklüğü planınızda mevcut değil.'
+            : 'This project size is not available in your plan.'}
         </p>
       )}
       {hataMesaji && (
