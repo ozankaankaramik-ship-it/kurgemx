@@ -388,49 +388,38 @@
   "pricing": {
     "baslik": "Pricing",
     "altBaslik": "Choose the plan that fits your project.",
-    "aylik": "/ month",
-    "popular": "Most Popular",
-    "dahil": "What's included:",
+    "enPopuler": "Most Popular",
     "freemiumNot": "Start for free, no credit card required.",
+    "teklifAl": "Get a Quote",
     "soruMetni": "Have questions?",
     "planlar": {
-      "freemium": {
-        "ad": "Freemium",
-        "fiyat": "$0",
-        "aciklama": "For exploring small projects",
-        "ozellikler": [
-          "1 small project per month",
-          "Up to 5 stories",
-          "Story map + analysis document",
-          "Prototype viewing (no download)",
-          "Watermarked export (1 file)"
-        ]
-      },
-      "starter": {
-        "ad": "Starter",
-        "fiyat": "$9",
-        "aciklama": "For growing teams",
-        "ozellikler": [
-          "3 small-medium projects per month",
-          "Up to 15 stories",
-          "All features included",
-          "Prototype download (1 per project)",
-          "Full export"
-        ]
-      },
-      "pro": {
-        "ad": "Pro",
-        "fiyat": "$29",
-        "aciklama": "For professional use",
-        "ozellikler": [
-          "10 projects per month",
-          "Up to 40 stories",
-          "All features unlimited",
-          "Unlimited prototype downloads",
-          "Priority support"
-        ]
-      }
-    }
+      "freemium": { "ad": "Freemium", "fiyat": "$0", "aylik": "/ month" },
+      "analyst":  { "ad": "Analyst",  "fiyat": "$9", "aylik": "/ month" },
+      "advanced": { "ad": "Advanced", "fiyat": "$29", "aylik": "/ month" },
+      "enterprise": { "ad": "Enterprise" }
+    },
+    "bolumler": {
+      "kapsam":   "Project Scope",
+      "ai":       "AI-Powered Outputs",
+      "kurumsal": "Enterprise Features"
+    },
+    "satirlar": {
+      "projeAy":          "Projects / month",
+      "kucukProje":       "Small project (1–5 stories)",
+      "ortaProje":        "Medium project (6–15 stories)",
+      "buyukProje":       "Large project (16–40 stories)",
+      "hikayeHaritasi":   "Story map",
+      "analizDokumani":   "Analysis document",
+      "prototip":         "Prototype generation",
+      "testSenaryosu":    "Test scenarios",
+      "export":           "Export (Word / Excel / HTML)",
+      "dil":              "Turkish / English output",
+      "kullaniciYonetimi":"User management",
+      "faturalandirma":   "Centralized billing",
+      "sso":              "SSO",
+      "sla":              "Enterprise SLA & support"
+    },
+    "sinirsiz": "Unlimited"
   },
   "terms": {
     "baslik": "Terms of Service",

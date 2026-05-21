@@ -388,49 +388,38 @@
   "pricing": {
     "baslik": "Fiyatlandırma",
     "altBaslik": "Projenize uygun planı seçin.",
-    "aylik": "/ ay",
-    "popular": "En Popüler",
-    "dahil": "Dahil özellikler:",
+    "enPopuler": "En Popüler",
     "freemiumNot": "Ücretsiz başlayın, kredi kartı gerekmez.",
+    "teklifAl": "Teklif Al",
     "soruMetni": "Sorularınız mı var?",
     "planlar": {
-      "freemium": {
-        "ad": "Freemium",
-        "fiyat": "$0",
-        "aciklama": "Küçük projeleri keşfetmek için",
-        "ozellikler": [
-          "Aylık 1 küçük proje",
-          "Maksimum 5 hikaye",
-          "Hikaye haritası + analiz dokümanı",
-          "Prototip görüntüleme (indirme yok)",
-          "Watermark'lı export (1 adet)"
-        ]
-      },
-      "starter": {
-        "ad": "Starter",
-        "fiyat": "$9",
-        "aciklama": "Büyüyen ekipler için",
-        "ozellikler": [
-          "Aylık 3 küçük-orta proje",
-          "Maksimum 15 hikaye",
-          "Tüm özellikler dahil",
-          "Prototip indirme (proje başına 1)",
-          "Tam export"
-        ]
-      },
-      "pro": {
-        "ad": "Pro",
-        "fiyat": "$29",
-        "aciklama": "Profesyonel kullanım için",
-        "ozellikler": [
-          "Aylık 10 proje",
-          "Maksimum 40 hikaye",
-          "Tüm özellikler sınırsız",
-          "Sınırsız prototip indirme",
-          "Öncelikli destek"
-        ]
-      }
-    }
+      "freemium": { "ad": "Freemium", "fiyat": "$0", "aylik": "/ ay" },
+      "analyst":  { "ad": "Analyst",  "fiyat": "$9", "aylik": "/ ay" },
+      "advanced": { "ad": "Advanced", "fiyat": "$29", "aylik": "/ ay" },
+      "enterprise": { "ad": "Enterprise" }
+    },
+    "bolumler": {
+      "kapsam":   "Proje Kapsamı",
+      "ai":       "AI Destekli Çıktılar",
+      "kurumsal": "Kurumsal Özellikler"
+    },
+    "satirlar": {
+      "projeAy":          "Proje / ay",
+      "kucukProje":       "Küçük proje (1–5 hikaye)",
+      "ortaProje":        "Orta proje (6–15 hikaye)",
+      "buyukProje":       "Büyük proje (16–40 hikaye)",
+      "hikayeHaritasi":   "Hikaye haritası",
+      "analizDokumani":   "Analiz dokümanı",
+      "prototip":         "Prototip üretimi",
+      "testSenaryosu":    "Test senaryosu",
+      "export":           "Dışa aktarım (Word / Excel / HTML)",
+      "dil":              "Türkçe / İngilizce çıktı",
+      "kullaniciYonetimi":"Kullanıcı yönetimi",
+      "faturalandirma":   "Merkezi faturalandırma",
+      "sso":              "SSO",
+      "sla":              "Kurumsal SLA ve destek"
+    },
+    "sinirsiz": "Sınırsız"
   },
   "terms": {
     "baslik": "Kullanım Koşulları",
