@@ -344,7 +344,7 @@
     "created": "Oluşturuldu"
   },
   "footer": {
-    "copyright": "© 2026 Ozan Kaan Karamık. Tüm hakları saklıdır.",
+    "copyright": "© 2026 KurgemX. Tüm hakları saklıdır.",
     "brand": "Kurumsal Gelişim Merkezi (KURGEM)'in tescilli markasıdır.",
     "about": "Hakkımızda",
     "pricing": "Fiyatlandırma",
@@ -426,9 +426,9 @@
     "sonGuncelleme": "Son güncelleme: 20 Mayıs 2025",
     "giris": "KurgemX'i kullanarak aşağıdaki koşulları kabul etmiş sayılırsınız. Lütfen dikkatlice okuyunuz.",
     "s1Baslik": "1. Hizmet Tanımı",
-    "s1Icerik": "KurgemX, Ozan Kaan Karamık tarafından işletilen, yapay zeka destekli iş analizi ve prototipleme hizmeti sunan bir SaaS platformudur. Hizmet, abonelik modeli ile sunulmaktadır.",
+    "s1Icerik": "KurgemX, KurgemX — Kurumsal Gelişim Merkezi (KURGEM) tarafından işletilen, yapay zeka destekli iş analizi ve prototipleme hizmeti sunan bir SaaS platformudur. Hizmet, abonelik modeli ile sunulmaktadır.",
     "s2Baslik": "2. Hesap Sorumluluğu",
-    "s2Icerik": "Hesabınızın güvenliğinden ve hesabınız aracılığıyla gerçekleştirilen tüm işlemlerden yalnızca siz sorumlusunuzdur. Şifrenizi güvenli tutmanız ve yetkisiz erişim durumunda derhal destek@kurgemx.com adresine bildirim yapmanız gerekmektedir.",
+    "s2Icerik": "Hesabınızın güvenliğinden ve hesabınız aracılığıyla gerçekleştirilen tüm işlemlerden yalnızca siz sorumlusunuzdur. Şifrenizi güvenli tutmanız ve yetkisiz erişim durumunda derhal support@kurgemx.com adresine bildirim yapmanız gerekmektedir.",
     "s3Baslik": "3. Yapay Zeka ile Üretilen İçerikler",
     "s3Icerik": "Platform, içerik üretiminde Anthropic'in Claude modeli gibi üçüncü taraf yapay zeka hizmetlerini kullanır. Üretilen içerikler bilgi amaçlı olup herhangi bir profesyonel tavsiye niteliği taşımaz. Bu içeriklerin doğruluğunu ve uygunluğunu değerlendirmek kullanıcının sorumluluğundadır.",
     "s4Baslik": "4. Hizmetin Değiştirilmesi",
@@ -450,7 +450,7 @@
     "s4Baslik": "4. KVKK Uyumluluğu",
     "s4Icerik": "Platform, 6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) kapsamında faaliyet göstermektedir. Verilerinizin işlenmesine ilişkin açık rıza, kayıt sürecinde alınmaktadır.",
     "s5Baslik": "5. Veri Silme Hakkı",
-    "s5Icerik": "Hesabınızı ve tüm verilerinizi silmek için destek@kurgemx.com adresine talep gönderebilirsiniz. Talepler en geç 30 iş günü içinde işleme alınır.",
+    "s5Icerik": "Hesabınızı ve tüm verilerinizi silmek için support@kurgemx.com adresine talep gönderebilirsiniz. Talepler en geç 30 iş günü içinde işleme alınır.",
     "iletisim": "İletişim"
   },
   "refund": {

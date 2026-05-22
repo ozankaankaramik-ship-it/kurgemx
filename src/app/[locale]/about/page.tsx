@@ -36,12 +36,12 @@ export default async function AboutPage() {
           <p className="text-xs font-semibold uppercase tracking-[0.8px] text-[#6B7280] mb-3">
             {t('iletisimBaslik')}
           </p>
-          <p className="font-medium text-[#1F3864] mb-1">Ozan Kaan Karamık — KurgemX</p>
+          <p className="font-medium text-[#1F3864] mb-1">KurgemX — Kurumsal Gelişim Merkezi (KURGEM)</p>
           <p>Alemdağ Mah. Reşadiye Cad. Dekon Silva Sitesi B1 Blok D:46 34794 Çekmeköy / İstanbul</p>
           <p className="mt-1">
             {t('iletisim')}:{' '}
-            <a href="mailto:destek@kurgemx.com" className="text-[#2E75B6] hover:underline">
-              destek@kurgemx.com
+            <a href="mailto:support@kurgemx.com" className="text-[#2E75B6] hover:underline">
+              support@kurgemx.com
             </a>
           </p>
           <p className="mt-1">

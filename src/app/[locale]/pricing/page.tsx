@@ -211,10 +211,10 @@ export default async function PricingPage() {
         <p className="text-center text-sm text-gray-500 mt-10">
           {t('soruMetni')}{' '}
           <a
-            href="mailto:destek@kurgemx.com"
+            href="mailto:support@kurgemx.com"
             className="text-[#2E75B6] hover:underline font-medium"
           >
-            destek@kurgemx.com
+            support@kurgemx.com
           </a>
         </p>
       </div>

@@ -344,7 +344,7 @@
     "created": "Created"
   },
   "footer": {
-    "copyright": "© 2026 Ozan Kaan Karamık. All rights reserved.",
+    "copyright": "© 2026 KurgemX. All rights reserved.",
     "brand": "A registered trademark of Kurumsal Gelişim Merkezi (KURGEM).",
     "about": "About",
     "pricing": "Pricing",
@@ -426,9 +426,9 @@
     "sonGuncelleme": "Last updated: May 20, 2025",
     "giris": "By using KurgemX, you agree to the following terms. Please read carefully.",
     "s1Baslik": "1. Service Description",
-    "s1Icerik": "KurgemX is a SaaS platform operated by Ozan Kaan Karamık, offering AI-powered business analysis and prototyping services on a subscription basis.",
+    "s1Icerik": "KurgemX is a SaaS platform operated by KurgemX — Kurumsal Gelişim Merkezi (KURGEM), offering AI-powered business analysis and prototyping services on a subscription basis.",
     "s2Baslik": "2. Account Responsibility",
-    "s2Icerik": "You are solely responsible for the security of your account and all actions performed through it. You must keep your password secure and immediately notify destek@kurgemx.com of any unauthorized access.",
+    "s2Icerik": "You are solely responsible for the security of your account and all actions performed through it. You must keep your password secure and immediately notify support@kurgemx.com of any unauthorized access.",
     "s3Baslik": "3. AI-Generated Content",
     "s3Icerik": "The platform uses third-party AI services such as Anthropic's Claude model for content generation. Generated content is informational only and does not constitute professional advice. Evaluating the accuracy and suitability of this content is the user's responsibility.",
     "s4Baslik": "4. Modifications to the Service",
@@ -450,7 +450,7 @@
     "s4Baslik": "4. KVKK Compliance",
     "s4Icerik": "The platform operates in accordance with Turkey's Personal Data Protection Law (KVKK, Law No. 6698). Explicit consent for data processing is obtained during registration.",
     "s5Baslik": "5. Right to Deletion",
-    "s5Icerik": "To delete your account and all associated data, send a request to destek@kurgemx.com. Requests are processed within 30 business days.",
+    "s5Icerik": "To delete your account and all associated data, send a request to support@kurgemx.com. Requests are processed within 30 business days.",
     "iletisim": "Contact"
   },
   "refund": {

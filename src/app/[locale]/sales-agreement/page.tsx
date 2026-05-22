@@ -34,15 +34,15 @@ export default async function SalesAgreementPage() {
           </h2>
           <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
             <dt className="font-medium text-[#1F3864] whitespace-nowrap">Ticari Unvan:</dt>
-            <dd className="text-[#374151]">Ozan Kaan Karamık</dd>
+            <dd className="text-[#374151]">KurgemX — Kurumsal Gelişim Merkezi (KURGEM)</dd>
             <dt className="font-medium text-[#1F3864] whitespace-nowrap">Marka:</dt>
             <dd className="text-[#374151]">KurgemX</dd>
             <dt className="font-medium text-[#1F3864] whitespace-nowrap">Adres:</dt>
             <dd className="text-[#374151]">Alemdağ Mah. Reşadiye Cad. Dekon Silva Sitesi B1 Blok D:46 34794 Çekmeköy / İstanbul</dd>
             <dt className="font-medium text-[#1F3864] whitespace-nowrap">E-posta:</dt>
             <dd className="text-[#374151]">
-              <a href="mailto:destek@kurgemx.com" className="text-[#2E75B6] hover:underline">
-                destek@kurgemx.com
+              <a href="mailto:support@kurgemx.com" className="text-[#2E75B6] hover:underline">
+                support@kurgemx.com
               </a>
             </dd>
             <dt className="font-medium text-[#1F3864] whitespace-nowrap">Web:</dt>
@@ -72,8 +72,8 @@ export default async function SalesAgreementPage() {
         <div className="mt-10 border-t border-[#E5E7EB] pt-8 text-sm text-[#6B7280]">
           <p className="mt-1">
             {t('iletisim')}:{' '}
-            <a href="mailto:destek@kurgemx.com" className="text-[#2E75B6] hover:underline">
-              destek@kurgemx.com
+            <a href="mailto:support@kurgemx.com" className="text-[#2E75B6] hover:underline">
+              support@kurgemx.com
             </a>
           </p>
         </div>
