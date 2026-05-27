@@ -44,7 +44,7 @@ function ProjectHeader({ proje, locale }: { proje: ProjeDetayRow; locale: string
       : ''
 
   const olusturma = tarihFmt(proje.olusturma_tarihi ?? null)
-  const guncelleme = tarihFmt(proje.son_guncelleme ?? null)
+  const guncelleme = tarihFmt(proje.guncelleme_tarihi ?? null)
 
   return (
     <div className="bg-white border-b border-kx-border">
