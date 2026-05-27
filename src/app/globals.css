@@ -1,26 +1,118 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* ──────────────────────────────────────────────────────────────────
+   KurgemX brand tokens — Tailwind v4 @theme
+   Use as: bg-kx-navy, text-kx-blue-soft, border-kx-border, etc.
+   ────────────────────────────────────────────────────────────────── */
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+@theme {
+  /* Brand palette */
+  --color-kx-navy: #1F3864;
+  --color-kx-navy-deep: #15264A;
+  --color-kx-blue: #2E75B6;
+  --color-kx-blue-soft: #EEF4FB;
+  --color-kx-red: #E63329;
+  --color-kx-red-soft: #FDECEB;
+  --color-kx-red-hover: #C41F17;
+
+  /* Surfaces */
+  --color-kx-bg: #FAFBFC;
+  --color-kx-bg-warm: #F5F4F0;
+  --color-kx-surface: #FFFFFF;
+  --color-kx-border: #E8EAEE;
+  --color-kx-border-soft: #F0F1F4;
+
+  /* Text */
+  --color-kx-ink: #0E1A33;
+  --color-kx-body: #3D4A66;
+  --color-kx-muted: #6B7387;
+  --color-kx-faint: #9CA3AF;
+
+  /* Accent surfaces */
+  --color-kx-amber: #FBBF24;
+  --color-kx-amber-soft: #FEF3C7;
+  --color-kx-amber-ink: #78350F;
+  --color-kx-green: #16A34A;
+  --color-kx-green-soft: #DCFCE7;
+  --color-kx-green-ink: #14532D;
+
+  /* Typography */
+  --font-display: var(--font-geist-sans);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* Shadows */
+  --shadow-kx-card: 0 1px 3px rgba(15, 23, 41, 0.04);
+  --shadow-kx-hero: 0 24px 60px -20px rgba(15, 30, 80, 0.25), 0 2px 6px rgba(15, 30, 80, 0.06);
+  --shadow-kx-red: 0 8px 20px -6px rgba(230, 51, 41, 0.35);
+  --shadow-kx-navy: 0 6px 14px -4px rgba(31, 56, 100, 0.4);
+
+  /* Animation */
+  --ease-kx: cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #0E1A33;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #ffffff;
+    --foreground: #0E1A33;
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  font-family: var(--font-sans);
 }
+
+/* Brand font for the KurgemX wordmark */
+.font-brand {
+  font-family: "Exo 2", var(--font-geist-sans), -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Custom utilities */
+@utility text-balance {
+  text-wrap: balance;
+}
+@utility text-pretty {
+  text-wrap: pretty;
+}
+
+/* Hero gradient — used in section background + page heroes */
+.kx-hero-gradient {
+  background:
+    radial-gradient(ellipse at top right, rgba(46, 117, 182, 0.18), transparent 55%),
+    radial-gradient(ellipse at bottom left, rgba(230, 51, 41, 0.10), transparent 60%),
+    linear-gradient(135deg, #1F3864 0%, #15264A 100%);
+}
+
+/* Subtle grid background for landing hero */
+.kx-grid-bg {
+  background-image:
+    linear-gradient(rgba(46, 117, 182, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(46, 117, 182, 0.06) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: radial-gradient(ellipse at top, black 30%, transparent 70%);
+}
+
+/* Animations */
+@keyframes kx-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes kx-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.4; }
+}
+@keyframes kx-blink {
+  from, 50%   { opacity: 1; }
+  50.1%, to   { opacity: 0; }
+}
+.animate-kx-spin   { animation: kx-spin 0.8s linear infinite; }
+.animate-kx-pulse  { animation: kx-pulse 1.4s ease-in-out infinite; }
+.animate-kx-blink  { animation: kx-blink 1s steps(2) infinite; }

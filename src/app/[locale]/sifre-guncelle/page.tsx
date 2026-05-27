@@ -1,5 +1,6 @@
 import { getTranslations } from 'next-intl/server'
 import type { Metadata } from 'next'
+import AuthLayout from '@/components/ui/AuthLayout'
 import SifreGuncelleFormu from '@/components/SifreGuncelleFormu'
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -9,8 +10,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default function SifreGuncellePage() {
   return (
-    <main className="flex flex-col items-center justify-center flex-1 px-4 py-16">
+    <AuthLayout variant="reset">
       <SifreGuncelleFormu />
-    </main>
+    </AuthLayout>
   )
 }

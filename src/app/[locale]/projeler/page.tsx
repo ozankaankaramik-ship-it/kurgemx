@@ -1,10 +1,12 @@
 import { redirect } from '@/i18n/navigation'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
-import { getKullaniciPlan } from '@/lib/abonelik'
 import { Link } from '@/i18n/navigation'
 import type { Metadata } from 'next'
 import type { ProjeListeRow } from '@/lib/projects/actions'
+import Navbar from '@/components/Navbar'
+import KxPill from '@/components/ui/KxPill'
+import ProjeKarti from '@/components/ProjeKarti'
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('projeler')
@@ -19,47 +21,85 @@ function formatTarih(tarihStr: string, locale: string) {
   }).format(new Date(tarihStr))
 }
 
-function ProjeBadge({ proje, label }: { proje: ProjeListeRow; label: string }) {
-  const hikayeSayisi = proje.hikayeler?.[0]?.count ?? 0
-  const durum = proje.durum
+/* ──────────────────────────────────────────────────────────────────
+   Dashboard header — welcome line + project count + "+ Yeni proje"
+   ────────────────────────────────────────────────────────────────── */
 
-  let bg: string
-  let color: string
-
-  if (hikayeSayisi > 0) {
-    bg = '#EEF4FB'
-    color = '#0C447C'
-  } else if (durum === 'aktif') {
-    bg = '#EAF3DE'
-    color = '#27500A'
-  } else {
-    bg = '#F1EFE8'
-    color = '#444441'
-  }
-
+function DashboardHeader({
+  username,
+  toplam,
+  yeniProjeLabel,
+  yeniProjeHref,
+}: {
+  username: string
+  toplam: number
+  yeniProjeLabel: string
+  yeniProjeHref: string
+}) {
   return (
-    <span
-      className="text-[11px] font-medium px-2 py-0.5 rounded-[4px] whitespace-nowrap"
-      style={{ backgroundColor: bg, color }}
-    >
-      {label}
-    </span>
+    <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6 mb-6">
+      <div>
+        <div className="text-[13px] text-kx-muted mb-1.5">
+          Tekrar hoş geldin, {username} 👋
+        </div>
+        <h1 className="font-display text-[36px] font-bold text-kx-ink tracking-[-0.025em] m-0 leading-[1]">
+          Projelerim
+        </h1>
+        <div className="text-[13px] text-kx-muted mt-3">
+          <strong className="text-kx-ink font-semibold">{toplam}</strong>{' '}
+          {toplam === 1 ? 'proje' : 'proje'}
+        </div>
+      </div>
+      <Link
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        href={yeniProjeHref as any}
+        className="inline-flex items-center gap-2 bg-kx-red text-white text-[13px] font-semibold px-4 py-2.5 rounded-xl no-underline shadow-kx-red whitespace-nowrap self-start"
+      >
+        <span className="text-base leading-none">+</span> {yeniProjeLabel}
+      </Link>
+    </div>
   )
 }
 
-function getBadgeLabel(proje: ProjeListeRow, t: (key: string) => string): string {
-  const hikayeSayisi = proje.hikayeler?.[0]?.count ?? 0
-  if (hikayeSayisi > 0) return t('badge.hikayeHaritasi')
-  if (proje.durum === 'aktif') return t('badge.devamEdiyor')
-  return t('badge.yeni')
+/* ──────────────────────────────────────────────────────────────────
+   Empty state — uses repo's bosHal copy
+   ────────────────────────────────────────────────────────────────── */
+
+function EmptyState({ t, yeniProjeHref }: { t: Awaited<ReturnType<typeof getTranslations<'projeler'>>>; yeniProjeHref: string }) {
+  return (
+    <div className="bg-white rounded-2xl border border-kx-border flex flex-col items-center justify-center py-20 px-6 text-center">
+      <div className="grid place-items-center rounded-2xl mb-5 w-14 h-14 bg-kx-blue-soft">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+          <path
+            d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"
+            stroke="#2E75B6"
+            strokeWidth="1.6"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </div>
+      <p className="text-[16px] font-semibold text-kx-ink mb-2">{t('bosHal.baslik')}</p>
+      <p className="text-[13.5px] text-kx-muted mb-6 max-w-sm leading-[1.55]">{t('bosHal.aciklama')}</p>
+      <Link
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        href={yeniProjeHref as any}
+        className="inline-flex items-center bg-kx-red text-white text-[13px] font-semibold px-5 py-2.5 rounded-xl no-underline shadow-kx-red"
+      >
+        {t('bosHal.btn')}
+      </Link>
+    </div>
+  )
 }
+
+/* ──────────────────────────────────────────────────────────────────
+   Main page
+   ────────────────────────────────────────────────────────────────── */
 
 export default async function ProjelerPage() {
   const supabase = await createClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()
-
   const locale = await getLocale()
 
   if (!user) {
@@ -68,167 +108,68 @@ export default async function ProjelerPage() {
 
   const t = await getTranslations('projeler')
 
-  const [{ data: projeler, error: projelerHata }, planBilgisi] = await Promise.all([
-    supabase
-      .from('projeler')
-      .select('*')
-      .eq('kullanici_id', user!.id)
-      .order('olusturma_tarihi', { ascending: false }),
-    getKullaniciPlan(supabase, user!.id),
-  ])
+  const { data: projeler, error: projelerHata } = await supabase
+    .from('projeler')
+    .select('*')
+    .eq('kullanici_id', user!.id)
+    .order('olusturma_tarihi', { ascending: false })
 
   if (projelerHata) {
-    console.error('[ProjelerPage] Projeler sorgu hatası:', projelerHata)
+    console.error('[ProjelerPage] sorgu hatası:', projelerHata)
   }
 
   const liste = (projeler ?? []) as unknown as ProjeListeRow[]
 
+  const username =
+    (user?.user_metadata?.ad as string | undefined) ||
+    user?.email?.split('@')[0] ||
+    ''
+
+  // Hard navigate for new project — same legacy reason as the Navbar
+  const yeniProjeHref = locale === 'en' ? '/en/projects/new' : '/tr/projeler/yeni'
+
   return (
-    <main className="flex-1 bg-[#F9FAFB]">
-      <div className="max-w-[860px] mx-auto px-4 py-10 w-full">
+    <>
+      <Navbar />
+      <main className="flex-1 bg-kx-bg">
+        <div className="max-w-[1200px] mx-auto px-6 sm:px-8 py-8 pb-20 w-full">
 
-        {/* Plan bandı — Freemium ve Analyst için */}
-        {(planBilgisi.plan.kod === 'freemium' || planBilgisi.plan.kod === 'analyst') && (
-          <div className="mb-5 flex items-center justify-between rounded-lg bg-[#EEF4FB] border border-blue-100 px-4 py-2.5">
-            <span className="text-xs text-[#1F3864]">
-              <span className="font-semibold">{planBilgisi.plan.ad}</span>
-              {locale === 'tr' ? ' planındasınız' : ' plan active'}
-              {planBilgisi.plan.aylik_proje_limiti !== null && (
-                <span className="text-gray-500 ml-2">
-                  · {locale === 'tr' ? 'Bu ay' : 'This month'}{' '}
-                  {planBilgisi.abonelik?.aylik_proje_sayaci ?? 0}/{planBilgisi.plan.aylik_proje_limiti}{' '}
-                  {locale === 'tr' ? 'proje' : 'project(s)'}
-                </span>
-              )}
-            </span>
-            <Link href="/pricing" className="text-xs font-medium text-[#2E75B6] hover:underline shrink-0 ml-4">
-              {locale === 'tr' ? 'Planı Yükselt →' : 'Upgrade plan →'}
-            </Link>
-          </div>
-        )}
+          {projelerHata && (
+            <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+              {t('hataMesaji')}
+            </div>
+          )}
 
-        {/* Hata mesajı */}
-        {projelerHata && (
-          <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
-            {t('hataMesaji')}
-          </div>
-        )}
+          <DashboardHeader
+            username={username}
+            toplam={liste.length}
+            yeniProjeLabel={t('yeniProje').replace(/^\+\s*/, '')}
+            yeniProjeHref={yeniProjeHref}
+          />
 
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-[18px] font-semibold" style={{ color: '#1F3864' }}>
-            {t('baslik')}
-          </h1>
-          {liste.length > 0 && (
-            <Link
-              href="/projeler/yeni"
-              className="inline-flex items-center h-[34px] px-4 rounded-md text-white text-[12px] font-medium transition-colors hover:opacity-90"
-              style={{ backgroundColor: '#1F3864' }}
-            >
-              {t('yeniProje')}
-            </Link>
+          {liste.length === 0 ? (
+            <EmptyState t={t} yeniProjeHref={yeniProjeHref} />
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
+              {liste.map((proje) => (
+                <ProjeKarti
+                  key={proje.id}
+                  proje={proje}
+                  href={`/projeler/${proje.id}`}
+                  olusturmaTarihi={
+                    proje.olusturma_tarihi
+                      ? formatTarih(proje.olusturma_tarihi, locale)
+                      : ''
+                  }
+                  hikayeEtiketi={t('kart.hikayeSayisi')}
+                  dokumanEtiketi={t('kart.dokumanSayisi')}
+                  dilEtiketi={(proje.dil ?? 'TR').toUpperCase()}
+                />
+              ))}
+            </div>
           )}
         </div>
-
-        {/* Empty state */}
-        {liste.length === 0 ? (
-          <div
-            className="bg-white rounded-xl flex flex-col items-center justify-center py-16 px-6 text-center"
-            style={{ border: '0.5px solid #E5E7EB' }}
-          >
-            <div
-              className="flex items-center justify-center rounded-[10px] mb-4"
-              style={{ width: 52, height: 52, backgroundColor: '#EEF4FB' }}
-            >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"
-                  stroke="#2E75B6"
-                  strokeWidth="1.5"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </div>
-            <p className="text-[14px] font-semibold text-[#1F3864] mb-2">
-              {t('bosHal.baslik')}
-            </p>
-            <p className="text-[13px] text-gray-400 mb-6 max-w-xs leading-relaxed">
-              {t('bosHal.aciklama')}
-            </p>
-            <Link
-              href="/projeler/yeni"
-              className="inline-flex items-center h-[34px] px-4 rounded-md text-white text-[12px] font-medium transition-colors hover:opacity-90"
-              style={{ backgroundColor: '#1F3864' }}
-            >
-              {t('bosHal.btn')}
-            </Link>
-          </div>
-        ) : (
-          /* Project list */
-          <div className="flex flex-col gap-[4px]">
-            {liste.map((proje) => (
-              <Link
-                key={proje.id}
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                href={{ pathname: '/projeler/[id]', params: { id: proje.id } } as any}
-                className="flex items-center justify-between bg-white rounded-xl px-4 py-3.5 transition-colors hover:border-[#2E75B6]/30"
-                style={{ border: '0.5px solid #E5E7EB' }}
-              >
-                {/* Left: icon + name + date */}
-                <div className="flex items-center gap-3 min-w-0">
-                  <div
-                    className="flex items-center justify-center shrink-0"
-                    style={{
-                      width: 34,
-                      height: 34,
-                      backgroundColor: '#1F3864',
-                      borderRadius: 8,
-                    }}
-                  >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                      <path
-                        d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"
-                        fill="rgba(255,255,255,0.85)"
-                      />
-                    </svg>
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-[13px] font-[500] text-[#1F3864] truncate">
-                      {proje.ad}
-                    </p>
-                    <p className="text-[11px] text-gray-400 mt-0.5">
-                      {proje.olusturma_tarihi
-                        ? formatTarih(proje.olusturma_tarihi, locale)
-                        : ''}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Right: badge + arrow */}
-                <div className="flex items-center gap-2.5 shrink-0 ml-4">
-                  <ProjeBadge proje={proje} label={getBadgeLabel(proje, t)} />
-                  <svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 16 16"
-                    fill="none"
-                    aria-hidden="true"
-                  >
-                    <path
-                      d="M6 3l5 5-5 5"
-                      stroke="#9CA3AF"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </div>
-              </Link>
-            ))}
-          </div>
-        )}
-
-      </div>
-    </main>
+      </main>
+    </>
   )
 }

@@ -1,5 +1,7 @@
 import { getTranslations } from 'next-intl/server'
 import type { Metadata } from 'next'
+import AuthLayout from '@/components/ui/AuthLayout'
+import { Link } from '@/i18n/navigation'
 import SifreSifirlamaFormu from '@/components/SifreSifirlamaFormu'
 
 type Props = {
@@ -19,8 +21,15 @@ export default async function SifreSifirlamaPage({ searchParams }: Props) {
     params.error_code === 'otp_expired'
 
   return (
-    <main className="flex flex-col items-center justify-center flex-1 px-4 py-16">
+    <AuthLayout
+      variant="reset"
+      topRight={
+        <Link href="/giris" className="text-kx-ink font-medium no-underline hover:text-kx-blue transition-colors">
+          ← Giriş sayfasına dön
+        </Link>
+      }
+    >
       <SifreSifirlamaFormu expiredLink={expiredLink} />
-    </main>
+    </AuthLayout>
   )
 }

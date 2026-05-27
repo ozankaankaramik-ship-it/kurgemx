@@ -10,6 +10,7 @@ import { createClient } from '@/lib/supabase/client'
 import { DOKUMAN_TIPLERI } from '@/lib/dokuman-tipleri'
 import type { PlanBilgisi } from '@/lib/abonelik'
 import { planIzinVeriyor } from '@/lib/abonelik'
+import StepRail, { StepCard, BackgroundBanner, type StepState } from './StepRail'
 
 interface HikayeItem {
   no: string
@@ -699,7 +700,7 @@ function EkranIci({
   useEffect(() => {
     if (initialProjeIdRef.current === null && projeId !== null) {
       setBasariBannerGoster(true)
-      storyMapRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      document.getElementById('adim2')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
       const timer = setTimeout(() => setBasariBannerGoster(false), 8000)
       return () => clearTimeout(timer)
     }
@@ -710,7 +711,7 @@ function EkranIci({
   const [adim2HataMesaji, setAdim2HataMesaji] = useState<string | null>(null)
   const [adim2MesajIdx, setAdim2MesajIdx] = useState(0)
   const adim2IntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
-  const storyMapRef = useRef<HTMLDivElement>(null)
+  const storyMapRef = useRef<HTMLElement | null>(null)
   const topScrollRef = useRef<HTMLDivElement>(null)
   const bottomScrollRef = useRef<HTMLDivElement>(null)
   const [adim3Yukleniyor, setAdim3Yukleniyor] = useState(false)
@@ -1336,9 +1337,50 @@ function EkranIci({
     }
   }
 
+  // ── Adım durumları (StepRail için) ──
+  const steps: StepState[] = [
+    {
+      no: 1,
+      label: t('adim1.baslik'),
+      status: projeId ? 'done' : 'active',
+    },
+    {
+      no: 2,
+      label: t('adim2.baslik'),
+      status: adim2Yukleniyor ? 'running' : storyMapData ? 'done' : projeId ? 'active' : 'pending',
+      time: adim2Metrigi ? formatSure(adim2Metrigi.sure, projektDili ?? 'TR') : undefined,
+      progress: adim2Yukleniyor ? (adim2MesajIdx + 1) / 4 : undefined,
+    },
+    {
+      no: 3,
+      label: t('adim3.baslik'),
+      status: adim3Yukleniyor ? 'running' : isAnaliziData ? 'done' : storyMapData ? 'active' : 'pending',
+      time: adim3Metrigi ? formatSure(adim3Metrigi.sure, projektDili ?? 'TR') : undefined,
+      progress: adim3Yukleniyor ? (adim3MesajIdx + 1) / 5 : undefined,
+    },
+    {
+      no: 4,
+      label: t('adim4.baslik'),
+      status: adim4Yukleniyor ? 'running' : ctx.dokuman.prototype ? 'done' : isAnaliziData ? 'active' : 'pending',
+      time: adim4Metrigi ? formatSure(adim4Metrigi.sure, projektDili ?? 'TR') : undefined,
+    },
+    {
+      no: 5,
+      label: t('adim5.baslik'),
+      status: adim5Yukleniyor ? 'running' : ctx.dokuman.testScenarios ? 'done' : isAnaliziData ? 'active' : 'pending',
+      time: adim5Metrigi ? formatSure(adim5Metrigi.sure, projektDili ?? 'TR') : undefined,
+    },
+  ]
+  const activeAdimId = steps.find(s => s.status === 'active' || s.status === 'running')?.no
+
+  // Token + süre toplamları (StepRail footer kartı)
+  const metrigi = [adim2Metrigi, adim3Metrigi, adim4Metrigi, adim5Metrigi].filter(Boolean)
+  const toplamToken = metrigi.reduce((s, m) => s + (m?.token ?? 0), 0)
+  const toplamSure = metrigi.reduce((s, m) => s + (m?.sure ?? 0), 0)
+
   return (
     <main className="min-h-screen bg-gray-100">
-      <div className="max-w-4xl mx-auto px-4 py-10 w-full">
+      <div className="max-w-[1280px] mx-auto px-4 py-10 w-full">
 
         {/* Geri butonu + proje başlığı (mevcut proje görüntüleme) */}
         {backHref && backLabel && (
@@ -1362,21 +1404,29 @@ function EkranIci({
           </div>
         )}
 
-        <div>
+        <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr] gap-7 items-start">
+          <StepRail
+            steps={steps}
+            activeId={activeAdimId}
+            extrasYakinda={locale === 'tr' ? ['Kapsam dokümanı', 'Mimari doküman'] : ['Scope document', 'Architecture doc']}
+            tokenLine={toplamToken > 0 ? toplamToken.toLocaleString() : undefined}
+            sureLine={toplamSure > 0 ? formatSure(toplamSure, projektDili ?? 'TR') : undefined}
+          />
+          <div className="flex flex-col gap-4">
+
+          {/* ── Arka plan üretim banner'ı (Edit 5) ── */}
+          {(adim3Yukleniyor || adim4Yukleniyor) && (
+            <BackgroundBanner message={t('uretimNotu')} />
+          )}
 
           {/* ── Adım 1 ── */}
-          <div className="flex gap-6">
-            <div className="flex flex-col items-center">
-              <div className="w-9 h-9 rounded-full bg-[#1F3864] text-white flex items-center justify-center text-sm font-bold shrink-0">
-                1
-              </div>
-              <div className="w-px flex-1 bg-gray-200 mt-2" />
-            </div>
-            <div className="flex-1 pb-10 min-w-0">
-              <h2 className="text-base font-semibold text-[#1F3864] mb-4">
-                {t('adim1.baslik')}
-              </h2>
-              <div className={`rounded-xl p-6 ${projeId ? 'bg-white border border-gray-100' : 'bg-[#EEF4FB] border border-blue-100'}`}>
+          <StepCard
+            id="adim1"
+            no={1}
+            title={t('adim1.baslik')}
+            status={projeId ? 'done' : 'active'}
+            subtitle={projeId && projeBuyuklugu ? `${projeBuyuklugu === 'Küçük' ? t('adim1.kucuk') : projeBuyuklugu === 'Orta' ? t('adim1.orta') : t('adim1.buyuk')} · ${projektDili ?? 'TR'}` : undefined}
+          >
                 {projeId ? (
                   // Read-only: proje oluşturulduktan sonra
                   <div className="space-y-4">
@@ -1410,23 +1460,17 @@ function EkranIci({
                 ) : (
                   <Adim1Formu />
                 )}
-              </div>
-            </div>
-          </div>
+          </StepCard>
 
           {/* ── Adım 2 ── */}
-          <div ref={storyMapRef} className="flex gap-6">
-            <div className="flex flex-col items-center">
-              <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold shrink-0 ${adim2Aktif ? 'bg-[#1F3864] text-white' : 'bg-gray-200 text-gray-400'}`}>
-                2
-              </div>
-              <div className="w-px flex-1 bg-gray-200 mt-2" />
-            </div>
-            <div className="flex-1 pb-10 min-w-0">
-              <h2 className={`text-base font-semibold mb-4 ${adim2Aktif ? 'text-[#1F3864]' : 'text-gray-400'}`}>
-                {t('adim2.baslik')}
-              </h2>
-              <div className={`rounded-xl p-6 space-y-6 ${adim2Aktif ? 'bg-[#EEF4FB] border border-blue-100' : 'bg-white border border-gray-100'}`}>
+          <StepCard
+            id="adim2"
+            no={2}
+            title={t('adim2.baslik')}
+            status={adim2Yukleniyor ? 'running' : storyMapData ? 'done' : adim2Aktif ? 'active' : 'pending'}
+            time={adim2Metrigi && storyMapData ? formatSure(adim2Metrigi.sure, projektDili ?? 'TR') : undefined}
+          >
+            <div className="space-y-6">
                 {/* Proje oluşturma bildirimi */}
                 {basariBannerGoster && (
                   <div
@@ -1626,9 +1670,8 @@ function EkranIci({
                     />
                   )}
                 </div>
-              </div>
             </div>
-          </div>
+          </StepCard>
 
           {/* ── Sprint Planı ── */}
           {storyMapData && storyMapData.sprintPlani.length > 0 && (() => {
@@ -1732,14 +1775,14 @@ function EkranIci({
           )}
 
           {/* ── Adım 3 ── */}
-          <div className="flex gap-6">
-            <div className="flex flex-col items-center">
-              <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold shrink-0 ${adim3Aktif ? 'bg-[#1F3864] text-white' : 'bg-gray-200 text-gray-400'}`}>3</div>
-              <div className="w-px flex-1 bg-gray-200 mt-2" />
-            </div>
-            <div className="flex-1 pb-10 min-w-0">
-              <h2 className={`text-base font-semibold mb-4 ${adim3Aktif ? 'text-[#1F3864]' : 'text-gray-400'}`}>{t('adim3.baslik')}</h2>
-              <div className={`rounded-xl p-6 ${adim3Aktif ? 'bg-[#EEF4FB] border border-blue-100' : 'bg-white border border-gray-100'}`}>
+          <StepCard
+            id="adim3"
+            no={3}
+            title={t('adim3.baslik')}
+            status={adim3Yukleniyor ? 'running' : isAnaliziData ? 'done' : adim3Aktif ? 'active' : 'pending'}
+            time={adim3Metrigi && isAnaliziData ? formatSure(adim3Metrigi.sure, projektDili ?? 'TR') : undefined}
+          >
+            <div className="space-y-4">
                 {/* Buton / tarih satırı */}
                 <div className="space-y-2 mb-4">
                   <div className="flex items-center gap-3">
@@ -1869,19 +1912,18 @@ function EkranIci({
                     </div>
                   )
                 )}
-              </div>
             </div>
-          </div>
+          </StepCard>
 
           {/* ── Adım 4 ── */}
-          <div className="flex gap-6">
-            <div className="flex flex-col items-center">
-              <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold shrink-0 ${adim3Aktif ? 'bg-[#1F3864] text-white' : 'bg-gray-200 text-gray-400'}`}>4</div>
-              <div className="w-px flex-1 bg-gray-200 mt-2" />
-            </div>
-            <div className="flex-1 pb-10 min-w-0">
-              <h2 className={`text-base font-semibold mb-4 ${adim3Aktif ? 'text-[#1F3864]' : 'text-gray-400'}`}>{t('adim4.baslik')}</h2>
-              <div className={`rounded-xl p-6 ${adim3Aktif ? 'bg-[#EEF4FB] border border-blue-100' : 'bg-white border border-gray-100'}`}>
+          <StepCard
+            id="adim4"
+            no={4}
+            title={t('adim4.baslik')}
+            status={adim4Yukleniyor ? 'running' : ctx.dokuman.prototype ? 'done' : adim3Aktif ? 'active' : 'pending'}
+            time={adim4Metrigi && ctx.dokuman.prototype ? formatSure(adim4Metrigi.sure, projektDili ?? 'TR') : undefined}
+          >
+            <div className="space-y-4">
                 <div className="space-y-2 mb-4">
                   <div className="flex items-center gap-3 flex-wrap">
                     {ctx.dokuman.prototype && !adim4Yukleniyor ? (
@@ -2067,18 +2109,18 @@ function EkranIci({
                     </div>
                   </div>
                 )}
-              </div>
             </div>
-          </div>
+          </StepCard>
 
           {/* ── Adım 5 ── */}
-          <div className="flex gap-6">
-            <div className="flex flex-col items-center">
-              <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold shrink-0 ${adim5Aktif ? 'bg-[#1F3864] text-white' : 'bg-gray-200 text-gray-400'}`}>5</div>
-            </div>
-            <div className="flex-1 pb-10 min-w-0">
-              <h2 className={`text-base font-semibold mb-4 ${adim5Aktif ? 'text-[#1F3864]' : 'text-gray-400'}`}>{t('adim5.baslik')}</h2>
-              <div className={`rounded-xl p-6 ${adim5Aktif ? 'bg-[#EEF4FB] border border-blue-100' : 'bg-white border border-gray-100'}`}>
+          <StepCard
+            id="adim5"
+            no={5}
+            title={t('adim5.baslik')}
+            status={adim5Yukleniyor ? 'running' : ctx.dokuman.testScenarios ? 'done' : adim5Aktif ? 'active' : 'pending'}
+            time={adim5Metrigi && ctx.dokuman.testScenarios ? formatSure(adim5Metrigi.sure, projektDili ?? 'TR') : undefined}
+          >
+            <div className="space-y-4">
                 {(() => {
                   const testCases: TestCaseItem[] = (() => {
                     try { return (JSON.parse(ctx.dokuman.testScenarios ?? '{}') as { test_cases: TestCaseItem[] }).test_cases ?? [] }
@@ -2193,9 +2235,8 @@ function EkranIci({
                     </>
                   )
                 })()}
-              </div>
             </div>
-          </div>
+          </StepCard>
 
           {/* ── Tamamlayıcı Dokümanlar ── */}
           <div className="border-t-2 border-dashed border-gray-200 pt-8 mt-2">
@@ -2221,7 +2262,8 @@ function EkranIci({
             </div>
           </div>
 
-        </div>
+          </div>{/* /flex flex-col gap-4 */}
+        </div>{/* /grid */}
       </div>
       {projeId && (
         <p className="fixed bottom-2 right-3 text-[10px] text-gray-400 select-all cursor-text">

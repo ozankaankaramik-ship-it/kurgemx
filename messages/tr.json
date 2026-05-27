@@ -1,471 +1,584 @@
-{
-  "nav": {
-    "home": "Ana Sayfa",
-    "projeler": "Projelerim",
-    "newProject": "Yeni Proje",
-    "signIn": "Giriş Yap",
-    "getStarted": "Başla"
-  },
-  "home": {
-    "title": "Kurgemx'e Hoş Geldiniz",
-    "description": "Bu, Next.js ile oluşturulmuş çok dilli bir web uygulamasıdır.",
-    "getStarted": "Başlayın",
-    "sonProje": "Son proje"
-  },
-  "language": {
-    "switchTo": "Switch to English",
-    "code": "TR",
-    "name": "Türkçe"
-  },
-  "auth": {
-    "girisYap": "Giriş Yap",
-    "kayitOl": "Kayıt Ol",
-    "cikisYap": "Çıkış Yap",
-    "giris": {
-      "baslik": "Giriş Yap",
-      "altBaslik": "Hesabınıza giriş yapın",
-      "email": "E-posta",
-      "emailPlaceholder": "ornek@email.com",
-      "sifre": "Şifre",
-      "sifrePlaceholder": "••••••••",
-      "girisBtn": "Giriş Yap",
-      "googleBtn": "Google ile Giriş Yap",
-      "ayirici": "veya",
-      "sifremiUnuttum": "Şifremi unuttum",
-      "hesapYok": "Hesabınız yok mu?",
-      "kayitLink": "Kayıt olun",
-      "hatalar": {
-        "invalid_credentials": "E-posta veya şifre hatalı.",
-        "email_not_confirmed": "E-postanız henüz doğrulanmamış. Lütfen gelen kutunuzu kontrol edin.",
-        "genel": "Giriş yapılırken bir hata oluştu. Lütfen tekrar deneyin."
-      }
-    },
-    "sifreSifirlama": {
-      "baslik": "Şifremi Unuttum",
-      "altBaslik": "E-posta adresinizi girin, size sıfırlama bağlantısı gönderelim.",
-      "email": "E-posta",
-      "emailPlaceholder": "ornek@email.com",
-      "gonderBtn": "Sıfırlama Bağlantısı Gönder",
-      "geriDon": "Giriş sayfasına dön",
-      "basariMesaji": "Sıfırlama bağlantısı gönderildi! Lütfen e-postanızı kontrol edin.",
-      "hatalar": {
-        "user_not_found": "Bu e-posta adresiyle kayıtlı bir hesap bulunamadı.",
-        "genel": "Bir hata oluştu. Lütfen tekrar deneyin."
-      }
-    },
-    "sifreGuncelle": {
-      "baslik": "Yeni Şifre Belirle",
-      "altBaslik": "Lütfen yeni şifrenizi girin.",
-      "sifre": "Yeni Şifre",
-      "sifrePlaceholder": "En az 8 karakter",
-      "sifreTekrar": "Şifre Tekrar",
-      "sifreTekrarPlaceholder": "Şifrenizi tekrar girin",
-      "kaydetBtn": "Şifremi Güncelle",
-      "basariMesaji": "Şifreniz güncellendi! Giriş yapabilirsiniz.",
-      "girisLink": "Giriş sayfasına git",
-      "hatalar": {
-        "sifre_eslesmiyor": "Şifreler eşleşmiyor.",
-        "sifre_kisa": "Şifre en az 8 karakter olmalıdır.",
-        "oturum_yok": "Oturum bulunamadı. Lütfen şifre sıfırlama bağlantısını tekrar kullanın.",
-        "genel": "Bir hata oluştu. Lütfen tekrar deneyin."
-      }
-    },
-    "kayit": {
-      "baslik": "Hesap Oluştur",
-      "altBaslik": "Ücretsiz hesabınızı oluşturun",
-      "ad": "Ad",
-      "adPlaceholder": "Adınız",
-      "soyad": "Soyad",
-      "soyadPlaceholder": "Soyadınız",
-      "email": "E-posta",
-      "emailPlaceholder": "ornek@email.com",
-      "sifre": "Şifre",
-      "sifrePlaceholder": "En az 8 karakter",
-      "kvkk": "KVKK Aydınlatma Metnini okudum ve kişisel verilerimin işlenmesini kabul ediyorum.",
-      "kvkkZorunlu": "Kayıt olabilmek için KVKK metnini kabul etmelisiniz.",
-      "kayitBtn": "Kayıt Ol",
-      "googleBtn": "Google ile Kayıt Ol",
-      "ayirici": "veya",
-      "hesapVar": "Zaten hesabınız var mı?",
-      "girisLink": "Giriş yapın",
-      "emailGonderildi": "Doğrulama e-postası gönderildi! Lütfen gelen kutunuzu kontrol edin ve hesabınızı etkinleştirin.",
-      "hatalar": {
-        "kvkk_required": "Kayıt olabilmek için KVKK metnini kabul etmelisiniz.",
-        "user_exists": "Bu e-posta adresi zaten kayıtlı. Giriş yapmayı deneyin.",
-        "genel": "Kayıt olurken bir hata oluştu. Lütfen tekrar deneyin."
-      }
-    }
-  },
-  "yeniProje": {
-    "baslik": "Yeni Proje",
-    "ad": "Proje Adı",
-    "adPlaceholder": "Projenizin adını girin",
-    "aciklama": "Açıklama",
-    "aciklamaPlaceholder": "Projenizi kısaca açıklayın...",
-    "aciklamaYardim": "AI bu açıklamadan proje özeti üretecektir.",
-    "dil": "Proje Dili",
-    "kaynak": "Kaynak Doküman (İsteğe Bağlı)",
-    "kaynakYardim": "PDF, Word, Excel veya PowerPoint. Maks. 10MB.",
-    "olusturBtn": "Proje Oluştur",
-    "iptal": "İptal",
-    "karakter": "karakter",
-    "hatalar": {
-      "ad_zorunlu": "Proje adı zorunludur.",
-      "ad_uzun": "Proje adı en fazla 100 karakter olabilir.",
-      "dosya_buyuk": "Dosya 10MB'tan büyük olamaz.",
-      "dosya_format": "Sadece PDF, Word, Excel, PowerPoint dosyaları yüklenebilir.",
-      "dosya_yuklenemedi": "Dosya yüklenirken bir hata oluştu.",
-      "yetkisiz": "Oturum açılmamış.",
-      "genel": "Proje oluşturulurken bir hata oluştu. Lütfen tekrar deneyin."
-    },
-    "mujkerrer": {
-      "mesaj": "Bu adda bir projeniz zaten var.",
-      "devam": "Yine de Devam Et",
-      "degistir": "İsmi değiştirmek için yukarıdaki alana yazın."
-    }
-  },
-  "projeDetay": {
-    "baslik": "Proje Detayı",
-    "geri": "Projelerime Dön",
-    "olusturmaTarihi": "Oluşturma Tarihi",
-    "sonGuncelleme": "Son Güncelleme"
-  },
-  "projeler": {
-    "baslik": "Projelerim",
-    "yeniProje": "+ Yeni Proje",
-    "bosHal": {
-      "baslik": "Henüz projeniz yok",
-      "aciklama": "Yapay zeka destekli iş analizine başlamak için ilk projenizi oluşturun.",
-      "btn": "Yeni Proje Oluştur"
-    },
-    "kart": {
-      "hikayeSayisi": "hikaye",
-      "dokumanSayisi": "doküman"
-    },
-    "badge": {
-      "hikayeHaritasi": "Hikaye Haritası",
-      "devamEdiyor": "Devam Ediyor",
-      "yeni": "Yeni"
-    },
-    "daha": "Daha Fazla Göster",
-    "hataMesaji": "Projeler yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin."
-  },
-  "calismaEkrani": {
-    "dilDegistir": "English",
-    "saltOkunurBanner": "Salt okunur — bu proje arşivlendi.",
-    "pasifAdimNot": "Bu bölümü açmak için önceki adımı tamamlayın.",
-    "adim1": {
-      "baslik": "Proje Bilgileri",
-      "projeAdi": "Proje Adı",
-      "projeAdiPlaceholder": "Proje adını girin",
-      "aciklama": "Açıklama",
-      "aciklamaPlaceholder": "Projenizi kısaca açıklayın...",
-      "yzDetaylandir": "YZ ile Detaylandır",
-      "yzCikti": "Ayrıntılı Açıklama",
-      "shortDesc": "Açıklama",
-      "yzPlaceholder": "YZ tarafından oluşturulan açıklama burada görünecek...",
-      "olustur": "Proje Oluştur",
-      "olusturuluyor": "Oluşturuluyor...",
-      "yzOlusturuluyor": "Açıklama detaylandırılıyor...",
-      "olusturTooltip": "Projeyi oluşturmadan önce lütfen açıklamanızı YZ ile detaylandırın",
-      "yzDuzenleNot": "Projeyi oluşturmadan önce bu açıklamayı düzenleyebilirsiniz.",
-      "projeBuyuklugu": "Proje Büyüklüğü",
-      "kucuk": "Küçük",
-      "orta": "Orta",
-      "buyuk": "Büyük",
-      "kucukAlt": "1–5 hikaye · 1 hft – 2 ay",
-      "ortaAlt": "6–15 hikaye · 2 ay – 4 ay",
-      "buyukAlt": "16–40 hikaye · 4 ay ve üzeri",
-      "kucukHikaye": "1–5 hikaye",
-      "ortaHikaye": "6–15 hikaye",
-      "buyukHikaye": "16–40 hikaye",
-      "hatalar": {
-        "ad_zorunlu": "Proje adı zorunludur.",
-        "ad_uzun": "Proje adı en fazla 100 karakter olabilir.",
-        "yetkisiz": "Oturum açılmamış.",
-        "genel": "Bir hata oluştu. Lütfen tekrar deneyin."
-      }
-    },
-    "adim2": {
-      "baslik": "Hikaye Haritası",
-      "uret": "Hikaye Haritası Oluştur",
-      "tabloBos": "Hikaye haritası oluşturulunca burada görünecek.",
-      "surum": "Sürüm",
-      "destanPlaceholder1": "Destan 1",
-      "destanPlaceholder2": "Destan 2",
-      "nonFunctional": "İşlevsel Olmayan Gereksinimler",
-      "transition": "Geçiş Gereksinimleri",
-      "r1": "R1 — MVP",
-      "r2": "R2 — Geliştirme",
-      "r3": "R3 — İleri Düzey",
-      "sprintPlanBaslik": "Sprint Planı Özeti",
-      "sprintSutun1": "Sprint",
-      "sprintSutun2": "Odak Alanı",
-      "sprintSutun3": "Hikayeler",
-      "sprintSutun4": "Hikaye Sayısı",
-      "sprintSutun5": "Süre",
-      "genelOzetBaslik": "Genel Özet",
-      "ozetSutun1": "Sürüm",
-      "ozetSutun2": "Hikaye Sayısı",
-      "ozetSutun3": "Sprint Aralığı",
-      "ozetSutun4": "Sprint Sayısı",
-      "ozetSutun5": "Süre",
-      "exportExcel": "Excel'e Aktar",
-      "olusturuluyor": "Hikaye haritası oluşturuluyor...",
-      "scrollIpucu": "Tüm destanları görmek için kaydırın",
-      "hikayeHaritasiTarih": "Hikaye haritası oluşturuldu:"
-    },
-    "adim3": {
-      "baslik": "İş Analizi Dokümanı",
-      "uret": "Doküman Oluştur",
-      "olusturuluyor": "Dokümanlar oluşturuluyor...",
-      "r1": "R1 — MVP",
-      "r2": "R2 — Geliştirme",
-      "r3": "R3 — İleri Düzey",
-      "beklemede": "Beklemede",
-      "belgeTarih": "Doküman oluşturuldu:",
-      "indir": "İndir (.docx)",
-      "indirYakinBir": "Yakında kullanıma girecek",
-      "tokenLimiti": "Doküman token limitine ulaştı — içerik kısaltılmış olabilir.",
-      "bolumAnaliz": {
-        "bolum1": "Doküman başlığı ve genel bilgiler hazırlanıyor... (1/5)",
-        "r1": "R1 — MVP analiz ediliyor... (2/5)",
-        "r2": "R2 — İyileştirme analiz ediliyor... (3/5)",
-        "r3": "R3 — Gelişmiş analiz ediliyor... (4/5)",
-        "bolum345": "Sistem gereksinimleri ve etki analizi hazırlanıyor... (5/5)"
-      }
-    },
-    "adim4": {
-      "baslik": "Prototip",
-      "uret": "Prototip Oluştur",
-      "olusturuluyor": "Prototip oluşturuluyor...",
-      "indir": "İndir (.html)",
-      "yeniSekme": "Yeni Sekmede Aç",
-      "prototipOlusturuldu": "✓ Prototip oluşturuldu",
-      "isAnaliziGerekli": "Önce İş Analizi Dokümanı oluşturulmalıdır",
-      "yenidenUret": "Yeniden Üret"
-    },
-    "adim5": {
-      "baslik": "Test Senaryosu",
-      "uret": "Test Senaryosu Oluştur (.xlsx)",
-      "olusturuluyor": "Test senaryoları oluşturuluyor...",
-      "indir": "İndir (.xlsx)",
-      "olusturuldu": "test case oluşturuldu",
-      "sutun1": "Senaryo",
-      "sutun2": "Adımlar",
-      "sutun3": "Beklenen Sonuç",
-      "ornekS1": "Başarılı Giriş",
-      "ornekA1": "Giriş sayfasına git → Bilgileri gir → Giriş Yap'a tıkla",
-      "ornekB1": "Kontrol paneline yönlendirilir",
-      "ornekS2": "Başarısız Giriş",
-      "ornekA2": "Yanlış şifre gir → Giriş Yap'a tıkla",
-      "ornekB2": "Hata mesajı gösterilir",
-      "ornekS3": "Şifremi Unuttum",
-      "ornekA3": "Şifremi Unuttum'a tıkla → E-posta gir → Gönder",
-      "ornekB3": "Sıfırlama e-postası gönderildi"
-    },
-    "tamamlayici": {
-      "baslik": "Tamamlayıcı Dokümanlar",
-      "etiket": "İsteğe Bağlı",
-      "kapsam": "Kapsam Dokümanı",
-      "mimari": "Mimari Doküman",
-      "yakinda": "Yakında"
-    },
-    "projeOlustu": {
-      "baslik": "Proje başarıyla oluşturuldu!",
-      "aciklama": "Projeniz hazır. Devam etmek için hikaye haritanızı oluşturun."
-    },
-    "yenidenOlustur": "Yeniden Oluştur",
-    "uretimNotu": "Üretim arka planda devam ediyor. Bu sekmeyi kapatmadan başka işlerinize bakabilirsiniz.",
-    "uretimMetrigi": "Üretim süresi: {sure} · Tahmini token: ~{token}",
-    "kisaltmalar": {
-      "baslik": "Kısaltmalar",
-      "kod": "Kod",
-      "anlam": "Anlam",
-      "ornek": "Örnek",
-      "st": "Hikaye",
-      "sp": "Sprint",
-      "r": "Sürüm",
-      "ac": "Kabul Kriteri",
-      "br": "İş Kuralı",
-      "tc": "Test Senaryosu"
-    }
-  },
-  "landing": {
-    "meta": {
-      "title": "Yapay Zeka Destekli İş Analizi",
-      "description": "Yapay zeka ile hikaye haritaları, iş analizi dokümanları ve prototipler oluşturun. İş analistleri ve proje yöneticileri için.",
-      "keywords": "yapay zeka iş analizi, hikaye haritası oluşturucu, kullanıcı hikayesi haritalama, iş analisti aracı"
-    },
-    "hero": {
-      "title": "Yapay Zeka Destekli İş Analizi Platformu",
-      "subtitle": "Dakikalar içinde yapay zeka ile hikaye haritaları, iş analizi dokümanları ve prototipler oluşturun.",
-      "getStarted": "Ücretsiz Başla",
-      "signIn": "Giriş Yap"
-    },
-    "howItWorks": {
-      "title": "Nasıl Çalışır",
-      "step1Title": "Projenizi Açıklayın",
-      "step1Desc": "Proje adınızı ve kısa bir açıklama girin. Yapay zekamız bunu detaylı bir proje özetine dönüştürür.",
-      "step2Title": "Hikaye Haritası Oluşturun",
-      "step2Desc": "Yapay zeka destanlar, kullanıcı hikayeleri, sprint'ler ve sürüm planlaması ile eksiksiz hikaye haritası oluşturur.",
-      "step3Title": "Analiz ve Prototip Üretin",
-      "step3Desc": "Hikayelerinizden iş analizi dokümanlarını, tıklanabilir prototipi ve test senaryolarını tek tıkla oluşturun.",
-      "step4Title": "Dışa Aktarın ve Paylaşın",
-      "step4Desc": "Hikaye haritanızı Excel'e aktarın, ekibinizle paylaşın ve geliştirmeye başlayın."
-    },
-    "features": {
-      "title": "İhtiyacınız Olan Her Şey",
-      "storyMap": "Hikaye Haritası Oluşturma",
-      "storyMapDesc": "R1/R2/R3 sürüm planlamasıyla kapsamlı hikaye haritaları otomatik oluşturun.",
-      "bizAnalysis": "İş Analizi Dokümanları",
-      "bizAnalysisDesc": "Hikaye haritanızla uyumlu R1, R2, R3 iş analizi dokümanları üretin.",
-      "prototype": "Prototip Oluşturma",
-      "prototypeDesc": "Kullanıcı hikayelerinizden etkileşimli prototipler oluşturun.",
-      "testScenarios": "Test Senaryoları",
-      "testScenariosDesc": "Her kullanıcı hikayesi için detaylı test senaryoları oluşturun.",
-      "export": "Excel ve Word Dışa Aktarma",
-      "exportDesc": "Hikaye haritaları, dokümanlar ve test senaryolarını standart formatlarda dışa aktarın.",
-      "multilang": "Çoklu Dil Desteği",
-      "multilangDesc": "Türkçe veya İngilizce çalışın — yapay zeka içerikleri proje dilinizde üretir."
-    },
-    "footer": {
-      "copyright": "© 2026 KurgemX",
-      "privacy": "Gizlilik Politikası",
-      "terms": "Kullanım Şartları"
-    }
-  },
-  "dashboard": {
-    "welcome": "{name}, tekrar hoş geldiniz",
-    "recentProjects": "Son Projeler",
-    "noProjects": "Henüz projeniz yok.",
-    "newProject": "Yeni Proje",
-    "allProjects": "Tüm Projeler",
-    "created": "Oluşturuldu"
-  },
-  "footer": {
-    "copyright": "© 2026 KurgemX. Tüm hakları saklıdır.",
-    "brand": "Kurumsal Gelişim Merkezi (KURGEM)'in tescilli markasıdır.",
-    "about": "Hakkımızda",
-    "pricing": "Fiyatlandırma",
-    "terms": "Kullanım Koşulları",
-    "privacy": "Gizlilik Politikası",
-    "refund": "İade Politikası",
-    "salesAgreement": "Mesafeli Satış Sözleşmesi",
-    "payment": "Güvenli Ödeme"
-  },
-  "about": {
-    "baslik": "Hakkımızda",
-    "altBaslik": "Yapay zeka destekli iş analizi için doğru adres",
-    "s1Baslik": "KurgemX Nedir?",
-    "s1Icerik": "KurgemX, Kurumsal Gelişim Merkezi (KURGEM)'in tescilli markasıdır. 25 yılı aşkın sektör deneyimine sahip iş analizi, proje yönetimi ve yazılım geliştirme uzmanlarından oluşan ekibimiz tarafından geliştirilen KurgemX, iş analistleri ve yazılım ekipleri için yapay zeka destekli bir iş analizi platformudur.",
-    "s2Baslik": "Ne Yapıyoruz?",
-    "s2Icerik": "Hikaye haritası, iş analizi dokümanı, prototip ve test senaryosu üretimini yapay zeka ile otomatikleştiren KurgemX, Türkçe dil desteği ve TRY fiyatlandırmasıyla Türkiye pazarında öncü konumdadır.",
-    "s3Baslik": "Misyonumuz",
-    "s3Icerik": "İş analizi süreçlerini hızlandırmak, kaliteyi artırmak ve yazılım ekiplerinin daha verimli çalışmasını sağlamak.",
-    "iletisimBaslik": "İletişim",
-    "iletisim": "İletişim"
-  },
-  "salesAgreement": {
-    "baslik": "Mesafeli Satış Sözleşmesi",
-    "kanun": "6502 Sayılı Tüketicinin Korunması Hakkında Kanun Kapsamında",
-    "sonGuncelleme": "Son güncelleme: 20 Mayıs 2026",
-    "saticiBaslik": "Satıcı Bilgileri",
-    "s2Baslik": "2. Hizmetin Konusu",
-    "s2Icerik": "İşbu sözleşme, alıcının KurgemX platformuna dijital abonelik satın almasına ilişkin koşulları düzenlemektedir. Hizmet; hikaye haritası, iş analizi dokümanı, prototip ve test senaryosu oluşturma özelliklerini içeren SaaS (Yazılım Hizmet Olarak) modelinde sunulan dijital bir hizmettir.",
-    "s3Baslik": "3. Fiyatlandırma",
-    "s3Icerik": "Freemium: $0 — Aylık 1 küçük proje, maks. 5 hikaye\nStarter: $9/ay — Aylık 3 proje, maks. 15 hikaye\nPro: $29/ay — Aylık 10 proje, maks. 40 hikaye\nBelirtilen fiyatlar KDV dahildir. Fiyatlar USD cinsinden olup ödeme anındaki kur esas alınır.",
-    "s4Baslik": "4. Ödeme Koşulları",
-    "s4Icerik": "Ücretli abonelikler aylık dönemler halinde peşin olarak tahsil edilir. Ödeme, kayıt sırasında girilen kredi veya banka kartı aracılığıyla otomatik olarak alınır. Başarısız ödemelerde abonelik askıya alınabilir.",
-    "s5Baslik": "5. Cayma Hakkı",
-    "s5Icerik": "6502 Sayılı Kanun'un 49. maddesi uyarınca mesafeli sözleşmelerde tüketici 14 gün içinde cayma hakkına sahiptir. Ancak alıcının talebi ve onayı ile hizmetin ifasına başlanmış olması halinde cayma hakkı kullanılamaz. Abonelik aktivasyonu anında hizmet ifası başladığından, alıcı aktivasyon sırasında bu hususa dair açık onay vermektedir. Bu nedenle dijital içerik niteliğindeki bu hizmet için cayma hakkı uygulanmaz.",
-    "s6Baslik": "6. Abonelik İptali ve İade",
-    "s6Icerik": "Alıcı aboneliğini istediği zaman iptal edebilir. İptal, mevcut fatura döneminin sonunda geçerli olur; bu tarihe kadar tüm özelliklere erişim devam eder. Kullanılmayan süre için iade yapılmaz. Freemium plan ücretsiz olduğundan iade kapsamı dışındadır.",
-    "s7Baslik": "7. Uyuşmazlık Çözümü",
-    "s7Icerik": "İşbu sözleşmeden doğan uyuşmazlıklarda Türk hukuku uygulanır. İstanbul mahkemeleri ve icra daireleri yetkilidir.",
-    "iletisim": "İletişim"
-  },
-  "pricing": {
-    "baslik": "Fiyatlandırma",
-    "altBaslik": "Projenize uygun planı seçin.",
-    "enPopuler": "En Popüler",
-    "freemiumNot": "Ücretsiz başlayın, kredi kartı gerekmez.",
-    "teklifAl": "Teklif Al",
-    "soruMetni": "Sorularınız mı var?",
-    "planlar": {
-      "freemium": { "ad": "Freemium", "fiyat": "$0", "aylik": "/ ay" },
-      "analyst":  { "ad": "Analyst",  "fiyat": "$9", "aylik": "/ ay" },
-      "advanced": { "ad": "Advanced", "fiyat": "$29", "aylik": "/ ay" },
-      "enterprise": { "ad": "Enterprise" }
-    },
-    "bolumler": {
-      "kapsam":   "Proje Kapsamı",
-      "ai":       "AI Destekli Çıktılar",
-      "kurumsal": "Kurumsal Özellikler"
-    },
-    "satirlar": {
-      "projeAy":          "Proje / ay",
-      "kucukProje":       "Küçük proje (1–5 hikaye)",
-      "ortaProje":        "Orta proje (6–15 hikaye)",
-      "buyukProje":       "Büyük proje (16–40 hikaye)",
-      "hikayeHaritasi":   "Hikaye haritası",
-      "analizDokumani":   "Analiz dokümanı",
-      "prototip":         "Prototip üretimi",
-      "testSenaryosu":    "Test senaryosu",
-      "export":           "Dışa aktarım (Word / Excel / HTML)",
-      "dil":              "Türkçe / İngilizce çıktı",
-      "kullaniciYonetimi":"Kullanıcı yönetimi",
-      "faturalandirma":   "Merkezi faturalandırma",
-      "sso":              "SSO",
-      "sla":              "Kurumsal SLA ve destek"
-    },
-    "sinirsiz": "Sınırsız"
-  },
-  "terms": {
-    "baslik": "Kullanım Koşulları",
-    "sonGuncelleme": "Son güncelleme: 20 Mayıs 2025",
-    "giris": "KurgemX'i kullanarak aşağıdaki koşulları kabul etmiş sayılırsınız. Lütfen dikkatlice okuyunuz.",
-    "s1Baslik": "1. Hizmet Tanımı",
-    "s1Icerik": "KurgemX, KurgemX — Kurumsal Gelişim Merkezi (KURGEM) tarafından işletilen, yapay zeka destekli iş analizi ve prototipleme hizmeti sunan bir SaaS platformudur. Hizmet, abonelik modeli ile sunulmaktadır.",
-    "s2Baslik": "2. Hesap Sorumluluğu",
-    "s2Icerik": "Hesabınızın güvenliğinden ve hesabınız aracılığıyla gerçekleştirilen tüm işlemlerden yalnızca siz sorumlusunuzdur. Şifrenizi güvenli tutmanız ve yetkisiz erişim durumunda derhal support@kurgemx.com adresine bildirim yapmanız gerekmektedir.",
-    "s3Baslik": "3. Yapay Zeka ile Üretilen İçerikler",
-    "s3Icerik": "Platform, içerik üretiminde Anthropic'in Claude modeli gibi üçüncü taraf yapay zeka hizmetlerini kullanır. Üretilen içerikler bilgi amaçlı olup herhangi bir profesyonel tavsiye niteliği taşımaz. Bu içeriklerin doğruluğunu ve uygunluğunu değerlendirmek kullanıcının sorumluluğundadır.",
-    "s4Baslik": "4. Hizmetin Değiştirilmesi",
-    "s4Icerik": "KurgemX, platformun özelliklerini, fiyatlandırmasını veya hizmet koşullarını önceden bildirim yaparak değiştirme hakkını saklı tutar. Önemli değişiklikler en az 30 gün öncesinde e-posta ile duyurulacaktır.",
-    "s5Baslik": "5. Geçerli Hukuk",
-    "s5Icerik": "Bu koşullar Türk hukuku kapsamında değerlendirilir. Anlaşmazlıklarda İstanbul mahkemeleri yetkilidir.",
-    "iletisim": "İletişim"
-  },
-  "privacy": {
-    "baslik": "Gizlilik Politikası",
-    "sonGuncelleme": "Son güncelleme: 20 Mayıs 2025",
-    "giris": "KurgemX olarak gizliliğinize önem veriyoruz. Bu politika, hangi verileri topladığımızı ve nasıl kullandığımızı açıklar.",
-    "s1Baslik": "1. Toplanan Veriler",
-    "s1Icerik": "Ad, e-posta adresi ve proje içerikleri (hikayeler, kabul kriterleri, analiz metinleri) gibi veriler toplanmaktadır. Bu veriler yalnızca hizmetin sunulması amacıyla kullanılır.",
-    "s2Baslik": "2. Veri Depolama",
-    "s2Icerik": "Verileriniz Supabase altyapısında güvenli biçimde saklanmaktadır. Supabase, endüstri standardı şifreleme ve güvenlik önlemleri uygulamaktadır.",
-    "s3Baslik": "3. Üçüncü Taraf Paylaşımı",
-    "s3Icerik": "İçerik üretimi için proje verileriniz Anthropic API'ye iletilmektedir. Anthropic bu verileri model eğitimi amacıyla kullanmaz. Verileriniz reklam amaçlı veya diğer üçüncü taraflarla paylaşılmaz.",
-    "s4Baslik": "4. KVKK Uyumluluğu",
-    "s4Icerik": "Platform, 6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) kapsamında faaliyet göstermektedir. Verilerinizin işlenmesine ilişkin açık rıza, kayıt sürecinde alınmaktadır.",
-    "s5Baslik": "5. Veri Silme Hakkı",
-    "s5Icerik": "Hesabınızı ve tüm verilerinizi silmek için support@kurgemx.com adresine talep gönderebilirsiniz. Talepler en geç 30 iş günü içinde işleme alınır.",
-    "iletisim": "İletişim"
-  },
-  "refund": {
-    "baslik": "İade Politikası",
-    "sonGuncelleme": "Son güncelleme: 20 Mayıs 2025",
-    "giris": "KurgemX aboneliklerinde geçerli iade ve iptal politikası aşağıda açıklanmıştır.",
-    "s1Baslik": "1. İptal Sonrası Erişim",
-    "s1Icerik": "Aboneliğinizi iptal ettiğinizde, mevcut fatura döneminin sonuna kadar tüm özelliklere erişiminiz devam eder. İptal anında erişiminiz kesilmez.",
-    "s2Baslik": "2. Bir Sonraki Dönem",
-    "s2Icerik": "İptal işlemi, bir sonraki fatura döneminin başlamadan önce yapıldığı sürece, yeni dönem için herhangi bir ücret tahsil edilmez.",
-    "s3Baslik": "3. Kalan Süre İadesi",
-    "s3Icerik": "Kullanılmayan kalan süre için iade yapılmamaktadır. Abonelik ücretleri dönem başında peşin alınmaktadır.",
-    "s4Baslik": "4. Freemium Plan",
-    "s4Icerik": "Ücretsiz Freemium planı için iade politikası geçerli değildir.",
-    "soruMetni": "Sorularınız için",
-    "iletisim": "İletişim"
-  }
+﻿{
+    "nav":  {
+                "home":  "Ana Sayfa",
+                "projeler":  "Projelerim",
+                "newProject":  "Yeni Proje",
+                "signIn":  "Giriş Yap",
+                "getStarted":  "Başla",
+                "hakkimizda":  "Hakkımızda"
+            },
+    "home":  {
+                 "title":  "Kurgemx\u0027e Hoş Geldiniz",
+                 "description":  "Bu, Next.js ile oluşturulmuş çok dilli bir web uygulamasıdır.",
+                 "getStarted":  "Başlayın",
+                 "sonProje":  "Son proje"
+             },
+    "language":  {
+                     "switchTo":  "Switch to English",
+                     "code":  "TR",
+                     "name":  "Türkçe"
+                 },
+    "auth":  {
+                 "girisYap":  "Giriş Yap",
+                 "kayitOl":  "Kayıt Ol",
+                 "cikisYap":  "Çıkış Yap",
+                 "giris":  {
+                               "baslik":  "Giriş Yap",
+                               "altBaslik":  "Hesabınıza giriş yapın",
+                               "email":  "E-posta",
+                               "emailPlaceholder":  "ornek@email.com",
+                               "sifre":  "Şifre",
+                               "sifrePlaceholder":  "••••••••",
+                               "girisBtn":  "Giriş Yap",
+                               "googleBtn":  "Google ile Giriş Yap",
+                               "ayirici":  "veya",
+                               "sifremiUnuttum":  "Şifremi unuttum",
+                               "hesapYok":  "Hesabınız yok mu?",
+                               "kayitLink":  "Kayıt olun",
+                               "hatalar":  {
+                                               "invalid_credentials":  "E-posta veya şifre hatalı.",
+                                               "email_not_confirmed":  "E-postanız henüz doğrulanmamış. Lütfen gelen kutunuzu kontrol edin.",
+                                               "genel":  "Giriş yapılırken bir hata oluştu. Lütfen tekrar deneyin."
+                                           }
+                           },
+                 "sifreSifirlama":  {
+                                        "baslik":  "Şifremi Unuttum",
+                                        "altBaslik":  "E-posta adresinizi girin, size sıfırlama bağlantısı gönderelim.",
+                                        "email":  "E-posta",
+                                        "emailPlaceholder":  "ornek@email.com",
+                                        "gonderBtn":  "Sıfırlama Bağlantısı Gönder",
+                                        "geriDon":  "Giriş sayfasına dön",
+                                        "basariMesaji":  "Sıfırlama bağlantısı gönderildi! Lütfen e-postanızı kontrol edin.",
+                                        "hatalar":  {
+                                                        "user_not_found":  "Bu e-posta adresiyle kayıtlı bir hesap bulunamadı.",
+                                                        "genel":  "Bir hata oluştu. Lütfen tekrar deneyin."
+                                                    }
+                                    },
+                 "sifreGuncelle":  {
+                                       "baslik":  "Yeni Şifre Belirle",
+                                       "altBaslik":  "Lütfen yeni şifrenizi girin.",
+                                       "sifre":  "Yeni Şifre",
+                                       "sifrePlaceholder":  "En az 8 karakter",
+                                       "sifreTekrar":  "Şifre Tekrar",
+                                       "sifreTekrarPlaceholder":  "Şifrenizi tekrar girin",
+                                       "kaydetBtn":  "Şifremi Güncelle",
+                                       "basariMesaji":  "Şifreniz güncellendi! Giriş yapabilirsiniz.",
+                                       "girisLink":  "Giriş sayfasına git",
+                                       "hatalar":  {
+                                                       "sifre_eslesmiyor":  "Şifreler eşleşmiyor.",
+                                                       "sifre_kisa":  "Şifre en az 8 karakter olmalıdır.",
+                                                       "oturum_yok":  "Oturum bulunamadı. Lütfen şifre sıfırlama bağlantısını tekrar kullanın.",
+                                                       "genel":  "Bir hata oluştu. Lütfen tekrar deneyin."
+                                                   }
+                                   },
+                 "kayit":  {
+                               "baslik":  "Hesap Oluştur",
+                               "altBaslik":  "Ücretsiz hesabınızı oluşturun",
+                               "ad":  "Ad",
+                               "adPlaceholder":  "Adınız",
+                               "soyad":  "Soyad",
+                               "soyadPlaceholder":  "Soyadınız",
+                               "email":  "E-posta",
+                               "emailPlaceholder":  "ornek@email.com",
+                               "sifre":  "Şifre",
+                               "sifrePlaceholder":  "En az 8 karakter",
+                               "kvkk":  "KVKK Aydınlatma Metnini okudum ve kişisel verilerimin işlenmesini kabul ediyorum.",
+                               "kvkkZorunlu":  "Kayıt olabilmek için KVKK metnini kabul etmelisiniz.",
+                               "kayitBtn":  "Kayıt Ol",
+                               "googleBtn":  "Google ile Kayıt Ol",
+                               "ayirici":  "veya",
+                               "hesapVar":  "Zaten hesabınız var mı?",
+                               "girisLink":  "Giriş yapın",
+                               "emailGonderildi":  "Doğrulama e-postası gönderildi! Lütfen gelen kutunuzu kontrol edin ve hesabınızı etkinleştirin.",
+                               "hatalar":  {
+                                               "kvkk_required":  "Kayıt olabilmek için KVKK metnini kabul etmelisiniz.",
+                                               "user_exists":  "Bu e-posta adresi zaten kayıtlı. Giriş yapmayı deneyin.",
+                                               "genel":  "Kayıt olurken bir hata oluştu. Lütfen tekrar deneyin."
+                                           }
+                           }
+             },
+    "yeniProje":  {
+                      "baslik":  "Yeni Proje",
+                      "ad":  "Proje Adı",
+                      "adPlaceholder":  "Projenizin adını girin",
+                      "aciklama":  "Açıklama",
+                      "aciklamaPlaceholder":  "Projenizi kısaca açıklayın...",
+                      "aciklamaYardim":  "AI bu açıklamadan proje özeti üretecektir.",
+                      "dil":  "Proje Dili",
+                      "kaynak":  "Kaynak Doküman (İsteğe Bağlı)",
+                      "kaynakYardim":  "PDF, Word, Excel veya PowerPoint. Maks. 10MB.",
+                      "olusturBtn":  "Proje Oluştur",
+                      "iptal":  "İptal",
+                      "karakter":  "karakter",
+                      "hatalar":  {
+                                      "ad_zorunlu":  "Proje adı zorunludur.",
+                                      "ad_uzun":  "Proje adı en fazla 100 karakter olabilir.",
+                                      "dosya_buyuk":  "Dosya 10MB\u0027tan büyük olamaz.",
+                                      "dosya_format":  "Sadece PDF, Word, Excel, PowerPoint dosyaları yüklenebilir.",
+                                      "dosya_yuklenemedi":  "Dosya yüklenirken bir hata oluştu.",
+                                      "yetkisiz":  "Oturum açılmamış.",
+                                      "genel":  "Proje oluşturulurken bir hata oluştu. Lütfen tekrar deneyin."
+                                  },
+                      "mujkerrer":  {
+                                        "mesaj":  "Bu adda bir projeniz zaten var.",
+                                        "devam":  "Yine de Devam Et",
+                                        "degistir":  "İsmi değiştirmek için yukarıdaki alana yazın."
+                                    },
+                      "adimRozeti":  "Adım 1 / 5",
+                      "sonraNe":  "Sonra ne olacak?",
+                      "tahminiToplam":  "Tahmini toplam: 12–18 dakika",
+                      "adimlar":  {
+                                      "1":  {
+                                                "ad":  "Proje bilgisi",
+                                                "sure":  "~1 dk"
+                                            },
+                                      "2":  {
+                                                "ad":  "Hikaye haritası",
+                                                "sure":  "~3 dk"
+                                            },
+                                      "3":  {
+                                                "ad":  "İş analizi",
+                                                "sure":  "~5 dk"
+                                            },
+                                      "4":  {
+                                                "ad":  "Prototip",
+                                                "sure":  "~6 dk"
+                                            },
+                                      "5":  {
+                                                "ad":  "Test senaryosu",
+                                                "sure":  "~3 dk"
+                                            }
+                                  }
+                  },
+    "projeDetay":  {
+                       "baslik":  "Proje Detayı",
+                       "geri":  "Projelerime Dön",
+                       "olusturmaTarihi":  "Oluşturma Tarihi",
+                       "sonGuncelleme":  "Son Güncelleme",
+                       "tumCiktilariGor":  "Tüm çıktıları gör",
+                       "olusturuldu":  "Oluşturuldu",
+                       "guncellendi":  "Güncellendi"
+                   },
+    "projeler":  {
+                     "baslik":  "Projelerim",
+                     "yeniProje":  "+ Yeni Proje",
+                     "bosHal":  {
+                                    "baslik":  "Henüz projeniz yok",
+                                    "aciklama":  "Yapay zeka destekli iş analizine başlamak için ilk projenizi oluşturun.",
+                                    "btn":  "Yeni Proje Oluştur"
+                                },
+                     "kart":  {
+                                  "hikayeSayisi":  "hikaye",
+                                  "dokumanSayisi":  "doküman"
+                              },
+                     "badge":  {
+                                   "hikayeHaritasi":  "Hikaye Haritası",
+                                   "devamEdiyor":  "Devam Ediyor",
+                                   "yeni":  "Yeni"
+                               },
+                     "daha":  "Daha Fazla Göster",
+                     "hataMesaji":  "Projeler yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin.",
+                     "hosgeldin":  "Tekrar hoş geldin, {name}"
+                 },
+    "calismaEkrani":  {
+                          "dilDegistir":  "English",
+                          "saltOkunurBanner":  "Salt okunur — bu proje arşivlendi.",
+                          "pasifAdimNot":  "Bu bölümü açmak için önceki adımı tamamlayın.",
+                          "adim1":  {
+                                        "baslik":  "Proje Bilgileri",
+                                        "projeAdi":  "Proje Adı",
+                                        "projeAdiPlaceholder":  "Proje adını girin",
+                                        "aciklama":  "Açıklama",
+                                        "aciklamaPlaceholder":  "Projenizi kısaca açıklayın...",
+                                        "yzDetaylandir":  "YZ ile Detaylandır",
+                                        "yzCikti":  "Ayrıntılı Açıklama",
+                                        "shortDesc":  "Açıklama",
+                                        "yzPlaceholder":  "YZ tarafından oluşturulan açıklama burada görünecek...",
+                                        "olustur":  "Proje Oluştur",
+                                        "olusturuluyor":  "Oluşturuluyor...",
+                                        "yzOlusturuluyor":  "Açıklama detaylandırılıyor...",
+                                        "olusturTooltip":  "Projeyi oluşturmadan önce lütfen açıklamanızı YZ ile detaylandırın",
+                                        "yzDuzenleNot":  "Projeyi oluşturmadan önce bu açıklamayı düzenleyebilirsiniz.",
+                                        "projeBuyuklugu":  "Proje Büyüklüğü",
+                                        "kucuk":  "Küçük",
+                                        "orta":  "Orta",
+                                        "buyuk":  "Büyük",
+                                        "kucukAlt":  "1–5 hikaye · 1 hft – 2 ay",
+                                        "ortaAlt":  "6–15 hikaye · 2 ay – 4 ay",
+                                        "buyukAlt":  "16–40 hikaye · 4 ay ve üzeri",
+                                        "kucukHikaye":  "1–5 hikaye",
+                                        "ortaHikaye":  "6–15 hikaye",
+                                        "buyukHikaye":  "16–40 hikaye",
+                                        "hatalar":  {
+                                                        "ad_zorunlu":  "Proje adı zorunludur.",
+                                                        "ad_uzun":  "Proje adı en fazla 100 karakter olabilir.",
+                                                        "yetkisiz":  "Oturum açılmamış.",
+                                                        "genel":  "Bir hata oluştu. Lütfen tekrar deneyin."
+                                                    }
+                                    },
+                          "adim2":  {
+                                        "baslik":  "Hikaye Haritası",
+                                        "uret":  "Hikaye Haritası Oluştur",
+                                        "tabloBos":  "Hikaye haritası oluşturulunca burada görünecek.",
+                                        "surum":  "Sürüm",
+                                        "destanPlaceholder1":  "Destan 1",
+                                        "destanPlaceholder2":  "Destan 2",
+                                        "nonFunctional":  "İşlevsel Olmayan Gereksinimler",
+                                        "transition":  "Geçiş Gereksinimleri",
+                                        "r1":  "R1 — MVP",
+                                        "r2":  "R2 — Geliştirme",
+                                        "r3":  "R3 — İleri Düzey",
+                                        "sprintPlanBaslik":  "Sprint Planı Özeti",
+                                        "sprintSutun1":  "Sprint",
+                                        "sprintSutun2":  "Odak Alanı",
+                                        "sprintSutun3":  "Hikayeler",
+                                        "sprintSutun4":  "Hikaye Sayısı",
+                                        "sprintSutun5":  "Süre",
+                                        "genelOzetBaslik":  "Genel Özet",
+                                        "ozetSutun1":  "Sürüm",
+                                        "ozetSutun2":  "Hikaye Sayısı",
+                                        "ozetSutun3":  "Sprint Aralığı",
+                                        "ozetSutun4":  "Sprint Sayısı",
+                                        "ozetSutun5":  "Süre",
+                                        "exportExcel":  "Excel\u0027e Aktar",
+                                        "olusturuluyor":  "Hikaye haritası oluşturuluyor...",
+                                        "scrollIpucu":  "Tüm destanları görmek için kaydırın",
+                                        "hikayeHaritasiTarih":  "Hikaye haritası oluşturuldu:"
+                                    },
+                          "adim3":  {
+                                        "baslik":  "İş Analizi Dokümanı",
+                                        "uret":  "Doküman Oluştur",
+                                        "olusturuluyor":  "Dokümanlar oluşturuluyor...",
+                                        "r1":  "R1 — MVP",
+                                        "r2":  "R2 — Geliştirme",
+                                        "r3":  "R3 — İleri Düzey",
+                                        "beklemede":  "Beklemede",
+                                        "belgeTarih":  "Doküman oluşturuldu:",
+                                        "indir":  "İndir (.docx)",
+                                        "indirYakinBir":  "Yakında kullanıma girecek",
+                                        "tokenLimiti":  "Doküman token limitine ulaştı — içerik kısaltılmış olabilir.",
+                                        "bolumAnaliz":  {
+                                                            "bolum1":  "Doküman başlığı ve genel bilgiler hazırlanıyor... (1/5)",
+                                                            "r1":  "R1 — MVP analiz ediliyor... (2/5)",
+                                                            "r2":  "R2 — İyileştirme analiz ediliyor... (3/5)",
+                                                            "r3":  "R3 — Gelişmiş analiz ediliyor... (4/5)",
+                                                            "bolum345":  "Sistem gereksinimleri ve etki analizi hazırlanıyor... (5/5)"
+                                                        }
+                                    },
+                          "adim4":  {
+                                        "baslik":  "Prototip",
+                                        "uret":  "Prototip Oluştur",
+                                        "olusturuluyor":  "Prototip oluşturuluyor...",
+                                        "indir":  "İndir (.html)",
+                                        "yeniSekme":  "Yeni Sekmede Aç",
+                                        "prototipOlusturuldu":  "✓ Prototip oluşturuldu",
+                                        "isAnaliziGerekli":  "Önce İş Analizi Dokümanı oluşturulmalıdır",
+                                        "yenidenUret":  "Yeniden Üret"
+                                    },
+                          "adim5":  {
+                                        "baslik":  "Test Senaryosu",
+                                        "uret":  "Test Senaryosu Oluştur (.xlsx)",
+                                        "olusturuluyor":  "Test senaryoları oluşturuluyor...",
+                                        "indir":  "İndir (.xlsx)",
+                                        "olusturuldu":  "test case oluşturuldu",
+                                        "sutun1":  "Senaryo",
+                                        "sutun2":  "Adımlar",
+                                        "sutun3":  "Beklenen Sonuç",
+                                        "ornekS1":  "Başarılı Giriş",
+                                        "ornekA1":  "Giriş sayfasına git → Bilgileri gir → Giriş Yap\u0027a tıkla",
+                                        "ornekB1":  "Kontrol paneline yönlendirilir",
+                                        "ornekS2":  "Başarısız Giriş",
+                                        "ornekA2":  "Yanlış şifre gir → Giriş Yap\u0027a tıkla",
+                                        "ornekB2":  "Hata mesajı gösterilir",
+                                        "ornekS3":  "Şifremi Unuttum",
+                                        "ornekA3":  "Şifremi Unuttum\u0027a tıkla → E-posta gir → Gönder",
+                                        "ornekB3":  "Sıfırlama e-postası gönderildi"
+                                    },
+                          "tamamlayici":  {
+                                              "baslik":  "Tamamlayıcı Dokümanlar",
+                                              "etiket":  "İsteğe Bağlı",
+                                              "kapsam":  "Kapsam Dokümanı",
+                                              "mimari":  "Mimari Doküman",
+                                              "yakinda":  "Yakında"
+                                          },
+                          "projeOlustu":  {
+                                              "baslik":  "Proje başarıyla oluşturuldu!",
+                                              "aciklama":  "Projeniz hazır. Devam etmek için hikaye haritanızı oluşturun."
+                                          },
+                          "yenidenOlustur":  "Yeniden Oluştur",
+                          "uretimNotu":  "Üretim arka planda devam ediyor. Bu sekmeyi kapatmadan başka işlerinize bakabilirsiniz.",
+                          "uretimMetrigi":  "Üretim süresi: {sure} · Tahmini token: ~{token}",
+                          "kisaltmalar":  {
+                                              "baslik":  "Kısaltmalar",
+                                              "kod":  "Kod",
+                                              "anlam":  "Anlam",
+                                              "ornek":  "Örnek",
+                                              "st":  "Hikaye",
+                                              "sp":  "Sprint",
+                                              "r":  "Sürüm",
+                                              "ac":  "Kabul Kriteri",
+                                              "br":  "İş Kuralı",
+                                              "tc":  "Test Senaryosu"
+                                          },
+                          "surec":  "Süreç",
+                          "buProjede":  "Bu projede",
+                          "tahminiToken":  "Tahmini token",
+                          "toplamSure":  "Toplam süre",
+                          "planKullanimi":  "Plan kullanımı",
+                          "tamamlayici2":  "Tamamlayıcı",
+                          "yakindaBadge":  "YAKINDA"
+                      },
+    "landing":  {
+                    "meta":  {
+                                 "title":  "Yapay Zeka Destekli İş Analizi",
+                                 "description":  "Yapay zeka ile hikaye haritaları, iş analizi dokümanları ve prototipler oluşturun. İş analistleri ve proje yöneticileri için.",
+                                 "keywords":  "yapay zeka iş analizi, hikaye haritası oluşturucu, kullanıcı hikayesi haritalama, iş analisti aracı"
+                             },
+                    "hero":  {
+                                 "title":  "Yapay Zeka Destekli İş Analizi Platformu",
+                                 "subtitle":  "Dakikalar içinde yapay zeka ile hikaye haritaları, iş analizi dokümanları ve prototipler oluşturun.",
+                                 "getStarted":  "Ücretsiz Başla",
+                                 "signIn":  "Giriş Yap"
+                             },
+                    "howItWorks":  {
+                                       "title":  "Nasıl Çalışır",
+                                       "step1Title":  "Projenizi Açıklayın",
+                                       "step1Desc":  "Proje adınızı ve kısa bir açıklama girin. Yapay zekamız bunu detaylı bir proje özetine dönüştürür.",
+                                       "step2Title":  "Hikaye Haritası Oluşturun",
+                                       "step2Desc":  "Yapay zeka destanlar, kullanıcı hikayeleri, sprint\u0027ler ve sürüm planlaması ile eksiksiz hikaye haritası oluşturur.",
+                                       "step3Title":  "Analiz ve Prototip Üretin",
+                                       "step3Desc":  "Hikayelerinizden iş analizi dokümanlarını, tıklanabilir prototipi ve test senaryolarını tek tıkla oluşturun.",
+                                       "step4Title":  "Dışa Aktarın ve Paylaşın",
+                                       "step4Desc":  "Hikaye haritanızı Excel\u0027e aktarın, ekibinizle paylaşın ve geliştirmeye başlayın."
+                                   },
+                    "features":  {
+                                     "title":  "İhtiyacınız Olan Her Şey",
+                                     "storyMap":  "Hikaye Haritası Oluşturma",
+                                     "storyMapDesc":  "R1/R2/R3 sürüm planlamasıyla kapsamlı hikaye haritaları otomatik oluşturun.",
+                                     "bizAnalysis":  "İş Analizi Dokümanları",
+                                     "bizAnalysisDesc":  "Hikaye haritanızla uyumlu R1, R2, R3 iş analizi dokümanları üretin.",
+                                     "prototype":  "Prototip Oluşturma",
+                                     "prototypeDesc":  "Kullanıcı hikayelerinizden etkileşimli prototipler oluşturun.",
+                                     "testScenarios":  "Test Senaryoları",
+                                     "testScenariosDesc":  "Her kullanıcı hikayesi için detaylı test senaryoları oluşturun.",
+                                     "export":  "Excel ve Word Dışa Aktarma",
+                                     "exportDesc":  "Hikaye haritaları, dokümanlar ve test senaryolarını standart formatlarda dışa aktarın.",
+                                     "multilang":  "Çoklu Dil Desteği",
+                                     "multilangDesc":  "Türkçe veya İngilizce çalışın — yapay zeka içerikleri proje dilinizde üretir."
+                                 },
+                    "footer":  {
+                                   "copyright":  "© 2026 KurgemX",
+                                   "privacy":  "Gizlilik Politikası",
+                                   "terms":  "Kullanım Şartları"
+                               },
+                    "logoStrip":  {
+                                      "kicker":  "1.200+ proje · 23.000+ hikaye · Türkiye\u0027nin lider iş analisti ekipleri kullanıyor"
+                                  },
+                    "useCases":  {
+                                     "kicker":  "— Kimler için",
+                                     "title":  "Üç farklı rol, aynı zaman kazancı.",
+                                     "personas":  {
+                                                      "analyst":  {
+                                                                      "role":  "İş Analisti",
+                                                                      "who":  "Banka, fintech, kurumsal",
+                                                                      "win":  "Workshop biter bitmez ilk taslak hazır.",
+                                                                      "before":  "3 gün",
+                                                                      "after":  "15 dakika"
+                                                                  },
+                                                      "pm":  {
+                                                                 "role":  "Ürün Yöneticisi",
+                                                                 "who":  "B2B SaaS, startup",
+                                                                 "win":  "R1/R2/R3 sürüm haritası ve sprint dağılımı hazır.",
+                                                                 "before":  "—",
+                                                                 "after":  "Sürüm planı"
+                                                             },
+                                                      "developer":  {
+                                                                        "role":  "Developer / Danışman",
+                                                                        "who":  "Freelance, butik danışmanlık",
+                                                                        "win":  "İlk görüşmede çalışan bir taslak gösteriyorum.",
+                                                                        "before":  "5 gün",
+                                                                        "after":  "1 görüşme"
+                                                                    }
+                                                  }
+                                 },
+                    "testimonial":  {
+                                        "quote":  "15 yıllık iş analizi kariyerimde, ilk kez bir araç \"doküman\" değil, düşünme partneri gibi davrandı. Workshop sonrası taslağı sıfırdan yazmak zorunda kalmıyorum.",
+                                        "author":  "Elif Sönmez",
+                                        "title":  "Kıdemli İş Analisti · Bir bankada",
+                                        "stats":  {
+                                                      "hikaye":  {
+                                                                     "n":  "23K+",
+                                                                     "label":  "üretilmiş hikaye"
+                                                                 },
+                                                      "proje":  {
+                                                                    "n":  "1.200+",
+                                                                    "label":  "tamamlanmış proje"
+                                                                },
+                                                      "hizli":  {
+                                                                    "n":  "6.4×",
+                                                                    "label":  "daha hızlı taslak"
+                                                                },
+                                                      "nps":  {
+                                                                  "n":  "94%",
+                                                                  "label":  "müşteri memnuniyeti"
+                                                              }
+                                                  }
+                                    },
+                    "finalCta":  {
+                                     "title1":  "İlk projeni",
+                                     "highlight":  "30 saniyede",
+                                     "title2":  "başlat.",
+                                     "subtitle":  "Bir cümle yaz — gerisini Kurgemx halletsin. Memnun kalmazsan, hiçbir yere bir şey ödemeden çıkabilirsin.",
+                                     "primary":  "Hesabımı şimdi aç",
+                                     "secondary":  "Demo iste",
+                                     "footnote":  "Kart gerekmez · 14 günlük profesyonel deneme · İptal tek tıkla"
+                                 }
+                },
+    "dashboard":  {
+                      "welcome":  "{name}, tekrar hoş geldiniz",
+                      "recentProjects":  "Son Projeler",
+                      "noProjects":  "Henüz projeniz yok.",
+                      "newProject":  "Yeni Proje",
+                      "allProjects":  "Tüm Projeler",
+                      "created":  "Oluşturuldu"
+                  },
+    "footer":  {
+                   "copyright":  "© 2026 KurgemX. Tüm hakları saklıdır.",
+                   "brand":  "Kurumsal Gelişim Merkezi (KURGEM)\u0027in tescilli markasıdır.",
+                   "about":  "Hakkımızda",
+                   "pricing":  "Fiyatlandırma",
+                   "terms":  "Kullanım Koşulları",
+                   "privacy":  "Gizlilik Politikası",
+                   "refund":  "İade Politikası",
+                   "salesAgreement":  "Mesafeli Satış Sözleşmesi",
+                   "payment":  "Güvenli Ödeme"
+               },
+    "about":  {
+                  "baslik":  "Hakkımızda",
+                  "altBaslik":  "Yapay zeka destekli iş analizi için doğru adres",
+                  "s1Baslik":  "KurgemX Nedir?",
+                  "s1Icerik":  "KurgemX, Kurumsal Gelişim Merkezi (KURGEM)\u0027in tescilli markasıdır. 25 yılı aşkın sektör deneyimine sahip iş analizi, proje yönetimi ve yazılım geliştirme uzmanlarından oluşan ekibimiz tarafından geliştirilen KurgemX, iş analistleri ve yazılım ekipleri için yapay zeka destekli bir iş analizi platformudur.",
+                  "s2Baslik":  "Ne Yapıyoruz?",
+                  "s2Icerik":  "Hikaye haritası, iş analizi dokümanı, prototip ve test senaryosu üretimini yapay zeka ile otomatikleştiren KurgemX, Türkçe dil desteği ve TRY fiyatlandırmasıyla Türkiye pazarında öncü konumdadır.",
+                  "s3Baslik":  "Misyonumuz",
+                  "s3Icerik":  "İş analizi süreçlerini hızlandırmak, kaliteyi artırmak ve yazılım ekiplerinin daha verimli çalışmasını sağlamak.",
+                  "iletisimBaslik":  "İletişim",
+                  "iletisim":  "İletişim"
+              },
+    "salesAgreement":  {
+                           "baslik":  "Mesafeli Satış Sözleşmesi",
+                           "kanun":  "6502 Sayılı Tüketicinin Korunması Hakkında Kanun Kapsamında",
+                           "sonGuncelleme":  "Son güncelleme: 20 Mayıs 2026",
+                           "saticiBaslik":  "Satıcı Bilgileri",
+                           "s2Baslik":  "2. Hizmetin Konusu",
+                           "s2Icerik":  "İşbu sözleşme, alıcının KurgemX platformuna dijital abonelik satın almasına ilişkin koşulları düzenlemektedir. Hizmet; hikaye haritası, iş analizi dokümanı, prototip ve test senaryosu oluşturma özelliklerini içeren SaaS (Yazılım Hizmet Olarak) modelinde sunulan dijital bir hizmettir.",
+                           "s3Baslik":  "3. Fiyatlandırma",
+                           "s3Icerik":  "Freemium: $0 — Aylık 1 küçük proje, maks. 5 hikaye\nStarter: $9/ay — Aylık 3 proje, maks. 15 hikaye\nPro: $29/ay — Aylık 10 proje, maks. 40 hikaye\nBelirtilen fiyatlar KDV dahildir. Fiyatlar USD cinsinden olup ödeme anındaki kur esas alınır.",
+                           "s4Baslik":  "4. Ödeme Koşulları",
+                           "s4Icerik":  "Ücretli abonelikler aylık dönemler halinde peşin olarak tahsil edilir. Ödeme, kayıt sırasında girilen kredi veya banka kartı aracılığıyla otomatik olarak alınır. Başarısız ödemelerde abonelik askıya alınabilir.",
+                           "s5Baslik":  "5. Cayma Hakkı",
+                           "s5Icerik":  "6502 Sayılı Kanun\u0027un 49. maddesi uyarınca mesafeli sözleşmelerde tüketici 14 gün içinde cayma hakkına sahiptir. Ancak alıcının talebi ve onayı ile hizmetin ifasına başlanmış olması halinde cayma hakkı kullanılamaz. Abonelik aktivasyonu anında hizmet ifası başladığından, alıcı aktivasyon sırasında bu hususa dair açık onay vermektedir. Bu nedenle dijital içerik niteliğindeki bu hizmet için cayma hakkı uygulanmaz.",
+                           "s6Baslik":  "6. Abonelik İptali ve İade",
+                           "s6Icerik":  "Alıcı aboneliğini istediği zaman iptal edebilir. İptal, mevcut fatura döneminin sonunda geçerli olur; bu tarihe kadar tüm özelliklere erişim devam eder. Kullanılmayan süre için iade yapılmaz. Freemium plan ücretsiz olduğundan iade kapsamı dışındadır.",
+                           "s7Baslik":  "7. Uyuşmazlık Çözümü",
+                           "s7Icerik":  "İşbu sözleşmeden doğan uyuşmazlıklarda Türk hukuku uygulanır. İstanbul mahkemeleri ve icra daireleri yetkilidir.",
+                           "iletisim":  "İletişim"
+                       },
+    "pricing":  {
+                    "baslik":  "Fiyatlandırma",
+                    "altBaslik":  "Projenize uygun planı seçin.",
+                    "enPopuler":  "En Popüler",
+                    "freemiumNot":  "Ücretsiz başlayın, kredi kartı gerekmez.",
+                    "teklifAl":  "Teklif Al",
+                    "soruMetni":  "Sorularınız mı var?",
+                    "planlar":  {
+                                    "freemium":  {
+                                                     "ad":  "Freemium",
+                                                     "fiyat":  "$0",
+                                                     "aylik":  "/ ay"
+                                                 },
+                                    "analyst":  {
+                                                    "ad":  "Analyst",
+                                                    "fiyat":  "$9",
+                                                    "aylik":  "/ ay"
+                                                },
+                                    "advanced":  {
+                                                     "ad":  "Advanced",
+                                                     "fiyat":  "$29",
+                                                     "aylik":  "/ ay"
+                                                 },
+                                    "enterprise":  {
+                                                       "ad":  "Enterprise"
+                                                   }
+                                },
+                    "bolumler":  {
+                                     "kapsam":  "Proje Kapsamı",
+                                     "ai":  "AI Destekli Çıktılar",
+                                     "kurumsal":  "Kurumsal Özellikler"
+                                 },
+                    "satirlar":  {
+                                     "projeAy":  "Proje / ay",
+                                     "kucukProje":  "Küçük proje (1–5 hikaye)",
+                                     "ortaProje":  "Orta proje (6–15 hikaye)",
+                                     "buyukProje":  "Büyük proje (16–40 hikaye)",
+                                     "hikayeHaritasi":  "Hikaye haritası",
+                                     "analizDokumani":  "Analiz dokümanı",
+                                     "prototip":  "Prototip üretimi",
+                                     "testSenaryosu":  "Test senaryosu",
+                                     "export":  "Dışa aktarım (Word / Excel / HTML)",
+                                     "dil":  "Türkçe / İngilizce çıktı",
+                                     "kullaniciYonetimi":  "Kullanıcı yönetimi",
+                                     "faturalandirma":  "Merkezi faturalandırma",
+                                     "sso":  "SSO",
+                                     "sla":  "Kurumsal SLA ve destek"
+                                 },
+                    "sinirsiz":  "Sınırsız"
+                },
+    "terms":  {
+                  "baslik":  "Kullanım Koşulları",
+                  "sonGuncelleme":  "Son güncelleme: 20 Mayıs 2025",
+                  "giris":  "KurgemX\u0027i kullanarak aşağıdaki koşulları kabul etmiş sayılırsınız. Lütfen dikkatlice okuyunuz.",
+                  "s1Baslik":  "1. Hizmet Tanımı",
+                  "s1Icerik":  "KurgemX, KurgemX — Kurumsal Gelişim Merkezi (KURGEM) tarafından işletilen, yapay zeka destekli iş analizi ve prototipleme hizmeti sunan bir SaaS platformudur. Hizmet, abonelik modeli ile sunulmaktadır.",
+                  "s2Baslik":  "2. Hesap Sorumluluğu",
+                  "s2Icerik":  "Hesabınızın güvenliğinden ve hesabınız aracılığıyla gerçekleştirilen tüm işlemlerden yalnızca siz sorumlusunuzdur. Şifrenizi güvenli tutmanız ve yetkisiz erişim durumunda derhal support@kurgemx.com adresine bildirim yapmanız gerekmektedir.",
+                  "s3Baslik":  "3. Yapay Zeka ile Üretilen İçerikler",
+                  "s3Icerik":  "Platform, içerik üretiminde Anthropic\u0027in Claude modeli gibi üçüncü taraf yapay zeka hizmetlerini kullanır. Üretilen içerikler bilgi amaçlı olup herhangi bir profesyonel tavsiye niteliği taşımaz. Bu içeriklerin doğruluğunu ve uygunluğunu değerlendirmek kullanıcının sorumluluğundadır.",
+                  "s4Baslik":  "4. Hizmetin Değiştirilmesi",
+                  "s4Icerik":  "KurgemX, platformun özelliklerini, fiyatlandırmasını veya hizmet koşullarını önceden bildirim yaparak değiştirme hakkını saklı tutar. Önemli değişiklikler en az 30 gün öncesinde e-posta ile duyurulacaktır.",
+                  "s5Baslik":  "5. Geçerli Hukuk",
+                  "s5Icerik":  "Bu koşullar Türk hukuku kapsamında değerlendirilir. Anlaşmazlıklarda İstanbul mahkemeleri yetkilidir.",
+                  "iletisim":  "İletişim"
+              },
+    "privacy":  {
+                    "baslik":  "Gizlilik Politikası",
+                    "sonGuncelleme":  "Son güncelleme: 20 Mayıs 2025",
+                    "giris":  "KurgemX olarak gizliliğinize önem veriyoruz. Bu politika, hangi verileri topladığımızı ve nasıl kullandığımızı açıklar.",
+                    "s1Baslik":  "1. Toplanan Veriler",
+                    "s1Icerik":  "Ad, e-posta adresi ve proje içerikleri (hikayeler, kabul kriterleri, analiz metinleri) gibi veriler toplanmaktadır. Bu veriler yalnızca hizmetin sunulması amacıyla kullanılır.",
+                    "s2Baslik":  "2. Veri Depolama",
+                    "s2Icerik":  "Verileriniz Supabase altyapısında güvenli biçimde saklanmaktadır. Supabase, endüstri standardı şifreleme ve güvenlik önlemleri uygulamaktadır.",
+                    "s3Baslik":  "3. Üçüncü Taraf Paylaşımı",
+                    "s3Icerik":  "İçerik üretimi için proje verileriniz Anthropic API\u0027ye iletilmektedir. Anthropic bu verileri model eğitimi amacıyla kullanmaz. Verileriniz reklam amaçlı veya diğer üçüncü taraflarla paylaşılmaz.",
+                    "s4Baslik":  "4. KVKK Uyumluluğu",
+                    "s4Icerik":  "Platform, 6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) kapsamında faaliyet göstermektedir. Verilerinizin işlenmesine ilişkin açık rıza, kayıt sürecinde alınmaktadır.",
+                    "s5Baslik":  "5. Veri Silme Hakkı",
+                    "s5Icerik":  "Hesabınızı ve tüm verilerinizi silmek için support@kurgemx.com adresine talep gönderebilirsiniz. Talepler en geç 30 iş günü içinde işleme alınır.",
+                    "iletisim":  "İletişim"
+                },
+    "refund":  {
+                   "baslik":  "İade Politikası",
+                   "sonGuncelleme":  "Son güncelleme: 20 Mayıs 2025",
+                   "giris":  "KurgemX aboneliklerinde geçerli iade ve iptal politikası aşağıda açıklanmıştır.",
+                   "s1Baslik":  "1. İptal Sonrası Erişim",
+                   "s1Icerik":  "Aboneliğinizi iptal ettiğinizde, mevcut fatura döneminin sonuna kadar tüm özelliklere erişiminiz devam eder. İptal anında erişiminiz kesilmez.",
+                   "s2Baslik":  "2. Bir Sonraki Dönem",
+                   "s2Icerik":  "İptal işlemi, bir sonraki fatura döneminin başlamadan önce yapıldığı sürece, yeni dönem için herhangi bir ücret tahsil edilmez.",
+                   "s3Baslik":  "3. Kalan Süre İadesi",
+                   "s3Icerik":  "Kullanılmayan kalan süre için iade yapılmamaktadır. Abonelik ücretleri dönem başında peşin alınmaktadır.",
+                   "s4Baslik":  "4. Freemium Plan",
+                   "s4Icerik":  "Ücretsiz Freemium planı için iade politikası geçerli değildir.",
+                   "soruMetni":  "Sorularınız için",
+                   "iletisim":  "İletişim"
+               }
 }
