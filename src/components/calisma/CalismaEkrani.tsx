@@ -1454,7 +1454,7 @@ function EkranIci({
                     {detailedDesc && (
                       <div>
                         <p className="text-xs font-medium text-gray-400 mb-1">{t('adim1.yzCikti')}</p>
-                        <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">{detailedDesc}</p>
+                        <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap" style={{ overflowWrap: 'break-word', wordBreak: 'break-word' }}>{detailedDesc}</p>
                       </div>
                     )}
                   </div>
@@ -2228,8 +2228,8 @@ function EkranIci({
                           </p>
                         )}
                       </div>
-                      <div className="rounded-lg border border-gray-100 overflow-hidden">
-                        <table className="w-full text-sm text-left">
+                      <div className="rounded-lg border border-gray-100 overflow-x-auto">
+                        <table className="w-full text-sm text-left" style={{ minWidth: 480 }}>
                           <thead className="bg-gray-50">
                             <tr>
                               <th className="px-4 py-2.5 text-xs font-semibold text-gray-400 uppercase tracking-wide w-1/4">{t('adim5.sutun1')}</th>
