@@ -135,7 +135,7 @@ export default function StepRail({
                 <span className="w-3.5 h-3.5 rounded-[3px] bg-kx-bg border border-dashed border-kx-border" />
                 <span className="flex-1 truncate">{x}</span>
                 <span className="text-[10px] px-1.5 py-0.5 bg-kx-amber-soft text-kx-amber-ink rounded font-bold">
-                  YAKINDA
+                  {isTR ? 'YAKINDA' : 'SOON'}
                 </span>
               </div>
             ))}

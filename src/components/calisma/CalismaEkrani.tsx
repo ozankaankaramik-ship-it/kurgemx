@@ -743,7 +743,7 @@ function EkranIci({
   const [kapsamHata, setKapsamHata] = useState(false)
   const [mimariYukleniyor, setMimariYukleniyor] = useState(false)
   const [mimariHata, setMimariHata] = useState(false)
-  const [tamEkranTablo, setTamEkranTablo] = useState<'hikaye' | 'sprint' | null>(null)
+  const [tamEkranTablo, setTamEkranTablo] = useState<'hikaye' | 'sprint' | 'ozet' | null>(null)
 
   useEffect(() => {
     const el = isAnaliziContainerRef.current
@@ -1557,7 +1557,7 @@ function EkranIci({
                     </button>
                   </div>
                 )}
-                <div className="relative w-full">
+                <div className="relative w-full overflow-hidden">
                   {/* Üst scroll bar — sadece içerik yok, phantom div ile tablo genişliğini taklit eder */}
                   {storyMapData && (
                     <div
@@ -1700,8 +1700,7 @@ function EkranIci({
                       </svg>
                     </button>
                   </div>
-                  <div className="overflow-x-auto w-full" style={{ touchAction: 'pan-x', WebkitOverflowScrolling: 'touch' }}>
-                  <div className="rounded-lg border border-gray-200 overflow-hidden bg-white">
+                  <div className="overflow-x-auto w-full rounded-lg border border-gray-200 bg-white" style={{ touchAction: 'pan-x', WebkitOverflowScrolling: 'touch' }}>
                     <table className="text-sm text-left" style={{ tableLayout: 'auto', minWidth: 'max-content' }}>
                       <thead className="bg-[#1F3864]">
                         <tr>
@@ -1728,7 +1727,6 @@ function EkranIci({
                       </tbody>
                     </table>
                   </div>
-                  </div>
                 </div>
               </div>
             )
@@ -1741,9 +1739,19 @@ function EkranIci({
               <div className="flex gap-0 md:gap-6">
                 <div className="hidden md:block w-9 shrink-0" />
                 <div className="flex-1 pb-10 min-w-0">
-                  <h3 className="text-sm font-semibold text-[#1F3864] mb-2">{t('adim2.genelOzetBaslik')}</h3>
-                  <div className="overflow-x-auto w-full" style={{ touchAction: 'pan-x', WebkitOverflowScrolling: 'touch' }}>
-                  <div className="rounded-lg border border-gray-200 overflow-hidden bg-white">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-sm font-semibold text-[#1F3864]">{t('adim2.genelOzetBaslik')}</h3>
+                    <button
+                      onClick={() => setTamEkranTablo('ozet')}
+                      title={locale === 'tr' ? 'Tam ekranda görüntüle' : 'View fullscreen'}
+                      className="inline-flex items-center gap-1 text-[11px] text-gray-400 hover:text-[#2E75B6] transition-colors shrink-0"
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/>
+                      </svg>
+                    </button>
+                  </div>
+                  <div className="overflow-x-auto w-full rounded-lg border border-gray-200 bg-white" style={{ touchAction: 'pan-x', WebkitOverflowScrolling: 'touch' }}>
                     <table className="text-sm text-left" style={{ tableLayout: 'auto', minWidth: 'max-content' }}>
                       <thead className="bg-[#1F3864]">
                         <tr>
@@ -1771,7 +1779,6 @@ function EkranIci({
                         })}
                       </tbody>
                     </table>
-                  </div>
                   </div>
                 </div>
               </div>
@@ -2269,7 +2276,7 @@ function EkranIci({
                 {t('tamamlayici.etiket')}
               </span>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="rounded-xl border border-gray-100 bg-white p-5" style={{ opacity: 0.6 }}>
                 <p className="text-sm font-medium text-gray-600 mb-2">{t('tamamlayici.kapsam')}</p>
                 <span style={{ background: '#FEF3C7', color: '#92400E', borderRadius: 12, fontSize: 11, padding: '2px 10px' }}>
@@ -2304,7 +2311,7 @@ function EkranIci({
             {/* Modal header */}
             <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100 shrink-0">
               <h3 className="text-sm font-semibold text-[#1F3864]">
-                {tamEkranTablo === 'hikaye' ? t('adim2.baslik') : t('adim2.sprintPlanBaslik')}
+                {tamEkranTablo === 'hikaye' ? t('adim2.baslik') : tamEkranTablo === 'sprint' ? t('adim2.sprintPlanBaslik') : t('adim2.genelOzetBaslik')}
               </h3>
               <button
                 onClick={() => setTamEkranTablo(null)}
@@ -2361,7 +2368,7 @@ function EkranIci({
                     </tbody>
                   </table>
                 </div>
-              ) : (
+              ) : tamEkranTablo === 'sprint' ? (
                 (() => {
                   const keys = Object.keys(storyMapData.sprintPlani[0] ?? {})
                   return (
@@ -2381,6 +2388,41 @@ function EkranIci({
                             const vals = Object.values(row)
                             return (
                               <tr key={idx} className={idx % 2 === 1 ? 'bg-gray-50/50' : ''}>
+                                {vals.map((val, i) => (
+                                  <td key={i} className="px-3 py-2 text-xs text-gray-700 border-r border-gray-100 last:border-r-0 whitespace-nowrap">
+                                    {String(val ?? '')}
+                                  </td>
+                                ))}
+                              </tr>
+                            )
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  )
+                })()
+              ) : (
+                (() => {
+                  const keys = Object.keys(storyMapData.genelOzet[0] ?? {})
+                  return (
+                    <div className="overflow-x-auto" style={{ WebkitOverflowScrolling: 'touch' }}>
+                      <table className="text-sm text-left" style={{ tableLayout: 'auto', minWidth: 'max-content' }}>
+                        <thead className="bg-[#1F3864]">
+                          <tr>
+                            {keys.map(k => (
+                              <th key={k} className="px-3 py-2 text-xs font-semibold text-white uppercase tracking-wide border-r border-white/20 last:border-r-0 whitespace-nowrap">
+                                {k}
+                              </th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                          {storyMapData.genelOzet.map((row, idx) => {
+                            const vals = Object.values(row)
+                            const ilkDeger = String(vals[0] ?? '').toLowerCase()
+                            const isToplam = ilkDeger.includes('toplam') || ilkDeger.includes('total')
+                            return (
+                              <tr key={idx} className={isToplam ? 'bg-gray-50 font-semibold' : idx % 2 === 1 ? 'bg-gray-50/50' : ''}>
                                 {vals.map((val, i) => (
                                   <td key={i} className="px-3 py-2 text-xs text-gray-700 border-r border-gray-100 last:border-r-0 whitespace-nowrap">
                                     {String(val ?? '')}
