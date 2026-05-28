@@ -1,13 +1,7 @@
 import type { ReactNode } from 'react'
+import { getLocale } from 'next-intl/server'
 import { Link } from '@/i18n/navigation'
 import KxPill from '@/components/ui/KxPill'
-
-/**
- * Pipeline preview card shown on `/projeler/yeni` (and embeddable elsewhere)
- * to communicate the 5-step flow with rough time estimates.
- *
- * Active step is highlighted blue.
- */
 
 type Step = { n: number; t: string; d: string }
 
@@ -19,7 +13,12 @@ const STEPS: Step[] = [
   { n: 5, t: 'Test senaryosu',   d: '~3 dk' },
 ]
 
-export default function PipelinePreview({ activeStep = 1 }: { activeStep?: number }) {
+export default async function PipelinePreview({ activeStep = 1 }: { activeStep?: number }) {
+  const locale = await getLocale()
+  const estimatedText = locale === 'tr'
+    ? 'Tahmini toplam: ~15 dk · Proje karmaşıklığına göre değişebilir.'
+    : 'Estimated total: ~15 min · May vary based on project complexity.'
+
   return (
     <div className="mt-8 p-6 bg-white rounded-2xl border border-kx-border">
       <div className="flex justify-between items-center mb-3.5">
@@ -27,7 +26,7 @@ export default function PipelinePreview({ activeStep = 1 }: { activeStep?: numbe
           Sonra ne olacak?
         </div>
         <div className="text-[11px] text-kx-muted font-mono">
-          Tahmini toplam: 12–18 dakika
+          {estimatedText}
         </div>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
@@ -63,10 +62,6 @@ export default function PipelinePreview({ activeStep = 1 }: { activeStep?: numbe
   )
 }
 
-/**
- * Tiny container used at the top of `/projeler/yeni`:
- * breadcrumb + "Adım 1 / 5" pill + heading.
- */
 export function YeniProjeHeader({
   breadcrumb,
   pill,

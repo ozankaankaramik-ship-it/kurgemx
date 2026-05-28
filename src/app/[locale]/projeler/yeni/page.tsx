@@ -2,7 +2,6 @@ import { redirect } from '@/i18n/navigation'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
 import type { Metadata } from 'next'
-import Navbar from '@/components/Navbar'
 import CalismaEkrani from '@/components/calisma/CalismaEkrani'
 import PipelinePreview, { YeniProjeHeader } from '@/components/calisma/PipelinePreview'
 
@@ -41,7 +40,6 @@ export default async function YeniProjePage() {
 
   return (
     <>
-      <Navbar />
       <main className="flex-1 bg-kx-bg">
         <div className="max-w-[820px] mx-auto px-6 sm:px-8 pt-8 pb-20 w-full">
 

@@ -5,7 +5,6 @@ import { Link } from '@/i18n/navigation'
 import { projeGetir, type ProjeDetayRow } from '@/lib/projects/actions'
 import SonProjeKaydet from '@/components/SonProjeKaydet'
 import CalismaEkrani from '@/components/calisma/CalismaEkrani'
-import Navbar from '@/components/Navbar'
 import KxPill from '@/components/ui/KxPill'
 import type { Metadata } from 'next'
 
@@ -166,13 +165,12 @@ export default async function ProjeDetayPage({ params }: Props) {
 
   if (dokError) console.error('Doküman hatası:', dokError)
 
-  const backHref = `/${locale}/projeler`
+  const backHref = '/projeler'
   const backLabel = `← ${t('geri')}`
 
   return (
     <>
       <SonProjeKaydet id={proje.id} ad={proje.ad} />
-      <Navbar />
       <ProjectHeader proje={proje} locale={locale} />
       <main className="flex-1 bg-kx-bg">
         <div className="max-w-[1280px] mx-auto px-8 py-6 pb-20">

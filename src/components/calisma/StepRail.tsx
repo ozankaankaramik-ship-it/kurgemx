@@ -233,7 +233,7 @@ export function StepCard({
   return (
     <section
       id={id}
-      className={`bg-white border border-kx-border rounded-2xl overflow-hidden scroll-mt-24 ${ring}`}
+      className={`bg-white border border-kx-border rounded-2xl overflow-x-hidden scroll-mt-24 ${ring}`}
     >
       <header className={`px-6 py-4.5 border-b border-kx-border-soft ${status === 'pending' ? 'bg-kx-bg' : 'bg-white'}`}>
         <div className="flex items-center gap-3.5">

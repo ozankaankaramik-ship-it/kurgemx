@@ -3,8 +3,6 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from '@/i18n/navigation'
 import type { Metadata } from 'next'
 
-import Navbar from '@/components/Navbar'
-import Footer from '@/components/Footer'
 import Hero from '@/components/landing/Hero'
 import LogoWall from '@/components/landing/LogoWall'
 import BeforeAfter from '@/components/landing/BeforeAfter'
@@ -39,19 +37,15 @@ export default async function HomePage() {
   }
 
   return (
-    <>
-      <Navbar />
-      <main className="flex-1">
-        <Hero />
-        <LogoWall />
-        <BeforeAfter />
-        <Features />
-        <UseCases />
-        <Testimonial />
-        <PricingTeaser />
-        <FinalCTA />
-      </main>
-      <Footer />
-    </>
+    <main className="flex-1">
+      <Hero />
+      <LogoWall />
+      <BeforeAfter />
+      <Features />
+      <UseCases />
+      <Testimonial />
+      <PricingTeaser />
+      <FinalCTA />
+    </main>
   )
 }

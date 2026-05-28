@@ -4,7 +4,6 @@ import { createClient } from '@/lib/supabase/server'
 import { Link } from '@/i18n/navigation'
 import type { Metadata } from 'next'
 import type { ProjeListeRow } from '@/lib/projects/actions'
-import Navbar from '@/components/Navbar'
 import KxPill from '@/components/ui/KxPill'
 import ProjeKarti from '@/components/ProjeKarti'
 
@@ -125,12 +124,10 @@ export default async function ProjelerPage() {
     user?.email?.split('@')[0] ||
     ''
 
-  // Hard navigate for new project — same legacy reason as the Navbar
-  const yeniProjeHref = locale === 'en' ? '/en/projects/new' : '/tr/projeler/yeni'
+  const yeniProjeHref = '/projeler/yeni'
 
   return (
     <>
-      <Navbar />
       <main className="flex-1 bg-kx-bg">
         <div className="max-w-[1200px] mx-auto px-6 sm:px-8 py-8 pb-20 w-full">
 

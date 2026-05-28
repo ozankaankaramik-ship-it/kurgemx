@@ -1543,14 +1543,11 @@ function EkranIci({
 
                 {/* ── Tablo 1: Hikaye Haritası ── */}
                 {storyMapData && (
-                  <div className="flex items-center justify-end gap-1 mb-1.5">
-                    <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                      <path d="M2 8h12M10 4l4 4-4 4" stroke="#9CA3AF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
+                  <div className="flex items-center gap-1 mb-1.5">
                     <span className="text-[11px] text-gray-400">{t('adim2.scrollIpucu')}</span>
                   </div>
                 )}
-                <div className="relative">
+                <div className="relative w-full">
                   {/* Üst scroll bar — sadece içerik yok, phantom div ile tablo genişliğini taklit eder */}
                   {storyMapData && (
                     <div
@@ -1570,7 +1567,8 @@ function EkranIci({
                   {/* Alt scroll bar — gerçek tablo */}
                   <div
                     ref={bottomScrollRef}
-                    className="overflow-x-auto rounded-lg border border-gray-200 bg-white"
+                    className="overflow-x-auto rounded-lg border border-gray-200 bg-white w-full"
+                    style={{ touchAction: 'pan-x' }}
                     onScroll={() => {
                       if (topScrollRef.current && bottomScrollRef.current &&
                           topScrollRef.current.scrollLeft !== bottomScrollRef.current.scrollLeft) {
@@ -1581,7 +1579,7 @@ function EkranIci({
                     {storyMapData ? (
                       <table
                         className="text-sm text-left"
-                        style={{ minWidth: `${((storyMapData.hikayeHaritasi?.destanlar ?? []).length + 1) * 200}px` }}
+                        style={{ minWidth: 'max-content' }}
                       >
                         <thead className="bg-[#1F3864]">
                           <tr>
@@ -1681,7 +1679,8 @@ function EkranIci({
                 <div className="w-9 shrink-0" />
                 <div className="flex-1 pb-4 min-w-0">
                   <h3 className="text-sm font-semibold text-[#1F3864] mb-2">{t('adim2.sprintPlanBaslik')}</h3>
-                  <div className="rounded-lg border border-gray-200 overflow-hidden bg-white inline-block">
+                  <div className="overflow-x-auto w-full" style={{ touchAction: 'pan-x' }}>
+                  <div className="rounded-lg border border-gray-200 overflow-hidden bg-white" style={{ minWidth: 'max-content' }}>
                     <table className="text-sm text-left">
                       <thead className="bg-[#1F3864]">
                         <tr>
@@ -1708,6 +1707,7 @@ function EkranIci({
                       </tbody>
                     </table>
                   </div>
+                  </div>
                 </div>
               </div>
             )
@@ -1721,7 +1721,8 @@ function EkranIci({
                 <div className="w-9 shrink-0" />
                 <div className="flex-1 pb-10 min-w-0">
                   <h3 className="text-sm font-semibold text-[#1F3864] mb-2">{t('adim2.genelOzetBaslik')}</h3>
-                  <div className="rounded-lg border border-gray-200 overflow-hidden bg-white inline-block">
+                  <div className="overflow-x-auto w-full" style={{ touchAction: 'pan-x' }}>
+                  <div className="rounded-lg border border-gray-200 overflow-hidden bg-white" style={{ minWidth: 'max-content' }}>
                     <table className="text-sm text-left">
                       <thead className="bg-[#1F3864]">
                         <tr>
@@ -1749,6 +1750,7 @@ function EkranIci({
                         })}
                       </tbody>
                     </table>
+                  </div>
                   </div>
                 </div>
               </div>
