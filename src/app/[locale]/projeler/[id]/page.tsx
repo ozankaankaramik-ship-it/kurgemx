@@ -100,19 +100,6 @@ function ProjectHeader({ proje, locale }: { proje: ProjeDetayRow; locale: string
             </div>
           </div>
 
-          <div className="flex gap-2 shrink-0">
-            {/* These are placeholders — the actual download buttons live inside
-                each step's StepCard action slot in CalismaEkrani. We keep a
-                lightweight "Tümünü indir" affordance here for parity with the
-                design. */}
-            <button className="bg-white border border-kx-border text-[13px] text-kx-body font-medium px-3.5 py-2.5 rounded-lg cursor-pointer flex items-center gap-1.5 hover:border-kx-blue transition-colors">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M3 17l6-6 4 4 8-8" />
-                <path d="M14 7h7v7" />
-              </svg>
-              {locale === 'tr' ? 'Tüm çıktıları gör' : 'View outputs'}
-            </button>
-          </div>
         </div>
       </div>
     </div>
