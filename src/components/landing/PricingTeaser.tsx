@@ -1,37 +1,126 @@
 import { Link } from '@/i18n/navigation'
 import KxPill from '@/components/ui/KxPill'
-import { getTranslations } from 'next-intl/server'
+import { getLocale } from 'next-intl/server'
 
-/**
- * 3-tier teaser pricing on the landing page.
- * Real plan data comes from translations under `pricing.planlar.{freemium,starter,pro}`
- * so this stays in sync with the detail page automatically.
- */
-const PLAN_KEYS = ['freemium', 'starter', 'pro'] as const
+type Plan = {
+  key: string
+  name: string
+  price: string
+  desc: string
+  features: string[]
+  popular: boolean
+}
+
+const PLANS_TR: Plan[] = [
+  {
+    key: 'freemium',
+    name: 'Freemium',
+    price: '$0',
+    desc: 'Başlamak için ideal. Kart bilgisi gerekmez.',
+    features: [
+      '1 proje / ay',
+      'Küçük projeler (1–5 hikaye)',
+      'Hikaye haritası',
+      'İş analizi dokümanı',
+    ],
+    popular: false,
+  },
+  {
+    key: 'analyst',
+    name: 'Analyst',
+    price: '$9',
+    desc: 'Bireysel analistler ve küçük ekipler için.',
+    features: [
+      '3 proje / ay',
+      'Orta projeler (6–15 hikaye)',
+      'Prototip üretimi',
+      'Word / Excel / HTML dışa aktarım',
+    ],
+    popular: true,
+  },
+  {
+    key: 'advanced',
+    name: 'Advanced',
+    price: '$29',
+    desc: 'Büyük projeler ve yoğun analistler için.',
+    features: [
+      '10 proje / ay',
+      'Büyük projeler (16–40 hikaye)',
+      'Test senaryosu üretimi',
+      'Tüm Analyst özellikleri',
+    ],
+    popular: false,
+  },
+]
+
+const PLANS_EN: Plan[] = [
+  {
+    key: 'freemium',
+    name: 'Freemium',
+    price: '$0',
+    desc: 'Perfect to get started. No credit card required.',
+    features: [
+      '1 project / month',
+      'Small projects (1–5 stories)',
+      'Story map',
+      'Business analysis document',
+    ],
+    popular: false,
+  },
+  {
+    key: 'analyst',
+    name: 'Analyst',
+    price: '$9',
+    desc: 'For individual analysts and small teams.',
+    features: [
+      '3 projects / month',
+      'Medium projects (6–15 stories)',
+      'Prototype generation',
+      'Word / Excel / HTML export',
+    ],
+    popular: true,
+  },
+  {
+    key: 'advanced',
+    name: 'Advanced',
+    price: '$29',
+    desc: 'For large projects and power analysts.',
+    features: [
+      '10 projects / month',
+      'Large projects (16–40 stories)',
+      'Test scenario generation',
+      'All Analyst features',
+    ],
+    popular: false,
+  },
+]
 
 export default async function PricingTeaser() {
-  const t = await getTranslations('pricing')
-
-  const plans = PLAN_KEYS.map((key) => ({
-    key,
-    name: t(`planlar.${key}.ad` as Parameters<typeof t>[0]),
-    price: t(`planlar.${key}.fiyat` as Parameters<typeof t>[0]),
-    desc:  t(`planlar.${key}.aciklama` as Parameters<typeof t>[0]),
-    features: (t.raw(`planlar.${key}.ozellikler`) as string[]).slice(0, 4),
-    popular: key === 'starter',
-  }))
+  const locale = await getLocale()
+  const plans = locale === 'tr' ? PLANS_TR : PLANS_EN
+  const headline = locale === 'tr'
+    ? 'İlk projen ücretsiz. Sonrası sana kalmış.'
+    : 'Your first project is free. The rest is up to you.'
+  const seeAll = locale === 'tr'
+    ? 'Karşılaştırma tablosunu ve SSS\'leri gör →'
+    : 'See comparison table and FAQs →'
+  const subtitle = locale === 'tr'
+    ? 'Projenize uygun planı seçin.'
+    : 'Choose the plan that fits your project.'
+  const sectionLabel = locale === 'tr' ? 'Fiyatlandırma' : 'Pricing'
+  const mostPopular = locale === 'tr' ? 'EN POPÜLER' : 'MOST POPULAR'
+  const tryCta = locale === 'tr' ? '14 gün ücretsiz dene' : 'Try free for 14 days'
+  const signUpCta = locale === 'tr' ? 'Hesap aç' : 'Sign up'
 
   return (
     <section className="bg-white py-22 px-8 border-t border-kx-border">
       <div className="max-w-[1180px] mx-auto">
         <div className="text-center mb-12">
-          <KxPill tone="blue">— {t('baslik')}</KxPill>
+          <KxPill tone="blue">— {sectionLabel}</KxPill>
           <h2 className="font-display text-[48px] tracking-[-0.03em] font-bold text-kx-ink mt-4 mb-3 leading-[1.1]">
-            İlk projen ücretsiz. Sonrası sana kalmış.
+            {headline}
           </h2>
-          <p className="text-[16px] text-kx-body">
-            {t('altBaslik')}
-          </p>
+          <p className="text-[16px] text-kx-body">{subtitle}</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -41,12 +130,14 @@ export default async function PricingTeaser() {
               <div
                 key={p.key}
                 className={`rounded-2xl p-7 relative ${
-                  isHl ? 'bg-kx-ink text-white shadow-[0_24px_56px_-20px_rgba(15,23,41,0.35)]' : 'bg-white text-kx-ink border border-kx-border'
+                  isHl
+                    ? 'bg-kx-ink text-white shadow-[0_24px_56px_-20px_rgba(15,23,41,0.35)]'
+                    : 'bg-white text-kx-ink border border-kx-border'
                 }`}
               >
                 {isHl && (
                   <div className="absolute -top-2.5 right-5 bg-kx-red text-white text-[11px] font-bold px-2.5 py-1 rounded-full tracking-wider">
-                    EN POPÜLER
+                    {mostPopular}
                   </div>
                 )}
                 <div className={`text-[13px] font-semibold tracking-[0.06em] uppercase mb-3 ${isHl ? 'text-white/60' : 'text-kx-muted'}`}>
@@ -54,17 +145,19 @@ export default async function PricingTeaser() {
                 </div>
                 <div className="flex items-baseline gap-1.5 mb-1.5">
                   <span className="font-display text-[44px] font-bold tracking-[-0.03em]">{p.price}</span>
-                  <span className={`text-[14px] ${isHl ? 'text-white/55' : 'text-kx-muted'}`}>/ ay</span>
+                  <span className={`text-[14px] ${isHl ? 'text-white/55' : 'text-kx-muted'}`}>/ {locale === 'tr' ? 'ay' : 'mo'}</span>
                 </div>
                 <div className={`text-[13px] mb-6 ${isHl ? 'text-white/70' : 'text-kx-muted'}`}>{p.desc}</div>
 
                 <Link
                   href="/kayit"
                   className={`block text-center px-4 py-3 rounded-xl text-[13px] font-semibold no-underline mb-6 ${
-                    isHl ? 'bg-kx-red text-white shadow-kx-red' : 'bg-white text-kx-ink border border-kx-ink'
+                    isHl
+                      ? 'bg-kx-red text-white shadow-kx-red'
+                      : 'bg-white text-kx-ink border border-kx-ink'
                   }`}
                 >
-                  {isHl ? '14 gün ücretsiz dene' : 'Hesap aç'}
+                  {isHl ? tryCta : signUpCta}
                 </Link>
 
                 <ul className="list-none p-0 m-0 flex flex-col gap-2.5">
@@ -86,7 +179,7 @@ export default async function PricingTeaser() {
             href={'/pricing' as any}
             className="text-[14px] text-kx-blue no-underline font-semibold hover:underline"
           >
-            Karşılaştırma tablosunu ve SSS'leri gör →
+            {seeAll}
           </Link>
         </div>
       </div>

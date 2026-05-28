@@ -1,7 +1,5 @@
 import { getTranslations } from 'next-intl/server'
 import type { Metadata } from 'next'
-import Navbar from '@/components/Navbar'
-import Footer from '@/components/Footer'
 import PageHero from '@/components/ui/PageHero'
 import KxPill from '@/components/ui/KxPill'
 
@@ -82,7 +80,6 @@ export default async function PricingPage() {
 
   return (
     <>
-      <Navbar />
       <main className="flex-1 bg-white">
         <PageHero
           kicker={t('baslik')}
@@ -247,7 +244,6 @@ export default async function PricingPage() {
           </div>
         </section>
       </main>
-      <Footer />
     </>
   )
 }
