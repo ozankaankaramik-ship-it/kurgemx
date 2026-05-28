@@ -1,4 +1,4 @@
-# KurgemX — İş Analizi Dokümanı Standartları
+# KurgemX — Gereksinim Analizi Dokümanı Standartları
 
 Bu dosyayı okumadan önce `genel.md` dosyasını oku ve oradaki kuralları da uygula.
 

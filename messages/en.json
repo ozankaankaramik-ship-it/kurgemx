@@ -139,7 +139,7 @@
                                                 "sure":  "~3 min"
                                             },
                                       "3":  {
-                                                "ad":  "Business analysis",
+                                                "ad":  "Requirements analysis",
                                                 "sure":  "~5 min"
                                             },
                                       "4":  {
@@ -248,7 +248,7 @@
                                         "hikayeHaritasiTarih":  "Story map generated on"
                                     },
                           "adim3":  {
-                                        "baslik":  "Business Analysis Document",
+                                        "baslik":  "Requirements Analysis Document",
                                         "uret":  "Generate Documents",
                                         "olusturuluyor":  "Generating documents...",
                                         "r1":  "R1 — MVP",
@@ -274,7 +274,7 @@
                                         "indir":  "Download (.html)",
                                         "yeniSekme":  "Open in New Tab",
                                         "prototipOlusturuldu":  "✓ Prototype generated",
-                                        "isAnaliziGerekli":  "Business Analysis Document must be generated first",
+                                        "isAnaliziGerekli":  "Requirements Analysis Document must be generated first",
                                         "yenidenUret":  "Regenerate"
                                     },
                           "adim5":  {
@@ -349,7 +349,7 @@
                                        "step2Title":  "Generate Story Map",
                                        "step2Desc":  "AI creates a complete story map with epics, user stories, sprints, and release planning.",
                                        "step3Title":  "Generate Analysis \u0026 Prototype",
-                                       "step3Desc":  "Turn your stories into business analysis documents, a clickable prototype, and test scenarios in one click.",
+                                       "step3Desc":  "Turn your stories into requirements analysis documents, a clickable prototype, and test scenarios in one click.",
                                        "step4Title":  "Export \u0026 Share",
                                        "step4Desc":  "Export your story map to Excel, share with your team, and start building."
                                    },
@@ -357,8 +357,8 @@
                                      "title":  "Everything You Need",
                                      "storyMap":  "Story Map Generation",
                                      "storyMapDesc":  "Automatically generate comprehensive story maps with R1/R2/R3 release planning.",
-                                     "bizAnalysis":  "Business Analysis Documents",
-                                     "bizAnalysisDesc":  "Generate R1, R2, R3 business analysis documents aligned with your story map.",
+                                     "bizAnalysis":  "Requirements Analysis Documents",
+                                     "bizAnalysisDesc":  "Generate R1, R2, R3 requirements analysis documents aligned with your story map.",
                                      "prototype":  "Prototype Creation",
                                      "prototypeDesc":  "Create interactive prototypes from your user stories.",
                                      "testScenarios":  "Test Scenarios",

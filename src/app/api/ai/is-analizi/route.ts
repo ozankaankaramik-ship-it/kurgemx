@@ -93,12 +93,12 @@ function bolum1Prompt(
 ): string {
   const isTR = projeDili === 'TR'
   const baslik = isTR
-    ? `${projeAdi} — İş Analizi Dokümanı`
-    : `${projeAdi} — Business Analysis Document`
+    ? `${projeAdi} — Gereksinim Analizi Dokümanı`
+    : `${projeAdi} — Requirements Analysis Document`
   const hikayeListesi = formatTumHikayeler(hh, projeDili)
 
   return isTR
-    ? `Aşağıdaki proje için iş analizi dokümanının SADECE BAŞLANGIÇ kısmını oluştur:
+    ? `Aşağıdaki proje için gereksinim analizi dokümanının SADECE BAŞLANGIÇ kısmını oluştur:
 - Doküman başlığı (H1)
 - Header bilgisi (KurgemX | Proje Adı | Doküman Adı formatında bir satır)
 - BÖLÜM 1: Doküman Genel Bilgileri (standartta tanımlı tüm alanlar)
@@ -123,7 +123,7 @@ HİKAYE HARİTASI (kapsanan hikayeler listesi için kullan):
 ${hikayeListesi}
 
 Yanıt olarak SADECE markdown formatında bu başlangıç kısmını döndür. JSON, kod bloğu veya ek açıklama ekleme. Sonunda "## Bölüm 2" başlığı YAZMA — sonraki istekte gelecek.`
-    : `Create ONLY the OPENING of the business analysis document for the project below:
+    : `Create ONLY the OPENING of the requirements analysis document for the project below:
 - Document title (H1)
 - Header line ("KurgemX | Project Name | Document Name" format)
 - SECTION 1: Document General Information (all fields defined in the standard)
@@ -192,7 +192,7 @@ function releasePrompt(
     : `\n\nSCOPE RULE:\n- Do not reference other releases or Sections 3/4/5.\n- Do NOT add the screen designs note, abbreviations table or footer — those come in the final request.`
 
   return isTR
-    ? `Aşağıdaki proje için iş analizi dokümanının ${release} — ${label} bölümünü oluştur.
+    ? `Aşağıdaki proje için gereksinim analizi dokümanının ${release} — ${label} bölümünü oluştur.
 
 ${bolum2Acilis}
 
@@ -211,7 +211,7 @@ ${release} HİKAYELERİ:
 ${hikayeMetni}
 
 Yanıt olarak SADECE markdown formatında bu bölümü döndür. JSON, kod bloğu veya ek açıklama ekleme.`
-    : `Create the ${release} — ${label} section of the business analysis document for the project below.
+    : `Create the ${release} — ${label} section of the requirements analysis document for the project below.
 
 ${bolum2Acilis}
 
@@ -247,7 +247,7 @@ function bolum345Prompt(
   const hikayeListesi = formatTumHikayeler(hh, projeDili)
 
   return isTR
-    ? `Aşağıdaki proje için iş analizi dokümanının KAPANIŞ bölümlerini üret:
+    ? `Aşağıdaki proje için gereksinim analizi dokümanının KAPANIŞ bölümlerini üret:
 
 1. Önce "### Ekran Tasarımları Notu" başlığı ve standarttaki not (blockquote):
    > **Ekran Tasarımları:** Bu dokümanda ekran mockup'ı yer almamaktadır. Tüm ekran tasarımları için KurgemX'te üretilen prototipe bakınız.
@@ -292,7 +292,7 @@ HİKAYE HARİTASI (etki analizi ve sistem gereksinimleri için referans):
 ${hikayeListesi}
 
 Yanıt olarak SADECE markdown formatında bu kapanış bölümlerini döndür. JSON, kod bloğu veya ek açıklama ekleme.`
-    : `Create the CLOSING sections of the business analysis document for the project below:
+    : `Create the CLOSING sections of the requirements analysis document for the project below:
 
 1. First "### Screen Designs Note" heading with the standard blockquote:
    > **Screen Designs:** This document does not include screen mockups. For all screen designs, refer to the prototype generated in KurgemX.
@@ -384,8 +384,8 @@ export async function POST(req: Request) {
 
   const bugun = new Date().toISOString().split('T')[0]
   const baslik = projeDili === 'TR'
-    ? `${projeAdi} — İş Analizi Dokümanı`
-    : `${projeAdi} — Business Analysis Document`
+    ? `${projeAdi} — Gereksinim Analizi Dokümanı`
+    : `${projeAdi} — Requirements Analysis Document`
 
   // Bölüme göre prompt seç
   let userPromptText: string

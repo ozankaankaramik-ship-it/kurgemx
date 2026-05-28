@@ -139,7 +139,7 @@
                                                 "sure":  "~3 dk"
                                             },
                                       "3":  {
-                                                "ad":  "İş analizi",
+                                                "ad":  "Gereksinim analizi",
                                                 "sure":  "~5 dk"
                                             },
                                       "4":  {
@@ -248,7 +248,7 @@
                                         "hikayeHaritasiTarih":  "Hikaye haritası oluşturuldu:"
                                     },
                           "adim3":  {
-                                        "baslik":  "İş Analizi Dokümanı",
+                                        "baslik":  "Gereksinim Analizi Dokümanı",
                                         "uret":  "Doküman Oluştur",
                                         "olusturuluyor":  "Dokümanlar oluşturuluyor...",
                                         "r1":  "R1 — MVP",
@@ -274,7 +274,7 @@
                                         "indir":  "İndir (.html)",
                                         "yeniSekme":  "Yeni Sekmede Aç",
                                         "prototipOlusturuldu":  "✓ Prototip oluşturuldu",
-                                        "isAnaliziGerekli":  "Önce İş Analizi Dokümanı oluşturulmalıdır",
+                                        "isAnaliziGerekli":  "Önce Gereksinim Analizi Dokümanı oluşturulmalıdır",
                                         "yenidenUret":  "Yeniden Üret"
                                     },
                           "adim5":  {
@@ -349,7 +349,7 @@
                                        "step2Title":  "Hikaye Haritası Oluşturun",
                                        "step2Desc":  "Yapay zeka destanlar, kullanıcı hikayeleri, sprint\u0027ler ve sürüm planlaması ile eksiksiz hikaye haritası oluşturur.",
                                        "step3Title":  "Analiz ve Prototip Üretin",
-                                       "step3Desc":  "Hikayelerinizden iş analizi dokümanlarını, tıklanabilir prototipi ve test senaryolarını tek tıkla oluşturun.",
+                                       "step3Desc":  "Hikayelerinizden gereksinim analizi dokümanlarını, tıklanabilir prototipi ve test senaryolarını tek tıkla oluşturun.",
                                        "step4Title":  "Dışa Aktarın ve Paylaşın",
                                        "step4Desc":  "Hikaye haritanızı Excel\u0027e aktarın, ekibinizle paylaşın ve geliştirmeye başlayın."
                                    },
@@ -357,8 +357,8 @@
                                      "title":  "İhtiyacınız Olan Her Şey",
                                      "storyMap":  "Hikaye Haritası Oluşturma",
                                      "storyMapDesc":  "R1/R2/R3 sürüm planlamasıyla kapsamlı hikaye haritaları otomatik oluşturun.",
-                                     "bizAnalysis":  "İş Analizi Dokümanları",
-                                     "bizAnalysisDesc":  "Hikaye haritanızla uyumlu R1, R2, R3 iş analizi dokümanları üretin.",
+                                     "bizAnalysis":  "Gereksinim Analizi Dokümanları",
+                                     "bizAnalysisDesc":  "Hikaye haritanızla uyumlu R1, R2, R3 gereksinim analizi dokümanları üretin.",
                                      "prototype":  "Prototip Oluşturma",
                                      "prototypeDesc":  "Kullanıcı hikayelerinizden etkileşimli prototipler oluşturun.",
                                      "testScenarios":  "Test Senaryoları",
