@@ -40,7 +40,7 @@ export default async function YeniProjePage() {
 
   return (
     <>
-      <main className="flex-1 bg-kx-bg">
+      <main className="flex-1 bg-kx-bg overflow-x-hidden max-w-full">
         <div className="max-w-[820px] mx-auto px-6 sm:px-8 pt-8 pb-20 w-full">
 
           <YeniProjeHeader
