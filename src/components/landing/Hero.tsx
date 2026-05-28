@@ -95,7 +95,7 @@ export default async function Hero() {
           <FloatingNote className="-top-3 -left-10" tone="amber">
             <strong>2 hafta → 12 dakika.</strong>
             <br />
-            Garanti bankası BA ekibi
+            Bir iş analisti ekibi
           </FloatingNote>
           <FloatingNote className="top-30 -right-12" tone="blue">
             18 hikaye, 3 sürüm, 27 kabul kriteri — hepsi <strong>tek tıkla</strong> üretildi.
