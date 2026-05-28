@@ -5,17 +5,27 @@ import KxPill from '@/components/ui/KxPill'
 
 type Step = { n: number; t: string; d: string }
 
-const STEPS: Step[] = [
-  { n: 1, t: 'Proje bilgisi',    d: '~1 dk' },
-  { n: 2, t: 'Hikaye haritası',  d: '~3 dk' },
-  { n: 3, t: 'İş analizi',       d: '~5 dk' },
-  { n: 4, t: 'Prototip',         d: '~6 dk' },
-  { n: 5, t: 'Test senaryosu',   d: '~3 dk' },
+const STEPS_TR: Step[] = [
+  { n: 1, t: 'Proje bilgisi',       d: '~1 dk' },
+  { n: 2, t: 'Hikaye haritası',     d: '~3 dk' },
+  { n: 3, t: 'Gereksinim analizi',  d: '~5 dk' },
+  { n: 4, t: 'Prototip',            d: '~6 dk' },
+  { n: 5, t: 'Test senaryosu',      d: '~3 dk' },
+]
+
+const STEPS_EN: Step[] = [
+  { n: 1, t: 'Project info',          d: '~1 min' },
+  { n: 2, t: 'Story map',             d: '~3 min' },
+  { n: 3, t: 'Requirements analysis', d: '~5 min' },
+  { n: 4, t: 'Prototype',             d: '~6 min' },
+  { n: 5, t: 'Test scenarios',        d: '~3 min' },
 ]
 
 export default async function PipelinePreview({ activeStep = 1 }: { activeStep?: number }) {
   const locale = await getLocale()
-  const estimatedText = locale === 'tr'
+  const isTR = locale === 'tr'
+  const STEPS = isTR ? STEPS_TR : STEPS_EN
+  const estimatedText = isTR
     ? 'Tahmini toplam: ~15 dk · Proje karmaşıklığına göre değişebilir.'
     : 'Estimated total: ~15 min · May vary based on project complexity.'
 
@@ -23,7 +33,7 @@ export default async function PipelinePreview({ activeStep = 1 }: { activeStep?:
     <div className="mt-8 p-6 bg-white rounded-2xl border border-kx-border">
       <div className="flex justify-between items-center mb-3.5">
         <div className="text-[12px] font-bold text-kx-muted tracking-[0.08em] uppercase">
-          Sonra ne olacak?
+          {isTR ? 'Sonra ne olacak?' : "What's next?"}
         </div>
         <div className="text-[11px] text-kx-muted font-mono">
           {estimatedText}

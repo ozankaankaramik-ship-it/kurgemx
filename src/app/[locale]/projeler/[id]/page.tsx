@@ -65,7 +65,7 @@ function ProjectHeader({ proje, locale }: { proje: ProjeDetayRow; locale: string
                 <h1 className="font-display text-[26px] font-bold text-kx-ink m-0 tracking-[-0.02em]">
                   {proje.ad}
                 </h1>
-                <ProjectStatusPill durum={proje.durum} />
+                <ProjectStatusPill durum={proje.durum} locale={locale} />
                 {proje.dil && (
                   <span className="text-[11px] font-mono font-bold text-kx-muted bg-kx-bg border border-kx-border-soft px-1.5 py-0.5 rounded">
                     {proje.dil.toUpperCase()}
@@ -119,11 +119,12 @@ function ProjectHeader({ proje, locale }: { proje: ProjeDetayRow; locale: string
   )
 }
 
-function ProjectStatusPill({ durum }: { durum: string }) {
+function ProjectStatusPill({ durum, locale }: { durum: string; locale: string }) {
+  const isTR = locale === 'tr'
   const map: Record<string, { tone: 'blue' | 'green' | 'amber' | 'gray'; label: string }> = {
-    aktif:       { tone: 'amber',  label: 'Aktif' },
-    tamamlandi:  { tone: 'green',  label: 'Tamamlandı' },
-    arsivlendi:  { tone: 'gray',   label: 'Arşiv' },
+    aktif:       { tone: 'amber',  label: isTR ? 'Aktif' : 'Active' },
+    tamamlandi:  { tone: 'green',  label: isTR ? 'Tamamlandı' : 'Completed' },
+    arsivlendi:  { tone: 'gray',   label: isTR ? 'Arşiv' : 'Archived' },
   }
   const m = map[durum] ?? { tone: 'blue' as const, label: durum }
   return (

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
 import { usePathname, useRouter, Link } from '@/i18n/navigation'
 import { createClient } from '@/lib/supabase/client'
@@ -19,18 +19,54 @@ export default function Navbar() {
   const [user, setUser] = useState<User | null>(null)
   const [loadingUser, setLoadingUser] = useState(true)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [dropdownOpen, setDropdownOpen] = useState(false)
+  const [planInfo, setPlanInfo] = useState<{ kod: string; ad: string } | null>(null)
+  const dropdownRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const supabase = createClient()
     supabase.auth.getUser().then(({ data }) => {
       setUser(data.user)
       setLoadingUser(false)
+      if (data.user) {
+        supabase
+          .from('abonelikler')
+          .select('plan:planlar!plan_id(kod, ad)')
+          .eq('kullanici_id', data.user.id)
+          .eq('durum', 'aktif')
+          .order('baslangic', { ascending: false })
+          .limit(1)
+          .maybeSingle()
+          .then(({ data: abo }) => {
+            const p = (abo as { plan?: { kod: string; ad: string } } | null)?.plan
+            setPlanInfo(p ?? { kod: 'freemium', ad: 'Freemium' })
+          })
+      }
     })
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null)
+      if (!session?.user) setPlanInfo(null)
     })
     return () => listener.subscription.unsubscribe()
   }, [])
+
+  useEffect(() => {
+    if (!dropdownOpen) return
+    function onClickOutside(e: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false)
+      }
+    }
+    function onEscape(e: KeyboardEvent) {
+      if (e.key === 'Escape') setDropdownOpen(false)
+    }
+    document.addEventListener('mousedown', onClickOutside)
+    document.addEventListener('keydown', onEscape)
+    return () => {
+      document.removeEventListener('mousedown', onClickOutside)
+      document.removeEventListener('keydown', onEscape)
+    }
+  }, [dropdownOpen])
 
   const switchLanguage = () => {
     const other = locale === 'tr' ? 'en' : 'tr'
@@ -43,6 +79,15 @@ export default function Navbar() {
     user?.email?.split('@')[0] ||
     ''
   const initials = displayName ? displayName.slice(0, 2).toUpperCase() : '?'
+
+  const planKod = planInfo?.kod ?? 'freemium'
+  const showUpgrade = !['advanced', 'enterprise'].includes(planKod)
+  const planBadgeClass: Record<string, string> = {
+    freemium:   'bg-gray-100 text-gray-500',
+    analyst:    'bg-[#EEF4FB] text-[#1F3864]',
+    advanced:   'bg-[#EDE9FE] text-[#5B21B6]',
+    enterprise: 'bg-[#FEF3C7] text-[#92400E]',
+  }
 
   return (
     <nav className="bg-kx-navy shrink-0 relative z-50">
@@ -99,34 +144,73 @@ export default function Navbar() {
             {loadingUser ? (
               <div className="h-[30px] w-24 rounded-md animate-pulse bg-white/10" />
             ) : user ? (
-              <>
+              <div className="relative" ref={dropdownRef}>
                 <button
-                  aria-label="Bildirimler"
-                  className="w-[34px] h-[34px] rounded-lg border border-white/25 grid place-items-center text-white/85 hover:bg-white/10 transition-colors"
+                  onClick={() => setDropdownOpen(v => !v)}
+                  aria-expanded={dropdownOpen}
+                  aria-haspopup="true"
+                  className="flex items-center gap-2 rounded-lg px-2 py-1 hover:bg-white/10 transition-colors"
                 >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-                    <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
-                    <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
-                  </svg>
-                </button>
-                <div className="flex items-center gap-2.5">
-                  <div className="w-[30px] h-[30px] rounded-full bg-kx-blue text-white text-[11px] font-semibold grid place-items-center">
+                  <div className="w-[30px] h-[30px] rounded-full bg-kx-blue text-white text-[11px] font-semibold grid place-items-center shrink-0">
                     {initials}
                   </div>
-                  <span className="hidden sm:block text-[13px] text-white/85 max-w-[130px] truncate">
+                  <span className="hidden sm:block text-[13px] text-white/85 max-w-[110px] truncate">
                     {displayName}
                   </span>
-                  <form action={cikisYap}>
-                    <input type="hidden" name="locale" value={locale} />
-                    <button
-                      type="submit"
-                      className="text-[12px] font-medium text-white px-2.5 py-1 rounded-md transition-colors hover:bg-white/10 border border-white/30 bg-transparent"
-                    >
-                      {tAuth('cikisYap')}
-                    </button>
-                  </form>
-                </div>
-              </>
+                  <svg
+                    width="12" height="12" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" strokeWidth="2" strokeLinecap="round"
+                    className={`text-white/60 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`}
+                  >
+                    <path d="M6 9l6 6 6-6" />
+                  </svg>
+                </button>
+
+                {dropdownOpen && (
+                  <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-xl shadow-lg border border-kx-border z-50 overflow-hidden">
+                    {/* Kullanıcı bilgisi + plan */}
+                    <div className="px-4 py-3 border-b border-kx-border-soft">
+                      <div className="text-[13px] font-semibold text-kx-ink truncate">{displayName}</div>
+                      <div className="text-[11px] text-kx-muted truncate mt-0.5">{user.email}</div>
+                      {planInfo && (
+                        <span className={`inline-block mt-2 text-[10px] font-bold px-2 py-0.5 rounded-full ${planBadgeClass[planKod] ?? 'bg-gray-100 text-gray-500'}`}>
+                          {planInfo.ad}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Plan yükselt */}
+                    {showUpgrade && (
+                      <Link
+                        href="/pricing"
+                        onClick={() => setDropdownOpen(false)}
+                        className="flex items-center gap-2.5 px-4 py-2.5 text-[13px] text-kx-blue font-medium hover:bg-kx-blue-soft transition-colors no-underline"
+                      >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M12 19V5M5 12l7-7 7 7" />
+                        </svg>
+                        {locale === 'tr' ? 'Planı Yükselt' : 'Upgrade Plan'}
+                      </Link>
+                    )}
+
+                    <div className="border-t border-kx-border-soft" />
+
+                    {/* Çıkış */}
+                    <form action={cikisYap}>
+                      <input type="hidden" name="locale" value={locale} />
+                      <button
+                        type="submit"
+                        className="w-full text-left flex items-center gap-2.5 px-4 py-2.5 text-[13px] text-kx-body hover:bg-kx-bg transition-colors"
+                      >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" />
+                        </svg>
+                        {tAuth('cikisYap')}
+                      </button>
+                    </form>
+                  </div>
+                )}
+              </div>
             ) : (
               <div className="flex items-center gap-2">
                 <Link
@@ -178,6 +262,16 @@ export default function Navbar() {
         <div className="md:hidden absolute top-16 left-0 right-0 bg-kx-navy border-t border-white/10 px-4 py-3 flex flex-col shadow-xl">
           {!loadingUser && user ? (
             <>
+              {/* Kullanıcı bilgisi + plan */}
+              <div className="py-3 px-1 border-b border-white/10">
+                <div className="text-[13px] font-semibold text-white truncate">{displayName}</div>
+                <div className="text-[11px] text-white/50 truncate mt-0.5">{user.email}</div>
+                {planInfo && (
+                  <span className={`inline-block mt-1.5 text-[10px] font-bold px-2 py-0.5 rounded-full ${planBadgeClass[planKod] ?? 'bg-gray-100 text-gray-500'}`}>
+                    {planInfo.ad}
+                  </span>
+                )}
+              </div>
               <Link
                 href="/projeler"
                 onClick={() => setMobileOpen(false)}
@@ -192,6 +286,15 @@ export default function Navbar() {
               >
                 {tNav('newProject')}
               </Link>
+              {showUpgrade && (
+                <Link
+                  href="/pricing"
+                  onClick={() => setMobileOpen(false)}
+                  className="text-[14px] text-kx-amber py-3 px-1 border-b border-white/10 hover:text-white transition-colors"
+                >
+                  {locale === 'tr' ? 'Planı Yükselt →' : 'Upgrade Plan →'}
+                </Link>
+              )}
               <div className="pt-2">
                 <form action={cikisYap}>
                   <input type="hidden" name="locale" value={locale} />

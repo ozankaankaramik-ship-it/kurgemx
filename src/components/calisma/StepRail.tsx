@@ -2,6 +2,7 @@
 
 import type { ReactNode } from 'react'
 import { useEffect, useState } from 'react'
+import { useLocale } from 'next-intl'
 
 /**
  * Sticky left rail showing the 5 workflow steps with status indicators.
@@ -70,11 +71,14 @@ export default function StepRail({
   sureLine?: string
   planLine?: string
 }) {
+  const locale = useLocale()
+  const isTR = locale === 'tr'
+
   return (
     <aside className="hidden lg:block sticky top-22 self-start w-[240px]">
       <div className="bg-white border border-kx-border rounded-2xl p-4.5">
         <div className="text-[11px] font-bold text-kx-muted tracking-[0.08em] uppercase mb-3.5">
-          Süreç
+          {isTR ? 'Süreç' : 'Process'}
         </div>
         <div className="flex flex-col gap-0.5">
           {steps.map((s, i) => {
@@ -121,7 +125,7 @@ export default function StepRail({
         {extrasYakinda.length > 0 && (
           <div className="mt-4 pt-3.5 border-t border-kx-border-soft">
             <div className="text-[11px] font-bold text-kx-muted tracking-[0.08em] uppercase mb-2.5">
-              Tamamlayıcı
+              {isTR ? 'Tamamlayıcı' : 'Optional'}
             </div>
             {extrasYakinda.map((x) => (
               <div
@@ -144,14 +148,14 @@ export default function StepRail({
         <div className="mt-4 bg-white border border-kx-border rounded-2xl p-4">
           <div className="flex justify-between items-baseline mb-2.5">
             <span className="text-[11px] font-bold text-kx-muted tracking-[0.08em] uppercase">
-              Bu projede
+              {isTR ? 'Bu projede' : 'This project'}
             </span>
           </div>
           {tokenLine && (
-            <Line label="Tahmini token" value={tokenLine} />
+            <Line label={isTR ? 'Tahmini token' : 'Est. tokens'} value={tokenLine} />
           )}
           {sureLine && (
-            <Line label="Toplam süre" value={sureLine} />
+            <Line label={isTR ? 'Toplam süre' : 'Total time'} value={sureLine} />
           )}
           {planLine && (
             <Line label="Plan kullanımı" value={planLine} tone="green" />
@@ -198,6 +202,9 @@ export function StepCard({
   action?: ReactNode
   children: ReactNode
 }) {
+  const locale = useLocale()
+  const isTR = locale === 'tr'
+
   const numBg = {
     done:    'bg-kx-green',
     active:  'bg-kx-navy',
@@ -218,12 +225,9 @@ export function StepCard({
     running: 'text-kx-amber-ink',
     pending: 'text-kx-muted',
   }[status]
-  const pillLabel = {
-    done:    'Hazır',
-    active:  'Aktif',
-    running: 'Üretiliyor',
-    pending: 'Beklemede',
-  }[status]
+  const pillLabel = isTR
+    ? { done: 'Hazır', active: 'Aktif', running: 'Üretiliyor', pending: 'Beklemede' }[status]
+    : { done: 'Done',  active: 'Active', running: 'Generating', pending: 'Pending' }[status]
 
   const ring =
     status === 'running'
