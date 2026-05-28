@@ -5,7 +5,9 @@
                 "newProject":  "New Project",
                 "signIn":  "Sign In",
                 "getStarted":  "Get Started",
-                "hakkimizda":  "About"
+                "hakkimizda":  "About",
+                "about":  "About",
+                "pricing":  "Pricing"
             },
     "home":  {
                  "title":  "Welcome to Kurgemx",

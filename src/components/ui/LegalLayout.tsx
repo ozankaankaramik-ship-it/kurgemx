@@ -1,8 +1,6 @@
 import type { ReactNode } from 'react'
 import { getTranslations } from 'next-intl/server'
 import type { Metadata } from 'next'
-import Navbar from '@/components/Navbar'
-import Footer from '@/components/Footer'
 import PageHero from '@/components/ui/PageHero'
 import { Link } from '@/i18n/navigation'
 
@@ -52,7 +50,6 @@ export default async function LegalLayout({
 
   return (
     <>
-      <Navbar />
       <main className="flex-1 bg-white">
         <PageHero
           kicker={t('baslik')}
@@ -192,7 +189,6 @@ export default async function LegalLayout({
           </div>
         </section>
       </main>
-      <Footer />
     </>
   )
 }

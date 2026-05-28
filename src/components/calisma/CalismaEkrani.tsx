@@ -743,6 +743,7 @@ function EkranIci({
   const [kapsamHata, setKapsamHata] = useState(false)
   const [mimariYukleniyor, setMimariYukleniyor] = useState(false)
   const [mimariHata, setMimariHata] = useState(false)
+  const [tamEkranTablo, setTamEkranTablo] = useState<'hikaye' | 'sprint' | null>(null)
 
   useEffect(() => {
     const el = isAnaliziContainerRef.current
@@ -1380,7 +1381,7 @@ function EkranIci({
 
   return (
     <main className="min-h-screen bg-gray-100 overflow-x-hidden max-w-full">
-      <div className="max-w-[1280px] mx-auto px-4 py-10 w-full">
+      <div className="max-w-[1280px] mx-auto px-1 md:px-4 py-10 w-full">
 
         {/* Geri butonu + proje başlığı (mevcut proje görüntüleme) */}
         {backHref && backLabel && (
@@ -1543,8 +1544,17 @@ function EkranIci({
 
                 {/* ── Tablo 1: Hikaye Haritası ── */}
                 {storyMapData && (
-                  <div className="flex items-center gap-1 mb-1.5">
+                  <div className="flex items-center justify-between gap-1 mb-1.5">
                     <span className="text-[11px] text-gray-400">{t('adim2.scrollIpucu')}</span>
+                    <button
+                      onClick={() => setTamEkranTablo('hikaye')}
+                      title={locale === 'tr' ? 'Tam ekranda görüntüle' : 'View fullscreen'}
+                      className="inline-flex items-center gap-1 text-[11px] text-gray-400 hover:text-[#2E75B6] transition-colors shrink-0"
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/>
+                      </svg>
+                    </button>
                   </div>
                 )}
                 <div className="relative w-full">
@@ -1568,7 +1578,7 @@ function EkranIci({
                   <div
                     ref={bottomScrollRef}
                     className="overflow-x-auto rounded-lg border border-gray-200 bg-white w-full"
-                    style={{ touchAction: 'pan-x' }}
+                    style={{ touchAction: 'pan-x', WebkitOverflowScrolling: 'touch' }}
                     onScroll={() => {
                       if (topScrollRef.current && bottomScrollRef.current &&
                           topScrollRef.current.scrollLeft !== bottomScrollRef.current.scrollLeft) {
@@ -1579,17 +1589,17 @@ function EkranIci({
                     {storyMapData ? (
                       <table
                         className="text-sm text-left"
-                        style={{ minWidth: 'max-content' }}
+                        style={{ minWidth: 'max-content', tableLayout: 'auto' }}
                       >
                         <thead className="bg-[#1F3864]">
                           <tr>
-                            <th className="px-4 py-2.5 text-xs font-semibold text-white uppercase tracking-wide w-36 border-r border-white/20 sticky left-0 z-10 bg-[#1F3864]">
+                            <th className="px-3 py-2 text-xs font-semibold text-white uppercase tracking-wide w-36 border-r border-white/20 sticky left-0 z-10 bg-[#1F3864] whitespace-nowrap">
                               {storyMapData.genelOzet[0]
                                 ? Object.keys(storyMapData.genelOzet[0])[0]
                                 : (projektDili === 'TR' ? 'Sürüm' : 'Release')}
                             </th>
                             {(storyMapData.hikayeHaritasi?.destanlar ?? []).map(d => (
-                              <th key={d} className="px-4 py-2.5 text-xs font-semibold text-white uppercase tracking-wide border-r border-white/20 last:border-r-0">
+                              <th key={d} className="px-3 py-2 text-xs font-semibold text-white uppercase tracking-wide border-r border-white/20 last:border-r-0 whitespace-nowrap">
                                 {d}
                               </th>
                             ))}
@@ -1601,13 +1611,13 @@ function EkranIci({
                             .map((surumKey, idx) => (
                               <tr key={surumKey} className={idx % 2 === 1 ? 'bg-gray-50/50' : ''}>
                                 <td
-                                  className={`px-4 py-3 text-xs font-semibold text-gray-600 border-r border-gray-100 align-top w-36 whitespace-nowrap sticky left-0 z-10 ${idx % 2 === 1 ? 'bg-gray-50' : 'bg-white'}`}
+                                  className={`px-3 py-2 text-xs font-semibold text-gray-600 border-r border-gray-100 align-top w-36 whitespace-nowrap sticky left-0 z-10 ${idx % 2 === 1 ? 'bg-gray-50' : 'bg-white'}`}
                                   style={{ boxShadow: '1px 0 0 #E5E7EB' }}
                                 >
                                   {formatSurum(surumKey)}
                                 </td>
                                 {(storyMapData.hikayeHaritasi?.destanlar ?? []).map(destan => (
-                                  <td key={destan} className="px-4 py-3 border-r border-gray-100 align-top min-w-[180px] last:border-r-0">
+                                  <td key={destan} className="px-3 py-2 border-r border-gray-100 align-top min-w-[180px] last:border-r-0 whitespace-nowrap">
                                     {hikayelerFiltrele(storyMapData, surumKey, destan).map(h => (
                                       <div key={h.no} className="mb-1 text-xs text-gray-700 leading-relaxed">
                                         <span className="font-semibold text-[#2E75B6]">{h.no}</span>
@@ -1675,17 +1685,28 @@ function EkranIci({
           {storyMapData && storyMapData.sprintPlani.length > 0 && (() => {
             const keys = Object.keys(storyMapData.sprintPlani[0])
             return (
-              <div className="flex gap-6">
-                <div className="w-9 shrink-0" />
+              <div className="flex gap-0 md:gap-6">
+                <div className="hidden md:block w-9 shrink-0" />
                 <div className="flex-1 pb-4 min-w-0">
-                  <h3 className="text-sm font-semibold text-[#1F3864] mb-2">{t('adim2.sprintPlanBaslik')}</h3>
-                  <div className="overflow-x-auto w-full" style={{ touchAction: 'pan-x' }}>
-                  <div className="rounded-lg border border-gray-200 overflow-hidden bg-white" style={{ minWidth: 'max-content' }}>
-                    <table className="text-sm text-left">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-sm font-semibold text-[#1F3864]">{t('adim2.sprintPlanBaslik')}</h3>
+                    <button
+                      onClick={() => setTamEkranTablo('sprint')}
+                      title={locale === 'tr' ? 'Tam ekranda görüntüle' : 'View fullscreen'}
+                      className="inline-flex items-center gap-1 text-[11px] text-gray-400 hover:text-[#2E75B6] transition-colors shrink-0"
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/>
+                      </svg>
+                    </button>
+                  </div>
+                  <div className="overflow-x-auto w-full" style={{ touchAction: 'pan-x', WebkitOverflowScrolling: 'touch' }}>
+                  <div className="rounded-lg border border-gray-200 overflow-hidden bg-white">
+                    <table className="text-sm text-left" style={{ tableLayout: 'auto', minWidth: 'max-content' }}>
                       <thead className="bg-[#1F3864]">
                         <tr>
                           {keys.map(k => (
-                            <th key={k} className="px-4 py-2.5 text-xs font-semibold text-white uppercase tracking-wide border-r border-white/20 last:border-r-0 whitespace-nowrap">
+                            <th key={k} className="px-3 py-2 text-xs font-semibold text-white uppercase tracking-wide border-r border-white/20 last:border-r-0 whitespace-nowrap">
                               {k}
                             </th>
                           ))}
@@ -1697,7 +1718,7 @@ function EkranIci({
                           return (
                             <tr key={idx} className={idx % 2 === 1 ? 'bg-gray-50/50' : ''}>
                               {vals.map((val, i) => (
-                                <td key={i} className="px-4 py-2.5 text-xs text-gray-700 border-r border-gray-100 last:border-r-0 whitespace-nowrap">
+                                <td key={i} className="px-3 py-2 text-xs text-gray-700 border-r border-gray-100 last:border-r-0 whitespace-nowrap">
                                   {String(val ?? '')}
                                 </td>
                               ))}
@@ -1717,17 +1738,17 @@ function EkranIci({
           {storyMapData && storyMapData.genelOzet.length > 0 && (() => {
             const keys = Object.keys(storyMapData.genelOzet[0])
             return (
-              <div className="flex gap-6">
-                <div className="w-9 shrink-0" />
+              <div className="flex gap-0 md:gap-6">
+                <div className="hidden md:block w-9 shrink-0" />
                 <div className="flex-1 pb-10 min-w-0">
                   <h3 className="text-sm font-semibold text-[#1F3864] mb-2">{t('adim2.genelOzetBaslik')}</h3>
-                  <div className="overflow-x-auto w-full" style={{ touchAction: 'pan-x' }}>
-                  <div className="rounded-lg border border-gray-200 overflow-hidden bg-white" style={{ minWidth: 'max-content' }}>
-                    <table className="text-sm text-left">
+                  <div className="overflow-x-auto w-full" style={{ touchAction: 'pan-x', WebkitOverflowScrolling: 'touch' }}>
+                  <div className="rounded-lg border border-gray-200 overflow-hidden bg-white">
+                    <table className="text-sm text-left" style={{ tableLayout: 'auto', minWidth: 'max-content' }}>
                       <thead className="bg-[#1F3864]">
                         <tr>
                           {keys.map(k => (
-                            <th key={k} className="px-4 py-2.5 text-xs font-semibold text-white uppercase tracking-wide border-r border-white/20 last:border-r-0 whitespace-nowrap">
+                            <th key={k} className="px-3 py-2 text-xs font-semibold text-white uppercase tracking-wide border-r border-white/20 last:border-r-0 whitespace-nowrap">
                               {k}
                             </th>
                           ))}
@@ -1741,7 +1762,7 @@ function EkranIci({
                           return (
                             <tr key={idx} className={isToplam ? 'bg-gray-50 font-semibold' : idx % 2 === 1 ? 'bg-gray-50/50' : ''}>
                               {vals.map((val, i) => (
-                                <td key={i} className="px-4 py-2.5 text-xs text-gray-700 border-r border-gray-100 last:border-r-0 whitespace-nowrap">
+                                <td key={i} className="px-3 py-2 text-xs text-gray-700 border-r border-gray-100 last:border-r-0 whitespace-nowrap">
                                   {String(val ?? '')}
                                 </td>
                               ))}
@@ -2271,6 +2292,112 @@ function EkranIci({
         <p className="fixed bottom-2 right-3 text-[10px] text-gray-400 select-all cursor-text">
           {projeId}
         </p>
+      )}
+
+      {/* ── Tam Ekran Tablo Modalı ── */}
+      {tamEkranTablo && storyMapData && (
+        <div
+          className="fixed inset-0 z-[100] bg-black/60 flex flex-col"
+          onClick={(e) => { if (e.target === e.currentTarget) setTamEkranTablo(null) }}
+        >
+          <div className="bg-white m-3 md:m-6 rounded-2xl flex flex-col overflow-hidden" style={{ maxHeight: 'calc(100vh - 24px)' }}>
+            {/* Modal header */}
+            <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100 shrink-0">
+              <h3 className="text-sm font-semibold text-[#1F3864]">
+                {tamEkranTablo === 'hikaye' ? t('adim2.baslik') : t('adim2.sprintPlanBaslik')}
+              </h3>
+              <button
+                onClick={() => setTamEkranTablo(null)}
+                className="w-8 h-8 rounded-lg grid place-items-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+                aria-label={locale === 'tr' ? 'Kapat' : 'Close'}
+              >
+                ✕
+              </button>
+            </div>
+            {/* Modal içerik */}
+            <div className="flex-1 overflow-auto p-3" style={{ WebkitOverflowScrolling: 'touch' }}>
+              {tamEkranTablo === 'hikaye' ? (
+                <div className="overflow-x-auto" style={{ WebkitOverflowScrolling: 'touch' }}>
+                  <table className="text-sm text-left" style={{ tableLayout: 'auto', minWidth: 'max-content' }}>
+                    <thead className="bg-[#1F3864]">
+                      <tr>
+                        <th className="px-3 py-2 text-xs font-semibold text-white uppercase tracking-wide w-36 border-r border-white/20 whitespace-nowrap sticky left-0 z-10 bg-[#1F3864]">
+                          {storyMapData.genelOzet[0]
+                            ? Object.keys(storyMapData.genelOzet[0])[0]
+                            : (projektDili === 'TR' ? 'Sürüm' : 'Release')}
+                        </th>
+                        {(storyMapData.hikayeHaritasi?.destanlar ?? []).map(d => (
+                          <th key={d} className="px-3 py-2 text-xs font-semibold text-white uppercase tracking-wide border-r border-white/20 last:border-r-0 whitespace-nowrap">
+                            {d}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100">
+                      {(['R1', 'R2', 'R3'] as const)
+                        .filter(s => (storyMapData.hikayeHaritasi?.hikayeler ?? []).some(h => h.surum === s))
+                        .map((surumKey, idx) => (
+                          <tr key={surumKey} className={idx % 2 === 1 ? 'bg-gray-50/50' : ''}>
+                            <td
+                              className={`px-3 py-2 text-xs font-semibold text-gray-600 border-r border-gray-100 align-top w-36 whitespace-nowrap sticky left-0 z-10 ${idx % 2 === 1 ? 'bg-gray-50' : 'bg-white'}`}
+                              style={{ boxShadow: '1px 0 0 #E5E7EB' }}
+                            >
+                              {formatSurum(surumKey)}
+                            </td>
+                            {(storyMapData.hikayeHaritasi?.destanlar ?? []).map(destan => (
+                              <td key={destan} className="px-3 py-2 border-r border-gray-100 align-top min-w-[180px] last:border-r-0 whitespace-nowrap">
+                                {hikayelerFiltrele(storyMapData, surumKey, destan).map(h => (
+                                  <div key={h.no} className="mb-1 text-xs text-gray-700 leading-relaxed">
+                                    <span className="font-semibold text-[#2E75B6]">{h.no}</span>
+                                    {' · '}{h.ad}{' '}
+                                    <span className="text-gray-400">({h.sprint})</span>
+                                  </div>
+                                ))}
+                              </td>
+                            ))}
+                          </tr>
+                        ))
+                      }
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                (() => {
+                  const keys = Object.keys(storyMapData.sprintPlani[0] ?? {})
+                  return (
+                    <div className="overflow-x-auto" style={{ WebkitOverflowScrolling: 'touch' }}>
+                      <table className="text-sm text-left" style={{ tableLayout: 'auto', minWidth: 'max-content' }}>
+                        <thead className="bg-[#1F3864]">
+                          <tr>
+                            {keys.map(k => (
+                              <th key={k} className="px-3 py-2 text-xs font-semibold text-white uppercase tracking-wide border-r border-white/20 last:border-r-0 whitespace-nowrap">
+                                {k}
+                              </th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                          {storyMapData.sprintPlani.map((row, idx) => {
+                            const vals = Object.values(row)
+                            return (
+                              <tr key={idx} className={idx % 2 === 1 ? 'bg-gray-50/50' : ''}>
+                                {vals.map((val, i) => (
+                                  <td key={i} className="px-3 py-2 text-xs text-gray-700 border-r border-gray-100 last:border-r-0 whitespace-nowrap">
+                                    {String(val ?? '')}
+                                  </td>
+                                ))}
+                              </tr>
+                            )
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  )
+                })()
+              )}
+            </div>
+          </div>
+        </div>
       )}
     </main>
   )

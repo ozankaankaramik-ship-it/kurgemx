@@ -1,7 +1,5 @@
 import { getTranslations } from 'next-intl/server'
 import type { Metadata } from 'next'
-import Navbar from '@/components/Navbar'
-import Footer from '@/components/Footer'
 import PageHero from '@/components/ui/PageHero'
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -28,7 +26,6 @@ export default async function AboutPage() {
 
   return (
     <>
-      <Navbar />
       <main className="flex-1 bg-white">
         <PageHero
           kicker={t('baslik')}
@@ -138,7 +135,6 @@ export default async function AboutPage() {
           </div>
         </section>
       </main>
-      <Footer />
     </>
   )
 }

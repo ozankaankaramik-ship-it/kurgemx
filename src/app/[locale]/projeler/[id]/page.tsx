@@ -173,7 +173,7 @@ export default async function ProjeDetayPage({ params }: Props) {
       <SonProjeKaydet id={proje.id} ad={proje.ad} />
       <ProjectHeader proje={proje} locale={locale} />
       <main className="flex-1 bg-kx-bg">
-        <div className="max-w-[1280px] mx-auto px-8 py-6 pb-20">
+        <div className="max-w-[1280px] mx-auto px-1 md:px-8 py-6 pb-20">
           <CalismaEkrani
             initialProje={{
               id: proje.id,
