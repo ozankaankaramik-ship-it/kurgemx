@@ -512,12 +512,10 @@ async function exportTestExcel(testCases: TestCaseItem[], projeAdi: string, proj
   const rows: { hpx: number }[] = []
 
   // Row 0: title + prepared by
-  const title = isTR ? `${projeAdi} — Test Senaryoları` : `${projeAdi} — Test Scenarios`
-  const prepBy = isTR ? 'Hazırlayan: KurgemX' : 'Prepared by: KurgemX'
+  const title = isTR ? `${projeAdi} — Test Senaryosu` : `${projeAdi} — Test Scenario`
   ws[enc(0, 0)] = cell(title, { font: { bold: true, sz: 12, color: { rgb: WHITE } }, fill: { patternType: 'solid', fgColor: { rgb: DARK_BLUE } }, alignment: { horizontal: 'left', vertical: 'center' } })
-  for (let i = 1; i < NUM_COLS - 1; i++) ws[enc(0, i)] = cell('', { fill: { patternType: 'solid', fgColor: { rgb: DARK_BLUE } } })
-  ws[enc(0, NUM_COLS - 1)] = cell(prepBy, { font: { sz: 10, color: { rgb: WHITE } }, fill: { patternType: 'solid', fgColor: { rgb: DARK_BLUE } }, alignment: { horizontal: 'right', vertical: 'center' } })
-  merges.push({ s: { r: 0, c: 0 }, e: { r: 0, c: NUM_COLS - 2 } })
+  for (let i = 1; i < NUM_COLS; i++) ws[enc(0, i)] = cell('', { fill: { patternType: 'solid', fgColor: { rgb: DARK_BLUE } } })
+  merges.push({ s: { r: 0, c: 0 }, e: { r: 0, c: NUM_COLS - 1 } })
   rows.push({ hpx: 36 })
 
   // Row 1: placeholder — dateLine yazılacak ama TC sayısı data'dan sonra hesaplanacak
@@ -526,10 +524,11 @@ async function exportTestExcel(testCases: TestCaseItem[], projeAdi: string, proj
 
   // Row 2: abbreviations
   const abbrev = isTR
-    ? 'Kısaltmalar: TC — Test Senaryosu  |  AC — Kabul Kriteri  |  ST — Hikaye  |  R — Sürüm'
+    ? 'Kısaltmalar: TC — Test Case  |  AC — Kabul Kriteri  |  ST — Hikaye  |  R — Sürüm'
     : 'Abbreviations: TC — Test Case  |  AC — Acceptance Criteria  |  ST — Story  |  R — Release'
   ws[enc(2, 0)] = cell(abbrev, { font: { italic: true, sz: 9, color: { rgb: '6B7280' } }, fill: { patternType: 'solid', fgColor: { rgb: 'F9FAFB' } }, alignment: { horizontal: 'left', vertical: 'center' } })
   for (let i = 1; i < NUM_COLS; i++) ws[enc(2, i)] = cell('', { fill: { patternType: 'solid', fgColor: { rgb: 'F9FAFB' } } })
+  merges.push({ s: { r: 2, c: 0 }, e: { r: 2, c: NUM_COLS - 1 } })
   rows.push({ hpx: 20 })
 
   // Row 3: empty
@@ -568,7 +567,7 @@ async function exportTestExcel(testCases: TestCaseItem[], projeAdi: string, proj
   ws['!ref'] = XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: footerRow, c: NUM_COLS - 1 } }) // footerRow = 5 + writtenCount
   ws['!merges'] = merges
   ws['!rows'] = rows
-  ws['!cols'] = [{ wch: 12 }, { wch: 8 }, { wch: 10 }, { wch: 35 }, { wch: 10 }, { wch: 25 }, { wch: 40 }, { wch: 30 }, { wch: 10 }]
+  ws['!cols'] = [{ wch: 12 }, { wch: 8 }, { wch: 10 }, { wch: 35 }, { wch: 10 }, { wch: 25 }, { wch: 40 }, { wch: 30 }, { wch: 40 }]
   ws['!views'] = [{ state: 'frozen', ySplit: 5 }]
   XLSX.utils.book_append_sheet(wb, ws, isTR ? 'Test Senaryoları' : 'Test Scenarios')
 
