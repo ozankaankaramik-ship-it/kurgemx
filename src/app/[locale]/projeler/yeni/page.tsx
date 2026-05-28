@@ -1,6 +1,7 @@
 import { redirect } from '@/i18n/navigation'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
+import { getKullaniciPlan } from '@/lib/abonelik'
 import type { Metadata } from 'next'
 import CalismaEkrani from '@/components/calisma/CalismaEkrani'
 import PipelinePreview, { YeniProjeHeader } from '@/components/calisma/PipelinePreview'
@@ -36,7 +37,10 @@ export default async function YeniProjePage() {
     redirect({ href: '/giris', locale })
   }
 
-  const t = await getTranslations('yeniProje')
+  const [planBilgisi, t] = await Promise.all([
+    getKullaniciPlan(supabase, user!.id),
+    getTranslations('yeniProje'),
+  ])
 
   return (
     <>
@@ -56,7 +60,7 @@ export default async function YeniProjePage() {
 
           {/* Form card — CalismaEkrani renders Adim1Formu when projeId is null */}
           <div className="bg-white rounded-2xl border border-kx-border p-8 shadow-kx-card">
-            <CalismaEkrani />
+            <CalismaEkrani initialPlan={planBilgisi} />
           </div>
 
           <PipelinePreview activeStep={1} />

@@ -3,6 +3,7 @@ import { getLocale, getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
 import { Link } from '@/i18n/navigation'
 import { projeGetir, type ProjeDetayRow } from '@/lib/projects/actions'
+import { getKullaniciPlan } from '@/lib/abonelik'
 import SonProjeKaydet from '@/components/SonProjeKaydet'
 import CalismaEkrani from '@/components/calisma/CalismaEkrani'
 import KxPill from '@/components/ui/KxPill'
@@ -158,10 +159,10 @@ export default async function ProjeDetayPage({ params }: Props) {
   const proje = projeRaw as ProjeDetayRow
   const t = await getTranslations('projeDetay')
 
-  const { data: dokumanlar, error: dokError } = await supabase
-    .from('dokumanlar')
-    .select('*')
-    .eq('proje_id', proje.id)
+  const [{ data: dokumanlar, error: dokError }, planBilgisi] = await Promise.all([
+    supabase.from('dokumanlar').select('*').eq('proje_id', proje.id),
+    getKullaniciPlan(supabase, user!.id),
+  ])
 
   if (dokError) console.error('Doküman hatası:', dokError)
 
@@ -185,6 +186,7 @@ export default async function ProjeDetayPage({ params }: Props) {
             mevcutDokumanlar={dokumanlar ?? []}
             backHref={backHref}
             backLabel={backLabel}
+            initialPlan={planBilgisi}
           />
         </div>
       </main>
