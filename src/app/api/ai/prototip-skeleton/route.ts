@@ -10,7 +10,7 @@ import { getKullaniciPlan, planIzinVeriyor } from '@/lib/abonelik'
 
 export const maxDuration = 300
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY, maxRetries: 0 })
+const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY, maxRetries: 0, timeout: 300_000 })
 
 function injectBaseCSS(html: string, css: string): string {
   const tag = `<style>\n${css}\n</style>`

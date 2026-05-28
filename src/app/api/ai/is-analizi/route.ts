@@ -6,7 +6,7 @@ import { genel, isAnalizi } from '@/lib/standartlar'
 // olduğundan bu budget yalnızca tek bir bölüm için geçerli.
 export const maxDuration = 300
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY, timeout: 300_000 })
 const SISTEM = `${genel}\n\n---\n\n${isAnalizi}`
 
 const DIL_ETIKET: Record<string, string> = {

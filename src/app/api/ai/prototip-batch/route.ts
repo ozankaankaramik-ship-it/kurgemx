@@ -5,7 +5,7 @@ import { getKullaniciPlan, planIzinVeriyor } from '@/lib/abonelik'
 
 export const maxDuration = 300
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY, maxRetries: 0 })
+const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY, maxRetries: 0, timeout: 300_000 })
 
 interface BatchScreen { id: string; name: string }
 

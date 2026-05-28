@@ -5,7 +5,7 @@ import { getKullaniciPlan, planIzinVeriyor } from '@/lib/abonelik'
 
 export const maxDuration = 300
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY, maxRetries: 0 })
+const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY, maxRetries: 0, timeout: 300_000 })
 const SISTEM = `${genel}\n\n---\n\n${testStandart}`
 
 interface HikayeInput { no: string; ad: string; destan: string; sprint: string }

@@ -2,7 +2,7 @@ import Anthropic from '@anthropic-ai/sdk'
 import { NextResponse } from 'next/server'
 import { genel, hikayeHaritasi } from '@/lib/standartlar'
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY, timeout: 300_000 })
 
 const SISTEM = `${genel}\n\n${hikayeHaritasi}`
 
