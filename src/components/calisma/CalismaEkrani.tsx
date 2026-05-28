@@ -1381,7 +1381,7 @@ function EkranIci({
 
   return (
     <main className="min-h-screen bg-gray-100 overflow-x-hidden max-w-full">
-      <div className="max-w-[1280px] mx-auto px-1 md:px-4 py-10 w-full">
+      <div className="max-w-[1280px] mx-auto px-1 md:px-4 py-10 w-full overflow-x-hidden">
 
         {/* Geri butonu + proje başlığı (mevcut proje görüntüleme) */}
         {backHref && backLabel && (
@@ -1389,7 +1389,7 @@ function EkranIci({
             <a href={backHref} className="text-sm text-gray-500 hover:underline shrink-0">
               {backLabel}
             </a>
-            {ad && <h1 className="text-lg font-semibold text-[#1F3864] truncate">{ad}</h1>}
+            {ad && <h1 className="text-lg font-semibold text-[#1F3864] truncate min-w-0">{ad}</h1>}
           </div>
         )}
 
@@ -1413,7 +1413,7 @@ function EkranIci({
             tokenLine={toplamToken > 0 ? toplamToken.toLocaleString() : undefined}
             sureLine={toplamSure > 0 ? formatSure(toplamSure, projektDili ?? 'TR') : undefined}
           />
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4 min-w-0">
 
           {/* ── Arka plan üretim banner'ı (Edit 5) ── */}
           {(adim3Yukleniyor || adim4Yukleniyor) && (
@@ -1430,10 +1430,10 @@ function EkranIci({
           >
                 {projeId ? (
                   // Read-only: proje oluşturulduktan sonra
-                  <div className="space-y-4">
+                  <div className="space-y-4 max-w-full overflow-hidden">
                     <div>
                       <p className="text-xs font-medium text-gray-400 mb-1">{t('adim1.projeAdi')}</p>
-                      <p className="text-sm font-semibold text-gray-800">{ad}</p>
+                      <p className="text-sm font-semibold text-gray-800 break-words">{ad}</p>
                     </div>
                     {projeBuyuklugu && (
                       <div>
@@ -1562,7 +1562,7 @@ function EkranIci({
                   {storyMapData && (
                     <div
                       ref={topScrollRef}
-                      className="overflow-x-auto"
+                      className="overflow-x-auto max-w-full"
                       style={{ height: 12 }}
                       onScroll={() => {
                         if (bottomScrollRef.current && topScrollRef.current &&
@@ -2228,7 +2228,7 @@ function EkranIci({
                           </p>
                         )}
                       </div>
-                      <div className="rounded-lg border border-gray-100 overflow-x-auto">
+                      <div className="rounded-lg border border-gray-100 overflow-x-auto max-w-full">
                         <table className="w-full text-sm text-left" style={{ minWidth: 480 }}>
                           <thead className="bg-gray-50">
                             <tr>
