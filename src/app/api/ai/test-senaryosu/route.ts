@@ -165,31 +165,55 @@ export async function POST(req: Request) {
   }
 
   const maxTokens = MAX_TOKENS[projeBuyuklugu] ?? 12000
-  const prompt = buildPrompt(projeAdi, detayliAciklama, release, hikayeler, acler, isTR)
+
+  console.log(`[test-senaryosu] başlıyor: release=${release} hikaye=${hikayeler.length} ac=${acler.length} maxTokens=${maxTokens} sistem_uzunluk=${SISTEM.length}`)
+
+  let prompt: string
+  try {
+    prompt = buildPrompt(projeAdi, detayliAciklama, release, hikayeler, acler, isTR)
+    console.log(`[test-senaryosu] prompt hazır: uzunluk=${prompt.length}`)
+  } catch (promptErr) {
+    console.error('[test-senaryosu] prompt oluşturma hatası:', promptErr)
+    return Response.json({ error: 'prompt_build_failed' }, { status: 500 })
+  }
 
   try {
+    console.log('[test-senaryosu] Claude API çağrısı başlıyor...')
     const response = await client.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: maxTokens,
       system: [{ type: 'text', text: SISTEM, cache_control: { type: 'ephemeral' } }],
       messages: [{ role: 'user', content: prompt }],
     })
+    console.log(`[test-senaryosu] Claude yanıtı geldi: stop_reason=${response.stop_reason} usage=${JSON.stringify(response.usage)}`)
 
     const raw = response.content[0].type === 'text' ? response.content[0].text : ''
     const cleaned = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim()
+    console.log(`[test-senaryosu] ham yanıt uzunluğu=${raw.length}`)
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let parsed: { testCases: any[] }
     try {
       parsed = JSON.parse(cleaned)
-    } catch {
+    } catch (parseErr) {
+      console.error('[test-senaryosu] JSON parse hatası:', parseErr, '\nHam yanıt (ilk 500):', cleaned.slice(0, 500))
       return Response.json({ error: 'parse_failed' }, { status: 500 })
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const testCases = (parsed.testCases ?? []).map((tc: any) => ({ ...tc, durum: 'pending' }))
+    console.log(`[test-senaryosu] tamamlandı: ${testCases.length} test case`)
     return Response.json({ testCases, release })
   } catch (err) {
-    return Response.json({ error: 'generation_failed' }, { status: 500 })
+    const errMsg = err instanceof Error ? err.message : String(err)
+    const errStack = err instanceof Error ? err.stack : undefined
+    const errName = err instanceof Error ? err.name : typeof err
+    console.error('[test-senaryosu] Claude API hatası:', {
+      name: errName,
+      message: errMsg,
+      stack: errStack,
+      raw: err,
+    })
+    return Response.json({ error: 'generation_failed', detail: errMsg }, { status: 500 })
   }
 }
