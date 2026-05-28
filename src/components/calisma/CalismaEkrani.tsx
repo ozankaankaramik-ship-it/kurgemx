@@ -1379,7 +1379,7 @@ function EkranIci({
   const toplamSure = metrigi.reduce((s, m) => s + (m?.sure ?? 0), 0)
 
   return (
-    <main className="min-h-screen bg-gray-100">
+    <main className="min-h-screen bg-gray-100 overflow-x-hidden">
       <div className="max-w-[1280px] mx-auto px-4 py-10 w-full">
 
         {/* Geri butonu + proje başlığı (mevcut proje görüntüleme) */}

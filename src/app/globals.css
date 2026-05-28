@@ -68,6 +68,7 @@ body {
   color: var(--foreground);
   -webkit-font-smoothing: antialiased;
   font-family: var(--font-sans);
+  overflow-x: hidden;
 }
 
 /* Brand font for the KurgemX wordmark */
