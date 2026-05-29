@@ -382,7 +382,7 @@
         },
         "useCases": {
             "kicker": "— Kimler için",
-            "title": "Üç farklı rol, aynı zaman kazancı.",
+            "title": "Dört farklı rol, aynı zaman kazancı.",
             "personas": {
                 "analyst": {
                     "role": "İş Analisti",
@@ -404,6 +404,13 @@
                     "win": "İlk görüşmede çalışan bir taslak gösteriyorum.",
                     "before": "5 gün",
                     "after": "1 görüşme"
+                },
+                "entrepreneur": {
+                    "role": "Girişimci",
+                    "who": "YZ ile yazılım geliştiren girişimci",
+                    "win": "YZ ile kod yazmaya başlamadan önce detaylı analiz elinde olsun.",
+                    "before": "Belirsizlik",
+                    "after": "Net taslak"
                 }
             }
         },
@@ -434,10 +441,10 @@
             "title1": "İlk projeni",
             "highlight": "30 saniyede",
             "title2": "başlat.",
-            "subtitle": "Bir cümle yaz — gerisini Kurgemx halletsin. Memnun kalmazsan, hiçbir yere bir şey ödemeden çıkabilirsin.",
+            "subtitle": "İlk projen tamamen ücretsiz. Beğenirsen devam et.",
             "primary": "Hesabımı şimdi aç",
             "secondary": "Demo iste",
-            "footnote": "Kart gerekmez · 14 günlük profesyonel deneme · İptal tek tıkla"
+            "footnote": "Kart gerekmez · İptal tek tıkla"
         }
     },
     "dashboard": {

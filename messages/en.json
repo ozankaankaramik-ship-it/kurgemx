@@ -382,7 +382,7 @@
         },
         "useCases": {
             "kicker": "— Who's it for",
-            "title": "Three different roles, the same time savings.",
+            "title": "Four different roles, the same time savings.",
             "personas": {
                 "analyst": {
                     "role": "Business Analyst",
@@ -404,6 +404,13 @@
                     "win": "I show a working draft in the first meeting.",
                     "before": "5 days",
                     "after": "1 meeting"
+                },
+                "entrepreneur": {
+                    "role": "Entrepreneur",
+                    "who": "Building software with AI",
+                    "win": "Have a detailed analysis ready before you start coding with AI.",
+                    "before": "Uncertainty",
+                    "after": "Clear draft"
                 }
             }
         },
@@ -434,10 +441,10 @@
             "title1": "Start your first project",
             "highlight": "in 30 seconds",
             "title2": ".",
-            "subtitle": "Write one sentence — Kurgemx handles the rest. Not happy? Walk away without paying.",
+            "subtitle": "Your first project is completely free. Continue if you love it.",
             "primary": "Create my account",
             "secondary": "Request a demo",
-            "footnote": "No card required · 14-day professional trial · Cancel with one click"
+            "footnote": "No card required · Cancel with one click"
         }
     },
     "dashboard": {

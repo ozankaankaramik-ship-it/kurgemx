@@ -1,4 +1,4 @@
-import { getTranslations } from 'next-intl/server'
+import { getLocale, getTranslations } from 'next-intl/server'
 import { Link } from '@/i18n/navigation'
 import HeroProductPreview from './HeroProductPreview'
 
@@ -27,6 +27,8 @@ function FloatingNote({
 
 export default async function Hero() {
   const tLanding = await getTranslations('landing')
+  const locale = await getLocale()
+  const isTR = locale === 'tr'
 
   return (
     <section className="relative bg-kx-bg px-8 pt-16 pb-20 overflow-hidden">
@@ -51,22 +53,40 @@ export default async function Hero() {
 
         {/* Hero title */}
         <h1 className="font-display text-[76px] leading-[1.02] tracking-[-0.04em] font-bold text-kx-ink text-center max-w-[940px] mx-auto text-balance">
-          İş analizinin ilk taslağı,<br />
-          <span className="text-kx-navy">ilk </span>
-          <span className="relative inline-block">
-            <span
-              className="absolute inset-y-[12%] -inset-x-1 bg-kx-red z-0"
-              style={{ transform: 'skew(-3deg)' }}
-              aria-hidden="true"
-            />
-            <span className="relative text-white px-3">10 dakikada</span>
-          </span>
-          <span className="text-kx-navy"> elinde.</span>
+          {isTR ? (
+            <>
+              İş analizinin ilk taslağı,<br />
+              <span className="relative inline-block">
+                <span
+                  className="absolute inset-y-[12%] -inset-x-1 bg-kx-red z-0"
+                  style={{ transform: 'skew(-3deg)' }}
+                  aria-hidden="true"
+                />
+                <span className="relative text-white px-3">10 dakikada</span>
+              </span>
+              <span className="text-kx-navy"> elinde.</span>
+            </>
+          ) : (
+            <>
+              Your first business analysis draft,<br />
+              <span className="relative inline-block">
+                <span
+                  className="absolute inset-y-[12%] -inset-x-1 bg-kx-red z-0"
+                  style={{ transform: 'skew(-3deg)' }}
+                  aria-hidden="true"
+                />
+                <span className="relative text-white px-3">in 10 minutes</span>
+              </span>
+              <span className="text-kx-navy">.</span>
+            </>
+          )}
         </h1>
 
         {/* Hero subtitle */}
         <p className="text-center text-[19px] text-kx-body max-w-[680px] mx-auto mt-7 mb-9 leading-[1.5]">
-          Kurgemx, fikrinden hikaye haritası → iş analizi dokümanı → tıklanabilir prototip → test senaryolarına kadar tüm zinciri sana yazar. Sen yorumla, düzelt, ekibinle paylaş.
+          {isTR
+            ? 'KurgemX, fikirden hikaye haritası → iş analizi → tıklanabilir prototip → test senaryolarına kadar tüm zinciri sana yazar.'
+            : 'KurgemX takes your idea from story map → requirements analysis → clickable prototype → test scenarios. You review, refine, share.'}
         </p>
 
         {/* Primary CTAs */}

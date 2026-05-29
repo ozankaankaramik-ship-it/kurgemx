@@ -1,9 +1,5 @@
+import { getLocale } from 'next-intl/server'
 import KxPill from '@/components/ui/KxPill'
-
-/**
- * Three persona cards: İş Analisti, Ürün Yöneticisi, Developer / Danışman.
- * (Note: "Developer / Danışman" replaces the older "Ajans / Danışman".)
- */
 
 type Persona = {
   role: string
@@ -16,7 +12,7 @@ type Persona = {
   ringClass: string
 }
 
-const PERSONAS: Persona[] = [
+const PERSONAS_TR: Persona[] = [
   {
     role: 'İş Analisti',
     who: 'Banka, fintech, kurumsal',
@@ -47,25 +43,82 @@ const PERSONAS: Persona[] = [
     toneClass: 'bg-kx-amber',
     ringClass: 'before:bg-kx-amber',
   },
+  {
+    role: 'Girişimci',
+    who: 'YZ ile yazılım geliştiren girişimci',
+    pain: "Claude Code'a, Cursor'a ne yazacağımı bilmiyorum.",
+    win: 'YZ ile kod yazmaya başlamadan önce detaylı analiz elinde olsun.',
+    before: 'Belirsizlik',
+    after: 'Net taslak',
+    toneClass: 'bg-kx-navy',
+    ringClass: 'before:bg-kx-navy',
+  },
 ]
 
-export default function UseCases() {
+const PERSONAS_EN: Persona[] = [
+  {
+    role: 'Business Analyst',
+    who: 'Bank, fintech, enterprise',
+    pain: 'After the workshop I spend 3 days buried in Word.',
+    win: 'First draft ready the moment the workshop ends.',
+    before: '3 days',
+    after: '15 minutes',
+    toneClass: 'bg-kx-blue',
+    ringClass: 'before:bg-kx-blue',
+  },
+  {
+    role: 'Product Manager',
+    who: 'B2B SaaS, startup',
+    pain: "I don't have a meaningful document for sprint planning.",
+    win: 'R1/R2/R3 release map and sprint breakdown ready.',
+    before: '—',
+    after: 'Release plan',
+    toneClass: 'bg-kx-red',
+    ringClass: 'before:bg-kx-red',
+  },
+  {
+    role: 'Developer / Consultant',
+    who: 'Freelance, boutique consulting',
+    pain: "Translating a client brief into code takes days.",
+    win: 'I show a working draft in the first meeting.',
+    before: '5 days',
+    after: '1 meeting',
+    toneClass: 'bg-kx-amber',
+    ringClass: 'before:bg-kx-amber',
+  },
+  {
+    role: 'Entrepreneur',
+    who: 'Building software with AI',
+    pain: "I don't know what to tell Claude Code or Cursor.",
+    win: 'Have a detailed analysis ready before you start coding with AI.',
+    before: 'Uncertainty',
+    after: 'Clear draft',
+    toneClass: 'bg-kx-navy',
+    ringClass: 'before:bg-kx-navy',
+  },
+]
+
+export default async function UseCases() {
+  const locale = await getLocale()
+  const isTR = locale === 'tr'
+  const PERSONAS = isTR ? PERSONAS_TR : PERSONAS_EN
+
   return (
     <section className="bg-kx-bg py-22 px-8 border-t border-kx-border">
-      <div className="max-w-[1180px] mx-auto">
+      <div className="max-w-[1280px] mx-auto">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-10">
           <div>
-            <KxPill tone="blue">— Kimler için</KxPill>
+            <KxPill tone="blue">{isTR ? '— Kimler için' : '— Who\'s it for'}</KxPill>
             <h2 className="font-display text-[48px] tracking-[-0.03em] font-bold text-kx-ink mt-4 leading-[1.1] max-w-[600px]">
-              Üç farklı rol, aynı zaman kazancı.
+              {isTR ? 'Dört farklı rol, aynı zaman kazancı.' : 'Four different roles, the same time savings.'}
             </h2>
           </div>
           <a href="/#" className="text-kx-blue text-[14px] no-underline font-semibold">
-            Tüm vakaları gör →
+            {isTR ? 'Tüm vakaları gör →' : 'See all cases →'}
           </a>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {PERSONAS.map((p) => (
             <div
               key={p.role}
@@ -88,11 +141,11 @@ export default function UseCases() {
               </div>
               <div className="grid grid-cols-2 gap-2 font-mono text-[11px]">
                 <div className="px-3 py-2.5 bg-kx-bg rounded-md">
-                  <div className="text-kx-muted text-[10px] mb-0.5">ÖNCE</div>
+                  <div className="text-kx-muted text-[10px] mb-0.5">{isTR ? 'ÖNCE' : 'BEFORE'}</div>
                   <div className="text-kx-ink font-semibold">{p.before}</div>
                 </div>
                 <div className={`px-3 py-2.5 ${p.toneClass} text-white rounded-md`}>
-                  <div className="text-white/70 text-[10px] mb-0.5">SONRA</div>
+                  <div className="text-white/70 text-[10px] mb-0.5">{isTR ? 'SONRA' : 'AFTER'}</div>
                   <div className="font-bold">{p.after}</div>
                 </div>
               </div>

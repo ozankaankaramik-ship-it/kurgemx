@@ -16,7 +16,7 @@ const PLANS_TR: Plan[] = [
     key: 'freemium',
     name: 'Freemium',
     price: '$0',
-    desc: 'Başlamak için ideal. Kart bilgisi gerekmez.',
+    desc: 'Hikaye haritası + analiz dokümanı — ücretsiz, hemen başla',
     features: [
       '1 proje / ay',
       'Küçük projeler (1–5 hikaye)',
@@ -29,7 +29,7 @@ const PLANS_TR: Plan[] = [
     key: 'analyst',
     name: 'Analyst',
     price: '$9',
-    desc: 'Bireysel analistler ve küçük ekipler için.',
+    desc: 'Hikaye haritasından test senaryosuna tüm çıktılar',
     features: [
       '3 proje / ay',
       'Orta projeler (6–15 hikaye)',
@@ -42,7 +42,7 @@ const PLANS_TR: Plan[] = [
     key: 'advanced',
     name: 'Advanced',
     price: '$29',
-    desc: 'Büyük projeler ve yoğun analistler için.',
+    desc: 'Büyük projeler için tam güç — tüm çıktılar',
     features: [
       '10 proje / ay',
       'Büyük projeler (16–40 hikaye)',
@@ -58,7 +58,7 @@ const PLANS_EN: Plan[] = [
     key: 'freemium',
     name: 'Freemium',
     price: '$0',
-    desc: 'Perfect to get started. No credit card required.',
+    desc: 'Story map + analysis document — free, start now',
     features: [
       '1 project / month',
       'Small projects (1–5 stories)',
@@ -71,7 +71,7 @@ const PLANS_EN: Plan[] = [
     key: 'analyst',
     name: 'Analyst',
     price: '$9',
-    desc: 'For individual analysts and small teams.',
+    desc: 'All outputs from story map to test scenarios',
     features: [
       '3 projects / month',
       'Medium projects (6–15 stories)',
@@ -84,7 +84,7 @@ const PLANS_EN: Plan[] = [
     key: 'advanced',
     name: 'Advanced',
     price: '$29',
-    desc: 'For large projects and power analysts.',
+    desc: 'Full power for large projects — all outputs',
     features: [
       '10 projects / month',
       'Large projects (16–40 stories)',
@@ -109,7 +109,6 @@ export default async function PricingTeaser() {
     : 'Choose the plan that fits your project.'
   const sectionLabel = locale === 'tr' ? 'Fiyatlandırma' : 'Pricing'
   const mostPopular = locale === 'tr' ? 'EN POPÜLER' : 'MOST POPULAR'
-  const tryCta = locale === 'tr' ? '14 gün ücretsiz dene' : 'Try free for 14 days'
   const signUpCta = locale === 'tr' ? 'Hesap aç' : 'Sign up'
 
   return (
@@ -157,7 +156,7 @@ export default async function PricingTeaser() {
                       : 'bg-white text-kx-ink border border-kx-ink'
                   }`}
                 >
-                  {isHl ? tryCta : signUpCta}
+                  {signUpCta}
                 </Link>
 
                 <ul className="list-none p-0 m-0 flex flex-col gap-2.5">

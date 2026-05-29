@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { getLocale } from 'next-intl/server'
 import KxPill from '@/components/ui/KxPill'
 import HeroProductPreview from './HeroProductPreview'
 
@@ -179,7 +180,10 @@ function FeatureBlock({
   )
 }
 
-export default function Features() {
+export default async function Features() {
+  const locale = await getLocale()
+  const isTR = locale === 'tr'
+
   return (
     <section id="ozellikler" className="bg-white py-22 px-8">
       <div className="max-w-[1180px] mx-auto">
@@ -207,7 +211,9 @@ export default function Features() {
           tone="blue"
           reverse
           title="Müşteriye gönderilebilir Word dokümanı."
-          desc="Her sürüm için ayrı, kabul kriterleri ve iş kurallarıyla zenginleştirilmiş, biçim olarak şirketinin standartlarına uygun bir .docx — saatler içinde."
+          desc={isTR
+            ? 'R1\'den R3\'e her sürüm için — kabul kriterleri, iş kuralları ve etki analiziyle eksiksiz, müşteriye gönderilebilir .docx. Dakikalar içinde.'
+            : 'From R1 to R3 — complete, client-ready .docx with acceptance criteria, business rules and impact analysis. In minutes.'}
           visual={<VisualDoc />}
         />
         <FeatureBlock

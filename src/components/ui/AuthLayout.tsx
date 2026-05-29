@@ -66,6 +66,7 @@ function BrandPanel({ variant }: { variant: Variant }) {
             ['Hikaye haritası',          'Destan, hikaye, kabul kriteri — eksiksiz'],
             ['İş analizi dokümanı',      'Müşteriye yollanabilir .docx, dakikalar içinde'],
             ['Tıklanabilir prototip',    'Paydaş demosu için çalışan HTML akış'],
+            ['Test senaryoları (.xlsx)', 'QA ekibine teslim edilebilir test senaryoları'],
           ].map(([t, d]) => (
             <div key={t} className="flex items-start gap-3">
               <div className="w-6 h-6 rounded-md bg-kx-red grid place-items-center text-[11px] font-bold shrink-0">✓</div>
