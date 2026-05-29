@@ -2,10 +2,20 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { sifreDegistir, hesapSilTalebi, cikisYap } from '@/lib/auth/actions'
+import { sifreDegistir, hesapSilTalebi } from '@/lib/auth/actions'
 import { Link } from '@/i18n/navigation'
 import type { PlanBilgisi } from '@/lib/abonelik'
 
+/* ── Plan badge ──────────────────────────────────────────────── */
+const PLAN_BADGE: Record<string, { bg: string; color: string }> = {
+  freemium:   { bg: '#F3F4F6', color: '#6B7280' },
+  analyst:    { bg: '#B5D4F4', color: '#0C447C' },
+  advanced:   { bg: '#C0DD97', color: '#27500A' },
+  enterprise: { bg: '#CECBF6', color: '#3C3489' },
+}
+const SHOW_UPGRADE = new Set(['freemium', 'analyst'])
+
+/* ── Types ───────────────────────────────────────────────────── */
 type Labels = {
   temelBilgiler: string
   ad: string
@@ -20,62 +30,69 @@ type Labels = {
   mevcutPlan: string
   aylikKullanim: string
   planiYukselt: string
-  hesapSil: string
-  hesapSilAciklama: string
   hesapSilBtn: string
+  hesapSilAciklama: string
   hesapSilOnay: string
   hatalar: { sifre_kisa: string; sifre_eslesmiyor: string; genel: string }
 }
 
 type Props = {
-  user: { id: string; email: string; ad: string; soyad: string }
+  user: { id: string; email: string; ad: string; soyad: string; displayName: string; initials: string }
   planBilgisi: PlanBilgisi
   locale: string
   labels: Labels
 }
 
-const PLAN_BADGE: Record<string, string> = {
-  freemium:   'bg-gray-100 text-gray-600',
-  analyst:    'bg-[#EEF4FB] text-[#1F3864]',
-  advanced:   'bg-[#EDE9FE] text-[#5B21B6]',
-  enterprise: 'bg-[#FEF3C7] text-[#92400E]',
-}
-
-function Card({ title, children }: { title: string; children: React.ReactNode }) {
+/* ── Section card ────────────────────────────────────────────── */
+function Section({ label, danger, children }: { label: string; danger?: boolean; children: React.ReactNode }) {
   return (
-    <div className="bg-white border border-kx-border rounded-xl p-5 mb-3">
-      <h2 className="text-[13px] font-semibold text-kx-muted uppercase tracking-[0.06em] mb-4">{title}</h2>
-      {children}
+    <div
+      className="bg-white rounded-lg mb-4"
+      style={{ border: danger ? '1px solid #FCA5A5' : '0.5px solid #D9DCE3' }}
+    >
+      <div
+        className="px-5 pt-4 pb-2 text-[10.5px] font-bold tracking-[0.09em] uppercase"
+        style={{ color: danger ? '#DC2626' : '#9CA3AF' }}
+      >
+        {label}
+      </div>
+      <div className="px-5 pb-5">{children}</div>
     </div>
   )
 }
 
+/* ── Field row ───────────────────────────────────────────────── */
 function FieldRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-center gap-4 py-2 border-b border-kx-border-soft last:border-0">
-      <span className="text-[12px] text-kx-muted w-24 shrink-0">{label}</span>
-      <span className="text-[13px] text-kx-ink font-medium">{value || '—'}</span>
+    <div className="flex items-center py-2.5 border-b last:border-0" style={{ borderColor: '#ECEEF2' }}>
+      <span className="text-[12.5px] w-28 shrink-0" style={{ color: '#6B7280' }}>{label}</span>
+      <span className="text-[13.5px] font-medium" style={{ color: '#1A2C4E' }}>{value || '—'}</span>
     </div>
   )
 }
 
+/* ── Component ───────────────────────────────────────────────── */
 export default function HesapIstemci({ user, planBilgisi, locale, labels: L }: Props) {
   const router = useRouter()
   const [sifreState, setSifreState] = useState<{ error?: string; success?: string } | null>(null)
-  const [sifrePending, startSifreTrans] = useTransition()
+  const [pending, startTrans] = useTransition()
 
   const { plan, abonelik } = planBilgisi
-  const showUpgrade = !['advanced', 'enterprise'].includes(plan.kod)
-  const limit = plan.aylik_proje_limiti
+  const badge    = PLAN_BADGE[plan.kod] ?? PLAN_BADGE.freemium
+  const limit    = plan.aylik_proje_limiti
   const kullanim = abonelik?.aylik_proje_sayaci ?? 0
+  const progress = limit ? Math.min((kullanim / limit) * 100, 100) : 0
+
+  const isTR = locale === 'tr'
 
   function handleSifreSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     const fd = new FormData(e.currentTarget)
     setSifreState(null)
-    startSifreTrans(async () => {
+    startTrans(async () => {
       const result = await sifreDegistir(null, fd)
       setSifreState(result)
+      if (result?.success) (e.target as HTMLFormElement).reset()
     })
   }
 
@@ -84,7 +101,7 @@ export default function HesapIstemci({ user, planBilgisi, locale, labels: L }: P
     if (!onay) return
     const fd = new FormData()
     fd.append('locale', locale)
-    startSifreTrans(async () => {
+    startTrans(async () => {
       await hesapSilTalebi(null, fd)
       router.push(`/${locale}`)
     })
@@ -95,19 +112,37 @@ export default function HesapIstemci({ user, planBilgisi, locale, labels: L }: P
     : null
 
   return (
-    <>
-      {/* Temel Bilgiler */}
-      <Card title={L.temelBilgiler}>
-        <FieldRow label={L.ad} value={user.ad} />
+    <div>
+      {/* ── Avatar header ── */}
+      <div className="flex items-center gap-4 mb-8">
+        <div
+          className="grid place-items-center rounded-full shrink-0 text-white font-bold text-[20px] tracking-wide"
+          style={{ width: 56, height: 56, backgroundColor: '#1F3864' }}
+        >
+          {user.initials}
+        </div>
+        <div>
+          <div className="text-[18px] font-medium leading-snug" style={{ color: '#1A2C4E' }}>
+            {user.displayName}
+          </div>
+          <div className="text-[13px] mt-0.5" style={{ color: '#9CA3AF' }}>
+            {user.email}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Section 1: Basic Information ── */}
+      <Section label={L.temelBilgiler}>
+        <FieldRow label={L.ad}    value={user.ad} />
         <FieldRow label={L.soyad} value={user.soyad} />
         <FieldRow label={L.email} value={user.email} />
-      </Card>
+      </Section>
 
-      {/* Şifre Değiştir */}
-      <Card title={L.sifreDegistir}>
-        <form onSubmit={handleSifreSubmit} className="space-y-3.5">
+      {/* ── Section 2: Change Password ── */}
+      <Section label={L.sifreDegistir}>
+        <form onSubmit={handleSifreSubmit} className="space-y-3.5" style={{ maxWidth: 360 }}>
           <div>
-            <label className="block text-[13px] font-medium text-kx-ink mb-1.5">
+            <label className="block text-[12.5px] font-medium mb-1.5" style={{ color: '#374151' }}>
               {L.yeniSifre}
             </label>
             <input
@@ -116,11 +151,18 @@ export default function HesapIstemci({ user, planBilgisi, locale, labels: L }: P
               placeholder="••••••••"
               minLength={8}
               required
-              className="w-full h-[40px] px-3 rounded-xl border border-kx-border text-[14px] text-kx-ink bg-white outline-none focus:ring-2 focus:ring-kx-blue/30 transition"
+              className="w-full h-[38px] px-3 rounded-lg text-[13.5px] outline-none transition"
+              style={{
+                border: '1px solid #D1D5DB',
+                color: '#1A2C4E',
+                background: '#fff',
+              }}
+              onFocus={e => (e.target.style.borderColor = '#2E75B6')}
+              onBlur={e => (e.target.style.borderColor = '#D1D5DB')}
             />
           </div>
           <div>
-            <label className="block text-[13px] font-medium text-kx-ink mb-1.5">
+            <label className="block text-[12.5px] font-medium mb-1.5" style={{ color: '#374151' }}>
               {L.yeniSifreTekrar}
             </label>
             <input
@@ -129,61 +171,95 @@ export default function HesapIstemci({ user, planBilgisi, locale, labels: L }: P
               placeholder="••••••••"
               minLength={8}
               required
-              className="w-full h-[40px] px-3 rounded-xl border border-kx-border text-[14px] text-kx-ink bg-white outline-none focus:ring-2 focus:ring-kx-blue/30 transition"
+              className="w-full h-[38px] px-3 rounded-lg text-[13.5px] outline-none transition"
+              style={{
+                border: '1px solid #D1D5DB',
+                color: '#1A2C4E',
+                background: '#fff',
+              }}
+              onFocus={e => (e.target.style.borderColor = '#2E75B6')}
+              onBlur={e => (e.target.style.borderColor = '#D1D5DB')}
             />
           </div>
-          {sifreHata && <p className="text-[13px] text-red-600">{sifreHata}</p>}
-          {sifreState?.success === 'ok' && (
-            <p className="text-[13px] text-green-700">{L.kaydedildi}</p>
+
+          {sifreHata && (
+            <p className="text-[12.5px]" style={{ color: '#DC2626' }}>{sifreHata}</p>
           )}
+          {sifreState?.success === 'ok' && (
+            <p className="text-[12.5px]" style={{ color: '#27500A' }}>{L.kaydedildi}</p>
+          )}
+
           <button
             type="submit"
-            disabled={sifrePending}
-            className="bg-kx-navy text-white text-[13px] font-semibold px-5 py-2 rounded-xl disabled:opacity-50 transition"
+            disabled={pending}
+            className="text-[13px] font-semibold text-white px-5 py-2 rounded-lg transition disabled:opacity-50"
+            style={{ background: '#1F3864' }}
           >
-            {sifrePending ? '...' : L.kaydet}
+            {pending ? '…' : L.kaydet}
           </button>
         </form>
-      </Card>
+      </Section>
 
-      {/* Abonelik */}
-      <Card title={L.abonelik}>
-        <div className="flex justify-between items-center py-2.5 border-b border-kx-border-soft">
-          <span className="text-[13px] text-kx-muted">{L.mevcutPlan}</span>
-          <span className={`text-[11px] font-bold px-2.5 py-1 rounded-full ${PLAN_BADGE[plan.kod] ?? 'bg-gray-100 text-gray-600'}`}>
+      {/* ── Section 3: Subscription ── */}
+      <Section label={L.abonelik}>
+        {/* Current plan */}
+        <div className="flex items-center justify-between py-3 border-b" style={{ borderColor: '#ECEEF2' }}>
+          <span className="text-[13px]" style={{ color: '#6B7280' }}>{L.mevcutPlan}</span>
+          <span
+            className="text-[11px] font-bold px-2.5 py-1 rounded-full"
+            style={{ background: badge.bg, color: badge.color }}
+          >
             {plan.ad}
           </span>
         </div>
+
+        {/* Monthly usage */}
         {limit !== null && (
-          <div className="flex justify-between items-center py-2.5 border-b border-kx-border-soft">
-            <span className="text-[13px] text-kx-muted">{L.aylikKullanim}</span>
-            <span className="text-[13px] text-kx-ink font-medium">{kullanim} / {limit}</span>
+          <div className="py-3 border-b" style={{ borderColor: '#ECEEF2' }}>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[13px]" style={{ color: '#6B7280' }}>{L.aylikKullanim}</span>
+              <span className="text-[13px] font-medium" style={{ color: '#1A2C4E' }}>
+                {kullanim} / {limit} {isTR ? 'proje' : 'projects'}
+              </span>
+            </div>
+            <div className="w-full rounded-full overflow-hidden" style={{ height: 6, background: '#E5E7EB' }}>
+              <div
+                className="h-full rounded-full transition-all"
+                style={{ width: `${progress}%`, background: '#2E75B6' }}
+              />
+            </div>
           </div>
         )}
-        {showUpgrade && (
-          <div className="pt-4">
+
+        {/* Upgrade */}
+        {SHOW_UPGRADE.has(plan.kod) && (
+          <div className="pt-3.5">
             <Link
               href="/pricing"
-              className="inline-flex items-center text-[13px] font-semibold text-kx-blue no-underline hover:underline"
+              className="inline-flex items-center gap-1.5 text-[13px] font-semibold no-underline transition-opacity hover:opacity-75"
+              style={{ color: '#2E75B6' }}
             >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 19V5M5 12l7-7 7 7" />
+              </svg>
               {L.planiYukselt}
             </Link>
           </div>
         )}
-      </Card>
+      </Section>
 
-      {/* Hesap Sil */}
-      <div className="bg-white border border-red-200 rounded-2xl p-6 mt-6">
-        <h2 className="text-[15px] font-semibold text-red-700 mb-1">{L.hesapSil}</h2>
-        <p className="text-[13px] text-kx-muted mb-4">{L.hesapSilAciklama}</p>
+      {/* ── Section 4: Danger Zone ── */}
+      <Section label={isTR ? 'TEHLİKELİ ALAN' : 'DANGER ZONE'} danger>
+        <p className="text-[13px] mb-4" style={{ color: '#9CA3AF' }}>{L.hesapSilAciklama}</p>
         <button
           onClick={handleHesapSil}
-          disabled={sifrePending}
-          className="text-[13px] font-semibold text-white bg-red-600 hover:bg-red-700 disabled:opacity-50 px-5 py-2 rounded-xl transition"
+          disabled={pending}
+          className="text-[13px] font-semibold px-5 py-2 rounded-lg transition disabled:opacity-50"
+          style={{ background: '#DC2626', color: '#fff' }}
         >
           {L.hesapSilBtn}
         </button>
-      </div>
-    </>
+      </Section>
+    </div>
   )
 }
