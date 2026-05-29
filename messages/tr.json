@@ -167,7 +167,9 @@
                      "bosHal":  {
                                     "baslik":  "Henüz projeniz yok",
                                     "aciklama":  "Yapay zeka destekli iş analizine başlamak için ilk projenizi oluşturun.",
-                                    "btn":  "Yeni Proje Oluştur"
+                                    "btn":  "Yeni Proje Oluştur",
+                                    "arsivBaslik":  "Arşiv boş",
+                                    "arsivAciklama":  "Henüz arşivlenmiş projeniz yok."
                                 },
                      "kart":  {
                                   "hikayeSayisi":  "hikaye",

@@ -696,6 +696,7 @@ function EkranIci({
   // Başarı banner'ı: sadece yeni proje oluşturulduğunda göster
   const initialProjeIdRef = useRef<string | null>(projeId)
   const [basariBannerGoster, setBasariBannerGoster] = useState(false)
+  const [tamamlandiBannerGoster, setTamamlandiBannerGoster] = useState(false)
   useEffect(() => {
     if (initialProjeIdRef.current === null && projeId !== null) {
       setBasariBannerGoster(true)
@@ -1298,6 +1299,17 @@ function EkranIci({
           { onConflict: 'proje_id,tip_id' },
         )
         if (upsertError) console.error('[generateTestScenarios] kayıt hatası:', upsertError)
+
+        // Proje tamamlandı — durumu güncelle
+        const { error: durumHata } = await supabase
+          .from('projeler')
+          .update({ durum: 'tamamlandi' })
+          .eq('id', projeId)
+        if (durumHata) console.error('[generateTestScenarios] durum güncelleme hatası:', durumHata)
+        else {
+          setTamamlandiBannerGoster(true)
+          setTimeout(() => setTamamlandiBannerGoster(false), 10000)
+        }
       }
 
       setAdim5Metrigi({ sure: sure5, token: token5 })
@@ -1483,6 +1495,34 @@ function EkranIci({
                     </div>
                     <button
                       onClick={() => setBasariBannerGoster(false)}
+                      className="shrink-0 hover:opacity-70 transition"
+                      aria-label="Kapat"
+                    >
+                      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                        <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                      </svg>
+                    </button>
+                  </div>
+                )}
+
+                {/* Proje tamamlandı bildirimi */}
+                {tamamlandiBannerGoster && (
+                  <div
+                    className="flex items-start gap-2"
+                    style={{ backgroundColor: '#EAF3DE', color: '#27500A', border: '0.5px solid #C0DD97', borderRadius: 8, padding: '10px 14px' }}
+                  >
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold">
+                        {projektDili === 'TR' ? '🎉 Proje tamamlandı!' : '🎉 Project completed!'}
+                      </p>
+                      <p className="text-xs mt-0.5" style={{ opacity: 0.8 }}>
+                        {projektDili === 'TR'
+                          ? 'Tüm adımlar başarıyla üretildi. Proje artık tamamlandı olarak işaretlendi.'
+                          : 'All steps generated successfully. The project is now marked as completed.'}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => setTamamlandiBannerGoster(false)}
                       className="shrink-0 hover:opacity-70 transition"
                       aria-label="Kapat"
                     >

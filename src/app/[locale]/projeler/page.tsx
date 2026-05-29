@@ -2,15 +2,19 @@ import { redirect } from '@/i18n/navigation'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
 import { Link } from '@/i18n/navigation'
+import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import type { ProjeListeRow } from '@/lib/projects/actions'
-import KxPill from '@/components/ui/KxPill'
 import ProjeKarti from '@/components/ProjeKarti'
+import ProjeSekmesi from '@/components/ProjeSekmesi'
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('projeler')
   return { title: t('baslik') }
 }
+
+const SELECT =
+  'id, ad, aciklama, dil, durum, arsivlendi_tarih, olusturma_tarihi, guncelleme_tarihi, hikayeler(count), dokumanlar(tip_id)'
 
 function formatTarih(tarihStr: string, locale: string) {
   return new Intl.DateTimeFormat(locale === 'tr' ? 'tr-TR' : 'en-US', {
@@ -19,10 +23,6 @@ function formatTarih(tarihStr: string, locale: string) {
     year: 'numeric',
   }).format(new Date(tarihStr))
 }
-
-/* ──────────────────────────────────────────────────────────────────
-   Dashboard header — welcome line + project count + "+ Yeni proje"
-   ────────────────────────────────────────────────────────────────── */
 
 function DashboardHeader({
   username,
@@ -60,11 +60,23 @@ function DashboardHeader({
   )
 }
 
-/* ──────────────────────────────────────────────────────────────────
-   Empty state — uses repo's bosHal copy
-   ────────────────────────────────────────────────────────────────── */
-
-function EmptyState({ t, yeniProjeHref }: { t: Awaited<ReturnType<typeof getTranslations<'projeler'>>>; yeniProjeHref: string }) {
+function EmptyState({
+  t,
+  yeniProjeHref,
+  isArsiv,
+}: {
+  t: Awaited<ReturnType<typeof getTranslations<'projeler'>>>
+  yeniProjeHref: string
+  isArsiv: boolean
+}) {
+  if (isArsiv) {
+    return (
+      <div className="bg-white rounded-2xl border border-kx-border flex flex-col items-center justify-center py-20 px-6 text-center">
+        <p className="text-[16px] font-semibold text-kx-ink mb-2">{t('bosHal.arsivBaslik')}</p>
+        <p className="text-[13.5px] text-kx-muted max-w-sm leading-[1.55]">{t('bosHal.arsivAciklama')}</p>
+      </div>
+    )
+  }
   return (
     <div className="bg-white rounded-2xl border border-kx-border flex flex-col items-center justify-center py-20 px-6 text-center">
       <div className="grid place-items-center rounded-2xl mb-5 w-14 h-14 bg-kx-blue-soft">
@@ -90,11 +102,12 @@ function EmptyState({ t, yeniProjeHref }: { t: Awaited<ReturnType<typeof getTran
   )
 }
 
-/* ──────────────────────────────────────────────────────────────────
-   Main page
-   ────────────────────────────────────────────────────────────────── */
+type SearchParams = Promise<{ sekme?: string }>
 
-export default async function ProjelerPage() {
+export default async function ProjelerPage({ searchParams }: { searchParams: SearchParams }) {
+  const { sekme: sekmeParam } = await searchParams
+  const sekme = sekmeParam === 'arsiv' ? 'arsiv' : 'aktif'
+
   const supabase = await createClient()
   const {
     data: { user },
@@ -107,9 +120,9 @@ export default async function ProjelerPage() {
 
   const t = await getTranslations('projeler')
 
-  const { data: projeler, error: projelerHata } = await supabase
+  const { data: tumProjeler, error: projelerHata } = await supabase
     .from('projeler')
-    .select('*')
+    .select(SELECT)
     .eq('kullanici_id', user!.id)
     .order('olusturma_tarihi', { ascending: false })
 
@@ -117,7 +130,10 @@ export default async function ProjelerPage() {
     console.error('[ProjelerPage] sorgu hatası:', projelerHata)
   }
 
-  const liste = (projeler ?? []) as unknown as ProjeListeRow[]
+  const tumListe = (tumProjeler ?? []) as unknown as ProjeListeRow[]
+  const aktifListe = tumListe.filter((p) => p.durum === 'aktif' || p.durum === 'tamamlandi')
+  const arsivListe = tumListe.filter((p) => p.durum === 'arsivlendi')
+  const gorunenListe = sekme === 'arsiv' ? arsivListe : aktifListe
 
   const username =
     (user?.user_metadata?.ad as string | undefined) ||
@@ -125,6 +141,13 @@ export default async function ProjelerPage() {
     ''
 
   const yeniProjeHref = '/projeler/yeni'
+  const isTR = locale === 'tr'
+
+  const durumLabelMap: Record<string, string> = {
+    aktif:      isTR ? 'Aktif'      : 'Active',
+    tamamlandi: isTR ? 'Tamamlandı' : 'Completed',
+    arsivlendi: isTR ? 'Arşivlendi' : 'Archived',
+  }
 
   return (
     <>
@@ -139,16 +162,25 @@ export default async function ProjelerPage() {
 
           <DashboardHeader
             username={username}
-            toplam={liste.length}
+            toplam={gorunenListe.length}
             yeniProjeLabel={t('yeniProje').replace(/^\+\s*/, '')}
             yeniProjeHref={yeniProjeHref}
           />
 
-          {liste.length === 0 ? (
-            <EmptyState t={t} yeniProjeHref={yeniProjeHref} />
+          <Suspense fallback={null}>
+            <ProjeSekmesi
+              aktifLabel={isTR ? 'Aktif Projeler' : 'Active Projects'}
+              arsivLabel={isTR ? 'Arşiv' : 'Archive'}
+              aktifSayi={aktifListe.length}
+              arsivSayi={arsivListe.length}
+            />
+          </Suspense>
+
+          {gorunenListe.length === 0 ? (
+            <EmptyState t={t} yeniProjeHref={yeniProjeHref} isArsiv={sekme === 'arsiv'} />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
-              {liste.map((proje) => (
+              {gorunenListe.map((proje) => (
                 <ProjeKarti
                   key={proje.id}
                   proje={proje}
@@ -161,6 +193,13 @@ export default async function ProjelerPage() {
                   hikayeEtiketi={t('kart.hikayeSayisi')}
                   dokumanEtiketi={t('kart.dokumanSayisi')}
                   dilEtiketi={(proje.dil ?? 'TR').toUpperCase()}
+                  durumLabel={durumLabelMap[proje.durum] ?? proje.durum}
+                  locale={locale}
+                  arsivleOnayi={
+                    isTR
+                      ? `"${proje.ad}" projesini arşivlemek istediğinize emin misiniz? Arşivlenen projeler Arşiv sekmesinden erişilebilir.`
+                      : `Are you sure you want to archive "${proje.ad}"? Archived projects can be accessed from the Archive tab.`
+                  }
                 />
               ))}
             </div>

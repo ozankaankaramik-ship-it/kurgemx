@@ -69,17 +69,31 @@ export default function ProjeListesi({ initialProjeler, toplamSayiVar }: Props) 
   return (
     <div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {projeler.map((proje) => (
-          <ProjeKarti
-            key={proje.id}
-            proje={proje}
-            href={projeHref(proje.id)}
-            olusturmaTarihi={formatTarih(proje.olusturma_tarihi)}
-            hikayeEtiketi={t('kart.hikayeSayisi')}
-            dokumanEtiketi={t('kart.dokumanSayisi')}
-            dilEtiketi={dilEtiketi(proje.dil)}
-          />
-        ))}
+        {projeler.map((proje) => {
+          const durumLabelMap: Record<string, string> = {
+            aktif:      locale === 'tr' ? 'Aktif'      : 'Active',
+            tamamlandi: locale === 'tr' ? 'Tamamlandı' : 'Completed',
+            arsivlendi: locale === 'tr' ? 'Arşivlendi' : 'Archived',
+          }
+          return (
+            <ProjeKarti
+              key={proje.id}
+              proje={proje}
+              href={projeHref(proje.id)}
+              olusturmaTarihi={formatTarih(proje.olusturma_tarihi)}
+              hikayeEtiketi={t('kart.hikayeSayisi')}
+              dokumanEtiketi={t('kart.dokumanSayisi')}
+              dilEtiketi={dilEtiketi(proje.dil)}
+              durumLabel={durumLabelMap[proje.durum] ?? proje.durum}
+              locale={locale}
+              arsivleOnayi={
+                locale === 'tr'
+                  ? `"${proje.ad}" projesini arşivlemek istediğinize emin misiniz?`
+                  : `Are you sure you want to archive "${proje.ad}"?`
+              }
+            />
+          )
+        })}
       </div>
 
       {!bitti && (

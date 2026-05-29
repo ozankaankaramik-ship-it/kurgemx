@@ -167,7 +167,9 @@
                      "bosHal":  {
                                     "baslik":  "No projects yet",
                                     "aciklama":  "Create your first project to get started with AI-powered business analysis.",
-                                    "btn":  "Create New Project"
+                                    "btn":  "Create New Project",
+                                    "arsivBaslik":  "Archive is empty",
+                                    "arsivAciklama":  "You have no archived projects yet."
                                 },
                      "kart":  {
                                   "hikayeSayisi":  "stories",

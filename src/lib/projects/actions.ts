@@ -1,6 +1,7 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
+import { revalidatePath } from 'next/cache'
 
 export type ProjeListeRow = {
   id: string
@@ -8,18 +9,17 @@ export type ProjeListeRow = {
   aciklama: string | null
   dil: string
   durum: string
+  arsivlendi_tarih: string | null
   olusturma_tarihi: string
   guncelleme_tarihi: string
   hikayeler: { count: number }[]
-  analiz_dokumanlari: { count: number }[]
+  dokumanlar: { tip_id: string }[]
 }
 
-const SAYFA_BOYUTU = 10
-
 const SELECT =
-  'id, ad, aciklama, dil, durum, olusturma_tarihi, guncelleme_tarihi, hikayeler(count), analiz_dokumanlari(count)'
+  'id, ad, aciklama, dil, durum, arsivlendi_tarih, olusturma_tarihi, guncelleme_tarihi, hikayeler(count), dokumanlar(tip_id)'
 
-export async function projeleriGetir(offset: number): Promise<ProjeListeRow[]> {
+export async function projeleriGetir(offset: number, limit = 10): Promise<ProjeListeRow[]> {
   const supabase = await createClient()
   const {
     data: { user },
@@ -31,7 +31,7 @@ export async function projeleriGetir(offset: number): Promise<ProjeListeRow[]> {
     .select(SELECT)
     .eq('kullanici_id', user.id)
     .order('olusturma_tarihi', { ascending: false })
-    .range(offset, offset + SAYFA_BOYUTU - 1)
+    .range(offset, offset + limit - 1)
 
   return (data ?? []) as unknown as ProjeListeRow[]
 }
@@ -42,6 +42,7 @@ export type ProjeDetayRow = {
   aciklama: string | null
   dil: string | null
   durum: string
+  arsivlendi_tarih: string | null
   proje_buyuklugu: 'Küçük' | 'Orta' | 'Büyük' | null
   kaynak_dokuman_url: string | null
   olusturma_tarihi: string
@@ -52,7 +53,7 @@ export async function projeGetir(id: string): Promise<ProjeDetayRow | null> {
   const supabase = await createClient()
   const { data } = await supabase
     .from('projeler')
-    .select('id, ad, aciklama, dil, durum, proje_buyuklugu, kaynak_dokuman_url, olusturma_tarihi, guncelleme_tarihi')
+    .select('id, ad, aciklama, dil, durum, arsivlendi_tarih, proje_buyuklugu, kaynak_dokuman_url, olusturma_tarihi, guncelleme_tarihi')
     .eq('id', id)
     .single()
 
@@ -67,4 +68,22 @@ export async function projeAdiBaskasindaVarMi(ad: string): Promise<boolean> {
     .ilike('ad', ad)
 
   return (count ?? 0) > 0
+}
+
+export async function arsivleProje(projeId: string): Promise<{ error?: string }> {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) return { error: 'unauthorized' }
+
+  const { error } = await supabase
+    .from('projeler')
+    .update({ durum: 'arsivlendi', arsivlendi_tarih: new Date().toISOString() })
+    .eq('id', projeId)
+    .eq('kullanici_id', user.id)
+
+  if (error) return { error: error.message }
+  revalidatePath('/projeler')
+  return {}
 }
