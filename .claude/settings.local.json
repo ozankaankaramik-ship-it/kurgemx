@@ -76,7 +76,10 @@
       "PowerShell(Get-ChildItem \"C:\\\\Users\\\\ozank\\\\Documents\\\\İşAnaliziAjan\\\\kurgemx\\\\\" | Where-Object { $_.Extension -in @\\('.md', '.html', '.json'\\) -and $_.Name -notmatch 'node_modules' } | Select-Object Name, LastWriteTime | Sort-Object LastWriteTime -Descending | Select-Object -First 30)",
       "PowerShell(\\(Get-Content \"C:\\\\Users\\\\ozank\\\\Documents\\\\İşAnaliziAjan\\\\kurgemx\\\\src\\\\components\\\\calisma\\\\CalismaEkrani.tsx\" | Measure-Object -Line\\).Lines)",
       "Bash(Select-Object -ExpandProperty FullName)",
-      "Bash(del \"C:\\\\Users\\\\ozank\\\\Documents\\\\İşAnaliziAjan\\\\kurgemx\\\\src\\\\proxy.ts\")"
+      "Bash(del \"C:\\\\Users\\\\ozank\\\\Documents\\\\İşAnaliziAjan\\\\kurgemx\\\\src\\\\proxy.ts\")",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\ozank\\\\Documents\\\\İşAnaliziAjan\\\\kurgemx\\\\src\\\\app\\\\[locale\\\\]\" -Directory)",
+      "Bash(mkdir \"C:\\\\Users\\\\ozank\\\\Documents\\\\İşAnaliziAjan\\\\kurgemx\\\\src\\\\app\\\\[locale]\\\\hesap\")",
+      "Bash(mkdir \"C:\\\\Users\\\\ozank\\\\Documents\\\\İşAnaliziAjan\\\\kurgemx\\\\src\\\\app\\\\[locale]\\\\contact\")"
     ]
   },
   "hooks": {

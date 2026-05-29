@@ -6,7 +6,14 @@ export const routing = defineRouting({
   pathnames: {
     "/": "/",
     "/about": "/about",
-    "/contact": "/contact",
+    "/contact": {
+      tr: "/iletisim",
+      en: "/contact",
+    },
+    "/hesap": {
+      tr: "/hesap",
+      en: "/account",
+    },
     "/pricing": "/pricing",
     "/terms": "/terms",
     "/privacy": "/privacy",

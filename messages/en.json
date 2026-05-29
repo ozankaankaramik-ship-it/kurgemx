@@ -7,7 +7,8 @@
                 "getStarted":  "Get Started",
                 "hakkimizda":  "About",
                 "about":  "About",
-                "pricing":  "Pricing"
+                "pricing":  "Pricing",
+                "iletisim":  "Contact"
             },
     "home":  {
                  "title":  "Welcome to Kurgemx",
@@ -40,6 +41,7 @@
                                "hatalar":  {
                                                "invalid_credentials":  "Invalid email or password.",
                                                "email_not_confirmed":  "Your email is not confirmed yet. Please check your inbox.",
+                                               "hesap_pasif":  "Your account is being deleted. Contact support@kurgemx.com for information.",
                                                "genel":  "An error occurred while signing in. Please try again."
                                            }
                            },
@@ -451,12 +453,56 @@
                    "brand":  "A registered trademark of Kurumsal Gelişim Merkezi (KURGEM).",
                    "about":  "About",
                    "pricing":  "Pricing",
+                   "contact":  "Contact",
                    "terms":  "Terms of Service",
                    "privacy":  "Privacy Policy",
                    "refund":  "Refund Policy",
                    "salesAgreement":  "Distance Sales Agreement",
                    "payment":  "Secure Payment"
                },
+    "hesap":  {
+                  "baslik":  "My Account",
+                  "temelBilgiler":  "Basic Information",
+                  "ad":  "First Name",
+                  "soyad":  "Last Name",
+                  "email":  "Email",
+                  "sifreDegistir":  "Change Password",
+                  "yeniSifre":  "New Password",
+                  "yeniSifreTekrar":  "New Password (Confirm)",
+                  "kaydet":  "Save",
+                  "kaydedildi":  "Your password has been updated.",
+                  "abonelik":  "Subscription",
+                  "mevcutPlan":  "Current Plan",
+                  "aylikKullanim":  "Monthly Usage",
+                  "planiYukselt":  "Upgrade Plan →",
+                  "hesapSil":  "Delete My Account",
+                  "hesapSilAciklama":  "Danger zone. This action cannot be undone.",
+                  "hesapSilBtn":  "Permanently Delete My Account",
+                  "hesapSilOnay":  "Your account will be deleted in 30 days. You will not be able to log in during this period. This action cannot be undone. Are you sure?",
+                  "hatalar":  {
+                      "sifre_kisa":  "Password must be at least 8 characters.",
+                      "sifre_eslesmiyor":  "Passwords do not match.",
+                      "genel":  "An error occurred. Please try again."
+                  }
+              },
+    "iletisim":  {
+                     "baslik":  "Contact",
+                     "altBaslik":  "Reach out to us with your questions.",
+                     "email":  "Email",
+                     "adres":  "Address",
+                     "form":  {
+                                  "baslik":  "Send a Message",
+                                  "ad":  "Your name",
+                                  "email":  "Your email address",
+                                  "mesaj":  "Your message",
+                                  "gonder":  "Send",
+                                  "basari":  "Your message has been sent. We will get back to you shortly.",
+                                  "hatalar":  {
+                                      "eksik_alan":  "Please fill in all fields.",
+                                      "genel":  "An error occurred while sending. Please try again."
+                                  }
+                              }
+                 },
     "about":  {
                   "baslik":  "About Us",
                   "altBaslik":  "The right address for AI-powered business analysis",

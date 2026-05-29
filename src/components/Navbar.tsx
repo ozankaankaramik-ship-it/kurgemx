@@ -119,13 +119,13 @@ export default function Navbar() {
             ) : !loadingUser ? (
               <div className="hidden md:flex items-center gap-7 text-[13.5px] text-white/78">
                 <Link href="/about" className="hover:text-white transition-colors">
-                  {tNav('about') ?? 'Ürün'}
+                  {tNav('hakkimizda')}
                 </Link>
                 <Link href="/pricing" className="hover:text-white transition-colors">
-                  {tNav('pricing') ?? 'Fiyatlandırma'}
+                  {tNav('pricing')}
                 </Link>
-                <Link href="/about" className="hover:text-white transition-colors">
-                  {tNav('hakkimizda') ?? 'Hakkımızda'}
+                <Link href="/contact" className="hover:text-white transition-colors">
+                  {tNav('iletisim')}
                 </Link>
               </div>
             ) : null}
@@ -178,6 +178,18 @@ export default function Navbar() {
                         </span>
                       )}
                     </div>
+
+                    {/* Hesap Ayarları */}
+                    <Link
+                      href="/hesap"
+                      onClick={() => setDropdownOpen(false)}
+                      className="flex items-center gap-2.5 px-4 py-2.5 text-[13px] text-kx-body hover:bg-kx-bg transition-colors no-underline"
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="8" r="4" /><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+                      </svg>
+                      {locale === 'tr' ? 'Hesap Ayarları' : 'Account Settings'}
+                    </Link>
 
                     {/* Plan yükselt */}
                     {showUpgrade && (
@@ -286,6 +298,13 @@ export default function Navbar() {
               >
                 {tNav('newProject')}
               </Link>
+              <Link
+                href="/hesap"
+                onClick={() => setMobileOpen(false)}
+                className="text-[14px] text-white/85 py-3 px-1 border-b border-white/10 hover:text-white transition-colors"
+              >
+                {locale === 'tr' ? 'Hesap Ayarları' : 'Account Settings'}
+              </Link>
               {showUpgrade && (
                 <Link
                   href="/pricing"
@@ -314,21 +333,21 @@ export default function Navbar() {
                 onClick={() => setMobileOpen(false)}
                 className="text-[14px] text-white/85 py-3 px-1 border-b border-white/10 hover:text-white transition-colors"
               >
-                {tNav('about') ?? 'Ürün'}
+                {tNav('hakkimizda')}
               </Link>
               <Link
                 href="/pricing"
                 onClick={() => setMobileOpen(false)}
                 className="text-[14px] text-white/85 py-3 px-1 border-b border-white/10 hover:text-white transition-colors"
               >
-                {tNav('pricing') ?? 'Fiyatlandırma'}
+                {tNav('pricing')}
               </Link>
               <Link
-                href="/about"
+                href="/contact"
                 onClick={() => setMobileOpen(false)}
                 className="text-[14px] text-white/85 py-3 px-1 border-b border-white/10 hover:text-white transition-colors"
               >
-                {tNav('hakkimizda') ?? 'Hakkımızda'}
+                {tNav('iletisim')}
               </Link>
               <div className="flex gap-2 pt-3 pb-1">
                 <Link

@@ -16,6 +16,7 @@ export default async function Footer() {
   const links = [
     { href: '/about'           as const, label: t('about') },
     { href: '/pricing'         as const, label: t('pricing') },
+    { href: '/contact'         as const, label: t('contact') },
     { href: '/terms'           as const, label: t('terms') },
     { href: '/privacy'         as const, label: t('privacy') },
     { href: '/refund'          as const, label: t('refund') },

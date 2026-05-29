@@ -7,7 +7,8 @@
                 "getStarted":  "Başla",
                 "hakkimizda":  "Hakkımızda",
                 "about":  "Hakkımızda",
-                "pricing":  "Fiyatlandırma"
+                "pricing":  "Fiyatlandırma",
+                "iletisim":  "İletişim"
             },
     "home":  {
                  "title":  "Kurgemx\u0027e Hoş Geldiniz",
@@ -40,6 +41,7 @@
                                "hatalar":  {
                                                "invalid_credentials":  "E-posta veya şifre hatalı.",
                                                "email_not_confirmed":  "E-postanız henüz doğrulanmamış. Lütfen gelen kutunuzu kontrol edin.",
+                                               "hesap_pasif":  "Hesabınız silinme sürecinde. Bilgi için support@kurgemx.com ile iletişime geçin.",
                                                "genel":  "Giriş yapılırken bir hata oluştu. Lütfen tekrar deneyin."
                                            }
                            },
@@ -451,12 +453,56 @@
                    "brand":  "Kurumsal Gelişim Merkezi (KURGEM)\u0027in tescilli markasıdır.",
                    "about":  "Hakkımızda",
                    "pricing":  "Fiyatlandırma",
+                   "contact":  "İletişim",
                    "terms":  "Kullanım Koşulları",
                    "privacy":  "Gizlilik Politikası",
                    "refund":  "İade Politikası",
                    "salesAgreement":  "Mesafeli Satış Sözleşmesi",
                    "payment":  "Güvenli Ödeme"
                },
+    "hesap":  {
+                  "baslik":  "Hesabım",
+                  "temelBilgiler":  "Temel Bilgiler",
+                  "ad":  "Ad",
+                  "soyad":  "Soyad",
+                  "email":  "E-posta",
+                  "sifreDegistir":  "Şifre Değiştir",
+                  "yeniSifre":  "Yeni Şifre",
+                  "yeniSifreTekrar":  "Yeni Şifre (Tekrar)",
+                  "kaydet":  "Kaydet",
+                  "kaydedildi":  "Şifreniz güncellendi.",
+                  "abonelik":  "Abonelik",
+                  "mevcutPlan":  "Mevcut Plan",
+                  "aylikKullanim":  "Aylık Kullanım",
+                  "planiYukselt":  "Planı Yükselt →",
+                  "hesapSil":  "Hesabımı Sil",
+                  "hesapSilAciklama":  "Tehlikeli alan. Bu işlem geri alınamaz.",
+                  "hesapSilBtn":  "Hesabımı Kalıcı Olarak Sil",
+                  "hesapSilOnay":  "Hesabınız 30 gün içinde silinecek. Bu sürede giriş yapamayacaksınız. Bu işlem geri alınamaz. Emin misiniz?",
+                  "hatalar":  {
+                      "sifre_kisa":  "Şifre en az 8 karakter olmalıdır.",
+                      "sifre_eslesmiyor":  "Şifreler eşleşmiyor.",
+                      "genel":  "Bir hata oluştu. Lütfen tekrar deneyin."
+                  }
+              },
+    "iletisim":  {
+                     "baslik":  "İletişim",
+                     "altBaslik":  "Sorularınız için bize ulaşın.",
+                     "email":  "E-posta",
+                     "adres":  "Adres",
+                     "form":  {
+                                  "baslik":  "Mesaj Gönder",
+                                  "ad":  "Adınız",
+                                  "email":  "E-posta adresiniz",
+                                  "mesaj":  "Mesajınız",
+                                  "gonder":  "Gönder",
+                                  "basari":  "Mesajınız iletildi. En kısa sürede dönüş yapacağız.",
+                                  "hatalar":  {
+                                      "eksik_alan":  "Lütfen tüm alanları doldurun.",
+                                      "genel":  "Gönderim sırasında bir hata oluştu. Lütfen tekrar deneyin."
+                                  }
+                              }
+                 },
     "about":  {
                   "baslik":  "Hakkımızda",
                   "altBaslik":  "Yapay zeka destekli iş analizi için doğru adres",

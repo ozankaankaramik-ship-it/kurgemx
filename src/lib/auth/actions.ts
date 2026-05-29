@@ -28,6 +28,20 @@ export async function girisYap(
     return { error: 'genel' }
   }
 
+  // Pasif kullanıcı kontrolü — giriş başarılıysa kullanıcı durumunu kontrol et
+  const { data: { user } } = await supabase.auth.getUser()
+  if (user) {
+    const { data: kullanici } = await supabase
+      .from('kullanicilar')
+      .select('durum')
+      .eq('id', user.id)
+      .single()
+    if (kullanici?.durum === 'pasif') {
+      await supabase.auth.signOut()
+      return { error: 'hesap_pasif' }
+    }
+  }
+
   redirect(`/${locale}`)
 }
 
@@ -160,6 +174,63 @@ export async function sifreGuncelle(
   }
 
   return { success: 'basariMesaji' }
+}
+
+// Hesap silme talebi
+export async function hesapSilTalebi(
+  prevState: AuthState,
+  formData: FormData
+): Promise<AuthState> {
+  const locale = (formData.get('locale') as string) || 'tr'
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'genel' }
+
+  const { error } = await supabase
+    .from('kullanicilar')
+    .update({ durum: 'pasif', silme_talep_tarihi: new Date().toISOString() })
+    .eq('id', user.id)
+
+  if (error) return { error: 'genel' }
+
+  // Destek mailı
+  try {
+    const { sendSupportMail, sendUserMail } = await import('@/lib/email')
+    const ad = (user.user_metadata?.ad as string | undefined) || user.email || ''
+    await sendSupportMail(
+      `[Hesap Silme Talebi] ${user.email}`,
+      `<p>Kullanıcı <strong>${ad}</strong> (${user.email}) hesabını silme talebinde bulundu.</p><p>Kullanıcı ID: ${user.id}</p><p>Talep zamanı: ${new Date().toISOString()}</p>`,
+    )
+    await sendUserMail(
+      user.email!,
+      locale === 'tr' ? 'KurgemX — Hesap Silme Talebiniz Alındı' : 'KurgemX — Account Deletion Request Received',
+      locale === 'tr'
+        ? `<p>Merhaba,</p><p>Hesabınızı silme talebiniz alındı. Hesabınız <strong>30 gün içinde</strong> kalıcı olarak silinecektir. Bu süre içinde giriş yapamayacaksınız.</p><p>Herhangi bir sorunuz için <a href="mailto:support@kurgemx.com">support@kurgemx.com</a> adresine yazabilirsiniz.</p><p>KurgemX Ekibi</p>`
+        : `<p>Hello,</p><p>Your account deletion request has been received. Your account will be permanently deleted within <strong>30 days</strong>. During this period, you will not be able to log in.</p><p>For any questions, contact <a href="mailto:support@kurgemx.com">support@kurgemx.com</a>.</p><p>KurgemX Team</p>`,
+    )
+  } catch (emailErr) {
+    console.error('[hesapSilTalebi] mail hatası:', emailErr)
+  }
+
+  await supabase.auth.signOut()
+  redirect(`/${locale}`)
+}
+
+// Şifre değiştirme (oturum açıkken)
+export async function sifreDegistir(
+  prevState: AuthState,
+  formData: FormData
+): Promise<AuthState> {
+  const yeniSifre = formData.get('yeniSifre') as string
+  const yeniSifreTekrar = formData.get('yeniSifreTekrar') as string
+
+  if (yeniSifre.length < 8) return { error: 'sifre_kisa' }
+  if (yeniSifre !== yeniSifreTekrar) return { error: 'sifre_eslesmiyor' }
+
+  const supabase = await createClient()
+  const { error } = await supabase.auth.updateUser({ password: yeniSifre })
+  if (error) return { error: 'genel' }
+  return { success: 'ok' }
 }
 
 // Çıkış

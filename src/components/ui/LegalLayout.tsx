@@ -101,10 +101,10 @@ export default async function LegalLayout({
                     {tNamespace === 'salesAgreement' && t('saticiBaslik' as Parameters<typeof t>[0])}
                   </div>
                   <div className="text-[17px] font-bold text-kx-ink mb-1.5">
-                    Ozan Kaan Karamık — KurgemX
+                    KurgemX — Kurumsal Gelişim Merkezi (KURGEM)
                   </div>
                   <div className="text-[14px] text-kx-body leading-[1.6]">
-                    Alemdağ Mah. Reşadiye Cad. Dekon Silva Sitesi B1 Blok D:46<br />
+                    Alemdağ Mah. Reşadiye Cad. Dekon Silva B1-46<br />
                     34794 Çekmeköy / İstanbul ·{' '}
                     <a
                       href="mailto:destek@kurgemx.com"
@@ -149,11 +149,11 @@ export default async function LegalLayout({
                     Satıcı / İşletmeci
                   </div>
                   <div className="text-[17px] font-bold text-kx-ink mb-1">
-                    Ozan Kaan Karamık — KurgemX
+                    KurgemX — Kurumsal Gelişim Merkezi (KURGEM)
                   </div>
                   <div className="text-[13px] text-kx-body leading-[1.55]">
                     Alemdağ Mah. Reşadiye Cad.<br />
-                    Dekon Silva Sitesi B1 Blok D:46<br />
+                    Dekon Silva B1-46<br />
                     34794 Çekmeköy / İstanbul
                   </div>
                 </div>
