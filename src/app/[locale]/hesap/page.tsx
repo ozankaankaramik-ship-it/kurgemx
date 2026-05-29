@@ -25,7 +25,7 @@ export default async function HesapPage() {
 
   return (
     <main className="flex-1 bg-kx-bg">
-      <div className="max-w-[760px] mx-auto px-6 sm:px-8 py-10 pb-20 w-full">
+      <div className="max-w-[600px] mx-auto px-6 py-10 pb-20 w-full">
         <h1 className="font-display text-[32px] font-bold text-kx-ink tracking-[-0.025em] mb-8">
           {t('baslik')}
         </h1>

@@ -43,8 +43,8 @@ const PLAN_BADGE: Record<string, string> = {
 
 function Card({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="bg-white border border-kx-border rounded-2xl p-6 mb-4">
-      <h2 className="text-[15px] font-semibold text-kx-ink mb-5">{title}</h2>
+    <div className="bg-white border border-kx-border rounded-xl p-5 mb-3">
+      <h2 className="text-[13px] font-semibold text-kx-muted uppercase tracking-[0.06em] mb-4">{title}</h2>
       {children}
     </div>
   )
@@ -52,8 +52,8 @@ function Card({ title, children }: { title: string; children: React.ReactNode })
 
 function FieldRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex justify-between items-center py-2.5 border-b border-kx-border-soft last:border-0">
-      <span className="text-[13px] text-kx-muted">{label}</span>
+    <div className="flex items-center gap-4 py-2 border-b border-kx-border-soft last:border-0">
+      <span className="text-[12px] text-kx-muted w-24 shrink-0">{label}</span>
       <span className="text-[13px] text-kx-ink font-medium">{value || '—'}</span>
     </div>
   )

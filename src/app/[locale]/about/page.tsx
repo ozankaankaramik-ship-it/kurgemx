@@ -108,11 +108,11 @@ export default async function AboutPage() {
                   {t('iletisimBaslik')}
                 </div>
                 <div className="text-[17px] font-bold text-kx-ink mb-1.5">
-                  Ozan Kaan Karamık — KurgemX
+                  KurgemX
                 </div>
                 <div className="text-[13px] text-kx-body leading-[1.6]">
                   Alemdağ Mah. Reşadiye Cad.<br />
-                  Dekon Silva Sitesi B1 Blok D:46<br />
+                  Dekon Silva B1-46<br />
                   34794 Çekmeköy / İstanbul
                 </div>
               </div>

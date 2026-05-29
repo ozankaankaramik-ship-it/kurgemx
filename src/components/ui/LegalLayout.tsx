@@ -101,7 +101,7 @@ export default async function LegalLayout({
                     {tNamespace === 'salesAgreement' && t('saticiBaslik' as Parameters<typeof t>[0])}
                   </div>
                   <div className="text-[17px] font-bold text-kx-ink mb-1.5">
-                    KurgemX — Kurumsal Gelişim Merkezi (KURGEM)
+                    KurgemX
                   </div>
                   <div className="text-[14px] text-kx-body leading-[1.6]">
                     Alemdağ Mah. Reşadiye Cad. Dekon Silva B1-46<br />
@@ -149,7 +149,7 @@ export default async function LegalLayout({
                     Satıcı / İşletmeci
                   </div>
                   <div className="text-[17px] font-bold text-kx-ink mb-1">
-                    KurgemX — Kurumsal Gelişim Merkezi (KURGEM)
+                    KurgemX
                   </div>
                   <div className="text-[13px] text-kx-body leading-[1.55]">
                     Alemdağ Mah. Reşadiye Cad.<br />

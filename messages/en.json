@@ -1,634 +1,634 @@
 {
-    "nav":  {
-                "home":  "Home",
-                "projeler":  "My Projects",
-                "newProject":  "New Project",
-                "signIn":  "Sign In",
-                "getStarted":  "Get Started",
-                "hakkimizda":  "About",
-                "about":  "About",
-                "pricing":  "Pricing",
-                "iletisim":  "Contact"
+    "nav": {
+        "home": "Home",
+        "projeler": "My Projects",
+        "newProject": "New Project",
+        "signIn": "Sign In",
+        "getStarted": "Get Started",
+        "hakkimizda": "About",
+        "about": "About",
+        "pricing": "Pricing",
+        "iletisim": "Contact"
+    },
+    "home": {
+        "title": "Welcome to Kurgemx",
+        "description": "This is a multilingual web application built with Next.js.",
+        "getStarted": "Get Started",
+        "sonProje": "Last project"
+    },
+    "language": {
+        "switchTo": "Türkçeye geç",
+        "code": "EN",
+        "name": "English"
+    },
+    "auth": {
+        "girisYap": "Sign In",
+        "kayitOl": "Sign Up",
+        "cikisYap": "Sign Out",
+        "giris": {
+            "baslik": "Sign In",
+            "altBaslik": "Sign in to your account",
+            "email": "Email",
+            "emailPlaceholder": "example@email.com",
+            "sifre": "Password",
+            "sifrePlaceholder": "••••••••",
+            "girisBtn": "Sign In",
+            "googleBtn": "Sign in with Google",
+            "ayirici": "or",
+            "sifremiUnuttum": "Forgot your password?",
+            "hesapYok": "Don't have an account?",
+            "kayitLink": "Sign up",
+            "hatalar": {
+                "invalid_credentials": "Invalid email or password.",
+                "email_not_confirmed": "Your email is not confirmed yet. Please check your inbox.",
+                "hesap_pasif": "Your account is being deleted. Contact support@kurgemx.com for information.",
+                "genel": "An error occurred while signing in. Please try again."
+            }
+        },
+        "sifreSifirlama": {
+            "baslik": "Forgot Password",
+            "altBaslik": "Enter your email and we'll send you a reset link.",
+            "email": "Email",
+            "emailPlaceholder": "example@email.com",
+            "gonderBtn": "Send Reset Link",
+            "geriDon": "Back to sign in",
+            "basariMesaji": "Reset link sent! Please check your email.",
+            "hatalar": {
+                "user_not_found": "No account found with this email address.",
+                "genel": "An error occurred. Please try again."
+            }
+        },
+        "sifreGuncelle": {
+            "baslik": "Set New Password",
+            "altBaslik": "Please enter your new password.",
+            "sifre": "New Password",
+            "sifrePlaceholder": "At least 8 characters",
+            "sifreTekrar": "Confirm Password",
+            "sifreTekrarPlaceholder": "Re-enter your password",
+            "kaydetBtn": "Update Password",
+            "basariMesaji": "Password updated! You can now sign in.",
+            "girisLink": "Go to sign in",
+            "hatalar": {
+                "sifre_eslesmiyor": "Passwords do not match.",
+                "sifre_kisa": "Password must be at least 8 characters.",
+                "oturum_yok": "Session not found. Please use the password reset link again.",
+                "genel": "An error occurred. Please try again."
+            }
+        },
+        "kayit": {
+            "baslik": "Create Account",
+            "altBaslik": "Create your free account",
+            "ad": "First Name",
+            "adPlaceholder": "Your first name",
+            "soyad": "Last Name",
+            "soyadPlaceholder": "Your last name",
+            "email": "Email",
+            "emailPlaceholder": "example@email.com",
+            "sifre": "Password",
+            "sifrePlaceholder": "At least 8 characters",
+            "kvkk": "I have read the KVKK (Personal Data Protection) disclosure text and consent to the processing of my personal data.",
+            "kvkkZorunlu": "You must accept the KVKK terms to register.",
+            "kayitBtn": "Sign Up",
+            "googleBtn": "Sign up with Google",
+            "ayirici": "or",
+            "hesapVar": "Already have an account?",
+            "girisLink": "Sign in",
+            "emailGonderildi": "Verification email sent! Please check your inbox and activate your account.",
+            "hatalar": {
+                "kvkk_required": "You must accept the KVKK terms to register.",
+                "user_exists": "This email is already registered. Try signing in.",
+                "genel": "An error occurred while signing up. Please try again."
+            }
+        }
+    },
+    "yeniProje": {
+        "baslik": "New Project",
+        "ad": "Project Name",
+        "adPlaceholder": "Enter your project name",
+        "aciklama": "Description",
+        "aciklamaPlaceholder": "Briefly describe your project...",
+        "aciklamaYardim": "AI will generate a project summary from this description.",
+        "dil": "Project Language",
+        "kaynak": "Source Document (Optional)",
+        "kaynakYardim": "PDF, Word, Excel, or PowerPoint. Max 10MB.",
+        "olusturBtn": "Create Project",
+        "iptal": "Cancel",
+        "karakter": "characters",
+        "hatalar": {
+            "ad_zorunlu": "Project name is required.",
+            "ad_uzun": "Project name cannot exceed 100 characters.",
+            "dosya_buyuk": "File cannot exceed 10MB.",
+            "dosya_format": "Only PDF, Word, Excel, or PowerPoint files are accepted.",
+            "dosya_yuklenemedi": "An error occurred while uploading the file.",
+            "yetkisiz": "Not authenticated.",
+            "genel": "An error occurred while creating the project. Please try again."
+        },
+        "mujkerrer": {
+            "mesaj": "You already have a project with this name.",
+            "devam": "Continue Anyway",
+            "degistir": "Edit the name above to use a different one."
+        },
+        "adimRozeti": "Step 1 / 5",
+        "sonraNe": "What comes next?",
+        "tahminiToplam": "Estimated total: 12–18 minutes",
+        "adimlar": {
+            "1": {
+                "ad": "Project info",
+                "sure": "~1 min"
             },
-    "home":  {
-                 "title":  "Welcome to Kurgemx",
-                 "description":  "This is a multilingual web application built with Next.js.",
-                 "getStarted":  "Get Started",
-                 "sonProje":  "Last project"
-             },
-    "language":  {
-                     "switchTo":  "Türkçeye geç",
-                     "code":  "EN",
-                     "name":  "English"
-                 },
-    "auth":  {
-                 "girisYap":  "Sign In",
-                 "kayitOl":  "Sign Up",
-                 "cikisYap":  "Sign Out",
-                 "giris":  {
-                               "baslik":  "Sign In",
-                               "altBaslik":  "Sign in to your account",
-                               "email":  "Email",
-                               "emailPlaceholder":  "example@email.com",
-                               "sifre":  "Password",
-                               "sifrePlaceholder":  "••••••••",
-                               "girisBtn":  "Sign In",
-                               "googleBtn":  "Sign in with Google",
-                               "ayirici":  "or",
-                               "sifremiUnuttum":  "Forgot your password?",
-                               "hesapYok":  "Don\u0027t have an account?",
-                               "kayitLink":  "Sign up",
-                               "hatalar":  {
-                                               "invalid_credentials":  "Invalid email or password.",
-                                               "email_not_confirmed":  "Your email is not confirmed yet. Please check your inbox.",
-                                               "hesap_pasif":  "Your account is being deleted. Contact support@kurgemx.com for information.",
-                                               "genel":  "An error occurred while signing in. Please try again."
-                                           }
-                           },
-                 "sifreSifirlama":  {
-                                        "baslik":  "Forgot Password",
-                                        "altBaslik":  "Enter your email and we\u0027ll send you a reset link.",
-                                        "email":  "Email",
-                                        "emailPlaceholder":  "example@email.com",
-                                        "gonderBtn":  "Send Reset Link",
-                                        "geriDon":  "Back to sign in",
-                                        "basariMesaji":  "Reset link sent! Please check your email.",
-                                        "hatalar":  {
-                                                        "user_not_found":  "No account found with this email address.",
-                                                        "genel":  "An error occurred. Please try again."
-                                                    }
-                                    },
-                 "sifreGuncelle":  {
-                                       "baslik":  "Set New Password",
-                                       "altBaslik":  "Please enter your new password.",
-                                       "sifre":  "New Password",
-                                       "sifrePlaceholder":  "At least 8 characters",
-                                       "sifreTekrar":  "Confirm Password",
-                                       "sifreTekrarPlaceholder":  "Re-enter your password",
-                                       "kaydetBtn":  "Update Password",
-                                       "basariMesaji":  "Password updated! You can now sign in.",
-                                       "girisLink":  "Go to sign in",
-                                       "hatalar":  {
-                                                       "sifre_eslesmiyor":  "Passwords do not match.",
-                                                       "sifre_kisa":  "Password must be at least 8 characters.",
-                                                       "oturum_yok":  "Session not found. Please use the password reset link again.",
-                                                       "genel":  "An error occurred. Please try again."
-                                                   }
-                                   },
-                 "kayit":  {
-                               "baslik":  "Create Account",
-                               "altBaslik":  "Create your free account",
-                               "ad":  "First Name",
-                               "adPlaceholder":  "Your first name",
-                               "soyad":  "Last Name",
-                               "soyadPlaceholder":  "Your last name",
-                               "email":  "Email",
-                               "emailPlaceholder":  "example@email.com",
-                               "sifre":  "Password",
-                               "sifrePlaceholder":  "At least 8 characters",
-                               "kvkk":  "I have read the KVKK (Personal Data Protection) disclosure text and consent to the processing of my personal data.",
-                               "kvkkZorunlu":  "You must accept the KVKK terms to register.",
-                               "kayitBtn":  "Sign Up",
-                               "googleBtn":  "Sign up with Google",
-                               "ayirici":  "or",
-                               "hesapVar":  "Already have an account?",
-                               "girisLink":  "Sign in",
-                               "emailGonderildi":  "Verification email sent! Please check your inbox and activate your account.",
-                               "hatalar":  {
-                                               "kvkk_required":  "You must accept the KVKK terms to register.",
-                                               "user_exists":  "This email is already registered. Try signing in.",
-                                               "genel":  "An error occurred while signing up. Please try again."
-                                           }
-                           }
-             },
-    "yeniProje":  {
-                      "baslik":  "New Project",
-                      "ad":  "Project Name",
-                      "adPlaceholder":  "Enter your project name",
-                      "aciklama":  "Description",
-                      "aciklamaPlaceholder":  "Briefly describe your project...",
-                      "aciklamaYardim":  "AI will generate a project summary from this description.",
-                      "dil":  "Project Language",
-                      "kaynak":  "Source Document (Optional)",
-                      "kaynakYardim":  "PDF, Word, Excel, or PowerPoint. Max 10MB.",
-                      "olusturBtn":  "Create Project",
-                      "iptal":  "Cancel",
-                      "karakter":  "characters",
-                      "hatalar":  {
-                                      "ad_zorunlu":  "Project name is required.",
-                                      "ad_uzun":  "Project name cannot exceed 100 characters.",
-                                      "dosya_buyuk":  "File cannot exceed 10MB.",
-                                      "dosya_format":  "Only PDF, Word, Excel, or PowerPoint files are accepted.",
-                                      "dosya_yuklenemedi":  "An error occurred while uploading the file.",
-                                      "yetkisiz":  "Not authenticated.",
-                                      "genel":  "An error occurred while creating the project. Please try again."
-                                  },
-                      "mujkerrer":  {
-                                        "mesaj":  "You already have a project with this name.",
-                                        "devam":  "Continue Anyway",
-                                        "degistir":  "Edit the name above to use a different one."
-                                    },
-                      "adimRozeti":  "Step 1 / 5",
-                      "sonraNe":  "What comes next?",
-                      "tahminiToplam":  "Estimated total: 12–18 minutes",
-                      "adimlar":  {
-                                      "1":  {
-                                                "ad":  "Project info",
-                                                "sure":  "~1 min"
-                                            },
-                                      "2":  {
-                                                "ad":  "Story map",
-                                                "sure":  "~3 min"
-                                            },
-                                      "3":  {
-                                                "ad":  "Requirements analysis",
-                                                "sure":  "~5 min"
-                                            },
-                                      "4":  {
-                                                "ad":  "Prototype",
-                                                "sure":  "~6 min"
-                                            },
-                                      "5":  {
-                                                "ad":  "Test scenarios",
-                                                "sure":  "~3 min"
-                                            }
-                                  }
-                  },
-    "projeDetay":  {
-                       "baslik":  "Project Details",
-                       "geri":  "Back to My Projects",
-                       "olusturmaTarihi":  "Created",
-                       "sonGuncelleme":  "Last Updated",
-                       "tumCiktilariGor":  "View all outputs",
-                       "olusturuldu":  "Created",
-                       "guncellendi":  "Updated"
-                   },
-    "projeler":  {
-                     "baslik":  "My Projects",
-                     "yeniProje":  "+ New Project",
-                     "bosHal":  {
-                                    "baslik":  "No projects yet",
-                                    "aciklama":  "Create your first project to get started with AI-powered business analysis.",
-                                    "btn":  "Create New Project",
-                                    "arsivBaslik":  "Archive is empty",
-                                    "arsivAciklama":  "You have no archived projects yet."
-                                },
-                     "kart":  {
-                                  "hikayeSayisi":  "stories",
-                                  "dokumanSayisi":  "documents"
-                              },
-                     "badge":  {
-                                   "hikayeHaritasi":  "Story Map",
-                                   "devamEdiyor":  "In Progress",
-                                   "yeni":  "New"
-                               },
-                     "daha":  "Load More",
-                     "hataMesaji":  "An error occurred while loading projects. Please refresh the page.",
-                     "hosgeldin":  "Welcome back, {name}"
-                 },
-    "calismaEkrani":  {
-                          "dilDegistir":  "Türkçe",
-                          "saltOkunurBanner":  "Read-only — this project has been archived.",
-                          "pasifAdimNot":  "Complete the previous step to unlock.",
-                          "adim1":  {
-                                        "baslik":  "Project Information",
-                                        "projeAdi":  "Project Name",
-                                        "projeAdiPlaceholder":  "Enter project name",
-                                        "aciklama":  "Description",
-                                        "aciklamaPlaceholder":  "Briefly describe your project...",
-                                        "yzDetaylandir":  "Enhance with AI",
-                                        "yzCikti":  "Detailed Description",
-                                        "shortDesc":  "Description",
-                                        "yzPlaceholder":  "AI-generated description will appear here...",
-                                        "olustur":  "Create Project",
-                                        "olusturuluyor":  "Creating...",
-                                        "yzOlusturuluyor":  "Enhancing description...",
-                                        "olusturTooltip":  "Please enhance your description with AI before creating the project",
-                                        "yzDuzenleNot":  "You can edit this description before creating your project.",
-                                        "projeBuyuklugu":  "Project Size",
-                                        "kucuk":  "Small",
-                                        "orta":  "Medium",
-                                        "buyuk":  "Large",
-                                        "kucukAlt":  "1–5 stories · 1 wk – 2 mo",
-                                        "ortaAlt":  "6–15 stories · 2 – 4 mo",
-                                        "buyukAlt":  "16–40 stories · 4+ mo",
-                                        "kucukHikaye":  "1–5 stories",
-                                        "ortaHikaye":  "6–15 stories",
-                                        "buyukHikaye":  "16–40 stories",
-                                        "hatalar":  {
-                                                        "ad_zorunlu":  "Project name is required.",
-                                                        "ad_uzun":  "Project name cannot exceed 100 characters.",
-                                                        "yetkisiz":  "Not authenticated.",
-                                                        "genel":  "An error occurred. Please try again."
-                                                    }
-                                    },
-                          "adim2":  {
-                                        "baslik":  "Story Map",
-                                        "uret":  "Generate Story Map",
-                                        "tabloBos":  "Story map will appear here once generated.",
-                                        "surum":  "Version",
-                                        "destanPlaceholder1":  "Epic 1",
-                                        "destanPlaceholder2":  "Epic 2",
-                                        "nonFunctional":  "Non-Functional Requirements",
-                                        "transition":  "Transition Requirements",
-                                        "r1":  "R1 — MVP",
-                                        "r2":  "R2 — Enhancement",
-                                        "r3":  "R3 — Advanced",
-                                        "sprintPlanBaslik":  "Sprint Plan Summary",
-                                        "sprintSutun1":  "Sprint",
-                                        "sprintSutun2":  "Focus Area",
-                                        "sprintSutun3":  "Stories",
-                                        "sprintSutun4":  "Story Count",
-                                        "sprintSutun5":  "Duration",
-                                        "genelOzetBaslik":  "General Summary",
-                                        "ozetSutun1":  "Version",
-                                        "ozetSutun2":  "Story Count",
-                                        "ozetSutun3":  "Sprint Range",
-                                        "ozetSutun4":  "Sprint Count",
-                                        "ozetSutun5":  "Duration",
-                                        "exportExcel":  "Export to Excel",
-                                        "olusturuluyor":  "Generating story map...",
-                                        "scrollIpucu":  "← Scroll to see all epics",
-                                        "hikayeHaritasiTarih":  "Story map generated on"
-                                    },
-                          "adim3":  {
-                                        "baslik":  "Requirements Analysis Document",
-                                        "uret":  "Generate Documents",
-                                        "olusturuluyor":  "Generating documents...",
-                                        "r1":  "R1 — MVP",
-                                        "r2":  "R2 — Enhancement",
-                                        "r3":  "R3 — Advanced",
-                                        "beklemede":  "Pending",
-                                        "belgeTarih":  "Document generated on",
-                                        "indir":  "Download (.docx)",
-                                        "indirYakinBir":  "Coming soon",
-                                        "tokenLimiti":  "Document reached token limit — content may be truncated.",
-                                        "bolumAnaliz":  {
-                                                            "bolum1":  "Generating header and general information... (1/5)",
-                                                            "r1":  "Analyzing R1 — MVP... (2/5)",
-                                                            "r2":  "Analyzing R2 — Enhancement... (3/5)",
-                                                            "r3":  "Analyzing R3 — Advanced... (4/5)",
-                                                            "bolum345":  "Generating system requirements and impact analysis... (5/5)"
-                                                        }
-                                    },
-                          "adim4":  {
-                                        "baslik":  "Prototype",
-                                        "uret":  "Generate Prototype",
-                                        "olusturuluyor":  "Generating prototype...",
-                                        "indir":  "Download (.html)",
-                                        "yeniSekme":  "Open in New Tab",
-                                        "prototipOlusturuldu":  "✓ Prototype generated",
-                                        "isAnaliziGerekli":  "Requirements Analysis Document must be generated first",
-                                        "yenidenUret":  "Regenerate"
-                                    },
-                          "adim5":  {
-                                        "baslik":  "Test Scenarios",
-                                        "uret":  "Generate Test Scenarios (.xlsx)",
-                                        "olusturuluyor":  "Generating test scenarios...",
-                                        "indir":  "Download (.xlsx)",
-                                        "olusturuldu":  "test cases generated",
-                                        "sutun1":  "Scenario",
-                                        "sutun2":  "Steps",
-                                        "sutun3":  "Expected Result",
-                                        "ornekS1":  "Successful Login",
-                                        "ornekA1":  "Navigate to login → Enter credentials → Click Sign In",
-                                        "ornekB1":  "Redirect to dashboard",
-                                        "ornekS2":  "Failed Login",
-                                        "ornekA2":  "Enter wrong password → Click Sign In",
-                                        "ornekB2":  "Error message shown",
-                                        "ornekS3":  "Forgot Password",
-                                        "ornekA3":  "Click Forgot Password → Enter email → Submit",
-                                        "ornekB3":  "Reset email sent to inbox"
-                                    },
-                          "tamamlayici":  {
-                                              "baslik":  "Optional Documents",
-                                              "etiket":  "Optional",
-                                              "kapsam":  "Scope Document",
-                                              "mimari":  "Architecture Document",
-                                              "yakinda":  "Coming Soon"
-                                          },
-                          "projeOlustu":  {
-                                              "baslik":  "Project created successfully!",
-                                              "aciklama":  "Your project is ready. Generate your story map to continue."
-                                          },
-                          "yenidenOlustur":  "Regenerate",
-                          "uretimNotu":  "Generation is running in the background. Feel free to multitask — just don\u0027t close this tab.",
-                          "uretimMetrigi":  "Generation time: {sure} · Est. tokens: ~{token}",
-                          "kisaltmalar":  {
-                                              "baslik":  "Abbreviations",
-                                              "kod":  "Code",
-                                              "anlam":  "Meaning",
-                                              "ornek":  "Example",
-                                              "st":  "Story",
-                                              "sp":  "Sprint",
-                                              "r":  "Release",
-                                              "ac":  "Acceptance Criteria",
-                                              "br":  "Business Rule",
-                                              "tc":  "Test Case"
-                                          },
-                          "surec":  "Process",
-                          "buProjede":  "On this project",
-                          "tahminiToken":  "Estimated tokens",
-                          "toplamSure":  "Total time",
-                          "planKullanimi":  "Plan usage",
-                          "tamamlayici2":  "Supplementary",
-                          "yakindaBadge":  "SOON"
-                      },
-    "landing":  {
-                    "meta":  {
-                                 "title":  "AI-Powered Business Analysis",
-                                 "description":  "Generate story maps, business analysis documents and prototypes with AI. Built for business analysts and project managers.",
-                                 "keywords":  "AI business analysis, story map generator, user story mapping, business analyst tool"
-                             },
-                    "hero":  {
-                                 "title":  "AI-Powered Business Analysis Platform",
-                                 "subtitle":  "Generate story maps, business analysis documents and prototypes with AI in minutes.",
-                                 "getStarted":  "Get Started Free",
-                                 "signIn":  "Sign In"
-                             },
-                    "howItWorks":  {
-                                       "title":  "How It Works",
-                                       "step1Title":  "Describe Your Project",
-                                       "step1Desc":  "Enter your project name and a brief description. AI will expand it into a detailed project overview.",
-                                       "step2Title":  "Generate Story Map",
-                                       "step2Desc":  "AI creates a complete story map with epics, user stories, sprints, and release planning.",
-                                       "step3Title":  "Generate Analysis \u0026 Prototype",
-                                       "step3Desc":  "Turn your stories into requirements analysis documents, a clickable prototype, and test scenarios in one click.",
-                                       "step4Title":  "Export \u0026 Share",
-                                       "step4Desc":  "Export your story map to Excel, share with your team, and start building."
-                                   },
-                    "features":  {
-                                     "title":  "Everything You Need",
-                                     "storyMap":  "Story Map Generation",
-                                     "storyMapDesc":  "Automatically generate comprehensive story maps with R1/R2/R3 release planning.",
-                                     "bizAnalysis":  "Requirements Analysis Documents",
-                                     "bizAnalysisDesc":  "Generate R1, R2, R3 requirements analysis documents aligned with your story map.",
-                                     "prototype":  "Prototype Creation",
-                                     "prototypeDesc":  "Create interactive prototypes from your user stories.",
-                                     "testScenarios":  "Test Scenarios",
-                                     "testScenariosDesc":  "Generate detailed test scenarios for every user story.",
-                                     "export":  "Excel \u0026 Word Export",
-                                     "exportDesc":  "Export story maps, documents and test scenarios in standard formats.",
-                                     "multilang":  "Multi-language Support",
-                                     "multilangDesc":  "Work in Turkish or English — AI generates content in your project language."
-                                 },
-                    "footer":  {
-                                   "copyright":  "© 2026 KurgemX",
-                                   "privacy":  "Privacy Policy",
-                                   "terms":  "Terms of Service"
-                               },
-                    "logoStrip":  {
-                                      "kicker":  "1,200+ projects · 23,000+ stories · Used by Turkey\u0027s leading BA teams"
-                                  },
-                    "useCases":  {
-                                     "kicker":  "— Who\u0027s it for",
-                                     "title":  "Three different roles, the same time savings.",
-                                     "personas":  {
-                                                      "analyst":  {
-                                                                      "role":  "Business Analyst",
-                                                                      "who":  "Bank, fintech, enterprise",
-                                                                      "win":  "First draft ready the moment the workshop ends.",
-                                                                      "before":  "3 days",
-                                                                      "after":  "15 minutes"
-                                                                  },
-                                                      "pm":  {
-                                                                 "role":  "Product Manager",
-                                                                 "who":  "B2B SaaS, startup",
-                                                                 "win":  "R1/R2/R3 release map and sprint breakdown ready.",
-                                                                 "before":  "—",
-                                                                 "after":  "Release plan"
-                                                             },
-                                                      "developer":  {
-                                                                        "role":  "Developer / Consultant",
-                                                                        "who":  "Freelance, boutique consulting",
-                                                                        "win":  "I show a working draft in the first meeting.",
-                                                                        "before":  "5 days",
-                                                                        "after":  "1 meeting"
-                                                                    }
-                                                  }
-                                 },
-                    "testimonial":  {
-                                        "quote":  "In 15 years of business analysis, this is the first tool that acted as a thinking partner, not a document. I don\u0027t write drafts from scratch after workshops anymore.",
-                                        "author":  "Elif Sönmez",
-                                        "title":  "Senior Business Analyst · At a bank",
-                                        "stats":  {
-                                                      "hikaye":  {
-                                                                     "n":  "23K+",
-                                                                     "label":  "stories generated"
-                                                                 },
-                                                      "proje":  {
-                                                                    "n":  "1,200+",
-                                                                    "label":  "completed projects"
-                                                                },
-                                                      "hizli":  {
-                                                                    "n":  "6.4×",
-                                                                    "label":  "faster drafting"
-                                                                },
-                                                      "nps":  {
-                                                                  "n":  "94%",
-                                                                  "label":  "customer satisfaction"
-                                                              }
-                                                  }
-                                    },
-                    "finalCta":  {
-                                     "title1":  "Start your first project",
-                                     "highlight":  "in 30 seconds",
-                                     "title2":  ".",
-                                     "subtitle":  "Write one sentence — Kurgemx handles the rest. Not happy? Walk away without paying.",
-                                     "primary":  "Create my account",
-                                     "secondary":  "Request a demo",
-                                     "footnote":  "No card required · 14-day professional trial · Cancel with one click"
-                                 }
+            "2": {
+                "ad": "Story map",
+                "sure": "~3 min"
+            },
+            "3": {
+                "ad": "Requirements analysis",
+                "sure": "~5 min"
+            },
+            "4": {
+                "ad": "Prototype",
+                "sure": "~6 min"
+            },
+            "5": {
+                "ad": "Test scenarios",
+                "sure": "~3 min"
+            }
+        }
+    },
+    "projeDetay": {
+        "baslik": "Project Details",
+        "geri": "Back to My Projects",
+        "olusturmaTarihi": "Created",
+        "sonGuncelleme": "Last Updated",
+        "tumCiktilariGor": "View all outputs",
+        "olusturuldu": "Created",
+        "guncellendi": "Updated"
+    },
+    "projeler": {
+        "baslik": "My Projects",
+        "yeniProje": "+ New Project",
+        "bosHal": {
+            "baslik": "No projects yet",
+            "aciklama": "Create your first project to get started with AI-powered business analysis.",
+            "btn": "Create New Project",
+            "arsivBaslik": "Archive is empty",
+            "arsivAciklama": "You have no archived projects yet."
+        },
+        "kart": {
+            "hikayeSayisi": "stories",
+            "dokumanSayisi": "documents"
+        },
+        "badge": {
+            "hikayeHaritasi": "Story Map",
+            "devamEdiyor": "In Progress",
+            "yeni": "New"
+        },
+        "daha": "Load More",
+        "hataMesaji": "An error occurred while loading projects. Please refresh the page.",
+        "hosgeldin": "Welcome back, {name}"
+    },
+    "calismaEkrani": {
+        "dilDegistir": "Türkçe",
+        "saltOkunurBanner": "Read-only — this project has been archived.",
+        "pasifAdimNot": "Complete the previous step to unlock.",
+        "adim1": {
+            "baslik": "Project Information",
+            "projeAdi": "Project Name",
+            "projeAdiPlaceholder": "Enter project name",
+            "aciklama": "Description",
+            "aciklamaPlaceholder": "Briefly describe your project...",
+            "yzDetaylandir": "Enhance with AI",
+            "yzCikti": "Detailed Description",
+            "shortDesc": "Description",
+            "yzPlaceholder": "AI-generated description will appear here...",
+            "olustur": "Create Project",
+            "olusturuluyor": "Creating...",
+            "yzOlusturuluyor": "Enhancing description...",
+            "olusturTooltip": "Please enhance your description with AI before creating the project",
+            "yzDuzenleNot": "You can edit this description before creating your project.",
+            "projeBuyuklugu": "Project Size",
+            "kucuk": "Small",
+            "orta": "Medium",
+            "buyuk": "Large",
+            "kucukAlt": "1–5 stories · 1 wk – 2 mo",
+            "ortaAlt": "6–15 stories · 2 – 4 mo",
+            "buyukAlt": "16–40 stories · 4+ mo",
+            "kucukHikaye": "1–5 stories",
+            "ortaHikaye": "6–15 stories",
+            "buyukHikaye": "16–40 stories",
+            "hatalar": {
+                "ad_zorunlu": "Project name is required.",
+                "ad_uzun": "Project name cannot exceed 100 characters.",
+                "yetkisiz": "Not authenticated.",
+                "genel": "An error occurred. Please try again."
+            }
+        },
+        "adim2": {
+            "baslik": "Story Map",
+            "uret": "Generate Story Map",
+            "tabloBos": "Story map will appear here once generated.",
+            "surum": "Version",
+            "destanPlaceholder1": "Epic 1",
+            "destanPlaceholder2": "Epic 2",
+            "nonFunctional": "Non-Functional Requirements",
+            "transition": "Transition Requirements",
+            "r1": "R1 — MVP",
+            "r2": "R2 — Enhancement",
+            "r3": "R3 — Advanced",
+            "sprintPlanBaslik": "Sprint Plan Summary",
+            "sprintSutun1": "Sprint",
+            "sprintSutun2": "Focus Area",
+            "sprintSutun3": "Stories",
+            "sprintSutun4": "Story Count",
+            "sprintSutun5": "Duration",
+            "genelOzetBaslik": "General Summary",
+            "ozetSutun1": "Version",
+            "ozetSutun2": "Story Count",
+            "ozetSutun3": "Sprint Range",
+            "ozetSutun4": "Sprint Count",
+            "ozetSutun5": "Duration",
+            "exportExcel": "Export to Excel",
+            "olusturuluyor": "Generating story map...",
+            "scrollIpucu": "← Scroll to see all epics",
+            "hikayeHaritasiTarih": "Story map generated on"
+        },
+        "adim3": {
+            "baslik": "Requirements Analysis Document",
+            "uret": "Generate Documents",
+            "olusturuluyor": "Generating documents...",
+            "r1": "R1 — MVP",
+            "r2": "R2 — Enhancement",
+            "r3": "R3 — Advanced",
+            "beklemede": "Pending",
+            "belgeTarih": "Document generated on",
+            "indir": "Download (.docx)",
+            "indirYakinBir": "Coming soon",
+            "tokenLimiti": "Document reached token limit — content may be truncated.",
+            "bolumAnaliz": {
+                "bolum1": "Generating header and general information... (1/5)",
+                "r1": "Analyzing R1 — MVP... (2/5)",
+                "r2": "Analyzing R2 — Enhancement... (3/5)",
+                "r3": "Analyzing R3 — Advanced... (4/5)",
+                "bolum345": "Generating system requirements and impact analysis... (5/5)"
+            }
+        },
+        "adim4": {
+            "baslik": "Prototype",
+            "uret": "Generate Prototype",
+            "olusturuluyor": "Generating prototype...",
+            "indir": "Download (.html)",
+            "yeniSekme": "Open in New Tab",
+            "prototipOlusturuldu": "✓ Prototype generated",
+            "isAnaliziGerekli": "Requirements Analysis Document must be generated first",
+            "yenidenUret": "Regenerate"
+        },
+        "adim5": {
+            "baslik": "Test Scenarios",
+            "uret": "Generate Test Scenarios (.xlsx)",
+            "olusturuluyor": "Generating test scenarios...",
+            "indir": "Download (.xlsx)",
+            "olusturuldu": "test cases generated",
+            "sutun1": "Scenario",
+            "sutun2": "Steps",
+            "sutun3": "Expected Result",
+            "ornekS1": "Successful Login",
+            "ornekA1": "Navigate to login → Enter credentials → Click Sign In",
+            "ornekB1": "Redirect to dashboard",
+            "ornekS2": "Failed Login",
+            "ornekA2": "Enter wrong password → Click Sign In",
+            "ornekB2": "Error message shown",
+            "ornekS3": "Forgot Password",
+            "ornekA3": "Click Forgot Password → Enter email → Submit",
+            "ornekB3": "Reset email sent to inbox"
+        },
+        "tamamlayici": {
+            "baslik": "Optional Documents",
+            "etiket": "Optional",
+            "kapsam": "Scope Document",
+            "mimari": "Architecture Document",
+            "yakinda": "Coming Soon"
+        },
+        "projeOlustu": {
+            "baslik": "Project created successfully!",
+            "aciklama": "Your project is ready. Generate your story map to continue."
+        },
+        "yenidenOlustur": "Regenerate",
+        "uretimNotu": "Generation is running in the background. Feel free to multitask — just don't close this tab.",
+        "uretimMetrigi": "Generation time: {sure} · Est. tokens: ~{token}",
+        "kisaltmalar": {
+            "baslik": "Abbreviations",
+            "kod": "Code",
+            "anlam": "Meaning",
+            "ornek": "Example",
+            "st": "Story",
+            "sp": "Sprint",
+            "r": "Release",
+            "ac": "Acceptance Criteria",
+            "br": "Business Rule",
+            "tc": "Test Case"
+        },
+        "surec": "Process",
+        "buProjede": "On this project",
+        "tahminiToken": "Estimated tokens",
+        "toplamSure": "Total time",
+        "planKullanimi": "Plan usage",
+        "tamamlayici2": "Supplementary",
+        "yakindaBadge": "SOON"
+    },
+    "landing": {
+        "meta": {
+            "title": "AI-Powered Business Analysis",
+            "description": "Generate story maps, business analysis documents and prototypes with AI. Built for business analysts and project managers.",
+            "keywords": "AI business analysis, story map generator, user story mapping, business analyst tool"
+        },
+        "hero": {
+            "title": "AI-Powered Business Analysis Platform",
+            "subtitle": "Generate story maps, business analysis documents and prototypes with AI in minutes.",
+            "getStarted": "Get Started Free",
+            "signIn": "Sign In"
+        },
+        "howItWorks": {
+            "title": "How It Works",
+            "step1Title": "Describe Your Project",
+            "step1Desc": "Enter your project name and a brief description. AI will expand it into a detailed project overview.",
+            "step2Title": "Generate Story Map",
+            "step2Desc": "AI creates a complete story map with epics, user stories, sprints, and release planning.",
+            "step3Title": "Generate Analysis & Prototype",
+            "step3Desc": "Turn your stories into requirements analysis documents, a clickable prototype, and test scenarios in one click.",
+            "step4Title": "Export & Share",
+            "step4Desc": "Export your story map to Excel, share with your team, and start building."
+        },
+        "features": {
+            "title": "Everything You Need",
+            "storyMap": "Story Map Generation",
+            "storyMapDesc": "Automatically generate comprehensive story maps with R1/R2/R3 release planning.",
+            "bizAnalysis": "Requirements Analysis Documents",
+            "bizAnalysisDesc": "Generate R1, R2, R3 requirements analysis documents aligned with your story map.",
+            "prototype": "Prototype Creation",
+            "prototypeDesc": "Create interactive prototypes from your user stories.",
+            "testScenarios": "Test Scenarios",
+            "testScenariosDesc": "Generate detailed test scenarios for every user story.",
+            "export": "Excel & Word Export",
+            "exportDesc": "Export story maps, documents and test scenarios in standard formats.",
+            "multilang": "Multi-language Support",
+            "multilangDesc": "Work in Turkish or English — AI generates content in your project language."
+        },
+        "footer": {
+            "copyright": "© 2026 KurgemX",
+            "privacy": "Privacy Policy",
+            "terms": "Terms of Service"
+        },
+        "logoStrip": {
+            "kicker": "1,200+ projects · 23,000+ stories · Used by Turkey's leading BA teams"
+        },
+        "useCases": {
+            "kicker": "— Who's it for",
+            "title": "Three different roles, the same time savings.",
+            "personas": {
+                "analyst": {
+                    "role": "Business Analyst",
+                    "who": "Bank, fintech, enterprise",
+                    "win": "First draft ready the moment the workshop ends.",
+                    "before": "3 days",
+                    "after": "15 minutes"
                 },
-    "dashboard":  {
-                      "welcome":  "Welcome back, {name}",
-                      "recentProjects":  "Recent Projects",
-                      "noProjects":  "No projects yet.",
-                      "newProject":  "New Project",
-                      "allProjects":  "All Projects",
-                      "created":  "Created"
-                  },
-    "footer":  {
-                   "copyright":  "© 2026 KurgemX. All rights reserved.",
-                   "brand":  "A registered trademark of Kurumsal Gelişim Merkezi (KURGEM).",
-                   "about":  "About",
-                   "pricing":  "Pricing",
-                   "contact":  "Contact",
-                   "terms":  "Terms of Service",
-                   "privacy":  "Privacy Policy",
-                   "refund":  "Refund Policy",
-                   "salesAgreement":  "Distance Sales Agreement",
-                   "payment":  "Secure Payment"
-               },
-    "hesap":  {
-                  "baslik":  "My Account",
-                  "temelBilgiler":  "Basic Information",
-                  "ad":  "First Name",
-                  "soyad":  "Last Name",
-                  "email":  "Email",
-                  "sifreDegistir":  "Change Password",
-                  "yeniSifre":  "New Password",
-                  "yeniSifreTekrar":  "New Password (Confirm)",
-                  "kaydet":  "Save",
-                  "kaydedildi":  "Your password has been updated.",
-                  "abonelik":  "Subscription",
-                  "mevcutPlan":  "Current Plan",
-                  "aylikKullanim":  "Monthly Usage",
-                  "planiYukselt":  "Upgrade Plan →",
-                  "hesapSil":  "Delete My Account",
-                  "hesapSilAciklama":  "Danger zone. This action cannot be undone.",
-                  "hesapSilBtn":  "Permanently Delete My Account",
-                  "hesapSilOnay":  "Your account will be deleted in 30 days. You will not be able to log in during this period. This action cannot be undone. Are you sure?",
-                  "hatalar":  {
-                      "sifre_kisa":  "Password must be at least 8 characters.",
-                      "sifre_eslesmiyor":  "Passwords do not match.",
-                      "genel":  "An error occurred. Please try again."
-                  }
-              },
-    "iletisim":  {
-                     "baslik":  "Contact",
-                     "altBaslik":  "Reach out to us with your questions.",
-                     "email":  "Email",
-                     "adres":  "Address",
-                     "form":  {
-                                  "baslik":  "Send a Message",
-                                  "ad":  "Your name",
-                                  "email":  "Your email address",
-                                  "mesaj":  "Your message",
-                                  "gonder":  "Send",
-                                  "basari":  "Your message has been sent. We will get back to you shortly.",
-                                  "hatalar":  {
-                                      "eksik_alan":  "Please fill in all fields.",
-                                      "genel":  "An error occurred while sending. Please try again."
-                                  }
-                              }
-                 },
-    "about":  {
-                  "baslik":  "About Us",
-                  "altBaslik":  "The right address for AI-powered business analysis",
-                  "s1Baslik":  "What is KurgemX?",
-                  "s1Icerik":  "KurgemX is a registered trademark of Kurumsal Gelişim Merkezi (KURGEM). Developed by a team of business analysis, project management, and software development experts with over 25 years of industry experience, KurgemX is an AI-powered business analysis platform for business analysts and software teams.",
-                  "s2Baslik":  "What We Do",
-                  "s2Icerik":  "KurgemX automates story map, business analysis document, prototype, and test scenario generation using AI. With Turkish language support and TRY pricing, KurgemX is a pioneer in the Turkish market.",
-                  "s3Baslik":  "Our Mission",
-                  "s3Icerik":  "To accelerate business analysis processes, improve quality, and enable software teams to work more efficiently.",
-                  "iletisimBaslik":  "Contact",
-                  "iletisim":  "Contact"
-              },
-    "salesAgreement":  {
-                           "baslik":  "Distance Sales Agreement",
-                           "kanun":  "Pursuant to Turkish Consumer Protection Law No. 6502",
-                           "sonGuncelleme":  "Last updated: May 20, 2026",
-                           "saticiBaslik":  "Seller Information",
-                           "s2Baslik":  "2. Subject of Service",
-                           "s2Icerik":  "This agreement governs the terms under which the buyer subscribes digitally to the KurgemX platform. The service is a digital SaaS (Software as a Service) offering that includes story mapping, business analysis document creation, prototyping, and test scenario generation features.",
-                           "s3Baslik":  "3. Pricing",
-                           "s3Icerik":  "Freemium: $0 — 1 small project per month, max 5 stories\nStarter: $9/month — 3 projects per month, max 15 stories\nPro: $29/month — 10 projects per month, max 40 stories\nListed prices include applicable taxes. Prices are in USD; the exchange rate at the time of payment applies.",
-                           "s4Baslik":  "4. Payment Terms",
-                           "s4Icerik":  "Paid subscriptions are charged in advance on a monthly billing cycle. Payment is collected automatically via the credit or debit card provided at registration. Subscriptions may be suspended in the event of payment failure.",
-                           "s5Baslik":  "5. Right of Withdrawal",
-                           "s5Icerik":  "Under Article 49 of Turkish Consumer Protection Law No. 6502, consumers have the right to withdraw within 14 days of a distance contract. However, where the buyer has requested and explicitly consented to the commencement of service performance before the withdrawal period expires, the right of withdrawal cannot be exercised. Since service performance begins at the moment of subscription activation, the buyer provides explicit consent to this during activation. Accordingly, the right of withdrawal does not apply to this digital content service.",
-                           "s6Baslik":  "6. Cancellation and Refunds",
-                           "s6Icerik":  "The buyer may cancel their subscription at any time. Cancellation takes effect at the end of the current billing period; access to all features continues until that date. No refunds are issued for unused time. The Freemium plan is free of charge and therefore not subject to refund.",
-                           "s7Baslik":  "7. Dispute Resolution",
-                           "s7Icerik":  "Turkish law governs any disputes arising from this agreement. Istanbul courts and enforcement offices have jurisdiction.",
-                           "iletisim":  "Contact"
-                       },
-    "pricing":  {
-                    "baslik":  "Pricing",
-                    "altBaslik":  "Choose the plan that fits your project.",
-                    "enPopuler":  "Most Popular",
-                    "freemiumNot":  "Start for free, no credit card required.",
-                    "teklifAl":  "Get a Quote",
-                    "soruMetni":  "Have questions?",
-                    "planlar":  {
-                                    "freemium":  {
-                                                     "ad":  "Freemium",
-                                                     "fiyat":  "$0",
-                                                     "aylik":  "/ month"
-                                                 },
-                                    "analyst":  {
-                                                    "ad":  "Analyst",
-                                                    "fiyat":  "$9",
-                                                    "aylik":  "/ month"
-                                                },
-                                    "advanced":  {
-                                                     "ad":  "Advanced",
-                                                     "fiyat":  "$29",
-                                                     "aylik":  "/ month"
-                                                 },
-                                    "enterprise":  {
-                                                       "ad":  "Enterprise"
-                                                   }
-                                },
-                    "bolumler":  {
-                                     "kapsam":  "Project Scope",
-                                     "ai":  "AI-Powered Outputs",
-                                     "kurumsal":  "Enterprise Features"
-                                 },
-                    "satirlar":  {
-                                     "projeAy":  "Projects / month",
-                                     "kucukProje":  "Small project (1–5 stories)",
-                                     "ortaProje":  "Medium project (6–15 stories)",
-                                     "buyukProje":  "Large project (16–40 stories)",
-                                     "hikayeHaritasi":  "Story map",
-                                     "analizDokumani":  "Analysis document",
-                                     "prototip":  "Prototype generation",
-                                     "testSenaryosu":  "Test scenarios",
-                                     "export":  "Export (Word / Excel / HTML)",
-                                     "dil":  "Turkish / English output",
-                                     "kullaniciYonetimi":  "User management",
-                                     "faturalandirma":  "Centralized billing",
-                                     "sso":  "SSO",
-                                     "sla":  "Enterprise SLA \u0026 support"
-                                 },
-                    "sinirsiz":  "Unlimited"
+                "pm": {
+                    "role": "Product Manager",
+                    "who": "B2B SaaS, startup",
+                    "win": "R1/R2/R3 release map and sprint breakdown ready.",
+                    "before": "—",
+                    "after": "Release plan"
                 },
-    "terms":  {
-                  "baslik":  "Terms of Service",
-                  "sonGuncelleme":  "Last updated: May 20, 2025",
-                  "giris":  "By using KurgemX, you agree to the following terms. Please read carefully.",
-                  "s1Baslik":  "1. Service Description",
-                  "s1Icerik":  "KurgemX is a SaaS platform operated by KurgemX — Kurumsal Gelişim Merkezi (KURGEM), offering AI-powered business analysis and prototyping services on a subscription basis.",
-                  "s2Baslik":  "2. Account Responsibility",
-                  "s2Icerik":  "You are solely responsible for the security of your account and all actions performed through it. You must keep your password secure and immediately notify support@kurgemx.com of any unauthorized access.",
-                  "s3Baslik":  "3. AI-Generated Content",
-                  "s3Icerik":  "The platform uses third-party AI services such as Anthropic\u0027s Claude model for content generation. Generated content is informational only and does not constitute professional advice. Evaluating the accuracy and suitability of this content is the user\u0027s responsibility.",
-                  "s4Baslik":  "4. Modifications to the Service",
-                  "s4Icerik":  "KurgemX reserves the right to modify platform features, pricing, or terms of service with prior notice. Significant changes will be announced by email at least 30 days in advance.",
-                  "s5Baslik":  "5. Governing Law",
-                  "s5Icerik":  "These terms are governed by Turkish law. Istanbul courts have jurisdiction over any disputes.",
-                  "iletisim":  "Contact"
-              },
-    "privacy":  {
-                    "baslik":  "Privacy Policy",
-                    "sonGuncelleme":  "Last updated: May 20, 2025",
-                    "giris":  "At KurgemX, we care about your privacy. This policy explains what data we collect and how we use it.",
-                    "s1Baslik":  "1. Data Collected",
-                    "s1Icerik":  "We collect name, email address, and project content (stories, acceptance criteria, analysis texts). This data is used solely to provide the service.",
-                    "s2Baslik":  "2. Data Storage",
-                    "s2Icerik":  "Your data is stored securely on Supabase infrastructure. Supabase applies industry-standard encryption and security measures.",
-                    "s3Baslik":  "3. Third-Party Sharing",
-                    "s3Icerik":  "Project data is sent to the Anthropic API for content generation. Anthropic does not use this data for model training. Your data is not shared with advertisers or other third parties.",
-                    "s4Baslik":  "4. KVKK Compliance",
-                    "s4Icerik":  "The platform operates in accordance with Turkey\u0027s Personal Data Protection Law (KVKK, Law No. 6698). Explicit consent for data processing is obtained during registration.",
-                    "s5Baslik":  "5. Right to Deletion",
-                    "s5Icerik":  "To delete your account and all associated data, send a request to support@kurgemx.com. Requests are processed within 30 business days.",
-                    "iletisim":  "Contact"
+                "developer": {
+                    "role": "Developer / Consultant",
+                    "who": "Freelance, boutique consulting",
+                    "win": "I show a working draft in the first meeting.",
+                    "before": "5 days",
+                    "after": "1 meeting"
+                }
+            }
+        },
+        "testimonial": {
+            "quote": "In 15 years of business analysis, this is the first tool that acted as a thinking partner, not a document. I don't write drafts from scratch after workshops anymore.",
+            "author": "Elif Sönmez",
+            "title": "Senior Business Analyst · At a bank",
+            "stats": {
+                "hikaye": {
+                    "n": "23K+",
+                    "label": "stories generated"
                 },
-    "refund":  {
-                   "baslik":  "Refund Policy",
-                   "sonGuncelleme":  "Last updated: May 20, 2025",
-                   "giris":  "The refund and cancellation policy applicable to KurgemX subscriptions is described below.",
-                   "s1Baslik":  "1. Access After Cancellation",
-                   "s1Icerik":  "When you cancel your subscription, you retain full access to all features until the end of the current billing period. Access is not immediately revoked upon cancellation.",
-                   "s2Baslik":  "2. Next Billing Period",
-                   "s2Icerik":  "As long as you cancel before the next billing period begins, no charge will be made for the new period.",
-                   "s3Baslik":  "3. Proration",
-                   "s3Icerik":  "No refunds are issued for unused time remaining in the current period. Subscription fees are charged in advance at the beginning of each period.",
-                   "s4Baslik":  "4. Freemium Plan",
-                   "s4Icerik":  "The refund policy does not apply to the free Freemium plan.",
-                   "soruMetni":  "For questions,",
-                   "iletisim":  "Contact"
-               }
+                "proje": {
+                    "n": "1,200+",
+                    "label": "completed projects"
+                },
+                "hizli": {
+                    "n": "6.4×",
+                    "label": "faster drafting"
+                },
+                "nps": {
+                    "n": "94%",
+                    "label": "customer satisfaction"
+                }
+            }
+        },
+        "finalCta": {
+            "title1": "Start your first project",
+            "highlight": "in 30 seconds",
+            "title2": ".",
+            "subtitle": "Write one sentence — Kurgemx handles the rest. Not happy? Walk away without paying.",
+            "primary": "Create my account",
+            "secondary": "Request a demo",
+            "footnote": "No card required · 14-day professional trial · Cancel with one click"
+        }
+    },
+    "dashboard": {
+        "welcome": "Welcome back, {name}",
+        "recentProjects": "Recent Projects",
+        "noProjects": "No projects yet.",
+        "newProject": "New Project",
+        "allProjects": "All Projects",
+        "created": "Created"
+    },
+    "footer": {
+        "copyright": "© 2026 KurgemX. All rights reserved.",
+        "brand": "AI-powered business analysis platform.",
+        "about": "About",
+        "pricing": "Pricing",
+        "contact": "Contact",
+        "terms": "Terms of Service",
+        "privacy": "Privacy Policy",
+        "refund": "Refund Policy",
+        "salesAgreement": "Distance Sales Agreement",
+        "payment": "Secure Payment"
+    },
+    "hesap": {
+        "baslik": "My Account",
+        "temelBilgiler": "Basic Information",
+        "ad": "First Name",
+        "soyad": "Last Name",
+        "email": "Email",
+        "sifreDegistir": "Change Password",
+        "yeniSifre": "New Password",
+        "yeniSifreTekrar": "New Password (Confirm)",
+        "kaydet": "Save",
+        "kaydedildi": "Your password has been updated.",
+        "abonelik": "Subscription",
+        "mevcutPlan": "Current Plan",
+        "aylikKullanim": "Monthly Usage",
+        "planiYukselt": "Upgrade Plan →",
+        "hesapSil": "Delete My Account",
+        "hesapSilAciklama": "Danger zone. This action cannot be undone.",
+        "hesapSilBtn": "Permanently Delete My Account",
+        "hesapSilOnay": "Your account will be deleted in 30 days. You will not be able to log in during this period. This action cannot be undone. Are you sure?",
+        "hatalar": {
+            "sifre_kisa": "Password must be at least 8 characters.",
+            "sifre_eslesmiyor": "Passwords do not match.",
+            "genel": "An error occurred. Please try again."
+        }
+    },
+    "iletisim": {
+        "baslik": "Contact",
+        "altBaslik": "Reach out to us with your questions.",
+        "email": "Email",
+        "adres": "Address",
+        "form": {
+            "baslik": "Send a Message",
+            "ad": "Your name",
+            "email": "Your email address",
+            "mesaj": "Your message",
+            "gonder": "Send",
+            "basari": "Your message has been sent. We will get back to you shortly.",
+            "hatalar": {
+                "eksik_alan": "Please fill in all fields.",
+                "genel": "An error occurred while sending. Please try again."
+            }
+        }
+    },
+    "about": {
+        "baslik": "About Us",
+        "altBaslik": "The right address for AI-powered business analysis",
+        "s1Baslik": "What is KurgemX?",
+        "s1Icerik": "KurgemX is an AI-powered business analysis platform for business analysts and software teams. Developed by experts with over 25 years of industry experience in business analysis, project management, and software development.",
+        "s2Baslik": "What We Do",
+        "s2Icerik": "KurgemX automates story map, business analysis document, prototype, and test scenario generation using AI. With Turkish language support and TRY pricing, KurgemX is a pioneer in the Turkish market.",
+        "s3Baslik": "Our Mission",
+        "s3Icerik": "To accelerate business analysis processes, improve quality, and enable software teams to work more efficiently.",
+        "iletisimBaslik": "Contact",
+        "iletisim": "Contact"
+    },
+    "salesAgreement": {
+        "baslik": "Distance Sales Agreement",
+        "kanun": "Pursuant to Turkish Consumer Protection Law No. 6502",
+        "sonGuncelleme": "Last updated: May 20, 2026",
+        "saticiBaslik": "Seller Information",
+        "s2Baslik": "2. Subject of Service",
+        "s2Icerik": "This agreement governs the terms under which the buyer subscribes digitally to the KurgemX platform. The service is a digital SaaS (Software as a Service) offering that includes story mapping, business analysis document creation, prototyping, and test scenario generation features.",
+        "s3Baslik": "3. Pricing",
+        "s3Icerik": "Freemium: $0 — 1 small project per month, max 5 stories\nStarter: $9/month — 3 projects per month, max 15 stories\nPro: $29/month — 10 projects per month, max 40 stories\nListed prices include applicable taxes. Prices are in USD; the exchange rate at the time of payment applies.",
+        "s4Baslik": "4. Payment Terms",
+        "s4Icerik": "Paid subscriptions are charged in advance on a monthly billing cycle. Payment is collected automatically via the credit or debit card provided at registration. Subscriptions may be suspended in the event of payment failure.",
+        "s5Baslik": "5. Right of Withdrawal",
+        "s5Icerik": "Under Article 49 of Turkish Consumer Protection Law No. 6502, consumers have the right to withdraw within 14 days of a distance contract. However, where the buyer has requested and explicitly consented to the commencement of service performance before the withdrawal period expires, the right of withdrawal cannot be exercised. Since service performance begins at the moment of subscription activation, the buyer provides explicit consent to this during activation. Accordingly, the right of withdrawal does not apply to this digital content service.",
+        "s6Baslik": "6. Cancellation and Refunds",
+        "s6Icerik": "The buyer may cancel their subscription at any time. Cancellation takes effect at the end of the current billing period; access to all features continues until that date. No refunds are issued for unused time. The Freemium plan is free of charge and therefore not subject to refund.",
+        "s7Baslik": "7. Dispute Resolution",
+        "s7Icerik": "Turkish law governs any disputes arising from this agreement. Istanbul courts and enforcement offices have jurisdiction.",
+        "iletisim": "Contact"
+    },
+    "pricing": {
+        "baslik": "Pricing",
+        "altBaslik": "Choose the plan that fits your project.",
+        "enPopuler": "Most Popular",
+        "freemiumNot": "Start for free, no credit card required.",
+        "teklifAl": "Get a Quote",
+        "soruMetni": "Have questions?",
+        "planlar": {
+            "freemium": {
+                "ad": "Freemium",
+                "fiyat": "$0",
+                "aylik": "/ month"
+            },
+            "analyst": {
+                "ad": "Analyst",
+                "fiyat": "$9",
+                "aylik": "/ month"
+            },
+            "advanced": {
+                "ad": "Advanced",
+                "fiyat": "$29",
+                "aylik": "/ month"
+            },
+            "enterprise": {
+                "ad": "Enterprise"
+            }
+        },
+        "bolumler": {
+            "kapsam": "Project Scope",
+            "ai": "AI-Powered Outputs",
+            "kurumsal": "Enterprise Features"
+        },
+        "satirlar": {
+            "projeAy": "Projects / month",
+            "kucukProje": "Small project (1–5 stories)",
+            "ortaProje": "Medium project (6–15 stories)",
+            "buyukProje": "Large project (16–40 stories)",
+            "hikayeHaritasi": "Story map",
+            "analizDokumani": "Analysis document",
+            "prototip": "Prototype generation",
+            "testSenaryosu": "Test scenarios",
+            "export": "Export (Word / Excel / HTML)",
+            "dil": "Turkish / English output",
+            "kullaniciYonetimi": "User management",
+            "faturalandirma": "Centralized billing",
+            "sso": "SSO",
+            "sla": "Enterprise SLA & support"
+        },
+        "sinirsiz": "Unlimited"
+    },
+    "terms": {
+        "baslik": "Terms of Service",
+        "sonGuncelleme": "Last updated: May 20, 2025",
+        "giris": "By using KurgemX, you agree to the following terms. Please read carefully.",
+        "s1Baslik": "1. Service Description",
+        "s1Icerik": "KurgemX is a SaaS platform offering AI-powered business analysis and prototyping services on a subscription basis.",
+        "s2Baslik": "2. Account Responsibility",
+        "s2Icerik": "You are solely responsible for the security of your account and all actions performed through it. You must keep your password secure and immediately notify support@kurgemx.com of any unauthorized access.",
+        "s3Baslik": "3. AI-Generated Content",
+        "s3Icerik": "The platform uses third-party AI services such as Anthropic's Claude model for content generation. Generated content is informational only and does not constitute professional advice. Evaluating the accuracy and suitability of this content is the user's responsibility.",
+        "s4Baslik": "4. Modifications to the Service",
+        "s4Icerik": "KurgemX reserves the right to modify platform features, pricing, or terms of service with prior notice. Significant changes will be announced by email at least 30 days in advance.",
+        "s5Baslik": "5. Governing Law",
+        "s5Icerik": "These terms are governed by Turkish law. Istanbul courts have jurisdiction over any disputes.",
+        "iletisim": "Contact"
+    },
+    "privacy": {
+        "baslik": "Privacy Policy",
+        "sonGuncelleme": "Last updated: May 20, 2025",
+        "giris": "At KurgemX, we care about your privacy. This policy explains what data we collect and how we use it.",
+        "s1Baslik": "1. Data Collected",
+        "s1Icerik": "We collect name, email address, and project content (stories, acceptance criteria, analysis texts). This data is used solely to provide the service.",
+        "s2Baslik": "2. Data Storage",
+        "s2Icerik": "Your data is stored securely on Supabase infrastructure. Supabase applies industry-standard encryption and security measures.",
+        "s3Baslik": "3. Third-Party Sharing",
+        "s3Icerik": "Project data is sent to the Anthropic API for content generation. Anthropic does not use this data for model training. Your data is not shared with advertisers or other third parties.",
+        "s4Baslik": "4. KVKK Compliance",
+        "s4Icerik": "The platform operates in accordance with Turkey's Personal Data Protection Law (KVKK, Law No. 6698). Explicit consent for data processing is obtained during registration.",
+        "s5Baslik": "5. Right to Deletion",
+        "s5Icerik": "To delete your account and all associated data, send a request to support@kurgemx.com. Requests are processed within 30 business days.",
+        "iletisim": "Contact"
+    },
+    "refund": {
+        "baslik": "Refund Policy",
+        "sonGuncelleme": "Last updated: May 20, 2025",
+        "giris": "The refund and cancellation policy applicable to KurgemX subscriptions is described below.",
+        "s1Baslik": "1. Access After Cancellation",
+        "s1Icerik": "When you cancel your subscription, you retain full access to all features until the end of the current billing period. Access is not immediately revoked upon cancellation.",
+        "s2Baslik": "2. Next Billing Period",
+        "s2Icerik": "As long as you cancel before the next billing period begins, no charge will be made for the new period.",
+        "s3Baslik": "3. Proration",
+        "s3Icerik": "No refunds are issued for unused time remaining in the current period. Subscription fees are charged in advance at the beginning of each period.",
+        "s4Baslik": "4. Freemium Plan",
+        "s4Icerik": "The refund policy does not apply to the free Freemium plan.",
+        "soruMetni": "For questions,",
+        "iletisim": "Contact"
+    }
 }
