@@ -29,7 +29,7 @@ export default async function HesapPage() {
 
   return (
     <main className="flex-1 bg-kx-bg">
-      <div className="max-w-[680px] mx-auto px-6 py-10 pb-24 w-full">
+      <div className="max-w-[900px] mx-auto px-6 py-10 pb-24 w-full">
         <HesapIstemci
           user={{ id: user!.id, email, ad, soyad, displayName, initials }}
           planBilgisi={planBilgisi}

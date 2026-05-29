@@ -131,135 +131,128 @@ export default function HesapIstemci({ user, planBilgisi, locale, labels: L }: P
         </div>
       </div>
 
-      {/* ── Section 1: Basic Information ── */}
-      <Section label={L.temelBilgiler}>
-        <FieldRow label={L.ad}    value={user.ad} />
-        <FieldRow label={L.soyad} value={user.soyad} />
-        <FieldRow label={L.email} value={user.email} />
-      </Section>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* ── Left column: Basic Information + Change Password ── */}
+        <div>
+          <Section label={L.temelBilgiler}>
+            <FieldRow label={L.ad}    value={user.ad} />
+            <FieldRow label={L.soyad} value={user.soyad} />
+            <FieldRow label={L.email} value={user.email} />
+          </Section>
 
-      {/* ── Section 2: Change Password ── */}
-      <Section label={L.sifreDegistir}>
-        <form onSubmit={handleSifreSubmit} className="space-y-3.5" style={{ maxWidth: 360 }}>
-          <div>
-            <label className="block text-[12.5px] font-medium mb-1.5" style={{ color: '#374151' }}>
-              {L.yeniSifre}
-            </label>
-            <input
-              name="yeniSifre"
-              type="password"
-              placeholder="••••••••"
-              minLength={8}
-              required
-              className="w-full h-[38px] px-3 rounded-lg text-[13.5px] outline-none transition"
-              style={{
-                border: '1px solid #D1D5DB',
-                color: '#1A2C4E',
-                background: '#fff',
-              }}
-              onFocus={e => (e.target.style.borderColor = '#2E75B6')}
-              onBlur={e => (e.target.style.borderColor = '#D1D5DB')}
-            />
-          </div>
-          <div>
-            <label className="block text-[12.5px] font-medium mb-1.5" style={{ color: '#374151' }}>
-              {L.yeniSifreTekrar}
-            </label>
-            <input
-              name="yeniSifreTekrar"
-              type="password"
-              placeholder="••••••••"
-              minLength={8}
-              required
-              className="w-full h-[38px] px-3 rounded-lg text-[13.5px] outline-none transition"
-              style={{
-                border: '1px solid #D1D5DB',
-                color: '#1A2C4E',
-                background: '#fff',
-              }}
-              onFocus={e => (e.target.style.borderColor = '#2E75B6')}
-              onBlur={e => (e.target.style.borderColor = '#D1D5DB')}
-            />
-          </div>
+          <Section label={L.sifreDegistir}>
+            <form onSubmit={handleSifreSubmit} className="space-y-3.5">
+              <div>
+                <label className="block text-[12.5px] font-medium mb-1.5" style={{ color: '#374151' }}>
+                  {L.yeniSifre}
+                </label>
+                <input
+                  name="yeniSifre"
+                  type="password"
+                  placeholder="••••••••"
+                  minLength={8}
+                  required
+                  className="w-full h-[38px] px-3 rounded-lg text-[13.5px] outline-none transition"
+                  style={{ border: '1px solid #D1D5DB', color: '#1A2C4E', background: '#fff' }}
+                  onFocus={e => (e.target.style.borderColor = '#2E75B6')}
+                  onBlur={e => (e.target.style.borderColor = '#D1D5DB')}
+                />
+              </div>
+              <div>
+                <label className="block text-[12.5px] font-medium mb-1.5" style={{ color: '#374151' }}>
+                  {L.yeniSifreTekrar}
+                </label>
+                <input
+                  name="yeniSifreTekrar"
+                  type="password"
+                  placeholder="••••••••"
+                  minLength={8}
+                  required
+                  className="w-full h-[38px] px-3 rounded-lg text-[13.5px] outline-none transition"
+                  style={{ border: '1px solid #D1D5DB', color: '#1A2C4E', background: '#fff' }}
+                  onFocus={e => (e.target.style.borderColor = '#2E75B6')}
+                  onBlur={e => (e.target.style.borderColor = '#D1D5DB')}
+                />
+              </div>
 
-          {sifreHata && (
-            <p className="text-[12.5px]" style={{ color: '#DC2626' }}>{sifreHata}</p>
-          )}
-          {sifreState?.success === 'ok' && (
-            <p className="text-[12.5px]" style={{ color: '#27500A' }}>{L.kaydedildi}</p>
-          )}
+              {sifreHata && (
+                <p className="text-[12.5px]" style={{ color: '#DC2626' }}>{sifreHata}</p>
+              )}
+              {sifreState?.success === 'ok' && (
+                <p className="text-[12.5px]" style={{ color: '#27500A' }}>{L.kaydedildi}</p>
+              )}
 
-          <button
-            type="submit"
-            disabled={pending}
-            className="text-[13px] font-semibold text-white px-5 py-2 rounded-lg transition disabled:opacity-50"
-            style={{ background: '#1F3864' }}
-          >
-            {pending ? '…' : L.kaydet}
-          </button>
-        </form>
-      </Section>
-
-      {/* ── Section 3: Subscription ── */}
-      <Section label={L.abonelik}>
-        {/* Current plan */}
-        <div className="flex items-center justify-between py-3 border-b" style={{ borderColor: '#ECEEF2' }}>
-          <span className="text-[13px]" style={{ color: '#6B7280' }}>{L.mevcutPlan}</span>
-          <span
-            className="text-[11px] font-bold px-2.5 py-1 rounded-full"
-            style={{ background: badge.bg, color: badge.color }}
-          >
-            {plan.ad}
-          </span>
+              <button
+                type="submit"
+                disabled={pending}
+                className="text-[13px] font-semibold text-white px-5 py-2 rounded-lg transition disabled:opacity-50"
+                style={{ background: '#1F3864' }}
+              >
+                {pending ? '…' : L.kaydet}
+              </button>
+            </form>
+          </Section>
         </div>
 
-        {/* Monthly usage */}
-        {limit !== null && (
-          <div className="py-3 border-b" style={{ borderColor: '#ECEEF2' }}>
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-[13px]" style={{ color: '#6B7280' }}>{L.aylikKullanim}</span>
-              <span className="text-[13px] font-medium" style={{ color: '#1A2C4E' }}>
-                {kullanim} / {limit} {isTR ? 'proje' : 'projects'}
+        {/* ── Right column: Subscription + Danger Zone ── */}
+        <div>
+          <Section label={L.abonelik}>
+            <div className="flex items-center justify-between py-3 border-b" style={{ borderColor: '#ECEEF2' }}>
+              <span className="text-[13px]" style={{ color: '#6B7280' }}>{L.mevcutPlan}</span>
+              <span
+                className="text-[11px] font-bold px-2.5 py-1 rounded-full"
+                style={{ background: badge.bg, color: badge.color }}
+              >
+                {plan.ad}
               </span>
             </div>
-            <div className="w-full rounded-full overflow-hidden" style={{ height: 6, background: '#E5E7EB' }}>
-              <div
-                className="h-full rounded-full transition-all"
-                style={{ width: `${progress}%`, background: '#2E75B6' }}
-              />
-            </div>
-          </div>
-        )}
 
-        {/* Upgrade */}
-        {SHOW_UPGRADE.has(plan.kod) && (
-          <div className="pt-3.5">
-            <Link
-              href="/pricing"
-              className="inline-flex items-center gap-1.5 text-[13px] font-semibold no-underline transition-opacity hover:opacity-75"
-              style={{ color: '#2E75B6' }}
+            {limit !== null && (
+              <div className="py-3 border-b" style={{ borderColor: '#ECEEF2' }}>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[13px]" style={{ color: '#6B7280' }}>{L.aylikKullanim}</span>
+                  <span className="text-[13px] font-medium" style={{ color: '#1A2C4E' }}>
+                    {kullanim} / {limit} {isTR ? 'proje' : 'projects'}
+                  </span>
+                </div>
+                <div className="w-full rounded-full overflow-hidden" style={{ height: 6, background: '#E5E7EB' }}>
+                  <div
+                    className="h-full rounded-full transition-all"
+                    style={{ width: `${progress}%`, background: '#2E75B6' }}
+                  />
+                </div>
+              </div>
+            )}
+
+            {SHOW_UPGRADE.has(plan.kod) && (
+              <div className="pt-3.5">
+                <Link
+                  href="/pricing"
+                  className="inline-flex items-center gap-1.5 text-[13px] font-semibold no-underline transition-opacity hover:opacity-75"
+                  style={{ color: '#2E75B6' }}
+                >
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 19V5M5 12l7-7 7 7" />
+                  </svg>
+                  {L.planiYukselt}
+                </Link>
+              </div>
+            )}
+          </Section>
+
+          <Section label={isTR ? 'TEHLİKELİ ALAN' : 'DANGER ZONE'} danger>
+            <p className="text-[13px] mb-4" style={{ color: '#9CA3AF' }}>{L.hesapSilAciklama}</p>
+            <button
+              onClick={handleHesapSil}
+              disabled={pending}
+              className="text-[13px] font-semibold px-5 py-2 rounded-lg transition disabled:opacity-50"
+              style={{ background: '#DC2626', color: '#fff' }}
             >
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 19V5M5 12l7-7 7 7" />
-              </svg>
-              {L.planiYukselt}
-            </Link>
-          </div>
-        )}
-      </Section>
-
-      {/* ── Section 4: Danger Zone ── */}
-      <Section label={isTR ? 'TEHLİKELİ ALAN' : 'DANGER ZONE'} danger>
-        <p className="text-[13px] mb-4" style={{ color: '#9CA3AF' }}>{L.hesapSilAciklama}</p>
-        <button
-          onClick={handleHesapSil}
-          disabled={pending}
-          className="text-[13px] font-semibold px-5 py-2 rounded-lg transition disabled:opacity-50"
-          style={{ background: '#DC2626', color: '#fff' }}
-        >
-          {L.hesapSilBtn}
-        </button>
-      </Section>
+              {L.hesapSilBtn}
+            </button>
+          </Section>
+        </div>
+      </div>
     </div>
   )
 }
