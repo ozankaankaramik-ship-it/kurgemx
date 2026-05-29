@@ -850,6 +850,16 @@ function EkranIci({
           setAdim2HataMesaji(`Kayıt hatası: ${upsertError.message} (code: ${upsertError.code})`)
           setAdim2Hata(true)
         }
+
+        // Hikaye sayısını projeler tablosuna kaydet
+        const hikayeSayisiGuncel = veri.hikayeHaritasi.hikayeler?.length ?? 0
+        if (hikayeSayisiGuncel > 0) {
+          const { error: sayiHata } = await supabase
+            .from('projeler')
+            .update({ hikaye_sayisi: hikayeSayisiGuncel })
+            .eq('id', projeId)
+          if (sayiHata) console.error('[generateStoryMap] hikaye_sayisi güncelleme hatası:', sayiHata)
+        }
       }
       ctx.setDokuman('storyMap', JSON.stringify(veri))
       setAdim2Metrigi({ sure: sure2, token: token2 })
@@ -1301,12 +1311,15 @@ function EkranIci({
         if (upsertError) console.error('[generateTestScenarios] kayıt hatası:', upsertError)
 
         // Proje tamamlandı — durumu güncelle
+        const { data: { user: currentUser } } = await supabase.auth.getUser()
         const { error: durumHata } = await supabase
           .from('projeler')
           .update({ durum: 'tamamlandi' })
           .eq('id', projeId)
-        if (durumHata) console.error('[generateTestScenarios] durum güncelleme hatası:', durumHata)
-        else {
+          .eq('kullanici_id', currentUser?.id ?? '')
+        if (durumHata) {
+          console.error('[generateTestScenarios] durum güncelleme hatası:', JSON.stringify(durumHata))
+        } else {
           setTamamlandiBannerGoster(true)
           setTimeout(() => setTamamlandiBannerGoster(false), 10000)
         }

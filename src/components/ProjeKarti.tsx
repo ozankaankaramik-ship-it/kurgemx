@@ -25,8 +25,7 @@ function deriveStage(proje: ProjeListeRow): number {
   if (tipIds.includes(DOKUMAN_TIPLERI.prototip)) return 4
   if (tipIds.includes(DOKUMAN_TIPLERI.is_analizi)) return 3
   if (tipIds.includes(DOKUMAN_TIPLERI.hikaye_haritasi)) return 2
-  const hikayeSayisi = proje.hikayeler?.[0]?.count ?? 0
-  if (hikayeSayisi > 0) return 2
+  if ((proje.hikaye_sayisi ?? 0) > 0) return 2
   return 1
 }
 
@@ -69,7 +68,7 @@ export default function ProjeKarti({
 }: Props) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
-  const hikayeSayisi = proje.hikayeler?.[0]?.count ?? 0
+  const hikayeSayisi = proje.hikaye_sayisi ?? 0
   const dokumanSayisi = proje.dokumanlar?.length ?? 0
   const stage = deriveStage(proje)
   const initials = proje.ad.split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase()

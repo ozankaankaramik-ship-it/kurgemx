@@ -10,14 +10,14 @@ export type ProjeListeRow = {
   dil: string
   durum: string
   arsivlendi_tarih: string | null
+  hikaye_sayisi: number
   olusturma_tarihi: string
   guncelleme_tarihi: string
-  hikayeler: { count: number }[]
   dokumanlar: { tip_id: string }[]
 }
 
 const SELECT =
-  'id, ad, aciklama, dil, durum, arsivlendi_tarih, olusturma_tarihi, guncelleme_tarihi, hikayeler(count), dokumanlar(tip_id)'
+  'id, ad, aciklama, dil, durum, arsivlendi_tarih, hikaye_sayisi, olusturma_tarihi, guncelleme_tarihi, dokumanlar(tip_id)'
 
 export async function projeleriGetir(offset: number, limit = 10): Promise<ProjeListeRow[]> {
   const supabase = await createClient()

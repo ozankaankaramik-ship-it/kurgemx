@@ -14,7 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 const SELECT =
-  'id, ad, aciklama, dil, durum, arsivlendi_tarih, olusturma_tarihi, guncelleme_tarihi, hikayeler(count), dokumanlar(tip_id)'
+  'id, ad, aciklama, dil, durum, arsivlendi_tarih, hikaye_sayisi, olusturma_tarihi, guncelleme_tarihi, dokumanlar(tip_id)'
 
 function formatTarih(tarihStr: string, locale: string) {
   return new Intl.DateTimeFormat(locale === 'tr' ? 'tr-TR' : 'en-US', {
