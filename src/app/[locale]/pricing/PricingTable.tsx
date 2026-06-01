@@ -133,9 +133,9 @@ function PlanCard({ featured, badge, name, price, period, description, btn, onSu
 /* ── Karşılaştırma tablosu hücreleri ─────────────────────────── */
 function Check() {
   return (
-    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-label="Yes">
+    <svg width="16" height="16" viewBox="0 0 15 15" fill="none" aria-label="Yes">
       <circle cx="7.5" cy="7.5" r="7.5" fill="#DCFCE7" />
-      <path d="M4.5 7.5l2 2 4-4" stroke="#22C55E" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M4.5 7.5l2 2 4-4" stroke="#16A34A" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   )
 }
