@@ -14,7 +14,7 @@
   @keyframes kxBlink { from, 49% { opacity: 1; } 50%, to { opacity: 0; } }
   @keyframes kxSpin  { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
   #stageHost { flex: 1; min-height: 0; position: relative; }
-  #scriptHost { background: #0a0a0a; border-top: 1px solid rgba(255,255,255,0.08); flex-shrink: 0; }
+
 </style>
 </head>
 <body>
@@ -1413,54 +1413,23 @@ window.TanitimScenes = TanitimScenes;
 
 <script type="text/babel" data-presets="react">
   function App() {
-    const [lang, setLang] = React.useState('TR');
-    const [aspect, setAspect] = React.useState('16:9');
-    const dim = ASPECTS[aspect];
     return (
-      <LangContext.Provider value={lang}>
-        <VideoToolbar title={lang === 'TR' ? 'Tanıtım Videosu · 60 saniye' : 'Promo Video · 60 seconds'} lang={lang} setLang={setLang} aspect={aspect} setAspect={setAspect} />
-        <div id="stageHost">
+      <LangContext.Provider value="TR">
+        <div id="stageHost" style={{ flex: 1, minHeight: 0, position: 'relative' }}>
           <Stage
-            width={dim.w}
-            height={dim.h}
+            width={1920}
+            height={1080}
             duration={60}
             background={KX.bg}
-            persistKey={'tanitim:' + aspect}
-            key={aspect}
+            persistKey="tanitim:embed"
           >
-            <LangContext.Provider value={lang}>
+            <LangContext.Provider value="TR">
               <TanitimScenes />
-              <SubtitleBar subs={TANITIM_SUBS} lang={lang} />
+              <SubtitleBar subs={TANITIM_SUBS} lang="TR" />
             </LangContext.Provider>
           </Stage>
         </div>
-        <div id="scriptHost">
-          <ScriptPanelWrapper lang={lang} />
-        </div>
       </LangContext.Provider>
-    );
-  }
-
-  function ScriptPanelWrapper({ lang }) {
-    const [time, setTime] = React.useState(0);
-    React.useEffect(() => {
-      const tick = () => {
-        try {
-          const keys = Object.keys(localStorage).filter(k => k.startsWith('tanitim:') && k.endsWith(':t'));
-          if (keys.length > 0) {
-            const vals = keys.map(k => parseFloat(localStorage.getItem(k) || '0')).filter(isFinite);
-            if (vals.length) setTime(Math.max(...vals));
-          }
-        } catch {}
-      };
-      const id = setInterval(tick, 100);
-      tick();
-      return () => clearInterval(id);
-    }, []);
-    return (
-      <TimelineContext.Provider value={{ time, duration: 60, playing: false }}>
-        <ScriptPanel scenes={TANITIM_SCENES} lang={lang} />
-      </TimelineContext.Provider>
     );
   }
 
