@@ -12,13 +12,19 @@ function paytrHmac(parts: string[], salt: string, key: string): string {
 
 export async function POST(request: NextRequest) {
   // ── Ortam değişkeni kontrolü ──────────────────────────────────
-  const merchantId   = process.env.PAYTR_MERCHANT_ID
-  const merchantKey  = process.env.PAYTR_MERCHANT_KEY
-  const merchantSalt = process.env.PAYTR_MERCHANT_SALT
+  const merchantId      = process.env.PAYTR_MERCHANT_ID
+  const merchantKey     = process.env.PAYTR_MERCHANT_KEY
+  const merchantSalt    = process.env.PAYTR_MERCHANT_SALT
+  const serviceRoleKey  = process.env.SUPABASE_SERVICE_ROLE_KEY
 
   if (!merchantId || !merchantKey || !merchantSalt) {
     console.error('[paytr/token] Eksik env: PAYTR_MERCHANT_ID / PAYTR_MERCHANT_KEY / PAYTR_MERCHANT_SALT')
     return NextResponse.json({ error: 'Ödeme servisi yapılandırılmamış' }, { status: 503 })
+  }
+
+  if (!serviceRoleKey) {
+    console.error('[paytr/token] Eksik env: SUPABASE_SERVICE_ROLE_KEY')
+    return NextResponse.json({ error: 'Veritabanı servisi yapılandırılmamış' }, { status: 503 })
   }
 
   const testMode = process.env.PAYTR_TEST_MODE === '1' ? '1' : '0'
@@ -55,7 +61,7 @@ export async function POST(request: NextRequest) {
     // ── Service role client ───────────────────────────────────────
     const service = createServiceClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
+      serviceRoleKey
     )
 
     // ── Plan bilgisi ──────────────────────────────────────────────
