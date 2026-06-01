@@ -24,6 +24,7 @@ export interface AbonelikDetay {
   aylik_buyuk_proje_sayaci: number
   sayac_sifirlama_tarihi: string | null
   email_dogrulandi: boolean
+  sonraki_odeme_tarihi: string | null
 }
 
 export interface PlanBilgisi {
@@ -68,6 +69,7 @@ export async function getKullaniciPlan(
       aylik_buyuk_proje_sayaci,
       sayac_sifirlama_tarihi,
       email_dogrulandi,
+      sonraki_odeme_tarihi,
       plan:planlar!plan_id (
         id, kod, ad, fiyat_usd,
         aylik_proje_limiti, proje_basi_max_hikaye,
@@ -113,6 +115,7 @@ export async function getKullaniciPlan(
       aylik_buyuk_proje_sayaci: data.aylik_buyuk_proje_sayaci ?? 0,
       sayac_sifirlama_tarihi: sifirlama ?? null,
       email_dogrulandi: data.email_dogrulandi ?? false,
+      sonraki_odeme_tarihi: data.sonraki_odeme_tarihi ?? null,
     },
   }
 }

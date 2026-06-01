@@ -1,7 +1,10 @@
-import { getTranslations } from 'next-intl/server'
+import { getTranslations, getLocale } from 'next-intl/server'
 import type { Metadata } from 'next'
 import PageHero from '@/components/ui/PageHero'
 import KxPill from '@/components/ui/KxPill'
+import PlanKartlari, { type PlanKart } from './PlanKartlari'
+import { createClient } from '@/lib/supabase/server'
+import { getKullaniciPlan } from '@/lib/abonelik'
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('pricing')
@@ -31,7 +34,28 @@ function Cell({ val }: { val: boolean | string }) {
 }
 
 export default async function PricingPage() {
-  const t = await getTranslations('pricing')
+  const t      = await getTranslations('pricing')
+  const locale = await getLocale()
+
+  // Planlar (public read — anon key yeterli)
+  const supabase = await createClient()
+
+  const { data: planlarRaw } = await supabase
+    .from('planlar')
+    .select('id, ad, kod, fiyat_usd, aylik_proje_limiti, kucuk_proje, orta_proje, buyuk_proje, max_buyuk_proje, prototip, test_senaryosu, export')
+    .in('kod', ['freemium', 'analyst', 'advanced'])
+    .eq('aktif', true)
+    .order('fiyat_usd', { ascending: true, nullsFirst: true })
+
+  const planlar: PlanKart[] = (planlarRaw ?? []) as PlanKart[]
+
+  // Oturum açmış kullanıcının aktif plan id'si
+  const { data: { user } } = await supabase.auth.getUser()
+  let mevcutPlanId: string | null = null
+  if (user) {
+    const pb = await getKullaniciPlan(supabase, user.id)
+    mevcutPlanId = pb.plan.id || null
+  }
 
   type Row = { label: string; vals: (boolean | string)[] }
   type Section = { label: string; rows: Row[] }
@@ -86,6 +110,9 @@ export default async function PricingPage() {
           title={t('baslik')}
           subtitle={t('altBaslik')}
         />
+
+        {/* Plan kartları */}
+        <PlanKartlari planlar={planlar} mevcutPlanId={mevcutPlanId} locale={locale} />
 
         {/* Comparison table */}
         <section className="py-14 px-8 bg-kx-bg">

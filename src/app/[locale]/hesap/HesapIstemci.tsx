@@ -14,6 +14,7 @@ const PLAN_BADGE: Record<string, { bg: string; color: string }> = {
   enterprise: { bg: '#CECBF6', color: '#3C3489' },
 }
 const SHOW_UPGRADE = new Set(['freemium', 'analyst'])
+const PAID_PLANS   = new Set(['analyst', 'advanced', 'enterprise'])
 
 /* ── Types ───────────────────────────────────────────────────── */
 type Labels = {
@@ -30,6 +31,10 @@ type Labels = {
   mevcutPlan: string
   aylikKullanim: string
   planiYukselt: string
+  sonrakiOdemeTarihi: string
+  aboneligiIptalEt: string
+  iptalOnay: string
+  iptalEdildi: string
   hesapSilBtn: string
   hesapSilAciklama: string
   hesapSilOnay: string
@@ -74,8 +79,10 @@ function FieldRow({ label, value }: { label: string; value: string }) {
 /* ── Component ───────────────────────────────────────────────── */
 export default function HesapIstemci({ user, planBilgisi, locale, labels: L }: Props) {
   const router = useRouter()
-  const [sifreState, setSifreState] = useState<{ error?: string; success?: string } | null>(null)
-  const [pending, startTrans] = useTransition()
+  const [sifreState, setSifreState]     = useState<{ error?: string; success?: string } | null>(null)
+  const [iptalMesaj, setIptalMesaj]     = useState<string | null>(null)
+  const [iptalPending, setIptalPending] = useState(false)
+  const [pending, startTrans]           = useTransition()
 
   const { plan, abonelik } = planBilgisi
   const badge    = PLAN_BADGE[plan.kod] ?? PLAN_BADGE.freemium
@@ -83,7 +90,9 @@ export default function HesapIstemci({ user, planBilgisi, locale, labels: L }: P
   const kullanim = abonelik?.aylik_proje_sayaci ?? 0
   const progress = limit ? Math.min((kullanim / limit) * 100, 100) : 0
 
-  const isTR = locale === 'tr'
+  const isTR          = locale === 'tr'
+  const isPaidPlan    = PAID_PLANS.has(plan.kod)
+  const sonrakiOdeme  = abonelik?.sonraki_odeme_tarihi ?? null
 
   function handleSifreSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -105,6 +114,27 @@ export default function HesapIstemci({ user, planBilgisi, locale, labels: L }: P
       await hesapSilTalebi(null, fd)
       router.push(`/${locale}`)
     })
+  }
+
+  async function handleIptal() {
+    const onay = window.confirm(L.iptalOnay)
+    if (!onay) return
+    setIptalPending(true)
+    setIptalMesaj(null)
+    try {
+      const res  = await fetch('/api/paytr/cancel', { method: 'POST' })
+      const data = await res.json() as { error?: string }
+      if (data.error) {
+        setIptalMesaj(data.error)
+      } else {
+        setIptalMesaj(L.iptalEdildi)
+        router.refresh()
+      }
+    } catch {
+      setIptalMesaj(L.hatalar.genel)
+    } finally {
+      setIptalPending(false)
+    }
   }
 
   const sifreHata = sifreState?.error
@@ -132,7 +162,7 @@ export default function HesapIstemci({ user, planBilgisi, locale, labels: L }: P
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* ── Left column: Basic Information + Change Password ── */}
+        {/* ── Left column ── */}
         <div>
           <Section label={L.temelBilgiler}>
             <FieldRow label={L.ad}    value={user.ad} />
@@ -194,9 +224,10 @@ export default function HesapIstemci({ user, planBilgisi, locale, labels: L }: P
           </Section>
         </div>
 
-        {/* ── Right column: Subscription + Danger Zone ── */}
+        {/* ── Right column ── */}
         <div>
           <Section label={L.abonelik}>
+            {/* Mevcut plan */}
             <div className="flex items-center justify-between py-3 border-b" style={{ borderColor: '#ECEEF2' }}>
               <span className="text-[13px]" style={{ color: '#6B7280' }}>{L.mevcutPlan}</span>
               <span
@@ -207,6 +238,7 @@ export default function HesapIstemci({ user, planBilgisi, locale, labels: L }: P
               </span>
             </div>
 
+            {/* Aylık kullanım */}
             {limit !== null && (
               <div className="py-3 border-b" style={{ borderColor: '#ECEEF2' }}>
                 <div className="flex items-center justify-between mb-2">
@@ -224,8 +256,21 @@ export default function HesapIstemci({ user, planBilgisi, locale, labels: L }: P
               </div>
             )}
 
+            {/* Sonraki ödeme tarihi */}
+            {isPaidPlan && sonrakiOdeme && (
+              <div className="flex items-center justify-between py-3 border-b" style={{ borderColor: '#ECEEF2' }}>
+                <span className="text-[13px]" style={{ color: '#6B7280' }}>{L.sonrakiOdemeTarihi}</span>
+                <span className="text-[13px] font-medium" style={{ color: '#1A2C4E' }}>
+                  {new Date(sonrakiOdeme).toLocaleDateString(locale === 'tr' ? 'tr-TR' : 'en-GB', {
+                    day: 'numeric', month: 'long', year: 'numeric',
+                  })}
+                </span>
+              </div>
+            )}
+
+            {/* Planı Yükselt */}
             {SHOW_UPGRADE.has(plan.kod) && (
-              <div className="pt-3.5">
+              <div className="pt-3.5 flex items-center gap-4">
                 <Link
                   href="/pricing"
                   className="inline-flex items-center gap-1.5 text-[13px] font-semibold no-underline transition-opacity hover:opacity-75"
@@ -236,6 +281,28 @@ export default function HesapIstemci({ user, planBilgisi, locale, labels: L }: P
                   </svg>
                   {L.planiYukselt}
                 </Link>
+              </div>
+            )}
+
+            {/* Aboneliği İptal Et */}
+            {isPaidPlan && (
+              <div className="pt-3 border-t mt-3" style={{ borderColor: '#ECEEF2' }}>
+                {iptalMesaj && (
+                  <p
+                    className="text-[12.5px] mb-2"
+                    style={{ color: iptalMesaj === L.iptalEdildi ? '#27500A' : '#DC2626' }}
+                  >
+                    {iptalMesaj}
+                  </p>
+                )}
+                <button
+                  onClick={handleIptal}
+                  disabled={iptalPending}
+                  className="text-[12.5px] font-semibold transition-opacity hover:opacity-70 disabled:opacity-40"
+                  style={{ color: '#9CA3AF' }}
+                >
+                  {iptalPending ? '…' : L.aboneligiIptalEt}
+                </button>
               </div>
             )}
           </Section>

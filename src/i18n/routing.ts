@@ -47,5 +47,7 @@ export const routing = defineRouting({
       tr: "/projeler/[id]",
       en: "/projects/[id]",
     },
+    "/odeme/basarili": "/odeme/basarili",
+    "/odeme/basarisiz": "/odeme/basarisiz",
   },
 });

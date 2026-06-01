@@ -497,6 +497,10 @@
         "hesapSilAciklama": "Tehlikeli alan. Bu işlem geri alınamaz.",
         "hesapSilBtn": "Hesabımı Kalıcı Olarak Sil",
         "hesapSilOnay": "Hesabınız 30 gün içinde silinecek. Bu sürede giriş yapamayacaksınız. Bu işlem geri alınamaz. Emin misiniz?",
+        "sonrakiOdemeTarihi": "Sonraki Ödeme",
+        "aboneligiIptalEt": "Aboneliği İptal Et",
+        "iptalOnay": "Aboneliğinizi iptal etmek istediğinizden emin misiniz? Mevcut dönem sonuna kadar erişiminiz devam eder.",
+        "iptalEdildi": "Aboneliğiniz iptal edildi.",
         "hatalar": {
             "sifre_kisa": "Şifre en az 8 karakter olmalıdır.",
             "sifre_eslesmiyor": "Şifreler eşleşmiyor.",

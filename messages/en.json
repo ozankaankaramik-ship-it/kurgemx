@@ -497,6 +497,10 @@
         "hesapSilAciklama": "Danger zone. This action cannot be undone.",
         "hesapSilBtn": "Permanently Delete My Account",
         "hesapSilOnay": "Your account will be deleted in 30 days. You will not be able to log in during this period. This action cannot be undone. Are you sure?",
+        "sonrakiOdemeTarihi": "Next Payment",
+        "aboneligiIptalEt": "Cancel Subscription",
+        "iptalOnay": "Are you sure you want to cancel your subscription? You will retain access until the end of the current billing period.",
+        "iptalEdildi": "Your subscription has been cancelled.",
         "hatalar": {
             "sifre_kisa": "Password must be at least 8 characters.",
             "sifre_eslesmiyor": "Passwords do not match.",

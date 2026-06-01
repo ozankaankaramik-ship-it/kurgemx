@@ -13,7 +13,7 @@ function paytrHmac(parts: string[], salt: string, key: string): string {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { plan_id } = body as { plan_id?: string }
+    const { plan_id, locale = 'tr' } = body as { plan_id?: string; locale?: string }
 
     if (!plan_id) {
       return NextResponse.json({ error: 'plan_id zorunlu' }, { status: 400 })
@@ -120,8 +120,8 @@ export async function POST(request: NextRequest) {
       max_installment,
       paytr_token,
       user_name:         `${kullanici.ad} ${kullanici.soyad}`,
-      merchant_ok_url:   `${appUrl}/odeme/basarili`,
-      merchant_fail_url: `${appUrl}/odeme/basarisiz`,
+      merchant_ok_url:   `${appUrl}/${locale}/odeme/basarili`,
+      merchant_fail_url: `${appUrl}/${locale}/odeme/basarisiz`,
       test_mode:         testMode,
       debug_on:          testMode,
       lang:              'tr',
