@@ -94,8 +94,18 @@ export async function POST(request: NextRequest) {
         odeme_platformu:       'paytr',
         odeme_referans_no:     merchant_oid,
       }
-      if (odeme.hedef_plan_id) abonelikUpdate.plan_id = odeme.hedef_plan_id
-      if (utoken)              abonelikUpdate.paytr_kart_token = utoken
+      if (odeme.hedef_plan_id) {
+        abonelikUpdate.plan_id = odeme.hedef_plan_id
+
+        const { data: hedefPlan } = await service
+          .from('planlar')
+          .select('kod')
+          .eq('id', odeme.hedef_plan_id)
+          .single()
+
+        if (hedefPlan?.kod) abonelikUpdate.plan = hedefPlan.kod
+      }
+      if (utoken) abonelikUpdate.paytr_kart_token = utoken
 
       await service.from('abonelikler')
         .update(abonelikUpdate)
