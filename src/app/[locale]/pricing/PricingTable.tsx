@@ -155,62 +155,76 @@ export default function PricingTable({
     <>
       <div className="max-w-[780px] mx-auto" style={{ padding: '1.5rem 1rem' }}>
 
-        {/* ── Plan kartları ── */}
-        <div className="grid grid-cols-4 mb-8" style={{ gap: 12 }}>
+        {/* ── Plan kartları ──
+             Sütun genişlikleri tablo colgroup ile tam eşleşiyor: 22% + 4×19.5%
+             gap yerine wrapper padding kullanılıyor ki sütun başlangıç noktaları
+             kaymadan tablo başlıklarıyla hizalanabilsin.                        */}
+        <div className="mb-8" style={{ display: 'grid', gridTemplateColumns: '22% 19.5% 19.5% 19.5% 19.5%', gap: 0 }}>
+
+          {/* Features sütunu placeholder */}
+          <div />
 
           {/* Freemium */}
-          <PlanCard
-            name={t('planlar.freemium.ad')}
-            price={<span style={{ fontSize: 36, fontWeight: 500, color: '#0E1A33' }}>$0</span>}
-            period={t('planlar.freemium.aylik')}
-            description={t('freemiumNot')}
-            btn="none"
-          />
+          <div style={{ paddingRight: 6 }}>
+            <PlanCard
+              name={t('planlar.freemium.ad')}
+              price={<span style={{ fontSize: 36, fontWeight: 500, color: '#0E1A33' }}>$0</span>}
+              period={t('planlar.freemium.aylik')}
+              description={t('freemiumNot')}
+              btn="none"
+            />
+          </div>
 
           {/* Analyst */}
-          <PlanCard
-            featured
-            badge={
-              <span
-                className="text-kx-navy"
-                style={{ background: '#EEF4FB', borderRadius: 20, fontSize: 11, fontWeight: 500, padding: '2px 10px' }}
-              >
-                {t('enPopuler')}
-              </span>
-            }
-            name={t('planlar.analyst.ad')}
-            price={<span style={{ fontSize: 36, fontWeight: 500, color: '#0E1A33' }}>$9</span>}
-            period={t('planlar.analyst.aylik')}
-            btn={analystBtn}
-            onSubscribe={analystPlan ? () => setModalPlan(analystPlan) : undefined}
-          />
+          <div style={{ padding: '0 6px' }}>
+            <PlanCard
+              featured
+              badge={
+                <span
+                  className="text-kx-navy"
+                  style={{ background: '#EEF4FB', borderRadius: 20, fontSize: 11, fontWeight: 500, padding: '2px 10px' }}
+                >
+                  {t('enPopuler')}
+                </span>
+              }
+              name={t('planlar.analyst.ad')}
+              price={<span style={{ fontSize: 36, fontWeight: 500, color: '#0E1A33' }}>$9</span>}
+              period={t('planlar.analyst.aylik')}
+              btn={analystBtn}
+              onSubscribe={analystPlan ? () => setModalPlan(analystPlan) : undefined}
+            />
+          </div>
 
           {/* Advanced */}
-          <PlanCard
-            name={t('planlar.advanced.ad')}
-            price={<span style={{ fontSize: 36, fontWeight: 500, color: '#0E1A33' }}>$29</span>}
-            period={t('planlar.advanced.aylik')}
-            btn={advancedBtn}
-            onSubscribe={advancedPlan ? () => setModalPlan(advancedPlan) : undefined}
-          />
+          <div style={{ padding: '0 6px' }}>
+            <PlanCard
+              name={t('planlar.advanced.ad')}
+              price={<span style={{ fontSize: 36, fontWeight: 500, color: '#0E1A33' }}>$29</span>}
+              period={t('planlar.advanced.aylik')}
+              btn={advancedBtn}
+              onSubscribe={advancedPlan ? () => setModalPlan(advancedPlan) : undefined}
+            />
+          </div>
 
           {/* Enterprise */}
-          <PlanCard
-            name={t('planlar.enterprise.ad')}
-            price={<span style={{ fontSize: 20, fontWeight: 500, color: '#9CA3AF' }}>Custom</span>}
-            btn="quote"
-          />
+          <div style={{ paddingLeft: 6 }}>
+            <PlanCard
+              name={t('planlar.enterprise.ad')}
+              price={<span style={{ fontSize: 20, fontWeight: 500, color: '#9CA3AF' }}>Custom</span>}
+              btn="quote"
+            />
+          </div>
         </div>
 
         {/* ── Karşılaştırma tablosu ── */}
         <div className="rounded-xl overflow-hidden" style={{ border: '0.5px solid #E8EAEE', background: '#fff' }}>
           <table style={{ tableLayout: 'fixed', width: '100%', fontSize: 14, borderCollapse: 'collapse' }}>
             <colgroup>
-              <col style={{ width: '32%' }} />
-              <col style={{ width: '17%' }} />
-              <col style={{ width: '17%' }} />
-              <col style={{ width: '17%' }} />
-              <col style={{ width: '17%' }} />
+              <col style={{ width: '22%' }} />
+              <col style={{ width: '19.5%' }} />
+              <col style={{ width: '19.5%' }} />
+              <col style={{ width: '19.5%' }} />
+              <col style={{ width: '19.5%' }} />
             </colgroup>
 
             <thead>
