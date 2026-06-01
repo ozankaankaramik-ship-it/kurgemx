@@ -440,6 +440,13 @@ function Stage({
         setTime(t => clamp(t + (e.shiftKey ? 1 : 0.1), 0, duration));
       } else if (e.key === '0' || e.code === 'Home') {
         setTime(0);
+      } else if (e.key === 'f' || e.key === 'F') {
+        const el = document.documentElement;
+        if (!document.fullscreenElement) {
+          el.requestFullscreen && el.requestFullscreen();
+        } else {
+          document.exitFullscreen && document.exitFullscreen();
+        }
       }
     };
     window.addEventListener('keydown', onKey);
@@ -660,6 +667,20 @@ function PlaybackBar({ time, duration, playing, onPlayPause, onReset, onSeek, on
       }}>
         {fmt(duration)}
       </div>
+
+      {/* Fullscreen button */}
+      <IconButton onClick={() => {
+        const el = document.documentElement;
+        if (!document.fullscreenElement) {
+          el.requestFullscreen && el.requestFullscreen();
+        } else {
+          document.exitFullscreen && document.exitFullscreen();
+        }
+      }} title="Tam ekran (F)">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M2 5V2h3M9 2h3v3M12 9v3H9M5 12H2V9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      </IconButton>
     </div>
   );
 }
@@ -1769,19 +1790,21 @@ window.KilavuzScenes = KilavuzScenes;
 
 <script type="text/babel" data-presets="react">
   function App() {
+    const params = new URLSearchParams(window.location.search);
+    const lang = (params.get('lang') || 'TR').toUpperCase();
     return (
-      <LangContext.Provider value="TR">
+      <LangContext.Provider value={lang}>
         <div id="stageHost" style={{ flex: 1, minHeight: 0, position: 'relative' }}>
           <Stage
             width={1920}
             height={1080}
             duration={60}
             background={KX.bg}
-            persistKey="kilavuz:embed"
+            persistKey={"kilavuz:embed:" + lang}
           >
-            <LangContext.Provider value="TR">
+            <LangContext.Provider value={lang}>
               <KilavuzScenes />
-              <SubtitleBar subs={KILAVUZ_SUBS} lang="TR" />
+              <SubtitleBar subs={KILAVUZ_SUBS} lang={lang} />
             </LangContext.Provider>
           </Stage>
         </div>
