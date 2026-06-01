@@ -1,0 +1,1826 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8" />
+<title>KurgemX — Kullanım Kılavuzu (60 san)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@600;700&family=Exo+2:wght@700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
+<style>
+  html, body { margin: 0; padding: 0; background: #000; min-height: 100vh; height: 100vh; overflow: hidden; }
+  body { font-family: 'Inter', sans-serif; display: flex; flex-direction: column; }
+  * { box-sizing: border-box; }
+  @keyframes kxBlink { from, 49% { opacity: 1; } 50%, to { opacity: 0; } }
+  @keyframes kxSpin  { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  #stageHost { flex: 1; min-height: 0; position: relative; }
+  #scriptHost { background: #0a0a0a; border-top: 1px solid rgba(255,255,255,0.08); flex-shrink: 0; }
+</style>
+</head>
+<body>
+<div id="root" style="display: flex; flex-direction: column; height: 100%;"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel">
+
+// animations.jsx
+// Reusable animation starter: Stage, Timeline, Sprite, easing helpers.
+// Usage (in an HTML file that loads React + Babel):
+//
+//   <Stage width={1280} height={720} duration={10} background="#f6f4ef">
+//     <MyScene />
+//   </Stage>
+//
+// Inside <Stage>, any child can call useTime() to read the current
+// playhead (seconds). Or wrap content in <Sprite start={1} end={4}>...</Sprite>
+// to only render during that window -- children receive a `localTime` and
+// `progress` via the useSprite() hook.
+//
+// ─────────────────────────────────────────────────────────────────────────────
+
+// ── Easing functions (hand-rolled, Popmotion-style) ─────────────────────────
+// All easings take t ∈ [0,1] and return eased t ∈ [0,1] (may overshoot for back/elastic).
+const Easing = {
+  linear: (t) => t,
+
+  // Quad
+  easeInQuad:    (t) => t * t,
+  easeOutQuad:   (t) => t * (2 - t),
+  easeInOutQuad: (t) => (t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t),
+
+  // Cubic
+  easeInCubic:    (t) => t * t * t,
+  easeOutCubic:   (t) => (--t) * t * t + 1,
+  easeInOutCubic: (t) => (t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1),
+
+  // Quart
+  easeInQuart:    (t) => t * t * t * t,
+  easeOutQuart:   (t) => 1 - (--t) * t * t * t,
+  easeInOutQuart: (t) => (t < 0.5 ? 8 * t * t * t * t : 1 - 8 * (--t) * t * t * t),
+
+  // Expo
+  easeInExpo:  (t) => (t === 0 ? 0 : Math.pow(2, 10 * (t - 1))),
+  easeOutExpo: (t) => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t)),
+  easeInOutExpo: (t) => {
+    if (t === 0) return 0;
+    if (t === 1) return 1;
+    if (t < 0.5) return 0.5 * Math.pow(2, 20 * t - 10);
+    return 1 - 0.5 * Math.pow(2, -20 * t + 10);
+  },
+
+  // Sine
+  easeInSine:    (t) => 1 - Math.cos((t * Math.PI) / 2),
+  easeOutSine:   (t) => Math.sin((t * Math.PI) / 2),
+  easeInOutSine: (t) => -(Math.cos(Math.PI * t) - 1) / 2,
+
+  // Back (overshoot)
+  easeOutBack: (t) => {
+    const c1 = 1.70158, c3 = c1 + 1;
+    return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+  },
+  easeInBack: (t) => {
+    const c1 = 1.70158, c3 = c1 + 1;
+    return c3 * t * t * t - c1 * t * t;
+  },
+  easeInOutBack: (t) => {
+    const c1 = 1.70158, c2 = c1 * 1.525;
+    return t < 0.5
+      ? (Math.pow(2 * t, 2) * ((c2 + 1) * 2 * t - c2)) / 2
+      : (Math.pow(2 * t - 2, 2) * ((c2 + 1) * (t * 2 - 2) + c2) + 2) / 2;
+  },
+
+  // Elastic
+  easeOutElastic: (t) => {
+    const c4 = (2 * Math.PI) / 3;
+    if (t === 0) return 0;
+    if (t === 1) return 1;
+    return Math.pow(2, -10 * t) * Math.sin((t * 10 - 0.75) * c4) + 1;
+  },
+};
+
+// ── Core interpolation helpers ──────────────────────────────────────────────
+
+// Clamp a value to [min, max]
+const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+
+// interpolate([0, 0.5, 1], [0, 100, 50], ease?) -> fn(t)
+// Popmotion-style: linearly maps t across input keyframes to output values,
+// with optional easing per segment (single fn or array of fns).
+function interpolate(input, output, ease = Easing.linear) {
+  return (t) => {
+    if (t <= input[0]) return output[0];
+    if (t >= input[input.length - 1]) return output[output.length - 1];
+    for (let i = 0; i < input.length - 1; i++) {
+      if (t >= input[i] && t <= input[i + 1]) {
+        const span = input[i + 1] - input[i];
+        const local = span === 0 ? 0 : (t - input[i]) / span;
+        const easeFn = Array.isArray(ease) ? (ease[i] || Easing.linear) : ease;
+        const eased = easeFn(local);
+        return output[i] + (output[i + 1] - output[i]) * eased;
+      }
+    }
+    return output[output.length - 1];
+  };
+}
+
+// animate({from, to, start, end, ease})(t) — simpler single-segment tween.
+// Returns `from` before `start`, `to` after `end`.
+function animate({ from = 0, to = 1, start = 0, end = 1, ease = Easing.easeInOutCubic }) {
+  return (t) => {
+    if (t <= start) return from;
+    if (t >= end) return to;
+    const local = (t - start) / (end - start);
+    return from + (to - from) * ease(local);
+  };
+}
+
+// ── Timeline context ────────────────────────────────────────────────────────
+
+const TimelineContext = React.createContext({ time: 0, duration: 10, playing: false });
+
+const useTime = () => React.useContext(TimelineContext).time;
+const useTimeline = () => React.useContext(TimelineContext);
+
+// ── Sprite ──────────────────────────────────────────────────────────────────
+// Renders children only when the playhead is inside [start, end]. Provides
+// a sub-context with `localTime` (seconds since start) and `progress` (0..1).
+//
+//   <Sprite start={2} end={5}>
+//     {({ localTime, progress }) => <Thing x={progress * 100} />}
+//   </Sprite>
+//
+// Or as a plain wrapper — children can call useSprite() themselves.
+
+const SpriteContext = React.createContext({ localTime: 0, progress: 0, duration: 0 });
+const useSprite = () => React.useContext(SpriteContext);
+
+function Sprite({ start = 0, end = Infinity, children, keepMounted = false }) {
+  const { time } = useTimeline();
+  const visible = time >= start && time <= end;
+  if (!visible && !keepMounted) return null;
+
+  const duration = end - start;
+  const localTime = Math.max(0, time - start);
+  const progress = duration > 0 && isFinite(duration)
+    ? clamp(localTime / duration, 0, 1)
+    : 0;
+
+  const value = { localTime, progress, duration, visible };
+
+  return (
+    <SpriteContext.Provider value={value}>
+      {typeof children === 'function' ? children(value) : children}
+    </SpriteContext.Provider>
+  );
+}
+
+// ── Sample sprite components ────────────────────────────────────────────────
+
+// TextSprite: fades/slides text in on entry, holds, then fades out on exit.
+// Props: text, x, y, size, color, font, entryDur, exitDur, align
+function TextSprite({
+  text,
+  x = 0, y = 0,
+  size = 48,
+  color = '#111',
+  font = 'Inter, system-ui, sans-serif',
+  weight = 600,
+  entryDur = 0.45,
+  exitDur = 0.35,
+  entryEase = Easing.easeOutBack,
+  exitEase = Easing.easeInCubic,
+  align = 'left',
+  letterSpacing = '-0.01em',
+}) {
+  const { localTime, duration } = useSprite();
+  const exitStart = Math.max(0, duration - exitDur);
+
+  let opacity = 1;
+  let ty = 0;
+
+  if (localTime < entryDur) {
+    const t = entryEase(clamp(localTime / entryDur, 0, 1));
+    opacity = t;
+    ty = (1 - t) * 16;
+  } else if (localTime > exitStart) {
+    const t = exitEase(clamp((localTime - exitStart) / exitDur, 0, 1));
+    opacity = 1 - t;
+    ty = -t * 8;
+  }
+
+  const translateX = align === 'center' ? '-50%' : align === 'right' ? '-100%' : '0';
+
+  return (
+    <div style={{
+      position: 'absolute',
+      left: x, top: y,
+      transform: `translate(${translateX}, ${ty}px)`,
+      opacity,
+      fontFamily: font,
+      fontSize: size,
+      fontWeight: weight,
+      color,
+      letterSpacing,
+      whiteSpace: 'pre',
+      lineHeight: 1.1,
+      willChange: 'transform, opacity',
+    }}>
+      {text}
+    </div>
+  );
+}
+
+// ImageSprite: scales + fades in; optional Ken Burns drift during hold.
+function ImageSprite({
+  src,
+  x = 0, y = 0,
+  width = 400, height = 300,
+  entryDur = 0.6,
+  exitDur = 0.4,
+  kenBurns = false,
+  kenBurnsScale = 1.08,
+  radius = 12,
+  fit = 'cover',
+  placeholder = null, // {label: string} for striped placeholder
+}) {
+  const { localTime, duration } = useSprite();
+  const exitStart = Math.max(0, duration - exitDur);
+
+  let opacity = 1;
+  let scale = 1;
+
+  if (localTime < entryDur) {
+    const t = Easing.easeOutCubic(clamp(localTime / entryDur, 0, 1));
+    opacity = t;
+    scale = 0.96 + 0.04 * t;
+  } else if (localTime > exitStart) {
+    const t = Easing.easeInCubic(clamp((localTime - exitStart) / exitDur, 0, 1));
+    opacity = 1 - t;
+    scale = (kenBurns ? kenBurnsScale : 1) + 0.02 * t;
+  } else if (kenBurns) {
+    const holdSpan = exitStart - entryDur;
+    const holdT = holdSpan > 0 ? (localTime - entryDur) / holdSpan : 0;
+    scale = 1 + (kenBurnsScale - 1) * holdT;
+  }
+
+  const content = placeholder ? (
+    <div style={{
+      width: '100%', height: '100%',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      background: 'repeating-linear-gradient(135deg, #e9e6df 0 10px, #dcd8cf 10px 20px)',
+      color: '#6b6458',
+      fontFamily: 'JetBrains Mono, ui-monospace, monospace',
+      fontSize: 13,
+      letterSpacing: '0.04em',
+      textTransform: 'uppercase',
+    }}>
+      {placeholder.label || 'image'}
+    </div>
+  ) : (
+    <img src={src} alt="" style={{ width: '100%', height: '100%', objectFit: fit, display: 'block' }} />
+  );
+
+  return (
+    <div style={{
+      position: 'absolute',
+      left: x, top: y,
+      width, height,
+      opacity,
+      transform: `scale(${scale})`,
+      transformOrigin: 'center',
+      borderRadius: radius,
+      overflow: 'hidden',
+      willChange: 'transform, opacity',
+    }}>
+      {content}
+    </div>
+  );
+}
+
+// RectSprite: simple rectangle that animates position/size/color via props.
+// Useful demo primitive — takes a `render` fn for per-frame customization.
+function RectSprite({
+  x = 0, y = 0,
+  width = 100, height = 100,
+  color = '#111',
+  radius = 8,
+  entryDur = 0.4,
+  exitDur = 0.3,
+  render, // optional: (ctx) => style overrides
+}) {
+  const spriteCtx = useSprite();
+  const { localTime, duration } = spriteCtx;
+  const exitStart = Math.max(0, duration - exitDur);
+
+  let opacity = 1;
+  let scale = 1;
+
+  if (localTime < entryDur) {
+    const t = Easing.easeOutBack(clamp(localTime / entryDur, 0, 1));
+    opacity = clamp(localTime / entryDur, 0, 1);
+    scale = 0.4 + 0.6 * t;
+  } else if (localTime > exitStart) {
+    const t = Easing.easeInQuad(clamp((localTime - exitStart) / exitDur, 0, 1));
+    opacity = 1 - t;
+    scale = 1 - 0.15 * t;
+  }
+
+  const overrides = render ? render(spriteCtx) : {};
+
+  return (
+    <div style={{
+      position: 'absolute',
+      left: x, top: y,
+      width, height,
+      background: color,
+      borderRadius: radius,
+      opacity,
+      transform: `scale(${scale})`,
+      transformOrigin: 'center',
+      willChange: 'transform, opacity',
+      ...overrides,
+    }} />
+  );
+}
+
+
+function Stage({
+  width = 1280,
+  height = 720,
+  duration = 10,
+  background = '#f6f4ef',
+  fps = 60,
+  loop = true,
+  autoplay = true,
+  persistKey = 'animstage',
+  children,
+}) {
+  const [time, setTime] = React.useState(() => {
+    try {
+      const v = parseFloat(localStorage.getItem(persistKey + ':t') || '0');
+      return isFinite(v) ? clamp(v, 0, duration) : 0;
+    } catch { return 0; }
+  });
+  const [playing, setPlaying] = React.useState(autoplay);
+  const [hoverTime, setHoverTime] = React.useState(null);
+  const [scale, setScale] = React.useState(1);
+
+  const stageRef = React.useRef(null);
+  const canvasRef = React.useRef(null);
+  const rafRef = React.useRef(null);
+  const lastTsRef = React.useRef(null);
+
+  // Persist playhead
+  React.useEffect(() => {
+    try { localStorage.setItem(persistKey + ':t', String(time)); } catch {}
+  }, [time, persistKey]);
+
+  // Auto-scale to fit viewport
+  React.useEffect(() => {
+    if (!stageRef.current) return;
+    const el = stageRef.current;
+    const measure = () => {
+      const barH = 44; // playback bar height
+      const s = Math.min(
+        el.clientWidth / width,
+        (el.clientHeight - barH) / height
+      );
+      setScale(Math.max(0.05, s));
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    window.addEventListener('resize', measure);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('resize', measure);
+    };
+  }, [width, height]);
+
+  // Animation loop
+  React.useEffect(() => {
+    if (!playing) {
+      lastTsRef.current = null;
+      return;
+    }
+    const step = (ts) => {
+      if (lastTsRef.current == null) lastTsRef.current = ts;
+      const dt = (ts - lastTsRef.current) / 1000;
+      lastTsRef.current = ts;
+      setTime((t) => {
+        let next = t + dt;
+        if (next >= duration) {
+          if (loop) next = next % duration;
+          else { next = duration; setPlaying(false); }
+        }
+        return next;
+      });
+      rafRef.current = requestAnimationFrame(step);
+    };
+    rafRef.current = requestAnimationFrame(step);
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      lastTsRef.current = null;
+    };
+  }, [playing, duration, loop]);
+
+  // Keyboard: space = play/pause, ← → = seek
+  React.useEffect(() => {
+    const onKey = (e) => {
+      if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
+      if (e.code === 'Space') {
+        e.preventDefault();
+        setPlaying(p => !p);
+      } else if (e.code === 'ArrowLeft') {
+        setTime(t => clamp(t - (e.shiftKey ? 1 : 0.1), 0, duration));
+      } else if (e.code === 'ArrowRight') {
+        setTime(t => clamp(t + (e.shiftKey ? 1 : 0.1), 0, duration));
+      } else if (e.key === '0' || e.code === 'Home') {
+        setTime(0);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [duration]);
+
+  const displayTime = hoverTime != null ? hoverTime : time;
+
+  const ctxValue = React.useMemo(
+    () => ({ time: displayTime, duration, playing, setTime, setPlaying }),
+    [displayTime, duration, playing]
+  );
+
+  return (
+    <div
+      ref={stageRef}
+      style={{
+        position: 'absolute', inset: 0,
+        display: 'flex', flexDirection: 'column',
+        alignItems: 'center',
+        background: '#0a0a0a',
+        fontFamily: 'Inter, system-ui, sans-serif',
+      }}
+    >
+      {/* Canvas area — vertically centered in remaining space */}
+      <div style={{
+        flex: 1,
+        width: '100%',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        overflow: 'hidden',
+        minHeight: 0,
+      }}>
+        <div
+          ref={canvasRef}
+          style={{
+            width, height,
+            background,
+            position: 'relative',
+            transform: `scale(${scale})`,
+            transformOrigin: 'center',
+            flexShrink: 0,
+            boxShadow: '0 20px 60px rgba(0,0,0,0.4)',
+            overflow: 'hidden',
+          }}
+        >
+          <TimelineContext.Provider value={ctxValue}>
+            {children}
+          </TimelineContext.Provider>
+        </div>
+      </div>
+
+      {/* Playback bar — stacked below canvas, never overlapping */}
+      <PlaybackBar
+        time={displayTime}
+        actualTime={time}
+        duration={duration}
+        playing={playing}
+        onPlayPause={() => setPlaying(p => !p)}
+        onReset={() => { setTime(0); }}
+        onSeek={(t) => setTime(t)}
+        onHover={(t) => setHoverTime(t)}
+      />
+    </div>
+  );
+}
+
+// ── Playback bar ────────────────────────────────────────────────────────────
+// Play/pause, return-to-begin, scrub track, time display.
+// Uses fixed-width time fields so layout doesn't thrash.
+
+function PlaybackBar({ time, duration, playing, onPlayPause, onReset, onSeek, onHover }) {
+  const trackRef = React.useRef(null);
+  const [dragging, setDragging] = React.useState(false);
+
+  const timeFromEvent = React.useCallback((e) => {
+    const rect = trackRef.current.getBoundingClientRect();
+    const x = clamp((e.clientX - rect.left) / rect.width, 0, 1);
+    return x * duration;
+  }, [duration]);
+
+  const onTrackMove = (e) => {
+    if (!trackRef.current) return;
+    const t = timeFromEvent(e);
+    if (dragging) {
+      onSeek(t);
+    } else {
+      onHover(t);
+    }
+  };
+
+  const onTrackLeave = () => {
+    if (!dragging) onHover(null);
+  };
+
+  const onTrackDown = (e) => {
+    setDragging(true);
+    const t = timeFromEvent(e);
+    onSeek(t);
+    onHover(null);
+  };
+
+  React.useEffect(() => {
+    if (!dragging) return;
+    const onUp = () => setDragging(false);
+    const onMove = (e) => {
+      if (!trackRef.current) return;
+      const t = timeFromEvent(e);
+      onSeek(t);
+    };
+    window.addEventListener('mouseup', onUp);
+    window.addEventListener('mousemove', onMove);
+    return () => {
+      window.removeEventListener('mouseup', onUp);
+      window.removeEventListener('mousemove', onMove);
+    };
+  }, [dragging, timeFromEvent, onSeek]);
+
+  const pct = duration > 0 ? (time / duration) * 100 : 0;
+  const fmt = (t) => {
+    const total = Math.max(0, t);
+    const m = Math.floor(total / 60);
+    const s = Math.floor(total % 60);
+    const cs = Math.floor((total * 100) % 100);
+    return `${String(m).padStart(1, '0')}:${String(s).padStart(2, '0')}.${String(cs).padStart(2, '0')}`;
+  };
+
+  const mono = 'JetBrains Mono, ui-monospace, SFMono-Regular, monospace';
+
+  return (
+    <div style={{
+      display: 'flex', alignItems: 'center', gap: 12,
+      padding: '8px 16px',
+      background: 'rgba(20,20,20,0.92)',
+      borderTop: '1px solid rgba(255,255,255,0.08)',
+      width: '100%',
+      maxWidth: 680,
+      alignSelf: 'center',
+
+      borderRadius: 8,
+      color: '#f6f4ef',
+      fontFamily: 'Inter, system-ui, sans-serif',
+      userSelect: 'none',
+      flexShrink: 0,
+    }}>
+      <IconButton onClick={onReset} title="Return to start (0)">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M3 2v10M12 2L5 7l7 5V2z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round"/>
+        </svg>
+      </IconButton>
+      <IconButton onClick={onPlayPause} title="Play/pause (space)">
+        {playing ? (
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <rect x="3" y="2" width="3" height="10" fill="currentColor"/>
+            <rect x="8" y="2" width="3" height="10" fill="currentColor"/>
+          </svg>
+        ) : (
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M3 2l9 5-9 5V2z" fill="currentColor"/>
+          </svg>
+        )}
+      </IconButton>
+
+      {/* Current time: fixed width so it doesn't thrash */}
+      <div style={{
+        fontFamily: mono,
+        fontSize: 12,
+        fontVariantNumeric: 'tabular-nums',
+        width: 64, textAlign: 'right',
+        color: '#f6f4ef',
+      }}>
+        {fmt(time)}
+      </div>
+
+      {/* Scrub track */}
+      <div
+        ref={trackRef}
+        onMouseMove={onTrackMove}
+        onMouseLeave={onTrackLeave}
+        onMouseDown={onTrackDown}
+        style={{
+          flex: 1,
+          height: 22,
+          position: 'relative',
+          cursor: 'pointer',
+          display: 'flex', alignItems: 'center',
+        }}
+      >
+        <div style={{
+          position: 'absolute',
+          left: 0, right: 0, height: 4,
+          background: 'rgba(255,255,255,0.12)',
+          borderRadius: 2,
+        }}/>
+        <div style={{
+          position: 'absolute',
+          left: 0, width: `${pct}%`, height: 4,
+          background: 'oklch(72% 0.12 250)',
+          borderRadius: 2,
+        }}/>
+        <div style={{
+          position: 'absolute',
+          left: `${pct}%`, top: '50%',
+          width: 12, height: 12,
+          marginLeft: -6, marginTop: -6,
+          background: '#fff',
+          borderRadius: 6,
+          boxShadow: '0 2px 4px rgba(0,0,0,0.4)',
+        }}/>
+      </div>
+
+      {/* Duration: fixed width */}
+      <div style={{
+        fontFamily: mono,
+        fontSize: 12,
+        fontVariantNumeric: 'tabular-nums',
+        width: 64, textAlign: 'left',
+        color: 'rgba(246,244,239,0.55)',
+      }}>
+        {fmt(duration)}
+      </div>
+    </div>
+  );
+}
+
+function IconButton({ children, onClick, title }) {
+  const [hover, setHover] = React.useState(false);
+  return (
+    <button
+      onClick={onClick}
+      title={title}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        width: 28, height: 28,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        background: hover ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.04)',
+        border: '1px solid rgba(255,255,255,0.1)',
+        borderRadius: 6,
+        color: '#f6f4ef',
+        cursor: 'pointer',
+        padding: 0,
+        transition: 'background 120ms',
+      }}
+    >
+      {children}
+    </button>
+  );
+}
+
+
+Object.assign(window, {
+  Easing, interpolate, animate, clamp,
+  TimelineContext, useTime, useTimeline,
+  Sprite, SpriteContext, useSprite,
+  TextSprite, ImageSprite, RectSprite,
+  Stage, PlaybackBar,
+});
+
+
+</script>
+
+<script type="text/babel">
+// Shared brand assets + Subtitle + ScriptPanel components for KurgemX videos.
+// Loaded BEFORE the scene file in both tanitim.html and kilavuz.html.
+
+const KX = {
+  navy:      '#1F3864',
+  navyDeep:  '#15264A',
+  blue:      '#2E75B6',
+  blueSoft:  '#EEF4FB',
+  red:       '#E63329',
+  redSoft:   '#FDECEB',
+  amber:     '#FBBF24',
+  amberSoft: '#FEF3C7',
+  green:     '#16A34A',
+  greenSoft: '#DCFCE7',
+  ink:       '#0E1A33',
+  body:      '#3D4A66',
+  muted:     '#6B7387',
+  faint:     '#9CA3AF',
+  border:    '#E8EAEE',
+  borderSoft:'#F0F1F4',
+  bg:        '#FAFBFC',
+  display:   '"Inter Tight", "Inter", -apple-system, sans-serif',
+  sans:      '"Inter", -apple-system, sans-serif',
+  mono:      '"JetBrains Mono", ui-monospace, monospace',
+  brand:     '"Exo 2", "Inter", sans-serif',
+};
+
+/* ── Logo / brand mark (real KurgemX logo: 4 swooshes + red core) ── */
+
+function KxIconSvg({ size = 60, withGlow = true }) {
+  // Real KurgemX icon — 4 curved swooshes (B/W/T/O) around a red center with highlight
+  return (
+    <svg width={size} height={size} viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="kxB" cx="35%" cy="30%" r="70%">
+          <stop offset="0%" stopColor="#555" />
+          <stop offset="100%" stopColor="#111" />
+        </radialGradient>
+        <radialGradient id="kxW" cx="35%" cy="30%" r="70%">
+          <stop offset="0%" stopColor="#d8d8d8" />
+          <stop offset="100%" stopColor="#909090" />
+        </radialGradient>
+        <radialGradient id="kxT" cx="35%" cy="30%" r="70%">
+          <stop offset="0%" stopColor="#5bbdd6" />
+          <stop offset="100%" stopColor="#2a7a99" />
+        </radialGradient>
+        <radialGradient id="kxO" cx="35%" cy="30%" r="70%">
+          <stop offset="0%" stopColor="#f0a830" />
+          <stop offset="100%" stopColor="#c07010" />
+        </radialGradient>
+        <radialGradient id="kxR" cx="35%" cy="30%" r="70%">
+          <stop offset="0%" stopColor="#ff4040" />
+          <stop offset="40%" stopColor="#cc1515" />
+          <stop offset="100%" stopColor="#7a0000" />
+        </radialGradient>
+        <radialGradient id="kxGlow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#ff3333" stopOpacity="0.3" />
+          <stop offset="100%" stopColor="#ff3333" stopOpacity="0" />
+        </radialGradient>
+        <filter id="kxSh" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="1" dy="2" stdDeviation="2" floodColor="#000" floodOpacity="0.5" />
+        </filter>
+      </defs>
+      {withGlow && <circle cx="60" cy="60" r="28" fill="url(#kxGlow)" />}
+      <path d="M28 22 C20 28, 32 48, 48 52 C40 40, 30 32, 36 24 Z" fill="url(#kxB)" filter="url(#kxSh)" />
+      <path d="M92 22 C100 28, 88 48, 72 52 C80 40, 90 32, 84 24 Z" fill="url(#kxW)" filter="url(#kxSh)" />
+      <path d="M22 88 C28 96, 48 84, 52 68 C40 76, 30 86, 24 80 Z" fill="url(#kxT)" filter="url(#kxSh)" />
+      <path d="M98 88 C92 96, 72 84, 68 68 C80 76, 90 86, 96 80 Z" fill="url(#kxO)" filter="url(#kxSh)" />
+      <circle cx="60" cy="60" r="17" fill="url(#kxR)" filter="url(#kxSh)" />
+      <ellipse cx="54" cy="54" rx="6" ry="4" fill="white" opacity="0.22" />
+    </svg>
+  );
+}
+
+function KxLogo({ size = 60, light = false, iconOnly = false }) {
+  const wordSize = Math.round(size * 0.55);
+  if (iconOnly) return <KxIconSvg size={size} />;
+  return (
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', gap: size * 0.22,
+      fontFamily: KX.brand, fontWeight: 700, fontSize: wordSize,
+      color: light ? '#fff' : KX.ink, letterSpacing: '-0.02em', lineHeight: 1,
+    }}>
+      <KxIconSvg size={size} />
+      <span style={{ paddingLeft: size * 0.1, borderLeft: `1px solid ${light ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.12)'}` }}>
+        Kurgem<span style={{ color: '#E63329' }}>X</span>
+      </span>
+    </span>
+  );
+}
+
+/* ── Subtitle bar (rendered inside <Stage>, anchored bottom) ────── */
+
+function SubtitleBar({ subs, lang }) {
+  // subs: [{ start, end, tr, en }]
+  // Reads time from TimelineContext (already in scope inside Stage)
+  const t = useTime();
+  const cur = subs.find(s => t >= s.start && t < s.end);
+  if (!cur) return null;
+  const text = lang === 'TR' ? cur.tr : cur.en;
+  // entry/exit fade
+  const dt = Math.min(t - cur.start, cur.end - t);
+  const opacity = Math.min(1, dt / 0.25);
+  return (
+    <div style={{
+      position: 'absolute',
+      left: 0, right: 0, bottom: 40,
+      display: 'flex', justifyContent: 'center',
+      pointerEvents: 'none',
+      opacity,
+      transition: 'opacity 0.2s',
+    }}>
+      <div style={{
+        background: 'rgba(14,26,51,0.92)', color: '#fff',
+        fontFamily: KX.sans, fontSize: 26, fontWeight: 500, letterSpacing: '-0.005em',
+        padding: '12px 22px', borderRadius: 8, maxWidth: '80%', textAlign: 'center',
+        lineHeight: 1.35, boxShadow: '0 12px 30px rgba(0,0,0,0.4)',
+      }}>
+        {text}
+      </div>
+    </div>
+  );
+}
+
+/* ── Script panel (rendered BELOW the Stage, follows current scene) */
+
+function ScriptPanel({ scenes, lang = 'EN' }) {
+  // scenes: [{ start, end, label, voiceover, label_en?, voiceover_en? }]
+  const { time, duration } = useTimeline();
+  const cur = scenes.find(s => time >= s.start && time < s.end) || scenes[scenes.length - 1];
+  const idx = scenes.indexOf(cur);
+  const total = scenes.length;
+  const label = lang === 'TR' ? (cur.label_tr || cur.label) : (cur.label_en || cur.label);
+  const voiceover = lang === 'TR' ? (cur.voiceover_tr || cur.voiceover) : (cur.voiceover_en || cur.voiceover);
+  return (
+    <div style={{
+      width: '100%', maxWidth: 1100, margin: '0 auto', padding: '20px 28px 32px',
+      fontFamily: KX.sans, color: '#fff',
+    }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 10 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span style={{ fontFamily: KX.mono, fontSize: 11, color: 'rgba(255,255,255,0.5)', letterSpacing: '0.08em' }}>SCENE {String(idx + 1).padStart(2, '0')} / {String(total).padStart(2, '0')}</span>
+          <span style={{ background: KX.amber, color: KX.ink, fontSize: 10, padding: '2px 7px', borderRadius: 4, fontWeight: 700, letterSpacing: '0.04em' }}>{formatTime(cur.start)} → {formatTime(cur.end)}</span>
+          <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.85)', fontWeight: 600 }}>{label}</span>
+        </div>
+        <div style={{ fontFamily: KX.mono, fontSize: 11, color: 'rgba(255,255,255,0.45)' }}>VOICEOVER ({lang})</div>
+      </div>
+      <p style={{
+        margin: 0, padding: '14px 18px', background: 'rgba(255,255,255,0.06)',
+        border: '1px solid rgba(255,255,255,0.12)', borderRadius: 10,
+        color: '#fff', fontSize: 15.5, lineHeight: 1.55, fontStyle: 'italic',
+      }}>
+        "{voiceover}"
+      </p>
+      {/* Mini scene strip */}
+      <div style={{ display: 'flex', gap: 4, marginTop: 14 }}>
+        {scenes.map((s, i) => {
+          const active = s === cur;
+          const done = time > s.end;
+          return (
+            <div key={i} style={{ flex: s.end - s.start, height: 4, borderRadius: 2,
+              background: active ? KX.amber : done ? KX.blue : 'rgba(255,255,255,0.12)',
+              transition: 'background 0.2s',
+            }} />
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function formatTime(s) {
+  const m = Math.floor(s / 60);
+  const sec = Math.floor(s % 60);
+  return `${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+}
+
+/* ── Top toolbar — language + aspect toggle ─────────────────────── */
+
+function VideoToolbar({ title, lang, setLang, aspect, setAspect }) {
+  return (
+    <div style={{
+      width: '100%', padding: '16px 28px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      background: '#000', color: '#fff', fontFamily: KX.sans, borderBottom: '1px solid rgba(255,255,255,0.08)',
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+        <KxLogo size={28} light />
+        <span style={{ color: 'rgba(255,255,255,0.4)' }}>·</span>
+        <span style={{ fontSize: 14, fontWeight: 600 }}>{title}</span>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        {/* Aspect toggle */}
+        <div style={{ display: 'flex', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 6, padding: 3 }}>
+          {['16:9', '1:1', '9:16'].map(a => (
+            <button key={a} onClick={() => setAspect(a)} style={{
+              padding: '5px 10px', borderRadius: 4, border: 'none', cursor: 'pointer',
+              background: a === aspect ? '#fff' : 'transparent',
+              color: a === aspect ? '#000' : 'rgba(255,255,255,0.65)',
+              fontSize: 11, fontWeight: 600, fontFamily: KX.mono,
+            }}>{a}</button>
+          ))}
+        </div>
+        {/* Lang toggle */}
+        <div style={{ display: 'flex', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 6, padding: 3 }}>
+          {['TR', 'EN'].map(l => (
+            <button key={l} onClick={() => setLang(l)} style={{
+              padding: '5px 12px', borderRadius: 4, border: 'none', cursor: 'pointer',
+              background: l === lang ? '#fff' : 'transparent',
+              color: l === lang ? '#000' : 'rgba(255,255,255,0.65)',
+              fontSize: 11, fontWeight: 700, fontFamily: KX.mono,
+            }}>{l}</button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── Aspect sizes ───────────────────────────────────────────────── */
+
+const ASPECTS = {
+  '16:9': { w: 1920, h: 1080, name: 'YouTube / Web' },
+  '1:1':  { w: 1080, h: 1080, name: 'LinkedIn / IG' },
+  '9:16': { w: 1080, h: 1920, name: 'Reels / TikTok' },
+};
+
+/* ── Language context ──────────────────────────────────────────── */
+
+const LangContext = React.createContext('TR');
+const useLang = () => React.useContext(LangContext);
+// T(tr, en) returns the right string for current locale.
+function useT() {
+  const lang = useLang();
+  return (tr, en) => (lang === 'TR' ? tr : en);
+}
+
+window.KX = KX;
+window.KxLogo = KxLogo;
+window.KxIconSvg = KxIconSvg;
+window.SubtitleBar = SubtitleBar;
+window.ScriptPanel = ScriptPanel;
+window.VideoToolbar = VideoToolbar;
+window.ASPECTS = ASPECTS;
+window.formatTime = formatTime;
+window.LangContext = LangContext;
+window.useLang = useLang;
+window.useT = useT;
+
+</script>
+
+<script type="text/babel">
+// KurgemX — Kullanım Kılavuzu videosu (60 saniye) — TR + EN visual content
+// 8 sahne: Intro → 5 adım → Tip → Outro
+
+const KILAVUZ_SUBS = [
+  { start: 0,  end: 6,  en: "Here's how to go from idea to test scenarios in one minute.",                tr: "Fikirden test senaryolarına 1 dakikada — nasıl?" },
+  { start: 6,  end: 14, en: "Step 1: sign up, name your project, write one sentence.",                    tr: "Adım 1: kaydol, proje adını ver, bir cümle yaz." },
+  { start: 14, end: 22, en: "Step 2: AI generates epics, stories, and release plan.",                     tr: "Adım 2: hikaye haritası — destan, hikaye, sürüm." },
+  { start: 22, end: 30, en: "Step 3: business requirements analysis with acceptance criteria.",           tr: "Adım 3: iş (gereksinim) analizi (.docx) — kabul kriterleri ve iş kuralları." },
+  { start: 30, end: 38, en: "Step 4: a clickable prototype — every screen, ready to share.",              tr: "Adım 4: tıklanabilir prototip (.html) — paydaş demosu hazır." },
+  { start: 38, end: 46, en: "Step 5: test scenarios in Excel — positive, negative, boundary cases.",      tr: "Adım 5: test senaryoları (.xlsx) — pozitif, negatif, sınır vakalar." },
+  { start: 46, end: 54, en: "Tip: use 'Enhance with AI' before generating — dramatically better output.", tr: "İpucu: önce YZ ile detaylandır — çıktı çok daha iyi olur." },
+  { start: 54, end: 60, en: "Try it now at kurgemx.com.",                                                  tr: "Şimdi dene: kurgemx.com" },
+];
+
+const KILAVUZ_SCENES = [
+  { start: 0,  end: 6,  label_tr: 'Giriş',                       label_en: 'Intro',
+    voiceover_tr: "Fikirden test senaryolarına 1 dakikada. 5 adım. 4 indirilebilir çıktı. Tek bir uygulama.",
+    voiceover_en: "Here's how to go from idea to test scenarios in one minute. Five steps. Four downloads. One workspace." },
+  { start: 6,  end: 14, label_tr: 'Adım 1 — Kayıt + Proje',     label_en: 'Step 1 — Sign up + Project',
+    voiceover_tr: "Kaydol, projeni isimlendir ve bir cümleyle anlat. 'YZ ile detaylandır'a tıkla — model brief'ini eksiksiz hale getirsin.",
+    voiceover_en: "Sign up, name your project, and describe it in one sentence. Click 'Enhance with AI' so the model expands your one-liner into a full brief." },
+  { start: 14, end: 22, label_tr: 'Adım 2 — Hikaye haritası',   label_en: 'Step 2 — Story map',
+    voiceover_tr: "KurgemX, destanları, kullanıcı hikayelerini, R1-R3 sürümlerini ve sprint dağılımını üretir. Düzenle veya olduğu gibi kabul et.",
+    voiceover_en: "KurgemX generates the epics, user stories, releases R1 to R3, and the sprint breakdown. Re-arrange, edit, or accept as is." },
+  { start: 22, end: 30, label_tr: 'Adım 3 — İş (Gereksinim) Analizi', label_en: 'Step 3 — Business (Requirements) Analysis',
+    voiceover_tr: "Üçüncü adım: her hikaye için kabul kriterleri ve iş kurallarıyla tam bir gereksinim analizi dokümanı. Word olarak dışa aktar, müşteriye gönder.",
+    voiceover_en: "Step three: a complete business requirements analysis document with acceptance criteria and business rules per story. Export as Word, send to the client." },
+  { start: 30, end: 38, label_tr: 'Adım 4 — Prototip',          label_en: 'Step 4 — Prototype',
+    voiceover_tr: "Dördüncü adım: tıklanabilir HTML prototip. Login, dashboard, transfer, profil — her ekran paylaşıma hazır.",
+    voiceover_en: "Step four: a clickable HTML prototype. Login, dashboard, transfer, profile — every screen ready to share." },
+  { start: 38, end: 46, label_tr: 'Adım 5 — Test senaryoları',  label_en: 'Step 5 — Test cases',
+    voiceover_tr: "Beşinci adım: Excel'de test senaryoları. Pozitif, negatif, sınır vakalar — direkt QA hattına.",
+    voiceover_en: "Step five: test scenarios in Excel. Positive, negative, boundary cases — straight into your QA pipeline." },
+  { start: 46, end: 54, label_tr: 'İpucu — Önce detaylandır',   label_en: 'Tip — Enhance first',
+    voiceover_tr: "Profesyonel ipucu: üretmeden önce mutlaka 'YZ ile detaylandır' butonunu kullan. Çıktı kalitesi belirgin şekilde artıyor.",
+    voiceover_en: "Pro tip: always use 'Enhance with AI' before generating. The output quality jumps dramatically." },
+  { start: 54, end: 60, label_tr: 'Kapanış',                    label_en: 'Outro',
+    voiceover_tr: "Şimdi kurgemx.com'da kendin dene. İlk projen ücretsiz.",
+    voiceover_en: "Try it now at kurgemx.com. Your first project is free." },
+];
+
+const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+
+/* ─── Step-tracker rail ────────────────────────────────────────── */
+
+function StepRailMini({ activeStep, doneSteps = [] }) {
+  const lang = useLang();
+  const steps = lang === 'TR'
+    ? ['Proje', 'Harita', 'Analiz', 'Prototip', 'Test']
+    : ['Project', 'Story Map', 'Analysis', 'Prototype', 'Test'];
+  return (
+    <div style={{
+      position: 'absolute', top: 36, left: 80, right: 80,
+      display: 'flex', alignItems: 'center', gap: 0, fontFamily: KX.sans,
+    }}>
+      {steps.map((s, i) => {
+        const done = doneSteps.includes(i + 1);
+        const active = i + 1 === activeStep;
+        const dotBg = done ? KX.green : active ? KX.blue : '#E8EAEE';
+        const dotFg = done || active ? '#fff' : KX.faint;
+        const wrapBg = active ? KX.blueSoft : 'transparent';
+        return (
+          <React.Fragment key={s}>
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 12,
+              padding: active ? '8px 16px' : '8px 12px', borderRadius: 10, background: wrapBg,
+            }}>
+              <span style={{
+                width: 32, height: 32, borderRadius: '50%', background: dotBg, color: dotFg,
+                fontSize: 14, fontWeight: 700, display: 'grid', placeItems: 'center', fontFamily: KX.mono,
+              }}>{done ? '✓' : i + 1}</span>
+              <span style={{ color: active ? KX.navy : (done ? KX.ink : KX.faint), fontWeight: active ? 700 : 500, fontSize: 18 }}>{s}</span>
+            </div>
+            {i < steps.length - 1 && <span style={{ flex: 1, height: 2, background: done ? KX.green : '#E8EAEE', maxWidth: 80, margin: '0 6px' }} />}
+          </React.Fragment>
+        );
+      })}
+    </div>
+  );
+}
+
+/* ─── Scene 0: Intro ───────────────────────────────────────────── */
+
+function K0_Intro() {
+  const { localTime } = useSprite();
+  const lang = useLang();
+  const t1 = clamp(localTime / 1, 0, 1);
+  const t2 = clamp((localTime - 1) / 1, 0, 1);
+  const t3 = clamp((localTime - 2.5) / 2, 0, 1);
+
+  const title = lang === 'TR' ? 'KurgemX nasıl çalışır?' : 'How does KurgemX work?';
+  const subtitle = lang === 'TR' ? '5 adım. 1 dakika.' : '5 steps. 1 minute.';
+  const steps = lang === 'TR'
+    ? ['Proje', 'Harita', 'Analiz', 'Prototip', 'Test']
+    : ['Project', 'Story Map', 'Analysis', 'Prototype', 'Test'];
+
+  return (
+    <div style={{ position: 'absolute', inset: 0, background: KX.bg, overflow: 'hidden' }}>
+      <div style={{
+        position: 'absolute', inset: 0,
+        backgroundImage: 'linear-gradient(rgba(46,117,182,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(46,117,182,0.06) 1px, transparent 1px)',
+        backgroundSize: '40px 40px',
+        maskImage: 'radial-gradient(ellipse at center, black 30%, transparent 75%)',
+        opacity: 0.4,
+      }} />
+      <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 40 }}>
+        <div style={{ opacity: t1, transform: `scale(${0.85 + 0.15 * Easing.easeOutBack(t1)})` }}>
+          <KxLogo size={110} />
+        </div>
+        <h1 style={{
+          fontFamily: KX.display, fontSize: 64, fontWeight: 700, color: KX.ink,
+          letterSpacing: '-0.035em', margin: 0, textAlign: 'center', lineHeight: 1.05,
+          opacity: t2, transform: `translateY(${(1 - t2) * 20}px)`,
+        }}>
+          {title}<br />
+          <span style={{ color: KX.muted, fontSize: 40 }}>{subtitle}</span>
+        </h1>
+        <div style={{
+          display: 'flex', gap: 14, opacity: t3, transform: `translateY(${(1 - t3) * 14}px)`,
+        }}>
+          {steps.map((s, i) => (
+            <div key={s} style={{
+              background: '#fff', border: `1px solid ${KX.border}`, padding: '14px 20px', borderRadius: 12,
+              fontSize: 16, color: KX.body, fontWeight: 600,
+              opacity: clamp((localTime - 2.5 - i * 0.15) / 0.4, 0, 1),
+              transform: `translateY(${(1 - clamp((localTime - 2.5 - i * 0.15) / 0.4, 0, 1)) * 20}px)`,
+            }}>
+              <span style={{ color: KX.faint, fontFamily: KX.mono, marginRight: 8 }}>{i + 1}</span>
+              {s}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Scene 1: Sign up + Project creation ─────────────────────── */
+
+function K1_SignUp() {
+  const { localTime } = useSprite();
+  const lang = useLang();
+  const phase = localTime < 2 ? 1 : localTime < 4.5 ? 2 : 3;
+
+  const c = lang === 'TR'
+    ? {
+        signupTitle: 'Hesap oluştur',
+        signupSub:   '30 saniye sürer · kart gerekmez.',
+        emailLabel:  'E-posta', passLabel: 'Şifre',
+        signupBtn:   'Ücretsiz hesabımı oluştur →',
+        stepBadge:   'ADIM 1 / 5',
+        projTitle:   'Bir cümleyle başla.',
+        projName:    'Proje adı', projDesc: 'Kısa açıklama',
+        projValue:   'Mobil Bankacılık MVP',
+        sentence:    'IBAN, QR ve kart üzerinden hızlı transfer yapabilen mobil bankacılık uygulaması.',
+        aiBtn:       '✨ YZ ile detaylandır',
+        hintKicker:  'NE OLUR?',
+        hintTitle:   phase >= 2 ? 'Açıklamadan, hedef kitle ve özellikler dahil tam brief üretilir.' : 'Bir cümleyle başla. AI gerisini halletsin.',
+        hintBody:    'Yapay zeka, iş analizi standartları çerçevesinde proje tanımı, hedef kullanıcı, temel özellikler ve teknik beklentileri üretir.',
+        urlSignup:   'kurgemx.com / kayit',
+        urlProj:     'kurgemx.com / projects / new',
+      }
+    : {
+        signupTitle: 'Create account',
+        signupSub:   'Takes 30 seconds · no card required.',
+        emailLabel:  'Email', passLabel: 'Password',
+        signupBtn:   'Create my free account →',
+        stepBadge:   'STEP 1 / 5',
+        projTitle:   'Start with one sentence.',
+        projName:    'Project name', projDesc: 'Short description',
+        projValue:   'Mobile Banking MVP',
+        sentence:    'Mobile banking app for fast transfers via IBAN, QR and card.',
+        aiBtn:       '✨ Enhance with AI',
+        hintKicker:  'WHAT HAPPENS?',
+        hintTitle:   phase >= 2 ? 'From your sentence, a full brief is generated — target users, features included.' : 'Start with one sentence. AI handles the rest.',
+        hintBody:    'AI produces project definition, target users, key features and technical expectations following business analysis standards.',
+        urlSignup:   'kurgemx.com / signup',
+        urlProj:     'kurgemx.com / projects / new',
+      };
+
+  return (
+    <div style={{ position: 'absolute', inset: 0, background: KX.bg, overflow: 'hidden' }}>
+      <StepRailMini activeStep={1} />
+
+      <div style={{ position: 'absolute', top: 130, left: 0, right: 0, bottom: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 40, padding: '0 80px' }}>
+
+        <div style={{
+          width: 560, background: '#fff', borderRadius: 18, border: `1px solid ${KX.border}`,
+          boxShadow: '0 20px 50px -20px rgba(15,30,80,0.2)', overflow: 'hidden',
+          fontFamily: KX.sans,
+        }}>
+          <div style={{ background: KX.navy, color: '#fff', padding: '12px 20px', display: 'flex', alignItems: 'center', gap: 10, fontSize: 14 }}>
+            <span style={{ display: 'flex', gap: 5 }}>
+              <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#FC615C' }} />
+              <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#FDBC40' }} />
+              <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#34C748' }} />
+            </span>
+            <span style={{ fontFamily: KX.mono, fontSize: 13, color: 'rgba(255,255,255,0.7)' }}>
+              {phase >= 2 ? c.urlProj : c.urlSignup}
+            </span>
+          </div>
+          <div style={{ padding: 36 }}>
+            {phase === 1 ? (
+              <>
+                <div style={{ fontSize: 28, fontWeight: 700, color: KX.ink, marginBottom: 6, fontFamily: KX.display }}>{c.signupTitle}</div>
+                <div style={{ fontSize: 14, color: KX.muted, marginBottom: 22 }}>{c.signupSub}</div>
+                <FormFill label={c.emailLabel} value="ozan@kurgem.com" t={localTime / 1.2} />
+                <FormFill label={c.passLabel}  value="••••••••" t={(localTime - 0.6) / 1.2} />
+                <div style={{
+                  marginTop: 18, background: KX.red, color: '#fff',
+                  padding: '12px 18px', borderRadius: 10, fontSize: 15, fontWeight: 600,
+                  textAlign: 'center', opacity: clamp((localTime - 1.6) / 0.4, 0, 1),
+                  transform: `scale(${0.95 + 0.05 * clamp((localTime - 1.6) / 0.4, 0, 1)})`,
+                }}>{c.signupBtn}</div>
+              </>
+            ) : (
+              <>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+                  <span style={{ background: KX.blueSoft, color: KX.navy, padding: '3px 10px', borderRadius: 999, fontSize: 11, fontWeight: 700 }}>{c.stepBadge}</span>
+                </div>
+                <div style={{ fontSize: 28, fontWeight: 700, color: KX.ink, marginBottom: 16, fontFamily: KX.display, letterSpacing: '-0.02em' }}>{c.projTitle}</div>
+                <FormFill label={c.projName} value={c.projValue} t={(localTime - 4.5) / 1.0} />
+                <div style={{ fontSize: 13, fontWeight: 600, color: KX.ink, marginTop: 14, marginBottom: 8 }}>{c.projDesc}</div>
+                <div style={{
+                  minHeight: 80, padding: '12px 14px', background: KX.bg, border: `1px solid ${KX.border}`, borderRadius: 10,
+                  fontSize: 15, color: KX.ink, lineHeight: 1.5,
+                }}>
+                  {phase === 3 ? <TypeText t={(localTime - 5) / 2} text={c.sentence} /> : null}
+                </div>
+                {phase === 3 && localTime > 6.5 && (
+                  <div style={{
+                    marginTop: 14, display: 'inline-flex', alignItems: 'center', gap: 8,
+                    background: KX.navy, color: '#fff', borderRadius: 10, padding: '10px 16px', fontSize: 14, fontWeight: 600,
+                    opacity: clamp((localTime - 6.5) / 0.5, 0, 1),
+                  }}>
+                    {c.aiBtn}
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+
+        <div style={{
+          width: 360, padding: 28,
+          background: '#fff', borderRadius: 14, border: `1px solid ${KX.border}`,
+          opacity: clamp((localTime - 1) / 0.6, 0, 1),
+        }}>
+          <div style={{ fontSize: 12, color: KX.muted, fontFamily: KX.mono, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 10 }}>{c.hintKicker}</div>
+          <div style={{ fontSize: 19, fontWeight: 600, color: KX.ink, marginBottom: 14, lineHeight: 1.35 }}>
+            {c.hintTitle}
+          </div>
+          <div style={{ fontSize: 13, color: KX.muted, lineHeight: 1.6 }}>
+            {c.hintBody}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function FormFill({ label, value, t }) {
+  const v = value.slice(0, Math.max(0, Math.floor(value.length * clamp(t, 0, 1))));
+  return (
+    <div style={{ marginBottom: 12 }}>
+      <div style={{ fontSize: 13, fontWeight: 600, color: KX.ink, marginBottom: 6 }}>{label}</div>
+      <div style={{
+        height: 42, padding: '0 14px', background: '#fff', border: `1px solid ${KX.border}`, borderRadius: 10,
+        display: 'flex', alignItems: 'center', fontSize: 15, color: KX.ink,
+      }}>
+        {v}
+        {clamp(t, 0, 1) < 1 && <span style={{ display: 'inline-block', width: 2, height: 18, background: KX.blue, marginLeft: 2, animation: 'kxBlink 1s steps(2) infinite' }} />}
+      </div>
+    </div>
+  );
+}
+
+function TypeText({ text, t }) {
+  const v = text.slice(0, Math.max(0, Math.floor(text.length * clamp(t, 0, 1))));
+  return <>{v}{clamp(t, 0, 1) < 1 && <span style={{ display: 'inline-block', width: 2, height: 18, background: KX.blue, verticalAlign: 'text-bottom', marginLeft: 2, animation: 'kxBlink 1s steps(2) infinite' }} />}</>;
+}
+
+/* ─── Scene 2: Story map ───────────────────────────────────────── */
+
+function K2_StoryMap() {
+  const { localTime } = useSprite();
+  const lang = useLang();
+  const showLoading = localTime < 2;
+
+  const c = lang === 'TR'
+    ? {
+        loading:  'Hikaye haritası oluşturuluyor…',
+        step:     'Adım', of: '/',
+        title:    'Hikaye Haritası',
+        counts:   ['4 destan', '18 hikaye', '3 sürüm'],
+        epics:    ['Kayıt', 'Transfer', 'Yatırım', 'Bildirim'],
+        excelBtn: "Excel'e aktar ↓",
+        rels: [
+          { label: 'R1 — MVP',         tone: KX.red,   items: [['ST1 Email kayıt', 'ST2 Telefon'], ['ST3 IBAN', 'ST4 Geçmiş'], ['ST5 Hesap özeti'], ['ST6 Push']] },
+          { label: 'R2 — Geliştirme',  tone: KX.amber, items: [['ST7 Yüz tanıma'], ['ST8 QR'], ['ST9 Fon', 'ST10 Alım'], ['ST11 SMS']] },
+          { label: 'R3 — İleri',       tone: KX.blue,  items: [['ST12 Sosyal'], ['ST13 Toplu'], ['ST14 Robo'], ['ST15 Akıllı']] },
+        ],
+      }
+    : {
+        loading:  'Generating story map…',
+        step:     'Step', of: '/',
+        title:    'Story Map',
+        counts:   ['4 epics', '18 stories', '3 releases'],
+        epics:    ['Sign-up', 'Transfer', 'Investment', 'Notifications'],
+        excelBtn: 'Export to Excel ↓',
+        rels: [
+          { label: 'R1 — MVP',          tone: KX.red,   items: [['ST1 Email signup', 'ST2 Phone OTP'], ['ST3 IBAN', 'ST4 History'], ['ST5 Summary'], ['ST6 Push']] },
+          { label: 'R2 — Enhancement',  tone: KX.amber, items: [['ST7 Face ID'], ['ST8 QR'], ['ST9 Funds', 'ST10 Trade'], ['ST11 SMS']] },
+          { label: 'R3 — Advanced',     tone: KX.blue,  items: [['ST12 Social'], ['ST13 Batch'], ['ST14 Robo'], ['ST15 Smart']] },
+        ],
+      };
+
+  return (
+    <div style={{ position: 'absolute', inset: 0, background: KX.bg, overflow: 'hidden' }}>
+      <StepRailMini activeStep={2} doneSteps={[1]} />
+
+      <div style={{ position: 'absolute', top: 130, left: 60, right: 60, bottom: 60 }}>
+        {showLoading ? (
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', flexDirection: 'column', gap: 24 }}>
+            <span style={{ width: 60, height: 60, border: '4px solid rgba(46,117,182,0.2)', borderTopColor: KX.blue, borderRadius: '50%', animation: 'kxSpin 0.8s linear infinite' }} />
+            <div style={{ fontSize: 22, color: KX.body, fontFamily: KX.sans, fontWeight: 500 }}>
+              {c.loading}
+            </div>
+            <div style={{ fontSize: 14, color: KX.muted, fontFamily: KX.mono, letterSpacing: '0.04em' }}>
+              {c.step} {Math.min(4, Math.floor(localTime * 2) + 1)} {c.of} 4
+            </div>
+          </div>
+        ) : (
+          <div style={{ background: '#fff', borderRadius: 18, border: `1px solid ${KX.border}`, padding: 32, height: '100%', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 22 }}>
+              <div style={{ fontSize: 26, fontWeight: 700, color: KX.ink, fontFamily: KX.display, letterSpacing: '-0.02em' }}>{c.title}</div>
+              <div style={{ fontSize: 16, color: KX.muted, fontFamily: KX.mono, display: 'flex', gap: 10 }}>
+                {c.counts.map((cnt, i) => (
+                  <React.Fragment key={i}>
+                    {i > 0 && <span style={{ color: KX.faint }}>·</span>}
+                    <span>{cnt}</span>
+                  </React.Fragment>
+                ))}
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 12 }}>
+              {c.epics.map((e, i) => {
+                const t = clamp((localTime - 2 - i * 0.12) / 0.4, 0, 1);
+                return (
+                  <div key={e} style={{
+                    background: KX.navy, color: '#fff', padding: '14px 16px', borderRadius: 8,
+                    fontSize: 18, fontWeight: 600, textAlign: 'center',
+                    opacity: t, transform: `translateY(${(1 - t) * 10}px)`,
+                  }}>{e}</div>
+                );
+              })}
+            </div>
+
+            {c.rels.map((row, ri) => {
+              const t0 = 3.2 + ri * 1.2;
+              const rowT = clamp((localTime - t0) / 0.5, 0, 1);
+              return (
+                <div key={row.label} style={{ marginTop: 10, opacity: rowT }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: row.tone, fontWeight: 700, marginBottom: 6 }}>
+                    <span style={{ width: 4, height: 16, background: row.tone, borderRadius: 2 }} />
+                    {row.label}
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
+                    {row.items.map((col, ci) => (
+                      <div key={ci} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                        {col.map(cc => (
+                          <div key={cc} style={{
+                            background: '#fff', border: `1px solid ${KX.borderSoft}`, borderLeft: `3px solid ${row.tone}`,
+                            padding: '8px 12px', borderRadius: 4, fontSize: 13, color: KX.body,
+                          }}>{cc}</div>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+
+            <div style={{
+              position: 'absolute', bottom: 24, right: 24, display: 'flex', alignItems: 'center', gap: 8,
+              background: '#107C41', color: '#fff', padding: '8px 14px', borderRadius: 8, fontSize: 13, fontWeight: 600,
+              opacity: clamp((localTime - 6.5) / 0.5, 0, 1),
+              transform: `translateY(${(1 - clamp((localTime - 6.5) / 0.5, 0, 1)) * 10}px)`,
+            }}>
+              {c.excelBtn}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ─── Scene 3: Requirements Analysis ──────────────────────────── */
+
+function K3_AnalysisDoc() {
+  const { localTime } = useSprite();
+  const lang = useLang();
+  const c = lang === 'TR'
+    ? {
+        fileName: 'analiz-r1-mvp.docx · v1.0',
+        title:    'Mobil Bankacılık MVP — İş (Gereksinim) Analizi',
+        sec1:     '1. Genel Bilgiler',
+        sec1Body: 'Bu doküman, Mobil Bankacılık MVP projesinin Sürüm 1 (R1) kapsamındaki kullanıcı hikayelerini, iş kurallarını ve kabul kriterlerini içerir.',
+        sec2:     '2.1 ST3 — IBAN ile Para Gönderme',
+        sec2Body: 'Hikaye:',
+        sec2Text: 'Bir kullanıcı olarak, IBAN ile para göndermek istiyorum ki günlük bankacılık ihtiyacımı uygulamadan halledebileyim.',
+        acHeader: 'Kabul Kriterleri',
+        acList:   [
+          ['AC-001 [P]:', 'Geçerli IBAN ile transfer başlatılır.'],
+          ['AC-002 [N]:', 'Geçersiz IBAN hata mesajı.'],
+          ['AC-003 [B]:', '5.000 TL üzerinde SMS doğrulama.'],
+        ],
+        brHeader: 'İş Kuralları',
+        brList:   [
+          ['BR-001:', 'Tek seferlik limit 50.000 TL.'],
+          ['BR-002:', 'Günlük limit 100.000 TL.'],
+        ],
+        downloadBtn: 'İndir (.docx) ↓',
+      }
+    : {
+        fileName: 'analysis-r1-mvp.docx · v1.0',
+        title:    'Mobile Banking MVP — Business (Requirements) Analysis',
+        sec1:     '1. General Information',
+        sec1Body: 'This document covers user stories, business rules and acceptance criteria for Release 1 (R1) of the Mobile Banking MVP project.',
+        sec2:     '2.1 ST3 — Send Money via IBAN',
+        sec2Body: 'Story:',
+        sec2Text: 'As a user I want to send money via IBAN so that I can handle daily banking without leaving the app.',
+        acHeader: 'Acceptance Criteria',
+        acList:   [
+          ['AC-001 [P]:', 'Valid IBAN initiates transfer.'],
+          ['AC-002 [N]:', 'Invalid IBAN shows error.'],
+          ['AC-003 [B]:', 'SMS verification above ₺5,000.'],
+        ],
+        brHeader: 'Business Rules',
+        brList:   [
+          ['BR-001:', 'Single-transfer limit ₺50,000.'],
+          ['BR-002:', 'Daily transfer limit ₺100,000.'],
+        ],
+        downloadBtn: 'Download (.docx) ↓',
+      };
+
+  return (
+    <div style={{ position: 'absolute', inset: 0, background: KX.bg, overflow: 'hidden' }}>
+      <StepRailMini activeStep={3} doneSteps={[1, 2]} />
+
+      <div style={{ position: 'absolute', top: 130, left: 80, right: 80, bottom: 80 }}>
+        <div style={{ background: '#fff', borderRadius: 18, border: `1px solid ${KX.border}`, height: '100%', overflow: 'hidden', boxShadow: '0 20px 50px -20px rgba(15,30,80,0.15)' }}>
+          <div style={{ padding: '24px 36px', borderBottom: `1px solid ${KX.borderSoft}`, background: KX.bg }}>
+            <div style={{ fontFamily: KX.mono, fontSize: 13, color: KX.muted, marginBottom: 6 }}>{c.fileName}</div>
+            <div style={{ fontSize: 26, fontWeight: 700, color: KX.ink, fontFamily: KX.display, letterSpacing: '-0.02em' }}>{c.title}</div>
+          </div>
+          <div style={{ padding: 36, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 32, height: 'calc(100% - 90px)' }}>
+            <div>
+              <div style={{ fontSize: 18, fontWeight: 700, color: KX.navy, marginBottom: 12 }}>{c.sec1}</div>
+              <p style={{ fontSize: 15, color: KX.body, lineHeight: 1.7, margin: 0, opacity: clamp(localTime / 1.5, 0, 1) }}>
+                {c.sec1Body}
+              </p>
+
+              <div style={{ fontSize: 18, fontWeight: 700, color: KX.navy, marginTop: 28, marginBottom: 12, opacity: clamp((localTime - 1.5) / 0.5, 0, 1) }}>
+                {c.sec2}
+              </div>
+              <p style={{ fontSize: 15, color: KX.body, lineHeight: 1.7, margin: 0, opacity: clamp((localTime - 2) / 0.6, 0, 1) }}>
+                <strong style={{ color: KX.ink }}>{c.sec2Body}</strong> {c.sec2Text}
+              </p>
+            </div>
+
+            <div>
+              <div style={{
+                padding: '14px 18px', background: KX.blueSoft, borderLeft: `3px solid ${KX.blue}`, borderRadius: 4, marginBottom: 14,
+                opacity: clamp((localTime - 3) / 0.5, 0, 1),
+                transform: `translateY(${(1 - clamp((localTime - 3) / 0.5, 0, 1)) * 16}px)`,
+              }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: '#0C447C', letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: 6 }}>{c.acHeader}</div>
+                <ul style={{ margin: 0, paddingLeft: 18, fontSize: 14, color: KX.body, lineHeight: 1.7 }}>
+                  {c.acList.map(([k, v]) => (
+                    <li key={k}><strong style={{ color: KX.ink }}>{k}</strong> {v}</li>
+                  ))}
+                </ul>
+              </div>
+              <div style={{
+                padding: '14px 18px', background: KX.amberSoft, borderLeft: `3px solid ${KX.amber}`, borderRadius: 4,
+                opacity: clamp((localTime - 4) / 0.5, 0, 1),
+                transform: `translateY(${(1 - clamp((localTime - 4) / 0.5, 0, 1)) * 16}px)`,
+              }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: '#78350F', letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: 6 }}>{c.brHeader}</div>
+                <ul style={{ margin: 0, paddingLeft: 18, fontSize: 14, color: KX.body, lineHeight: 1.7 }}>
+                  {c.brList.map(([k, v]) => (
+                    <li key={k}><strong style={{ color: KX.ink }}>{k}</strong> {v}</li>
+                  ))}
+                </ul>
+              </div>
+
+              <div style={{
+                marginTop: 24, display: 'inline-flex', alignItems: 'center', gap: 10,
+                background: KX.navy, color: '#fff', padding: '12px 22px', borderRadius: 10, fontSize: 15, fontWeight: 600,
+                opacity: clamp((localTime - 5.5) / 0.6, 0, 1),
+                transform: `scale(${0.92 + 0.08 * Easing.easeOutBack(clamp((localTime - 5.5) / 0.6, 0, 1))})`,
+                boxShadow: '0 10px 24px -8px rgba(31,56,100,0.4)',
+              }}>
+                {c.downloadBtn}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Scene 4: Prototype ──────────────────────────────────────── */
+
+function K4_Prototype() {
+  const { localTime } = useSprite();
+  const lang = useLang();
+  const screens = lang === 'TR'
+    ? ['Login', 'Kayıt', 'Onboard', 'Dashboard', 'Hesap', 'Transfer', 'IBAN', 'Onay', 'Profil', 'Ayarlar']
+    : ['Login', 'Sign-up', 'Onboard', 'Dashboard', 'Account', 'Transfer', 'IBAN', 'Confirm', 'Profile', 'Settings'];
+
+  const c = lang === 'TR'
+    ? { progress: 'ekran tamamlandı', downloadBtn: 'İndir (.html) ↓', newTabBtn: 'Yeni sekmede aç ↗' }
+    : { progress: 'screens completed', downloadBtn: 'Download (.html) ↓', newTabBtn: 'Open in new tab ↗' };
+
+  return (
+    <div style={{ position: 'absolute', inset: 0, background: KX.bg, overflow: 'hidden' }}>
+      <StepRailMini activeStep={4} doneSteps={[1, 2, 3]} />
+
+      <div style={{ position: 'absolute', top: 130, left: 80, right: 80, bottom: 80 }}>
+        <div style={{ background: '#fff', borderRadius: 18, border: `1px solid ${KX.border}`, height: '100%', overflow: 'hidden', boxShadow: '0 20px 50px -20px rgba(15,30,80,0.15)' }}>
+          <div style={{ background: KX.navy, padding: '16px 28px', color: '#fff', display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
+            <span style={{ fontFamily: KX.mono }}>proto-v1.html</span>
+            <span style={{ color: 'rgba(255,255,255,0.6)' }}>
+              {Math.min(10, Math.floor(localTime * 1.5))} / 14 {c.progress}
+            </span>
+          </div>
+          <div style={{ padding: 30, display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 16 }}>
+            {screens.map((s, i) => {
+              const t = clamp((localTime - 0.8 - i * 0.5) / 0.5, 0, 1);
+              const done = localTime > 0.8 + i * 0.5 + 0.5;
+              return (
+                <div key={s} style={{
+                  background: '#fff', border: `1px solid ${KX.border}`, borderRadius: 12, padding: 10,
+                  opacity: 0.3 + 0.7 * t,
+                }}>
+                  <div style={{ aspectRatio: '9 / 16', background: KX.bg, borderRadius: 8, border: `1px solid ${KX.borderSoft}`, position: 'relative', display: 'flex', flexDirection: 'column', padding: 8, gap: 6 }}>
+                    {!done ? (
+                      <div style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center' }}>
+                        <span style={{ width: 22, height: 22, border: '2px solid rgba(46,117,182,0.2)', borderTopColor: KX.amber, borderRadius: '50%', animation: 'kxSpin 0.8s linear infinite' }} />
+                      </div>
+                    ) : (
+                      <>
+                        <div style={{ height: 5, background: '#E8EAEE', borderRadius: 2, width: '40%' }} />
+                        <div style={{ height: 12, background: '#E8EAEE', borderRadius: 3 }} />
+                        <div style={{ height: 5, background: '#E8EAEE', borderRadius: 2, width: '60%' }} />
+                        <div style={{ height: 5, background: '#E8EAEE', borderRadius: 2, width: '80%' }} />
+                        <div style={{ flex: 1 }} />
+                        {(i % 2 === 0) && <div style={{ height: 10, background: KX.navy, borderRadius: 3 }} />}
+                      </>
+                    )}
+                  </div>
+                  <div style={{ marginTop: 8, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span style={{ fontSize: 12, color: done ? KX.ink : KX.muted, fontWeight: 500 }}>{s}</span>
+                    {done && <span style={{ fontSize: 11, color: KX.green, fontWeight: 700 }}>✓</span>}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <div style={{
+            position: 'absolute', bottom: 24, left: '50%', transform: 'translateX(-50%)',
+            opacity: clamp((localTime - 6) / 0.6, 0, 1),
+            display: 'flex', gap: 10,
+          }}>
+            <div style={{ background: KX.red, color: '#fff', padding: '12px 22px', borderRadius: 10, fontSize: 15, fontWeight: 600, boxShadow: `0 10px 24px -8px ${KX.red}80` }}>
+              {c.downloadBtn}
+            </div>
+            <div style={{ background: '#fff', border: `1px solid ${KX.border}`, color: KX.ink, padding: '12px 22px', borderRadius: 10, fontSize: 15, fontWeight: 600 }}>
+              {c.newTabBtn}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Scene 5: Test cases ─────────────────────────────────────── */
+
+function K5_TestCases() {
+  const { localTime } = useSprite();
+  const lang = useLang();
+
+  const c = lang === 'TR'
+    ? {
+        fileName: 'test-senaryolari.xlsx',
+        meta: '32 satır · 4 tip',
+        headers: ['ID', 'Senaryo', 'Tip', 'Durum'],
+        rows: [
+          ['TC-001', 'Başarılı IBAN transferi',  'Pozitif',     'Geçti'],
+          ['TC-002', 'Geçersiz IBAN uyarısı',     'Negatif',    'Geçti'],
+          ['TC-003', '5K üstü SMS doğrulama',     'Sınır',      'Geçti'],
+          ['TC-004', 'Günlük limit aşımı',        'Negatif',    'Geçti'],
+          ['TC-005', 'Eş zamanlı 2 transfer',     'Eş zamanlı', 'Bekliyor'],
+          ['TC-006', 'Offline IBAN deneme',       'Sınır',      'Bekliyor'],
+        ],
+        passed: 'Geçti',
+      }
+    : {
+        fileName: 'test-cases.xlsx',
+        meta: '32 rows · 4 types',
+        headers: ['ID', 'Scenario', 'Type', 'Status'],
+        rows: [
+          ['TC-001', 'Successful IBAN transfer',  'Positive',   'Passed'],
+          ['TC-002', 'Invalid IBAN warning',       'Negative',  'Passed'],
+          ['TC-003', 'SMS verify above 5K',        'Boundary',  'Passed'],
+          ['TC-004', 'Daily limit exceeded',       'Negative',  'Passed'],
+          ['TC-005', 'Concurrent 2 transfers',     'Concurrent','Pending'],
+          ['TC-006', 'Offline IBAN attempt',       'Boundary',  'Pending'],
+        ],
+        passed: 'Passed',
+      };
+
+  return (
+    <div style={{ position: 'absolute', inset: 0, background: KX.bg, overflow: 'hidden' }}>
+      <StepRailMini activeStep={5} doneSteps={[1, 2, 3, 4]} />
+
+      <div style={{ position: 'absolute', top: 130, left: 100, right: 100, bottom: 100 }}>
+        <div style={{ background: '#fff', borderRadius: 18, border: `1px solid ${KX.border}`, overflow: 'hidden', boxShadow: '0 20px 50px -20px rgba(15,30,80,0.15)', height: '100%', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ background: '#107C41', color: '#fff', padding: '14px 24px', display: 'flex', justifyContent: 'space-between', fontFamily: KX.mono, fontSize: 14 }}>
+            <span>{c.fileName}</span><span>{c.meta}</span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr 140px 140px', background: '#F4F4F2', fontSize: 13, fontWeight: 700, color: KX.muted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+            {c.headers.map(h => (
+              <div key={h} style={{ padding: '14px 18px', borderRight: `1px solid ${KX.borderSoft}` }}>{h}</div>
+            ))}
+          </div>
+          {c.rows.map((r, i) => {
+            const t = clamp((localTime - 0.4 - i * 0.4) / 0.4, 0, 1);
+            const statusColor = r[3] === c.passed ? KX.green : '#D97706';
+            return (
+              <div key={r[0]} style={{
+                display: 'grid', gridTemplateColumns: '120px 1fr 140px 140px',
+                borderTop: `1px solid ${KX.borderSoft}`,
+                background: i % 2 ? '#fff' : '#FBFBFA',
+                opacity: t, transform: `translateX(${(1 - t) * -20}px)`,
+                fontSize: 15,
+              }}>
+                <div style={{ padding: '14px 18px', borderRight: `1px solid ${KX.borderSoft}`, color: KX.blue, fontFamily: KX.mono, fontWeight: 600 }}>{r[0]}</div>
+                <div style={{ padding: '14px 18px', borderRight: `1px solid ${KX.borderSoft}`, color: KX.body }}>{r[1]}</div>
+                <div style={{ padding: '14px 18px', borderRight: `1px solid ${KX.borderSoft}`, color: KX.body }}>{r[2]}</div>
+                <div style={{ padding: '14px 18px', color: statusColor, fontWeight: 700 }}>● {r[3]}</div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Scene 6: Tip ────────────────────────────────────────────── */
+
+function K6_Tip() {
+  const { localTime } = useSprite();
+  const lang = useLang();
+  const t1 = clamp(localTime / 0.8, 0, 1);
+  const t2 = clamp((localTime - 1.5) / 0.8, 0, 1);
+  const t3 = clamp((localTime - 4) / 0.8, 0, 1);
+
+  const c = lang === 'TR'
+    ? {
+        kicker: '💡 İpucu',
+        titleA: 'Üretmeden önce', highlight: 'YZ ile detaylandır', titleB: 'butonunu kullan.',
+        without: 'Detaylandırmadan',
+        withoutTitle: '5 hikaye, yüzeysel',
+        withoutItems: ['• Genel ifadeler', '• Eksik kabul kriterleri', '• Sürüm planı dengesiz'],
+        withh: 'YZ ile detaylandırarak',
+        withTitle: '18 hikaye, derin',
+        withItems: ['✓ Hedef kullanıcı, kapsam tanımlı', '✓ Kabul kriterleri + iş kuralları', '✓ R1/R2/R3 dengeli dağıtılmış'],
+      }
+    : {
+        kicker: '💡 Tip',
+        titleA: 'Use', highlight: 'Enhance with AI', titleB: 'before generating.',
+        without: 'Without enhancing',
+        withoutTitle: '5 stories, shallow',
+        withoutItems: ['• Vague descriptions', '• Missing acceptance criteria', '• Unbalanced release plan'],
+        withh: 'With AI enhancement',
+        withTitle: '18 stories, deep',
+        withItems: ['✓ Target users, scope defined', '✓ Acceptance criteria + business rules', '✓ R1/R2/R3 balanced'],
+      };
+
+  return (
+    <div style={{ position: 'absolute', inset: 0, background: KX.bg, padding: 80, display: 'flex', flexDirection: 'column', justifyContent: 'center', overflow: 'hidden' }}>
+      <div style={{
+        position: 'absolute', top: 60, left: 80, fontSize: 14, color: KX.amber, fontFamily: KX.mono, letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 700,
+        opacity: t1,
+      }}>
+        {c.kicker}
+      </div>
+
+      <div style={{
+        fontSize: 70, fontWeight: 700, fontFamily: KX.display, letterSpacing: '-0.03em', lineHeight: 1.05, color: KX.ink,
+        textAlign: 'center', maxWidth: 1500, margin: '0 auto', marginBottom: 60,
+        opacity: clamp((localTime - 0.5) / 0.8, 0, 1),
+        transform: `translateY(${(1 - clamp((localTime - 0.5) / 0.8, 0, 1)) * 20}px)`,
+      }}>
+        {c.titleA} <span style={{ color: KX.navy, background: KX.blueSoft, padding: '0 14px', borderRadius: 8 }}>{c.highlight}</span>{' '}
+        {c.titleB}
+      </div>
+
+      <div style={{ display: 'flex', gap: 24, maxWidth: 1500, margin: '0 auto', width: '100%' }}>
+        <div style={{
+          flex: 1, background: '#fff', border: `1px solid ${KX.border}`, borderRadius: 16, padding: 28,
+          opacity: t2, transform: `translateX(${(1 - t2) * -40}px)`,
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+            <span style={{ width: 32, height: 32, borderRadius: 8, background: '#F1F2F4', color: KX.muted, display: 'grid', placeItems: 'center', fontSize: 18 }}>×</span>
+            <span style={{ fontSize: 15, fontWeight: 700, color: KX.muted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{c.without}</span>
+          </div>
+          <div style={{ fontSize: 22, fontWeight: 600, color: KX.ink, marginBottom: 12 }}>{c.withoutTitle}</div>
+          <div style={{ fontSize: 16, color: KX.body, lineHeight: 1.6 }}>
+            {c.withoutItems.map((it, i) => <div key={i}>{it}</div>)}
+          </div>
+        </div>
+
+        <div style={{
+          flex: 1, background: KX.navy, color: '#fff', borderRadius: 16, padding: 28, position: 'relative', overflow: 'hidden',
+          opacity: t3, transform: `translateX(${(1 - t3) * 40}px)`,
+        }}>
+          <div aria-hidden style={{ position: 'absolute', top: -50, right: -50, width: 200, height: 200, borderRadius: '50%', background: `radial-gradient(circle, ${KX.red}30, transparent 70%)` }} />
+          <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+            <span style={{ width: 32, height: 32, borderRadius: 8, background: KX.red, color: '#fff', display: 'grid', placeItems: 'center', fontSize: 16, fontWeight: 700 }}>✓</span>
+            <span style={{ fontSize: 15, fontWeight: 700, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{c.withh}</span>
+          </div>
+          <div style={{ position: 'relative', fontSize: 22, fontWeight: 600, marginBottom: 12 }}>{c.withTitle}</div>
+          <div style={{ position: 'relative', fontSize: 16, color: 'rgba(255,255,255,0.85)', lineHeight: 1.6 }}>
+            {c.withItems.map((it, i) => <div key={i}>{it}</div>)}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Scene 7: Outro ──────────────────────────────────────────── */
+
+function K7_Outro() {
+  const { localTime } = useSprite();
+  const lang = useLang();
+  const t1 = clamp(localTime / 1, 0, 1);
+  const t2 = clamp((localTime - 1) / 1, 0, 1);
+  const t3 = clamp((localTime - 2.5) / 1, 0, 1);
+  const tagline = lang === 'TR' ? 'Şimdi sen dene.' : 'Try it now.';
+  return (
+    <div style={{
+      position: 'absolute', inset: 0,
+      background: `linear-gradient(135deg, ${KX.navy} 0%, ${KX.navyDeep} 100%)`,
+      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+      gap: 36, fontFamily: KX.sans, color: '#fff', textAlign: 'center', overflow: 'hidden',
+    }}>
+      <div aria-hidden style={{ position: 'absolute', top: -150, right: -150, width: 500, height: 500, borderRadius: '50%', background: `radial-gradient(circle, ${KX.blue}40, transparent 65%)` }} />
+      <div aria-hidden style={{ position: 'absolute', bottom: -150, left: -150, width: 500, height: 500, borderRadius: '50%', background: `radial-gradient(circle, ${KX.red}30, transparent 70%)` }} />
+
+      <div style={{ position: 'relative', opacity: t1, transform: `scale(${0.85 + 0.15 * Easing.easeOutBack(t1)})` }}>
+        <KxLogo size={120} light />
+      </div>
+
+      <div style={{
+        position: 'relative', fontSize: 54, fontWeight: 700, fontFamily: KX.display, letterSpacing: '-0.03em', lineHeight: 1.1,
+        opacity: t2, transform: `translateY(${(1 - t2) * 18}px)`,
+      }}>
+        {tagline}
+      </div>
+
+      <div style={{
+        position: 'relative', fontFamily: KX.mono, fontSize: 28, color: KX.amber, marginTop: 8,
+        opacity: t3, letterSpacing: '0.04em',
+      }}>
+        kurgemx.com
+      </div>
+    </div>
+  );
+}
+
+/* ─── Compose ──────────────────────────────────────────────────── */
+
+function KilavuzScenes() {
+  return (
+    <>
+      <Sprite start={0}  end={6}>  <K0_Intro /></Sprite>
+      <Sprite start={6}  end={14}> <K1_SignUp /></Sprite>
+      <Sprite start={14} end={22}> <K2_StoryMap /></Sprite>
+      <Sprite start={22} end={30}> <K3_AnalysisDoc /></Sprite>
+      <Sprite start={30} end={38}> <K4_Prototype /></Sprite>
+      <Sprite start={38} end={46}> <K5_TestCases /></Sprite>
+      <Sprite start={46} end={54}> <K6_Tip /></Sprite>
+      <Sprite start={54} end={60}> <K7_Outro /></Sprite>
+    </>
+  );
+}
+
+window.KILAVUZ_SUBS = KILAVUZ_SUBS;
+window.KILAVUZ_SCENES = KILAVUZ_SCENES;
+window.KilavuzScenes = KilavuzScenes;
+
+</script>
+
+<script type="text/babel" data-presets="react">
+  function App() {
+    const [lang, setLang] = React.useState('TR');
+    const [aspect, setAspect] = React.useState('16:9');
+    const dim = ASPECTS[aspect];
+    return (
+      <LangContext.Provider value={lang}>
+        <VideoToolbar title={lang === 'TR' ? 'Kullanım Kılavuzu · 60 saniye' : 'User Guide · 60 seconds'} lang={lang} setLang={setLang} aspect={aspect} setAspect={setAspect} />
+        <div id="stageHost">
+          <Stage
+            width={dim.w}
+            height={dim.h}
+            duration={60}
+            background={KX.bg}
+            persistKey={'kilavuz:' + aspect}
+            key={aspect}
+          >
+            <LangContext.Provider value={lang}>
+              <KilavuzScenes />
+              <SubtitleBar subs={KILAVUZ_SUBS} lang={lang} />
+            </LangContext.Provider>
+          </Stage>
+        </div>
+        <div id="scriptHost">
+          <ScriptPanelWrapper lang={lang} />
+        </div>
+      </LangContext.Provider>
+    );
+  }
+
+  function ScriptPanelWrapper({ lang }) {
+    const [time, setTime] = React.useState(0);
+    React.useEffect(() => {
+      const tick = () => {
+        try {
+          const keys = Object.keys(localStorage).filter(k => k.startsWith('kilavuz:') && k.endsWith(':t'));
+          if (keys.length > 0) {
+            const vals = keys.map(k => parseFloat(localStorage.getItem(k) || '0')).filter(isFinite);
+            if (vals.length) setTime(Math.max(...vals));
+          }
+        } catch {}
+      };
+      const id = setInterval(tick, 100);
+      tick();
+      return () => clearInterval(id);
+    }, []);
+    return (
+      <TimelineContext.Provider value={{ time, duration: 60, playing: false }}>
+        <ScriptPanel scenes={KILAVUZ_SCENES} lang={lang} />
+      </TimelineContext.Provider>
+    );
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

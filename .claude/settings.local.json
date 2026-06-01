@@ -79,7 +79,9 @@
       "Bash(del \"C:\\\\Users\\\\ozank\\\\Documents\\\\İşAnaliziAjan\\\\kurgemx\\\\src\\\\proxy.ts\")",
       "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\ozank\\\\Documents\\\\İşAnaliziAjan\\\\kurgemx\\\\src\\\\app\\\\[locale\\\\]\" -Directory)",
       "Bash(mkdir \"C:\\\\Users\\\\ozank\\\\Documents\\\\İşAnaliziAjan\\\\kurgemx\\\\src\\\\app\\\\[locale]\\\\hesap\")",
-      "Bash(mkdir \"C:\\\\Users\\\\ozank\\\\Documents\\\\İşAnaliziAjan\\\\kurgemx\\\\src\\\\app\\\\[locale]\\\\contact\")"
+      "Bash(mkdir \"C:\\\\Users\\\\ozank\\\\Documents\\\\İşAnaliziAjan\\\\kurgemx\\\\src\\\\app\\\\[locale]\\\\contact\")",
+      "Bash(Get-ChildItem -Recurse \"C:\\\\Users\\\\ozank\\\\Documents\\\\İşAnaliziAjan\\\\kurgemx\\\\src\\\\components\" -Name)",
+      "Bash(Get-ChildItem *)"
     ]
   },
   "hooks": {
