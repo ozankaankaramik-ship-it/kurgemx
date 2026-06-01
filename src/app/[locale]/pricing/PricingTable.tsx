@@ -126,8 +126,7 @@ export default function PricingTable({
 
   return (
     <>
-      <section className="py-10 px-6 bg-kx-bg">
-        <div className="max-w-[900px] mx-auto">
+      <div className="max-w-[900px] mx-auto px-6 py-10">
           <div className="overflow-x-auto rounded-xl border border-kx-border shadow-kx-card bg-white">
             <table className="w-full" style={{ minWidth: 560, fontSize: 12 }}>
               <colgroup>
@@ -241,8 +240,7 @@ export default function PricingTable({
           <p className="text-center mt-4 text-[12px] text-kx-muted">
             <strong className="text-kx-ink">USD</strong> · KDV dahil · Ödeme anındaki kur esas alınır · Aylık fatura, dilediğin zaman iptal
           </p>
-        </div>
-      </section>
+      </div>
 
       {modalPlan && (
         <PaymentModal
