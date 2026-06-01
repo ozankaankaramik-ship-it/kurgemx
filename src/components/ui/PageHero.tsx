@@ -11,13 +11,15 @@ type Props = {
   lastUpdate?: ReactNode
   /** Optional small badge inside the kicker pill */
   badge?: ReactNode
+  /** Smaller, lighter title for utility pages (pricing, legal, etc.) */
+  compact?: boolean
 }
 
 /**
  * Lacivert hero used on About, Pricing, Privacy, Terms, Refund and
  * Sales-Agreement pages. Includes subtle radial blobs and a grid overlay.
  */
-export default function PageHero({ kicker, title, subtitle, lastUpdate, badge }: Props) {
+export default function PageHero({ kicker, title, subtitle, lastUpdate, badge, compact }: Props) {
   return (
     <section className="kx-hero-gradient text-white px-8 py-22 relative overflow-hidden">
       <div className="kx-grid-bg absolute inset-0 opacity-25 pointer-events-none" aria-hidden="true" />
@@ -32,7 +34,7 @@ export default function PageHero({ kicker, title, subtitle, lastUpdate, badge }:
             {kicker}
           </div>
         )}
-        <h1 className="font-sans text-[56px] leading-[1.05] tracking-[-0.035em] font-bold mb-4 text-balance">
+        <h1 className={`font-sans leading-[1.1] tracking-[-0.025em] mb-4 text-balance ${compact ? 'text-[36px] font-semibold' : 'text-[56px] leading-[1.05] tracking-[-0.035em] font-bold'}`}>
           {title}
         </h1>
         {subtitle && (

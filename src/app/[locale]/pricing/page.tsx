@@ -86,6 +86,7 @@ export default async function PricingPage() {
         kicker={t('baslik')}
         title={t('baslik')}
         subtitle={t('altBaslik')}
+        compact
       />
 
       {/* Karşılaştırma tablosu + modal mantığı */}
