@@ -74,11 +74,11 @@ export default async function PricingPage() {
   ]
 
   const faqs = [
-    { q: 'Plan değiştirebilir miyim?',                     a: 'Evet — istediğin zaman yükselt veya düşür. Yükselttiğinde fark anında, düşürdüğünde bir sonraki dönemde geçerli olur.' },
-    { q: 'İade alabilir miyim?',                            a: 'Dijital içerik niteliğinde olduğu için cayma hakkı uygulanmaz. Ancak aboneliğini iptal ettiğinde dönem sonuna kadar erişimin devam eder.' },
-    { q: 'Kredi kartı gerekli mi?',                         a: 'Hayır. Freemium plan için kart bilgisi gerekmiyor. Sadece ücretli planlara geçerken talep ediyoruz.' },
-    { q: 'KDV dahil mi?',                                   a: 'Evet, gösterilen fiyatlara KDV dahildir. USD üzerinden faturalanır, kur ödeme anında belirlenir.' },
-    { q: 'Kurumsal plan için nasıl iletişime geçebilirim?', a: 'support@kurgemx.com adresine yazın; 24 saat içinde dönüş yapıyoruz.' },
+    { q: t('sss.degisim.q'), a: t('sss.degisim.a') },
+    { q: t('sss.iade.q'),    a: t('sss.iade.a')    },
+    { q: t('sss.kart.q'),    a: t('sss.kart.a')    },
+    { q: t('sss.kdv.q'),     a: t('sss.kdv.a')     },
+    { q: t('sss.kurumsal.q'), a: t('sss.kurumsal.a') },
   ]
 
   return (
@@ -109,9 +109,9 @@ export default async function PricingPage() {
       <section className="py-20 px-8 bg-white border-t border-kx-border">
         <div className="max-w-[900px] mx-auto">
           <div className="text-center mb-10">
-            <KxPill tone="amber">— Sıkça sorulanlar</KxPill>
+            <KxPill tone="amber">— {t('sssBolum')}</KxPill>
             <h2 className="font-display text-[36px] font-bold text-kx-ink mt-4 tracking-tight">
-              Aklındaki sorular
+              {t('sssBaslik')}
             </h2>
           </div>
           <div>

@@ -606,7 +606,32 @@
             "sso": "SSO",
             "sla": "Enterprise SLA & support"
         },
-        "sinirsiz": "Unlimited"
+        "sinirsiz": "Unlimited",
+        "footerNot": "USD · VAT included · Exchange rate at time of payment · Monthly billing, cancel anytime",
+        "sssBolum": "Frequently asked questions",
+        "sssBaslik": "Got questions?",
+        "sss": {
+            "degisim": {
+                "q": "Can I change my plan?",
+                "a": "Yes — upgrade or downgrade anytime. Upgrades take effect immediately; downgrades apply at the start of the next billing period."
+            },
+            "iade": {
+                "q": "Can I get a refund?",
+                "a": "As digital content, withdrawal rights do not apply. However, your access continues until the end of the current period after cancellation."
+            },
+            "kart": {
+                "q": "Is a credit card required?",
+                "a": "No. No card is needed for the Freemium plan. We only ask when upgrading to a paid plan."
+            },
+            "kdv": {
+                "q": "Is VAT included?",
+                "a": "Yes, VAT is included in all displayed prices. Billed in USD at the exchange rate at time of payment."
+            },
+            "kurumsal": {
+                "q": "How can I contact you about the Enterprise plan?",
+                "a": "Write to support@kurgemx.com and we'll get back to you within 24 hours."
+            }
+        }
     },
     "terms": {
         "baslik": "Terms of Service",

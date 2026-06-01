@@ -293,7 +293,7 @@ export default function PricingTable({
         </div>
 
         <p className="text-center text-kx-muted mt-4" style={{ fontSize: 12 }}>
-          <strong className="text-kx-ink">USD</strong> · KDV dahil · Ödeme anındaki kur esas alınır · Aylık fatura, dilediğin zaman iptal
+          {t('footerNot')}
         </p>
       </div>
 

@@ -606,7 +606,32 @@
             "sso": "SSO",
             "sla": "Kurumsal SLA ve destek"
         },
-        "sinirsiz": "Sınırsız"
+        "sinirsiz": "Sınırsız",
+        "footerNot": "USD · KDV dahil · Ödeme anındaki kur esas alınır · Aylık fatura, dilediğin zaman iptal",
+        "sssBolum": "Sıkça sorulanlar",
+        "sssBaslik": "Aklındaki sorular",
+        "sss": {
+            "degisim": {
+                "q": "Plan değiştirebilir miyim?",
+                "a": "Evet — istediğin zaman yükselt veya düşür. Yükselttiğinde fark anında, düşürdüğünde bir sonraki dönemde geçerli olur."
+            },
+            "iade": {
+                "q": "İade alabilir miyim?",
+                "a": "Dijital içerik niteliğinde olduğu için cayma hakkı uygulanmaz. Ancak aboneliğini iptal ettiğinde dönem sonuna kadar erişimin devam eder."
+            },
+            "kart": {
+                "q": "Kredi kartı gerekli mi?",
+                "a": "Hayır. Freemium plan için kart bilgisi gerekmiyor. Sadece ücretli planlara geçerken talep ediyoruz."
+            },
+            "kdv": {
+                "q": "KDV dahil mi?",
+                "a": "Evet, gösterilen fiyatlara KDV dahildir. USD üzerinden faturalanır, kur ödeme anında belirlenir."
+            },
+            "kurumsal": {
+                "q": "Kurumsal plan için nasıl iletişime geçebilirim?",
+                "a": "support@kurgemx.com adresine yazın; 24 saat içinde dönüş yapıyoruz."
+            }
+        }
     },
     "terms": {
         "baslik": "Kullanım Koşulları",
