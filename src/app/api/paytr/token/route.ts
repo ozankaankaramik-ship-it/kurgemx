@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
     }
 
     // ── PayTR parametreleri ───────────────────────────────────────
-    const merchant_oid    = `KX-${user.id.slice(0, 8)}-${Date.now()}`
+    const merchant_oid    = `KX${user.id.replace(/-/g, '').slice(0, 8)}${Date.now()}`
     const payment_amount  = Math.round(plan.fiyat_usd * 100)
     const currency        = 'TL'
     const no_installment  = '1'
