@@ -42,9 +42,10 @@ export default function VideoModal({ open, onClose, defaultTab = 'tanitim' }: Vi
 
   if (!open) return null
 
+  const isEN = locale === 'en'
   const videoSrc = {
-    tanitim: locale === 'tr' ? '/videos/tanitim.html' : '/videos/tanitim-en.html',
-    kilavuz: locale === 'tr' ? '/videos/kilavuz.html' : '/videos/kilavuz-en.html',
+    tanitim: isEN ? '/videos/tanitim.html?lang=en' : '/videos/tanitim.html',
+    kilavuz: isEN ? '/videos/kilavuz.html?lang=en' : '/videos/kilavuz.html',
   }
   const src = videoSrc[activeTab]
 
