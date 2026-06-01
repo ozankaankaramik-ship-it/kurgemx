@@ -148,6 +148,8 @@ export async function POST(request: NextRequest) {
       max_installment,
       paytr_token,
       user_name:         `${kullanici.ad} ${kullanici.soyad}`,
+      user_address:      'Türkiye',
+      user_phone:        '05000000000',
       merchant_ok_url:   `${appUrl}/${locale}/odeme/basarili`,
       merchant_fail_url: `${appUrl}/${locale}/odeme/basarisiz`,
       test_mode:         testMode,
