@@ -153,13 +153,13 @@ export default function PricingTable({
 
   return (
     <>
-      <div className="max-w-[780px] mx-auto" style={{ padding: '1.5rem 1rem' }}>
+      <div style={{ width: '830px', margin: '0 auto', padding: '1.5rem 1rem' }}>
 
         {/* ── Plan kartları ──
              Sütun genişlikleri tablo colgroup ile tam eşleşiyor: 22% + 4×19.5%
              gap yerine wrapper padding kullanılıyor ki sütun başlangıç noktaları
              kaymadan tablo başlıklarıyla hizalanabilsin.                        */}
-        <div className="mb-8" style={{ display: 'grid', gridTemplateColumns: '22% 19.5% 19.5% 19.5% 19.5%', gap: 0 }}>
+        <div className="mb-8" style={{ display: 'grid', gridTemplateColumns: '210px 155px 155px 155px 155px', gap: 0 }}>
 
           {/* Features sütunu placeholder */}
           <div />
@@ -218,13 +218,13 @@ export default function PricingTable({
 
         {/* ── Karşılaştırma tablosu ── */}
         <div className="rounded-xl overflow-hidden" style={{ border: '0.5px solid #E8EAEE', background: '#fff' }}>
-          <table style={{ tableLayout: 'fixed', width: '100%', fontSize: 14, borderCollapse: 'collapse' }}>
+          <table style={{ tableLayout: 'fixed', width: '830px', margin: '0 auto', fontSize: 14, borderCollapse: 'collapse' }}>
             <colgroup>
-              <col style={{ width: '22%' }} />
-              <col style={{ width: '19.5%' }} />
-              <col style={{ width: '19.5%' }} />
-              <col style={{ width: '19.5%' }} />
-              <col style={{ width: '19.5%' }} />
+              <col style={{ width: '210px' }} />
+              <col style={{ width: '155px' }} />
+              <col style={{ width: '155px' }} />
+              <col style={{ width: '155px' }} />
+              <col style={{ width: '155px' }} />
             </colgroup>
 
             <thead>
