@@ -7,8 +7,8 @@ import PaymentModal from '@/components/PaymentModal'
 /* ── Tablo hücre bileşenleri ─────────────────────────────────── */
 function CheckIcon() {
   return (
-    <span className="inline-grid place-items-center w-[22px] h-[22px] rounded-full bg-kx-green-soft">
-      <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+    <span className="inline-grid place-items-center w-[18px] h-[18px] rounded-full bg-kx-green-soft">
+      <svg width="10" height="10" viewBox="0 0 16 16" fill="none" aria-hidden="true">
         <path d="M4 8.5l2.5 2.5L12 5.5" stroke="#16A34A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
     </span>
@@ -20,34 +20,7 @@ function DashCell() {
 function Cell({ val }: { val: boolean | string }) {
   if (val === true)  return <CheckIcon />
   if (val === false) return <DashCell />
-  return <span className="text-[13px] font-bold text-kx-navy">{val}</span>
-}
-
-/* ── "Abone Ol" buton ────────────────────────────────────────── */
-function AboneOlBtn({
-  label,
-  isMevcut,
-  onClick,
-}: {
-  label: string
-  isMevcut: boolean
-  onClick: () => void
-}) {
-  if (isMevcut) {
-    return (
-      <span className="inline-block mt-3 rounded-md text-[10px] font-semibold px-3 py-1.5 bg-white/20 text-white/60 cursor-default">
-        {label}
-      </span>
-    )
-  }
-  return (
-    <button
-      onClick={onClick}
-      className="inline-block mt-3 rounded-md bg-white text-kx-navy text-xs font-semibold px-3 py-1.5 hover:bg-kx-blue-soft transition-colors cursor-pointer"
-    >
-      {label}
-    </button>
-  )
+  return <span className="font-bold text-kx-navy">{val}</span>
 }
 
 /* ── Tipler ──────────────────────────────────────────────────── */
@@ -62,6 +35,55 @@ type Props = {
     label: string
     rows:  Array<{ label: string; vals: (boolean | string)[] }>
   }>
+}
+
+/* ── Header sütun yapısı (6 sabit yükseklikli satır) ─────────── */
+type HeaderColProps = {
+  badge?:       React.ReactNode   // Satır 1 — 24px
+  name:         React.ReactNode   // Satır 2 — 20px
+  price:        React.ReactNode   // Satır 3 — 60px
+  period?:      React.ReactNode   // Satır 4 — 20px
+  description?: React.ReactNode   // Satır 5 — 20px
+  action?:      React.ReactNode   // Satır 6 — 44px
+}
+
+function HeaderCol({ badge, name, price, period, description, action }: HeaderColProps) {
+  return (
+    <div className="flex flex-col items-center w-full">
+      {/* Satır 1: badge (24px) */}
+      <div className="h-6 flex items-center justify-center w-full">
+        {badge ?? null}
+      </div>
+      {/* Satır 2: plan adı (20px) */}
+      <div className="h-5 flex items-center justify-center w-full">
+        <span className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[#B5D4F4]">
+          {name}
+        </span>
+      </div>
+      {/* Satır 3: fiyat (60px) */}
+      <div className="h-[60px] flex items-center justify-center w-full">
+        {price}
+      </div>
+      {/* Satır 4: periyot (20px) */}
+      <div className="h-5 flex items-center justify-center w-full">
+        {period ? (
+          <span className="text-[11px] text-[#B5D4F4]">{period}</span>
+        ) : null}
+      </div>
+      {/* Satır 5: açıklama (20px) */}
+      <div className="h-5 flex items-center justify-center w-full">
+        {description ? (
+          <span className="text-[10px] text-[#B5D4F4]/70 italic leading-tight text-center px-1">
+            {description}
+          </span>
+        ) : null}
+      </div>
+      {/* Satır 6: buton (44px) */}
+      <div className="h-11 flex items-center justify-center w-full">
+        {action ?? null}
+      </div>
+    </div>
+  )
 }
 
 /* ── Ana bileşen ─────────────────────────────────────────────── */
@@ -80,91 +102,96 @@ export default function PricingTable({
   const isAnalystMevcut  = !!analystPlan  && mevcutPlanId === analystPlan.id
   const isAdvancedMevcut = !!advancedPlan && mevcutPlanId === advancedPlan.id
 
+  const priceEl = (text: string) => (
+    <span className="text-xl font-bold text-white leading-none">{text}</span>
+  )
+
+  const subscribeBtn = (plan: NonNullable<PlanRef>, isMevcut: boolean) => {
+    if (isMevcut) {
+      return (
+        <span className="rounded-md text-[10px] font-semibold px-3 py-1.5 bg-white/20 text-white/60 cursor-default">
+          {t('mevcutPlan')}
+        </span>
+      )
+    }
+    return (
+      <button
+        onClick={() => setModalPlan(plan)}
+        className="rounded-md bg-white text-kx-navy text-[11px] font-semibold px-3 py-1.5 hover:bg-kx-blue-soft transition-colors cursor-pointer"
+      >
+        {t('aboneOl')}
+      </button>
+    )
+  }
+
   return (
     <>
-      <section className="py-10 px-4 bg-kx-bg">
-        <div className="max-w-5xl mx-auto">
+      <section className="py-10 px-8 bg-kx-bg">
+        <div className="max-w-4xl mx-auto">
           <div className="overflow-x-auto rounded-xl border border-kx-border shadow-kx-card bg-white">
-            <table className="w-full" style={{ minWidth: 600, fontSize: 12 }}>
+            <table className="w-full" style={{ minWidth: 560, fontSize: 12 }}>
               <colgroup>
-                <col style={{ width: '34%' }} />
-                <col style={{ width: '16.5%' }} />
-                <col style={{ width: '16.5%' }} />
-                <col style={{ width: '16.5%' }} />
-                <col style={{ width: '16.5%' }} />
+                <col style={{ width: '32%' }} />
+                <col style={{ width: '17%' }} />
+                <col style={{ width: '17%' }} />
+                <col style={{ width: '17%' }} />
+                <col style={{ width: '17%' }} />
               </colgroup>
 
-              {/* ── Plan başlıkları ── */}
               <thead>
                 <tr className="bg-kx-navy">
-                  <th className="px-4 py-4" />
+                  {/* Sol boş hücre */}
+                  <th className="px-4" />
 
                   {/* Freemium */}
-                  <th className="px-2 py-4 text-center align-top">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[#B5D4F4] mb-1">
-                      {t('planlar.freemium.ad')}
-                    </p>
-                    <p className="text-xl font-bold text-white leading-none">
-                      {t('planlar.freemium.fiyat')}
-                    </p>
-                    <p className="text-[11px] text-[#B5D4F4] mt-1">{t('planlar.freemium.aylik')}</p>
-                    <p className="text-[10px] text-[#B5D4F4]/70 italic mt-1.5 leading-tight">
-                      {t('freemiumNot')}
-                    </p>
+                  <th className="px-3 text-center">
+                    <HeaderCol
+                      name={t('planlar.freemium.ad')}
+                      price={priceEl(t('planlar.freemium.fiyat'))}
+                      period={t('planlar.freemium.aylik')}
+                      description={t('freemiumNot')}
+                    />
                   </th>
 
                   {/* Analyst — vurgulu */}
-                  <th className="px-2 pt-3 pb-4 text-center align-top border-l-2 border-r-2 border-t-2 border-kx-blue">
-                    <div className="flex justify-center mb-2">
-                      <span className="bg-kx-blue text-white text-[10px] font-semibold px-2.5 py-0.5 rounded-full whitespace-nowrap tracking-wider">
-                        {t('enPopuler')}
-                      </span>
-                    </div>
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[#B5D4F4] mb-1">
-                      {t('planlar.analyst.ad')}
-                    </p>
-                    <p className="text-xl font-bold text-white leading-none">
-                      {t('planlar.analyst.fiyat')}
-                    </p>
-                    <p className="text-[11px] text-[#B5D4F4] mt-1">{t('planlar.analyst.aylik')}</p>
-                    {analystPlan && (
-                      <AboneOlBtn
-                        label={isAnalystMevcut ? t('mevcutPlan') : t('aboneOl')}
-                        isMevcut={isAnalystMevcut}
-                        onClick={() => setModalPlan(analystPlan)}
-                      />
-                    )}
+                  <th className="px-3 text-center border-l-2 border-r-2 border-t-2 border-kx-blue">
+                    <HeaderCol
+                      badge={
+                        <span className="bg-kx-blue text-white text-[10px] font-semibold px-2.5 py-0.5 rounded-full whitespace-nowrap tracking-wider">
+                          {t('enPopuler')}
+                        </span>
+                      }
+                      name={t('planlar.analyst.ad')}
+                      price={priceEl(t('planlar.analyst.fiyat'))}
+                      period={t('planlar.analyst.aylik')}
+                      action={analystPlan ? subscribeBtn(analystPlan, isAnalystMevcut) : undefined}
+                    />
                   </th>
 
                   {/* Advanced */}
-                  <th className="px-2 py-4 text-center align-top">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[#B5D4F4] mb-1">
-                      {t('planlar.advanced.ad')}
-                    </p>
-                    <p className="text-xl font-bold text-white leading-none">
-                      {t('planlar.advanced.fiyat')}
-                    </p>
-                    <p className="text-[11px] text-[#B5D4F4] mt-1">{t('planlar.advanced.aylik')}</p>
-                    {advancedPlan && (
-                      <AboneOlBtn
-                        label={isAdvancedMevcut ? t('mevcutPlan') : t('aboneOl')}
-                        isMevcut={isAdvancedMevcut}
-                        onClick={() => setModalPlan(advancedPlan)}
-                      />
-                    )}
+                  <th className="px-3 text-center">
+                    <HeaderCol
+                      name={t('planlar.advanced.ad')}
+                      price={priceEl(t('planlar.advanced.fiyat'))}
+                      period={t('planlar.advanced.aylik')}
+                      action={advancedPlan ? subscribeBtn(advancedPlan, isAdvancedMevcut) : undefined}
+                    />
                   </th>
 
                   {/* Enterprise */}
-                  <th className="px-2 py-4 text-center align-top">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[#B5D4F4] mb-1">
-                      {t('planlar.enterprise.ad')}
-                    </p>
-                    <a
-                      href="mailto:support@kurgemx.com"
-                      className="inline-block mt-2 rounded-md bg-white text-kx-navy text-[11px] font-semibold px-2.5 py-1 hover:bg-kx-blue-soft transition-colors no-underline"
-                    >
-                      {t('teklifAl')}
-                    </a>
+                  <th className="px-3 text-center">
+                    <HeaderCol
+                      name={t('planlar.enterprise.ad')}
+                      price={<span className="text-xl font-bold text-white/30 leading-none">—</span>}
+                      action={
+                        <a
+                          href="mailto:support@kurgemx.com"
+                          className="rounded-md bg-white text-kx-navy text-[11px] font-semibold px-3 py-1.5 hover:bg-kx-blue-soft transition-colors no-underline"
+                        >
+                          {t('teklifAl')}
+                        </a>
+                      }
+                    />
                   </th>
                 </tr>
               </thead>
