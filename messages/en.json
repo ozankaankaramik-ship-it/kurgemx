@@ -344,7 +344,8 @@
             "title": "AI-Powered Business Analysis Platform",
             "subtitle": "Generate story maps, business analysis documents and prototypes with AI in minutes.",
             "getStarted": "Get Started Free",
-            "signIn": "Sign In"
+            "signIn": "Sign In",
+            "watchTour": "▶ Watch a quick tour"
         },
         "howItWorks": {
             "title": "How It Works",
@@ -445,6 +446,16 @@
             "primary": "Create my account",
             "secondary": "Request a demo",
             "footnote": "No card required · Cancel with one click"
+        },
+        "videos": {
+            "sectionLabel": "Videos",
+            "title": "Seeing is believing.",
+            "subtitle": "A 60-second intro or a step-by-step walkthrough.",
+            "tab1": "Intro (60 sec)",
+            "tab2": "User Guide (60 sec)",
+            "card1Title": "Product Intro",
+            "card2Title": "User Guide",
+            "openNewTab": "Open in new tab"
         }
     },
     "dashboard": {

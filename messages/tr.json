@@ -344,7 +344,8 @@
             "title": "Yapay Zeka Destekli İş Analizi Platformu",
             "subtitle": "Dakikalar içinde yapay zeka ile hikaye haritaları, iş analizi dokümanları ve prototipler oluşturun.",
             "getStarted": "Ücretsiz Başla",
-            "signIn": "Giriş Yap"
+            "signIn": "Giriş Yap",
+            "watchTour": "▶ Kısa tur izle"
         },
         "howItWorks": {
             "title": "Nasıl Çalışır",
@@ -445,6 +446,16 @@
             "primary": "Hesabımı şimdi aç",
             "secondary": "Demo iste",
             "footnote": "Kart gerekmez · İptal tek tıkla"
+        },
+        "videos": {
+            "sectionLabel": "Videolar",
+            "title": "Görmek inanmaktan daha kolaydır.",
+            "subtitle": "60 saniyede tanıtım veya adım adım kullanım kılavuzu.",
+            "tab1": "Tanıtım (60 sn)",
+            "tab2": "Kullanım Kılavuzu (60 sn)",
+            "card1Title": "Tanıtım Videosu",
+            "card2Title": "Kullanım Kılavuzu",
+            "openNewTab": "Yeni sekmede aç"
         }
     },
     "dashboard": {

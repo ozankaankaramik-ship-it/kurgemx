@@ -7,6 +7,7 @@ import Hero from '@/components/landing/Hero'
 import LogoWall from '@/components/landing/LogoWall'
 import BeforeAfter from '@/components/landing/BeforeAfter'
 import Features from '@/components/landing/Features'
+import VideoSection from '@/components/landing/VideoSection'
 import UseCases from '@/components/landing/UseCases'
 import Testimonial from '@/components/landing/Testimonial'
 import PricingTeaser from '@/components/landing/PricingTeaser'
@@ -42,6 +43,7 @@ export default async function HomePage() {
       <LogoWall />
       <BeforeAfter />
       <Features />
+      <VideoSection />
       <UseCases />
       <Testimonial />
       <PricingTeaser />

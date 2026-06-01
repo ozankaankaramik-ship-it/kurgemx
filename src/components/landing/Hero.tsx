@@ -1,6 +1,7 @@
 import { getLocale, getTranslations } from 'next-intl/server'
 import { Link } from '@/i18n/navigation'
 import HeroProductPreview from './HeroProductPreview'
+import WatchTourButton from './WatchTourButton'
 
 /**
  * Floating note shown over the hero preview.
@@ -97,13 +98,7 @@ export default async function Hero() {
           >
             {tLanding('hero.getStarted')} <span>→</span>
           </Link>
-          <a
-            href="#how"
-            className="inline-flex items-center gap-2.5 bg-white text-kx-ink text-[14px] font-medium px-5 py-3.5 rounded-xl no-underline border border-kx-border hover:border-kx-blue transition-colors"
-          >
-            <span className="w-5 h-5 rounded-full bg-kx-navy text-white grid place-items-center text-[8px]">▶</span>
-            2 dakikalık tur izle
-          </a>
+          <WatchTourButton label={tLanding('hero.watchTour')} />
         </div>
 
         <div className="text-center text-[12px] text-kx-muted mb-12">
