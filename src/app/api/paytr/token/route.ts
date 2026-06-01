@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import crypto from 'crypto'
+import { createHmac } from 'crypto'
 import { createServerClient } from '@supabase/ssr'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
 
@@ -7,11 +7,25 @@ const PAYTR_API_URL = 'https://www.paytr.com/odeme/api/get-token'
 
 function paytrHmac(parts: string[], salt: string, key: string): string {
   const msg = parts.join('') + salt
-  return crypto.createHmac('sha256', key).update(msg).digest('base64')
+  return createHmac('sha256', key).update(msg).digest('base64')
 }
 
 export async function POST(request: NextRequest) {
+  // ── Ortam değişkeni kontrolü ──────────────────────────────────
+  const merchantId   = process.env.PAYTR_MERCHANT_ID
+  const merchantKey  = process.env.PAYTR_MERCHANT_KEY
+  const merchantSalt = process.env.PAYTR_MERCHANT_SALT
+
+  if (!merchantId || !merchantKey || !merchantSalt) {
+    console.error('[paytr/token] Eksik env: PAYTR_MERCHANT_ID / PAYTR_MERCHANT_KEY / PAYTR_MERCHANT_SALT')
+    return NextResponse.json({ error: 'Ödeme servisi yapılandırılmamış' }, { status: 503 })
+  }
+
+  const testMode = process.env.PAYTR_TEST_MODE === '1' ? '1' : '0'
+  const appUrl   = process.env.NEXT_PUBLIC_APP_URL ?? 'https://kurgemx.com'
+
   try {
+    // ── Request body ──────────────────────────────────────────────
     const body = await request.json()
     const { plan_id, locale = 'tr' } = body as { plan_id?: string; locale?: string }
 
@@ -19,13 +33,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'plan_id zorunlu' }, { status: 400 })
     }
 
-    const merchantId   = process.env.PAYTR_MERCHANT_ID!
-    const merchantKey  = process.env.PAYTR_MERCHANT_KEY!
-    const merchantSalt = process.env.PAYTR_MERCHANT_SALT!
-    const testMode     = process.env.PAYTR_TEST_MODE === '1' ? '1' : '0'
-    const appUrl       = process.env.NEXT_PUBLIC_APP_URL ?? 'https://kurgemx.com'
-
-    // Kullanıcı oturumu (cookie tabanlı)
+    // ── Kullanıcı oturumu (cookie tabanlı) ────────────────────────
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -42,12 +50,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Oturum gerekli' }, { status: 401 })
     }
 
+    console.log(`[paytr/token] Kullanıcı doğrulandı: ${user.id}`)
+
+    // ── Service role client ───────────────────────────────────────
     const service = createServiceClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     )
 
-    // Plan bilgisi
+    // ── Plan bilgisi ──────────────────────────────────────────────
     const { data: plan, error: planErr } = await service
       .from('planlar')
       .select('id, ad, fiyat_usd')
@@ -55,10 +66,13 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (planErr || !plan || plan.fiyat_usd == null) {
+      console.error('[paytr/token] Plan bulunamadı:', planErr?.message)
       return NextResponse.json({ error: 'Plan bulunamadı' }, { status: 404 })
     }
 
-    // Kullanıcı bilgisi
+    console.log(`[paytr/token] Plan: ${plan.ad} (${plan.fiyat_usd} TRY)`)
+
+    // ── Kullanıcı bilgisi ─────────────────────────────────────────
     const { data: kullanici, error: kullaniciErr } = await service
       .from('kullanicilar')
       .select('id, ad, soyad, email')
@@ -66,29 +80,37 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (kullaniciErr || !kullanici) {
+      console.error('[paytr/token] Kullanıcı kaydı bulunamadı:', kullaniciErr?.message)
       return NextResponse.json({ error: 'Kullanıcı bulunamadı' }, { status: 404 })
     }
 
-    // Kullanıcının mevcut aboneliği (freemium dahil)
-    const { data: abonelik } = await service
+    // ── Kullanıcının mevcut aboneliği ─────────────────────────────
+    const { data: abonelik, error: abonelikErr } = await service
       .from('abonelikler')
       .select('id')
       .eq('kullanici_id', user.id)
+      .in('durum', ['aktif', 'pasif'])
       .order('baslangic', { ascending: false })
       .limit(1)
       .maybeSingle()
 
+    if (abonelikErr) {
+      console.error('[paytr/token] Abonelik sorgu hatası:', abonelikErr.message)
+      return NextResponse.json({ error: 'Abonelik bilgisi alınamadı' }, { status: 500 })
+    }
+
     if (!abonelik) {
+      console.error(`[paytr/token] Abonelik bulunamadı: kullanici=${user.id}`)
       return NextResponse.json({ error: 'Abonelik kaydı bulunamadı' }, { status: 422 })
     }
 
-    const merchant_oid     = `KX-${user.id.slice(0, 8)}-${Date.now()}`
-    const payment_amount   = Math.round(plan.fiyat_usd * 100) // TRY kuruş
-    const currency         = 'TL'
-    const no_installment   = '1'
-    const max_installment  = '0'
+    // ── PayTR parametreleri ───────────────────────────────────────
+    const merchant_oid    = `KX-${user.id.slice(0, 8)}-${Date.now()}`
+    const payment_amount  = Math.round(plan.fiyat_usd * 100)
+    const currency        = 'TL'
+    const no_installment  = '1'
+    const max_installment = '0'
 
-    // user_basket: [[ürün adı, birim fiyat, adet]]
     const user_basket = Buffer.from(
       JSON.stringify([[plan.ad, String(plan.fiyat_usd), 1]])
     ).toString('base64')
@@ -106,7 +128,7 @@ export async function POST(request: NextRequest) {
       merchantKey
     )
 
-    console.log(`[paytr/token] merchant_oid=${merchant_oid} kullanici=${user.id} plan=${plan.ad} tutar=${payment_amount}`)
+    console.log(`[paytr/token] İstek hazırlandı: merchant_oid=${merchant_oid} user_ip=${user_ip} tutar=${payment_amount}`)
 
     const params = new URLSearchParams({
       merchant_id:       merchantId,
@@ -127,38 +149,65 @@ export async function POST(request: NextRequest) {
       lang:              'tr',
     })
 
-    const paytrRes  = await fetch(PAYTR_API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: params.toString(),
-    })
-    const paytrData = await paytrRes.json() as { status: string; token?: string; reason?: string }
+    // ── PayTR API çağrısı (kendi try/catch bloğu) ─────────────────
+    let paytrData: { status: string; token?: string; reason?: string }
+    try {
+      const paytrRes = await fetch(PAYTR_API_URL, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body:    params.toString(),
+        cache:   'no-store',
+      })
+
+      const rawText = await paytrRes.text()
+      console.log(`[paytr/token] PayTR yanıt (${paytrRes.status}): ${rawText.slice(0, 300)}`)
+
+      try {
+        paytrData = JSON.parse(rawText)
+      } catch {
+        console.error(`[paytr/token] PayTR JSON parse hatası. Ham yanıt: ${rawText.slice(0, 500)}`)
+        return NextResponse.json(
+          { error: `PayTR geçersiz yanıt döndürdü (HTTP ${paytrRes.status})` },
+          { status: 502 }
+        )
+      }
+    } catch (fetchErr) {
+      console.error('[paytr/token] PayTR bağlantı hatası:', fetchErr)
+      return NextResponse.json({ error: 'Ödeme servisiyle bağlantı kurulamadı' }, { status: 502 })
+    }
 
     if (paytrData.status !== 'success' || !paytrData.token) {
       console.error(`[paytr/token] PayTR hata: ${paytrData.reason}`)
-      return NextResponse.json({ error: paytrData.reason ?? 'PayTR token alınamadı' }, { status: 502 })
+      return NextResponse.json(
+        { error: paytrData.reason ?? 'PayTR token alınamadı' },
+        { status: 502 }
+      )
     }
 
-    console.log(`[paytr/token] Token alındı merchant_oid=${merchant_oid}`)
+    console.log(`[paytr/token] Token alındı: merchant_oid=${merchant_oid}`)
 
+    // ── Ödeme kaydı aç ────────────────────────────────────────────
     const { error: insertErr } = await service.from('odemeler').insert({
-      kullanici_id:      user.id,
-      abonelik_id:       abonelik.id,
-      hedef_plan_id:     plan.id,
-      tutar:             plan.fiyat_usd,
-      para_birimi:       'TRY',
+      kullanici_id:       user.id,
+      abonelik_id:        abonelik.id,
+      hedef_plan_id:      plan.id,
+      tutar:              plan.fiyat_usd,
+      para_birimi:        'TRY',
       paytr_merchant_oid: merchant_oid,
-      paytr_odeme_turu:  'card',
-      durum:             'bekliyor',
+      paytr_odeme_turu:   'card',
+      durum:              'bekliyor',
     })
 
     if (insertErr) {
-      console.error(`[paytr/token] odemeler insert hata:`, insertErr.message)
+      // Token zaten alındı; kaydı oluşturamadık ama ödeme devam edebilir
+      console.error('[paytr/token] odemeler insert hatası:', insertErr.message)
     }
 
     return NextResponse.json({ merchant_oid, token: paytrData.token })
+
   } catch (err) {
-    console.error('[paytr/token] Beklenmedik hata:', err)
-    return NextResponse.json({ error: 'Sunucu hatası' }, { status: 500 })
+    const msg = err instanceof Error ? err.message : String(err)
+    console.error('[paytr/token] Beklenmedik hata:', msg)
+    return NextResponse.json({ error: `Sunucu hatası: ${msg}` }, { status: 500 })
   }
 }
