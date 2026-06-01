@@ -4,32 +4,32 @@ import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import PaymentModal from '@/components/PaymentModal'
 
-/* ── Tablo hücre bileşenleri ─────────────────────────────────── */
-function CheckIcon() {
-  return (
-    <span className="inline-grid place-items-center w-[18px] h-[18px] rounded-full bg-kx-green-soft">
-      <svg width="10" height="10" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-        <path d="M4 8.5l2.5 2.5L12 5.5" stroke="#16A34A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    </span>
-  )
-}
-function DashCell() {
-  return <span className="text-[#D1D5DB] font-semibold" aria-hidden="true">—</span>
-}
-function Cell({ val }: { val: boolean | string }) {
-  if (val === true)  return <CheckIcon />
-  if (val === false) return <DashCell />
-  return <span className="font-bold text-kx-navy">{val}</span>
+/* ── Plan sıra indeksi (buton mantığı için) ──────────────────── */
+const PLAN_RANK: Record<string, number> = {
+  freemium: 0, analyst: 1, advanced: 2, enterprise: 3,
 }
 
-/* ── Tipler ──────────────────────────────────────────────────── */
-type PlanRef = { id: string; fiyat: number; ad: string } | null
+type BtnType = 'none' | 'current' | 'subscribe' | 'quote'
+
+function btnType(planKod: string, mevcutKod: string | null): BtnType {
+  if (planKod === 'freemium')   return 'none'
+  if (planKod === 'enterprise') return 'quote'
+  if (!mevcutKod)               return 'subscribe'
+  const rank  = PLAN_RANK[planKod]  ?? 0
+  const curr  = PLAN_RANK[mevcutKod] ?? 0
+  if (rank === curr) return 'current'
+  if (rank > curr)   return 'subscribe'
+  return 'none'
+}
+
+/* ── Tipleri ─────────────────────────────────────────────────── */
+type PlanRef = { id: string; fiyat: number; ad: string; kod: string } | null
 
 type Props = {
   analystPlan:   PlanRef
   advancedPlan:  PlanRef
   mevcutPlanId:  string | null
+  mevcutPlanKod: string | null
   locale:        string
   sections: Array<{
     label: string
@@ -37,53 +37,103 @@ type Props = {
   }>
 }
 
-/* ── Header sütun yapısı (6 sabit yükseklikli satır) ─────────── */
-type HeaderColProps = {
-  badge?:       React.ReactNode   // Satır 1 — 24px
-  name:         React.ReactNode   // Satır 2 — 20px
-  price:        React.ReactNode   // Satır 3 — 60px
-  period?:      React.ReactNode   // Satır 4 — 20px
-  description?: React.ReactNode   // Satır 5 — 20px
-  action?:      React.ReactNode   // Satır 6 — 44px
+/* ── Plan kartı ──────────────────────────────────────────────── */
+type CardProps = {
+  featured?:   boolean
+  badge?:      React.ReactNode
+  name:        string
+  price:       React.ReactNode
+  period?:     string
+  description?: string
+  btn:         BtnType
+  onSubscribe?: () => void
 }
 
-function HeaderCol({ badge, name, price, period, description, action }: HeaderColProps) {
+function PlanCard({ featured, badge, name, price, period, description, btn, onSubscribe }: CardProps) {
   return (
-    <div className="flex flex-col items-center w-full">
-      {/* Satır 1: badge (24px) */}
-      <div className="h-6 flex items-center justify-center w-full">
+    <div
+      className="flex flex-col items-center text-center bg-white rounded-xl"
+      style={{
+        border:   featured ? '2px solid #2E75B6' : '0.5px solid #E8EAEE',
+        padding:  '1.25rem 1rem',
+      }}
+    >
+      {/* Satır 1 — badge (22px) */}
+      <div className="flex items-center justify-center w-full" style={{ height: 22, marginBottom: 8 }}>
         {badge ?? null}
       </div>
-      {/* Satır 2: plan adı (20px) */}
-      <div className="h-5 flex items-center justify-center w-full">
-        <span className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[#B5D4F4]">
-          {name}
-        </span>
-      </div>
-      {/* Satır 3: fiyat (60px) */}
-      <div className="h-[60px] flex items-center justify-center w-full">
-        {price}
-      </div>
-      {/* Satır 4: periyot (20px) */}
-      <div className="h-5 flex items-center justify-center w-full">
-        {period ? (
-          <span className="text-[11px] text-[#B5D4F4]">{period}</span>
-        ) : null}
-      </div>
-      {/* Satır 5: açıklama (20px) */}
-      <div className="h-5 flex items-center justify-center w-full">
-        {description ? (
-          <span className="text-[10px] text-[#B5D4F4]/70 italic leading-tight text-center px-1">
-            {description}
-          </span>
-        ) : null}
-      </div>
-      {/* Satır 6: buton (44px) */}
-      <div className="h-11 flex items-center justify-center w-full">
-        {action ?? null}
+
+      {/* Satır 2 — plan adı */}
+      <p
+        className="text-kx-muted mb-2"
+        style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em' }}
+      >
+        {name}
+      </p>
+
+      {/* Satır 3 — fiyat */}
+      <div className="mb-1">{price}</div>
+
+      {/* Satır 4 — / month */}
+      <p className="text-kx-muted mb-2" style={{ fontSize: 13 }}>
+        {period ?? <span style={{ visibility: 'hidden' }}>—</span>}
+      </p>
+
+      {/* Satır 5 — açıklama (min 16px) */}
+      <p className="text-kx-muted" style={{ fontSize: 12, minHeight: 16, marginBottom: 12 }}>
+        {description ?? ''}
+      </p>
+
+      {/* Satır 6 — buton alanı (34px) */}
+      <div className="flex items-center justify-center w-full" style={{ height: 34 }}>
+        {btn === 'subscribe' && (
+          <button
+            onClick={onSubscribe}
+            className="w-full rounded-lg text-white transition-opacity hover:opacity-85"
+            style={{ height: 34, fontSize: 13, fontWeight: 500, background: '#1F3864' }}
+          >
+            Subscribe
+          </button>
+        )}
+        {btn === 'current' && (
+          <button
+            disabled
+            className="w-full rounded-lg"
+            style={{ height: 34, fontSize: 13, fontWeight: 500, background: '#F3F4F6', color: '#9CA3AF', cursor: 'default' }}
+          >
+            Current plan
+          </button>
+        )}
+        {btn === 'quote' && (
+          <a
+            href="mailto:support@kurgemx.com"
+            className="w-full rounded-lg flex items-center justify-center no-underline transition-colors hover:bg-kx-bg"
+            style={{ height: 34, fontSize: 13, fontWeight: 500, color: '#9CA3AF', border: '0.5px solid #E8EAEE' }}
+          >
+            Get a quote
+          </a>
+        )}
       </div>
     </div>
   )
+}
+
+/* ── Karşılaştırma tablosu hücreleri ─────────────────────────── */
+function Check() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-label="Yes">
+      <circle cx="7.5" cy="7.5" r="7.5" fill="#DCFCE7" />
+      <path d="M4.5 7.5l2 2 4-4" stroke="#22C55E" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+function Dash() {
+  return <span style={{ color: '#D1D5DB', fontWeight: 600 }} aria-label="No">—</span>
+}
+function Cell({ val }: { val: boolean | string }) {
+  if (val === true)  return <span className="flex justify-center"><Check /></span>
+  if (val === false) return <Dash />
+  return <span style={{ fontWeight: 500 }}>{val}</span>
 }
 
 /* ── Ana bileşen ─────────────────────────────────────────────── */
@@ -91,155 +141,134 @@ export default function PricingTable({
   analystPlan,
   advancedPlan,
   mevcutPlanId,
+  mevcutPlanKod,
   locale,
   sections,
 }: Props) {
   const t = useTranslations('pricing')
   const [modalPlan, setModalPlan] = useState<PlanRef>(null)
 
-  const ANALYST = 1
-
-  const isAnalystMevcut  = !!analystPlan  && mevcutPlanId === analystPlan.id
-  const isAdvancedMevcut = !!advancedPlan && mevcutPlanId === advancedPlan.id
-
-  const priceEl = (text: string) => (
-    <span className="text-xl font-bold text-white leading-none">{text}</span>
-  )
-
-  const subscribeBtn = (plan: NonNullable<PlanRef>, isMevcut: boolean) => {
-    if (isMevcut) {
-      return (
-        <span className="rounded-md text-[10px] font-semibold px-3 py-1.5 bg-white/20 text-white/60 cursor-default">
-          {t('mevcutPlan')}
-        </span>
-      )
-    }
-    return (
-      <button
-        onClick={() => setModalPlan(plan)}
-        className="rounded-md bg-white text-kx-navy text-[11px] font-semibold px-3 py-1.5 hover:bg-kx-blue-soft transition-colors cursor-pointer"
-      >
-        {t('aboneOl')}
-      </button>
-    )
-  }
+  const analystBtn  = btnType('analyst',  mevcutPlanKod)
+  const advancedBtn = btnType('advanced', mevcutPlanKod)
 
   return (
     <>
-      <div className="max-w-[900px] mx-auto px-6 py-10">
-          <div className="overflow-x-auto rounded-xl border border-kx-border shadow-kx-card bg-white">
-            <table className="mx-auto" style={{ fontSize: 12, borderCollapse: 'collapse', width: 'auto' }}>
-              <colgroup>
-                <col style={{ minWidth: 160 }} />
-                <col style={{ minWidth: 110 }} />
-                <col style={{ minWidth: 110 }} />
-                <col style={{ minWidth: 110 }} />
-                <col style={{ minWidth: 110 }} />
-              </colgroup>
+      <div className="max-w-[780px] mx-auto" style={{ padding: '1.5rem 1rem' }}>
 
-              <thead>
-                <tr className="bg-kx-navy">
-                  {/* Sol boş hücre */}
-                  <th className="px-4" />
+        {/* ── Plan kartları ── */}
+        <div className="grid grid-cols-4 gap-3 mb-8">
 
-                  {/* Freemium */}
-                  <th className="px-3 text-center">
-                    <HeaderCol
-                      name={t('planlar.freemium.ad')}
-                      price={priceEl(t('planlar.freemium.fiyat'))}
-                      period={t('planlar.freemium.aylik')}
-                      description={t('freemiumNot')}
-                    />
+          {/* Freemium */}
+          <PlanCard
+            name={t('planlar.freemium.ad')}
+            price={<span style={{ fontSize: 32, fontWeight: 500, color: '#0E1A33' }}>$0</span>}
+            period={t('planlar.freemium.aylik')}
+            description={t('freemiumNot')}
+            btn="none"
+          />
+
+          {/* Analyst */}
+          <PlanCard
+            featured
+            badge={
+              <span
+                className="text-kx-navy"
+                style={{ background: '#EEF4FB', borderRadius: 20, fontSize: 11, fontWeight: 500, padding: '2px 10px' }}
+              >
+                {t('enPopuler')}
+              </span>
+            }
+            name={t('planlar.analyst.ad')}
+            price={<span style={{ fontSize: 32, fontWeight: 500, color: '#0E1A33' }}>$9</span>}
+            period={t('planlar.analyst.aylik')}
+            btn={analystBtn}
+            onSubscribe={analystPlan ? () => setModalPlan(analystPlan) : undefined}
+          />
+
+          {/* Advanced */}
+          <PlanCard
+            name={t('planlar.advanced.ad')}
+            price={<span style={{ fontSize: 32, fontWeight: 500, color: '#0E1A33' }}>$29</span>}
+            period={t('planlar.advanced.aylik')}
+            btn={advancedBtn}
+            onSubscribe={advancedPlan ? () => setModalPlan(advancedPlan) : undefined}
+          />
+
+          {/* Enterprise */}
+          <PlanCard
+            name={t('planlar.enterprise.ad')}
+            price={<span style={{ fontSize: 20, fontWeight: 500, color: '#9CA3AF' }}>Custom</span>}
+            btn="quote"
+          />
+        </div>
+
+        {/* ── Karşılaştırma tablosu ── */}
+        <div className="rounded-xl overflow-hidden" style={{ border: '0.5px solid #E8EAEE', background: '#fff' }}>
+          <table style={{ tableLayout: 'fixed', width: '100%', fontSize: 13, borderCollapse: 'collapse' }}>
+            <colgroup>
+              <col style={{ width: '32%' }} />
+              <col style={{ width: '17%' }} />
+              <col style={{ width: '17%' }} />
+              <col style={{ width: '17%' }} />
+              <col style={{ width: '17%' }} />
+            </colgroup>
+
+            <thead>
+              <tr style={{ borderBottom: '0.5px solid #E8EAEE' }}>
+                <th style={{ padding: '10px 12px', textAlign: 'left', fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#9CA3AF' }}>
+                  Features
+                </th>
+                {(['planlar.freemium.ad', 'planlar.analyst.ad', 'planlar.advanced.ad', 'planlar.enterprise.ad'] as const).map(key => (
+                  <th key={key} style={{ padding: '10px 12px', textAlign: 'center', fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#9CA3AF' }}>
+                    {t(key)}
                   </th>
+                ))}
+              </tr>
+            </thead>
 
-                  {/* Analyst — vurgulu */}
-                  <th className="px-3 text-center border-l-2 border-r-2 border-t-2 border-kx-blue">
-                    <HeaderCol
-                      badge={
-                        <span className="bg-kx-blue text-white text-[10px] font-semibold px-2.5 py-0.5 rounded-full whitespace-nowrap tracking-wider">
-                          {t('enPopuler')}
-                        </span>
-                      }
-                      name={t('planlar.analyst.ad')}
-                      price={priceEl(t('planlar.analyst.fiyat'))}
-                      period={t('planlar.analyst.aylik')}
-                      action={analystPlan ? subscribeBtn(analystPlan, isAnalystMevcut) : undefined}
-                    />
-                  </th>
+            <tbody>
+              {sections.flatMap((section, si) => {
+                const isLast = si === sections.length - 1
+                return [
+                  /* Bölüm başlığı */
+                  <tr key={`sec-${si}`} style={{ background: '#FAFBFC' }}>
+                    <td
+                      colSpan={5}
+                      style={{ padding: '8px 12px', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.07em', color: '#3D4A66' }}
+                    >
+                      {section.label}
+                    </td>
+                  </tr>,
 
-                  {/* Advanced */}
-                  <th className="px-3 text-center">
-                    <HeaderCol
-                      name={t('planlar.advanced.ad')}
-                      price={priceEl(t('planlar.advanced.fiyat'))}
-                      period={t('planlar.advanced.aylik')}
-                      action={advancedPlan ? subscribeBtn(advancedPlan, isAdvancedMevcut) : undefined}
-                    />
-                  </th>
-
-                  {/* Enterprise */}
-                  <th className="px-3 text-center">
-                    <HeaderCol
-                      name={t('planlar.enterprise.ad')}
-                      price={<span className="text-xl font-bold text-white/30 leading-none">—</span>}
-                      action={
-                        <a
-                          href="mailto:support@kurgemx.com"
-                          className="rounded-md bg-white text-kx-navy text-[11px] font-semibold px-3 py-1.5 hover:bg-kx-blue-soft transition-colors no-underline"
-                        >
-                          {t('teklifAl')}
-                        </a>
-                      }
-                    />
-                  </th>
-                </tr>
-              </thead>
-
-              {/* ── Özellik satırları ── */}
-              <tbody>
-                {sections.flatMap((section, si) => {
-                  const isLastSection = si === sections.length - 1
-                  return [
-                    <tr key={`sec-${si}`} className="bg-kx-blue-soft">
-                      <td
-                        colSpan={5}
-                        className="px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.08em] text-kx-navy"
+                  /* Özellik satırları */
+                  ...section.rows.map((row, ri) => {
+                    const isLastRow = isLast && ri === section.rows.length - 1
+                    return (
+                      <tr
+                        key={`row-${si}-${ri}`}
+                        className="hover:bg-[#FAFBFC] transition-colors"
+                        style={{ borderBottom: isLastRow ? 'none' : '0.5px solid #F0F1F4' }}
                       >
-                        {section.label}
-                      </td>
-                    </tr>,
-                    ...section.rows.map((row, ri) => {
-                      const isLastRow = isLastSection && ri === section.rows.length - 1
-                      return (
-                        <tr
-                          key={`row-${si}-${ri}`}
-                          className={ri % 2 === 0 ? 'bg-white' : 'bg-kx-bg'}
-                        >
-                          <td className="px-4 py-2 text-kx-body">{row.label}</td>
-                          {row.vals.map((val, ci) => (
-                            <td
-                              key={ci}
-                              className={`px-3 py-2 text-center ${
-                                ci === ANALYST
-                                  ? `border-l-2 border-r-2 border-kx-blue ${isLastRow ? 'border-b-2' : ''}`
-                                  : ''
-                              }`}
-                            >
-                              <Cell val={val} />
-                            </td>
-                          ))}
-                        </tr>
-                      )
-                    }),
-                  ]
-                })}
-              </tbody>
-            </table>
-          </div>
+                        <td style={{ padding: '9px 12px', color: '#6B7387', textAlign: 'left' }}>
+                          {row.label}
+                        </td>
+                        {row.vals.map((val, ci) => (
+                          <td key={ci} style={{ padding: '9px 12px', textAlign: 'center' }}>
+                            <Cell val={val} />
+                          </td>
+                        ))}
+                      </tr>
+                    )
+                  }),
+                ]
+              })}
+            </tbody>
+          </table>
+        </div>
 
-          <p className="text-center mt-4 text-[12px] text-kx-muted">
-            <strong className="text-kx-ink">USD</strong> · KDV dahil · Ödeme anındaki kur esas alınır · Aylık fatura, dilediğin zaman iptal
-          </p>
+        <p className="text-center text-kx-muted mt-4" style={{ fontSize: 12 }}>
+          <strong className="text-kx-ink">USD</strong> · KDV dahil · Ödeme anındaki kur esas alınır · Aylık fatura, dilediğin zaman iptal
+        </p>
       </div>
 
       {modalPlan && (

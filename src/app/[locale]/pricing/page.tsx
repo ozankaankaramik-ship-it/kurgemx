@@ -24,15 +24,17 @@ export default async function PricingPage() {
     .eq('aktif', true)
 
   const planMap = Object.fromEntries(
-    (planlarRaw ?? []).map(p => [p.kod, { id: p.id, fiyat: p.fiyat_usd as number, ad: p.ad as string }])
+    (planlarRaw ?? []).map(p => [p.kod, { id: p.id, fiyat: p.fiyat_usd as number, ad: p.ad as string, kod: p.kod as string }])
   )
 
-  // Oturum açmış kullanıcının aktif plan id'si
+  // Oturum açmış kullanıcının aktif plan id'si ve kodu
   const { data: { user } } = await supabase.auth.getUser()
-  let mevcutPlanId: string | null = null
+  let mevcutPlanId:  string | null = null
+  let mevcutPlanKod: string | null = null
   if (user) {
     const pb = await getKullaniciPlan(supabase, user.id)
-    mevcutPlanId = pb.plan.id || null
+    mevcutPlanId  = pb.plan.id  || null
+    mevcutPlanKod = pb.plan.kod || null
   }
 
   // Özellik satırları (çeviri server-side'da çekiliyor, Client Component'e prop olarak geçiyor)
@@ -98,6 +100,7 @@ export default async function PricingPage() {
         analystPlan={planMap['analyst'] ?? null}
         advancedPlan={planMap['advanced'] ?? null}
         mevcutPlanId={mevcutPlanId}
+        mevcutPlanKod={mevcutPlanKod}
         locale={locale}
         sections={sections}
       />
