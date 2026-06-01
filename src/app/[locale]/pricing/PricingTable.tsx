@@ -217,7 +217,7 @@ export default function PricingTable({
         </div>
 
         {/* ── Karşılaştırma tablosu ── */}
-        <div className="rounded-xl overflow-hidden" style={{ border: '0.5px solid #E8EAEE', background: '#fff' }}>
+        <div className="rounded-xl overflow-hidden" style={{ border: '1px solid #E5E7EB', background: '#F8F9FA' }}>
           <table style={{ tableLayout: 'fixed', width: '830px', margin: '0 auto', fontSize: 14, borderCollapse: 'collapse' }}>
             <colgroup>
               <col style={{ width: '210px' }} />
@@ -228,12 +228,12 @@ export default function PricingTable({
             </colgroup>
 
             <thead>
-              <tr style={{ borderBottom: '0.5px solid #E8EAEE' }}>
-                <th style={{ padding: '10px 12px', textAlign: 'left', fontSize: 12, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#9CA3AF' }}>
+              <tr>
+                <th style={{ padding: '12px', textAlign: 'left', fontSize: 12, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', background: '#1F3864', color: 'white' }}>
                   Features
                 </th>
                 {(['planlar.freemium.ad', 'planlar.analyst.ad', 'planlar.advanced.ad', 'planlar.enterprise.ad'] as const).map(key => (
-                  <th key={key} style={{ padding: '10px 12px', textAlign: 'center', fontSize: 12, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#9CA3AF' }}>
+                  <th key={key} style={{ padding: '12px', textAlign: 'center', fontSize: 12, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', background: '#1F3864', color: 'white' }}>
                     {t(key)}
                   </th>
                 ))}
@@ -245,10 +245,10 @@ export default function PricingTable({
                 const isLast = si === sections.length - 1
                 return [
                   /* Bölüm başlığı */
-                  <tr key={`sec-${si}`} style={{ background: '#FAFBFC' }}>
+                  <tr key={`sec-${si}`}>
                     <td
                       colSpan={5}
-                      style={{ padding: '8px 12px', fontSize: 12, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.07em', color: '#3D4A66' }}
+                      style={{ padding: '8px 12px', fontSize: 12, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.07em', background: '#EEF4FB', color: '#1F3864' }}
                     >
                       {section.label}
                     </td>
@@ -260,10 +260,10 @@ export default function PricingTable({
                     return (
                       <tr
                         key={`row-${si}-${ri}`}
-                        className="hover:bg-[#FAFBFC] transition-colors"
-                        style={{ borderBottom: isLastRow ? 'none' : '0.5px solid #F0F1F4' }}
+                        className="hover:bg-[#EEF4FB] transition-colors"
+                        style={{ borderBottom: isLastRow ? 'none' : '1px solid #E5E7EB' }}
                       >
-                        <td style={{ padding: '9px 12px', color: '#6B7387', textAlign: 'left' }}>
+                        <td style={{ padding: '9px 12px', color: '#111827', fontWeight: 500, textAlign: 'left' }}>
                           {row.label}
                         </td>
                         {row.vals.map((val, ci) => (
