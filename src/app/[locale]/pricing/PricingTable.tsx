@@ -52,45 +52,54 @@ type CardProps = {
 function PlanCard({ featured, badge, name, price, period, description, btn, onSubscribe }: CardProps) {
   return (
     <div
-      className="flex flex-col items-center text-center bg-white rounded-xl"
       style={{
-        border:   featured ? '2px solid #2E75B6' : '0.5px solid #E8EAEE',
-        padding:  '1.25rem 1rem',
+        display:       'flex',
+        flexDirection: 'column',
+        alignItems:    'center',
+        textAlign:     'center',
+        background:    'white',
+        borderRadius:  12,
+        border:        featured ? '2px solid #2E75B6' : '1px solid #E5E7EB',
+        boxShadow:     '0 1px 4px rgba(0,0,0,0.08)',
+        padding:       '1.25rem 1rem',
+        minHeight:     280,
+        height:        '100%',
       }}
     >
-      {/* Satır 1 — badge (22px) */}
-      <div className="flex items-center justify-center w-full" style={{ height: 22, marginBottom: 8 }}>
-        {badge ?? null}
+      {/* Üst içerik — flex-grow ile altta butona yer açar */}
+      <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+
+        {/* Badge (22px) */}
+        <div style={{ height: 22, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', marginBottom: 8 }}>
+          {badge ?? null}
+        </div>
+
+        {/* Plan adı */}
+        <p style={{ fontSize: 13, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#6B7387', marginBottom: 8 }}>
+          {name}
+        </p>
+
+        {/* Fiyat */}
+        <div style={{ marginBottom: 4 }}>{price}</div>
+
+        {/* / month */}
+        <p style={{ fontSize: 15, color: '#6B7387', marginBottom: 8 }}>
+          {period ?? <span style={{ visibility: 'hidden' }}>—</span>}
+        </p>
+
+        {/* Açıklama */}
+        <p style={{ fontSize: 13, color: '#6B7387', minHeight: 16 }}>
+          {description ?? ''}
+        </p>
       </div>
 
-      {/* Satır 2 — plan adı */}
-      <p
-        className="text-kx-muted mb-2"
-        style={{ fontSize: 13, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em' }}
-      >
-        {name}
-      </p>
-
-      {/* Satır 3 — fiyat */}
-      <div className="mb-1">{price}</div>
-
-      {/* Satır 4 — / month */}
-      <p className="text-kx-muted mb-2" style={{ fontSize: 15 }}>
-        {period ?? <span style={{ visibility: 'hidden' }}>—</span>}
-      </p>
-
-      {/* Satır 5 — açıklama (min 16px) */}
-      <p className="text-kx-muted" style={{ fontSize: 13, minHeight: 16, marginBottom: 12 }}>
-        {description ?? ''}
-      </p>
-
-      {/* Satır 6 — buton alanı (34px) */}
-      <div className="flex items-center justify-center w-full" style={{ height: 34 }}>
+      {/* Buton — her zaman en altta */}
+      <div style={{ width: '100%', marginTop: 'auto', paddingTop: 16 }}>
         {btn === 'subscribe' && (
           <button
             onClick={onSubscribe}
             className="w-full rounded-lg text-white transition-opacity hover:opacity-85"
-            style={{ height: 34, fontSize: 14, fontWeight: 500, background: '#1F3864' }}
+            style={{ height: 38, fontSize: 14, fontWeight: 500, background: '#1F3864' }}
           >
             Subscribe
           </button>
@@ -99,7 +108,7 @@ function PlanCard({ featured, badge, name, price, period, description, btn, onSu
           <button
             disabled
             className="w-full rounded-lg"
-            style={{ height: 34, fontSize: 14, fontWeight: 500, background: '#F3F4F6', color: '#9CA3AF', cursor: 'default' }}
+            style={{ height: 38, fontSize: 14, fontWeight: 500, background: '#F3F4F6', color: '#9CA3AF', cursor: 'default' }}
           >
             Current plan
           </button>
@@ -108,10 +117,13 @@ function PlanCard({ featured, badge, name, price, period, description, btn, onSu
           <a
             href="mailto:support@kurgemx.com"
             className="w-full rounded-lg flex items-center justify-center no-underline transition-colors hover:bg-kx-bg"
-            style={{ height: 34, fontSize: 14, fontWeight: 500, color: '#9CA3AF', border: '0.5px solid #E8EAEE' }}
+            style={{ height: 38, fontSize: 14, fontWeight: 500, color: '#9CA3AF', border: '1px solid #E5E7EB' }}
           >
             Get a quote
           </a>
+        )}
+        {btn === 'none' && (
+          <div style={{ height: 38 }} aria-hidden="true" />
         )}
       </div>
     </div>
