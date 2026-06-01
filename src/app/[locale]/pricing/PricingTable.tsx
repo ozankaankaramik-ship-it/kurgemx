@@ -66,7 +66,7 @@ function PlanCard({ featured, badge, name, price, period, description, btn, onSu
       {/* Satır 2 — plan adı */}
       <p
         className="text-kx-muted mb-2"
-        style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em' }}
+        style={{ fontSize: 13, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em' }}
       >
         {name}
       </p>
@@ -75,12 +75,12 @@ function PlanCard({ featured, badge, name, price, period, description, btn, onSu
       <div className="mb-1">{price}</div>
 
       {/* Satır 4 — / month */}
-      <p className="text-kx-muted mb-2" style={{ fontSize: 13 }}>
+      <p className="text-kx-muted mb-2" style={{ fontSize: 15 }}>
         {period ?? <span style={{ visibility: 'hidden' }}>—</span>}
       </p>
 
       {/* Satır 5 — açıklama (min 16px) */}
-      <p className="text-kx-muted" style={{ fontSize: 12, minHeight: 16, marginBottom: 12 }}>
+      <p className="text-kx-muted" style={{ fontSize: 13, minHeight: 16, marginBottom: 12 }}>
         {description ?? ''}
       </p>
 
@@ -90,7 +90,7 @@ function PlanCard({ featured, badge, name, price, period, description, btn, onSu
           <button
             onClick={onSubscribe}
             className="w-full rounded-lg text-white transition-opacity hover:opacity-85"
-            style={{ height: 34, fontSize: 13, fontWeight: 500, background: '#1F3864' }}
+            style={{ height: 34, fontSize: 14, fontWeight: 500, background: '#1F3864' }}
           >
             Subscribe
           </button>
@@ -99,7 +99,7 @@ function PlanCard({ featured, badge, name, price, period, description, btn, onSu
           <button
             disabled
             className="w-full rounded-lg"
-            style={{ height: 34, fontSize: 13, fontWeight: 500, background: '#F3F4F6', color: '#9CA3AF', cursor: 'default' }}
+            style={{ height: 34, fontSize: 14, fontWeight: 500, background: '#F3F4F6', color: '#9CA3AF', cursor: 'default' }}
           >
             Current plan
           </button>
@@ -108,7 +108,7 @@ function PlanCard({ featured, badge, name, price, period, description, btn, onSu
           <a
             href="mailto:support@kurgemx.com"
             className="w-full rounded-lg flex items-center justify-center no-underline transition-colors hover:bg-kx-bg"
-            style={{ height: 34, fontSize: 13, fontWeight: 500, color: '#9CA3AF', border: '0.5px solid #E8EAEE' }}
+            style={{ height: 34, fontSize: 14, fontWeight: 500, color: '#9CA3AF', border: '0.5px solid #E8EAEE' }}
           >
             Get a quote
           </a>
@@ -156,12 +156,12 @@ export default function PricingTable({
       <div className="max-w-[780px] mx-auto" style={{ padding: '1.5rem 1rem' }}>
 
         {/* ── Plan kartları ── */}
-        <div className="grid grid-cols-4 gap-3 mb-8">
+        <div className="grid grid-cols-4 mb-8" style={{ gap: 12 }}>
 
           {/* Freemium */}
           <PlanCard
             name={t('planlar.freemium.ad')}
-            price={<span style={{ fontSize: 32, fontWeight: 500, color: '#0E1A33' }}>$0</span>}
+            price={<span style={{ fontSize: 36, fontWeight: 500, color: '#0E1A33' }}>$0</span>}
             period={t('planlar.freemium.aylik')}
             description={t('freemiumNot')}
             btn="none"
@@ -179,7 +179,7 @@ export default function PricingTable({
               </span>
             }
             name={t('planlar.analyst.ad')}
-            price={<span style={{ fontSize: 32, fontWeight: 500, color: '#0E1A33' }}>$9</span>}
+            price={<span style={{ fontSize: 36, fontWeight: 500, color: '#0E1A33' }}>$9</span>}
             period={t('planlar.analyst.aylik')}
             btn={analystBtn}
             onSubscribe={analystPlan ? () => setModalPlan(analystPlan) : undefined}
@@ -188,7 +188,7 @@ export default function PricingTable({
           {/* Advanced */}
           <PlanCard
             name={t('planlar.advanced.ad')}
-            price={<span style={{ fontSize: 32, fontWeight: 500, color: '#0E1A33' }}>$29</span>}
+            price={<span style={{ fontSize: 36, fontWeight: 500, color: '#0E1A33' }}>$29</span>}
             period={t('planlar.advanced.aylik')}
             btn={advancedBtn}
             onSubscribe={advancedPlan ? () => setModalPlan(advancedPlan) : undefined}
@@ -204,7 +204,7 @@ export default function PricingTable({
 
         {/* ── Karşılaştırma tablosu ── */}
         <div className="rounded-xl overflow-hidden" style={{ border: '0.5px solid #E8EAEE', background: '#fff' }}>
-          <table style={{ tableLayout: 'fixed', width: '100%', fontSize: 13, borderCollapse: 'collapse' }}>
+          <table style={{ tableLayout: 'fixed', width: '100%', fontSize: 14, borderCollapse: 'collapse' }}>
             <colgroup>
               <col style={{ width: '32%' }} />
               <col style={{ width: '17%' }} />
@@ -215,11 +215,11 @@ export default function PricingTable({
 
             <thead>
               <tr style={{ borderBottom: '0.5px solid #E8EAEE' }}>
-                <th style={{ padding: '10px 12px', textAlign: 'left', fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#9CA3AF' }}>
+                <th style={{ padding: '10px 12px', textAlign: 'left', fontSize: 12, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#9CA3AF' }}>
                   Features
                 </th>
                 {(['planlar.freemium.ad', 'planlar.analyst.ad', 'planlar.advanced.ad', 'planlar.enterprise.ad'] as const).map(key => (
-                  <th key={key} style={{ padding: '10px 12px', textAlign: 'center', fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#9CA3AF' }}>
+                  <th key={key} style={{ padding: '10px 12px', textAlign: 'center', fontSize: 12, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#9CA3AF' }}>
                     {t(key)}
                   </th>
                 ))}
@@ -234,7 +234,7 @@ export default function PricingTable({
                   <tr key={`sec-${si}`} style={{ background: '#FAFBFC' }}>
                     <td
                       colSpan={5}
-                      style={{ padding: '8px 12px', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.07em', color: '#3D4A66' }}
+                      style={{ padding: '8px 12px', fontSize: 12, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.07em', color: '#3D4A66' }}
                     >
                       {section.label}
                     </td>
