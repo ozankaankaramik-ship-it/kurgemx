@@ -1,0 +1,1460 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8" />
+<title>KurgemX — Intro (60 sec)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@600;700&family=Exo+2:wght@700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
+<style>
+  html, body { margin: 0; padding: 0; background: #000; min-height: 100vh; height: 100vh; overflow: hidden; }
+  body { font-family: 'Inter', sans-serif; display: flex; flex-direction: column; }
+  * { box-sizing: border-box; }
+  @keyframes kxBlink { from, 49% { opacity: 1; } 50%, to { opacity: 0; } }
+  @keyframes kxSpin  { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  #stageHost { flex: 1; min-height: 0; position: relative; }
+
+</style>
+</head>
+<body>
+<div id="root" style="display: flex; flex-direction: column; height: 100%;"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+
+<script type="text/babel">
+
+// animations.jsx
+// Reusable animation starter: Stage, Timeline, Sprite, easing helpers.
+// Usage (in an HTML file that loads React + Babel):
+//
+//   <Stage width={1280} height={720} duration={10} background="#f6f4ef">
+//     <MyScene />
+//   </Stage>
+//
+// Inside <Stage>, any child can call useTime() to read the current
+// playhead (seconds). Or wrap content in <Sprite start={1} end={4}>...</Sprite>
+// to only render during that window -- children receive a `localTime` and
+// `progress` via the useSprite() hook.
+//
+// ─────────────────────────────────────────────────────────────────────────────
+
+// ── Easing functions (hand-rolled, Popmotion-style) ─────────────────────────
+// All easings take t ∈ [0,1] and return eased t ∈ [0,1] (may overshoot for back/elastic).
+const Easing = {
+  linear: (t) => t,
+
+  // Quad
+  easeInQuad:    (t) => t * t,
+  easeOutQuad:   (t) => t * (2 - t),
+  easeInOutQuad: (t) => (t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t),
+
+  // Cubic
+  easeInCubic:    (t) => t * t * t,
+  easeOutCubic:   (t) => (--t) * t * t + 1,
+  easeInOutCubic: (t) => (t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1),
+
+  // Quart
+  easeInQuart:    (t) => t * t * t * t,
+  easeOutQuart:   (t) => 1 - (--t) * t * t * t,
+  easeInOutQuart: (t) => (t < 0.5 ? 8 * t * t * t * t : 1 - 8 * (--t) * t * t * t),
+
+  // Expo
+  easeInExpo:  (t) => (t === 0 ? 0 : Math.pow(2, 10 * (t - 1))),
+  easeOutExpo: (t) => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t)),
+  easeInOutExpo: (t) => {
+    if (t === 0) return 0;
+    if (t === 1) return 1;
+    if (t < 0.5) return 0.5 * Math.pow(2, 20 * t - 10);
+    return 1 - 0.5 * Math.pow(2, -20 * t + 10);
+  },
+
+  // Sine
+  easeInSine:    (t) => 1 - Math.cos((t * Math.PI) / 2),
+  easeOutSine:   (t) => Math.sin((t * Math.PI) / 2),
+  easeInOutSine: (t) => -(Math.cos(Math.PI * t) - 1) / 2,
+
+  // Back (overshoot)
+  easeOutBack: (t) => {
+    const c1 = 1.70158, c3 = c1 + 1;
+    return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+  },
+  easeInBack: (t) => {
+    const c1 = 1.70158, c3 = c1 + 1;
+    return c3 * t * t * t - c1 * t * t;
+  },
+  easeInOutBack: (t) => {
+    const c1 = 1.70158, c2 = c1 * 1.525;
+    return t < 0.5
+      ? (Math.pow(2 * t, 2) * ((c2 + 1) * 2 * t - c2)) / 2
+      : (Math.pow(2 * t - 2, 2) * ((c2 + 1) * (t * 2 - 2) + c2) + 2) / 2;
+  },
+
+  // Elastic
+  easeOutElastic: (t) => {
+    const c4 = (2 * Math.PI) / 3;
+    if (t === 0) return 0;
+    if (t === 1) return 1;
+    return Math.pow(2, -10 * t) * Math.sin((t * 10 - 0.75) * c4) + 1;
+  },
+};
+
+// ── Core interpolation helpers ──────────────────────────────────────────────
+
+// Clamp a value to [min, max]
+const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+
+// interpolate([0, 0.5, 1], [0, 100, 50], ease?) -> fn(t)
+// Popmotion-style: linearly maps t across input keyframes to output values,
+// with optional easing per segment (single fn or array of fns).
+function interpolate(input, output, ease = Easing.linear) {
+  return (t) => {
+    if (t <= input[0]) return output[0];
+    if (t >= input[input.length - 1]) return output[output.length - 1];
+    for (let i = 0; i < input.length - 1; i++) {
+      if (t >= input[i] && t <= input[i + 1]) {
+        const span = input[i + 1] - input[i];
+        const local = span === 0 ? 0 : (t - input[i]) / span;
+        const easeFn = Array.isArray(ease) ? (ease[i] || Easing.linear) : ease;
+        const eased = easeFn(local);
+        return output[i] + (output[i + 1] - output[i]) * eased;
+      }
+    }
+    return output[output.length - 1];
+  };
+}
+
+// animate({from, to, start, end, ease})(t) — simpler single-segment tween.
+// Returns `from` before `start`, `to` after `end`.
+function animate({ from = 0, to = 1, start = 0, end = 1, ease = Easing.easeInOutCubic }) {
+  return (t) => {
+    if (t <= start) return from;
+    if (t >= end) return to;
+    const local = (t - start) / (end - start);
+    return from + (to - from) * ease(local);
+  };
+}
+
+// ── Timeline context ────────────────────────────────────────────────────────
+
+const TimelineContext = React.createContext({ time: 0, duration: 10, playing: false });
+
+const useTime = () => React.useContext(TimelineContext).time;
+const useTimeline = () => React.useContext(TimelineContext);
+
+// ── Sprite ──────────────────────────────────────────────────────────────────
+// Renders children only when the playhead is inside [start, end]. Provides
+// a sub-context with `localTime` (seconds since start) and `progress` (0..1).
+//
+//   <Sprite start={2} end={5}>
+//     {({ localTime, progress }) => <Thing x={progress * 100} />}
+//   </Sprite>
+//
+// Or as a plain wrapper — children can call useSprite() themselves.
+
+const SpriteContext = React.createContext({ localTime: 0, progress: 0, duration: 0 });
+const useSprite = () => React.useContext(SpriteContext);
+
+function Sprite({ start = 0, end = Infinity, children, keepMounted = false }) {
+  const { time } = useTimeline();
+  const visible = time >= start && time <= end;
+  if (!visible && !keepMounted) return null;
+
+  const duration = end - start;
+  const localTime = Math.max(0, time - start);
+  const progress = duration > 0 && isFinite(duration)
+    ? clamp(localTime / duration, 0, 1)
+    : 0;
+
+  const value = { localTime, progress, duration, visible };
+
+  return (
+    <SpriteContext.Provider value={value}>
+      {typeof children === 'function' ? children(value) : children}
+    </SpriteContext.Provider>
+  );
+}
+
+// ── Sample sprite components ────────────────────────────────────────────────
+
+// TextSprite: fades/slides text in on entry, holds, then fades out on exit.
+// Props: text, x, y, size, color, font, entryDur, exitDur, align
+function TextSprite({
+  text,
+  x = 0, y = 0,
+  size = 48,
+  color = '#111',
+  font = 'Inter, system-ui, sans-serif',
+  weight = 600,
+  entryDur = 0.45,
+  exitDur = 0.35,
+  entryEase = Easing.easeOutBack,
+  exitEase = Easing.easeInCubic,
+  align = 'left',
+  letterSpacing = '-0.01em',
+}) {
+  const { localTime, duration } = useSprite();
+  const exitStart = Math.max(0, duration - exitDur);
+
+  let opacity = 1;
+  let ty = 0;
+
+  if (localTime < entryDur) {
+    const t = entryEase(clamp(localTime / entryDur, 0, 1));
+    opacity = t;
+    ty = (1 - t) * 16;
+  } else if (localTime > exitStart) {
+    const t = exitEase(clamp((localTime - exitStart) / exitDur, 0, 1));
+    opacity = 1 - t;
+    ty = -t * 8;
+  }
+
+  const translateX = align === 'center' ? '-50%' : align === 'right' ? '-100%' : '0';
+
+  return (
+    <div style={{
+      position: 'absolute',
+      left: x, top: y,
+      transform: `translate(${translateX}, ${ty}px)`,
+      opacity,
+      fontFamily: font,
+      fontSize: size,
+      fontWeight: weight,
+      color,
+      letterSpacing,
+      whiteSpace: 'pre',
+      lineHeight: 1.1,
+      willChange: 'transform, opacity',
+    }}>
+      {text}
+    </div>
+  );
+}
+
+// ImageSprite: scales + fades in; optional Ken Burns drift during hold.
+function ImageSprite({
+  src,
+  x = 0, y = 0,
+  width = 400, height = 300,
+  entryDur = 0.6,
+  exitDur = 0.4,
+  kenBurns = false,
+  kenBurnsScale = 1.08,
+  radius = 12,
+  fit = 'cover',
+  placeholder = null, // {label: string} for striped placeholder
+}) {
+  const { localTime, duration } = useSprite();
+  const exitStart = Math.max(0, duration - exitDur);
+
+  let opacity = 1;
+  let scale = 1;
+
+  if (localTime < entryDur) {
+    const t = Easing.easeOutCubic(clamp(localTime / entryDur, 0, 1));
+    opacity = t;
+    scale = 0.96 + 0.04 * t;
+  } else if (localTime > exitStart) {
+    const t = Easing.easeInCubic(clamp((localTime - exitStart) / exitDur, 0, 1));
+    opacity = 1 - t;
+    scale = (kenBurns ? kenBurnsScale : 1) + 0.02 * t;
+  } else if (kenBurns) {
+    const holdSpan = exitStart - entryDur;
+    const holdT = holdSpan > 0 ? (localTime - entryDur) / holdSpan : 0;
+    scale = 1 + (kenBurnsScale - 1) * holdT;
+  }
+
+  const content = placeholder ? (
+    <div style={{
+      width: '100%', height: '100%',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      background: 'repeating-linear-gradient(135deg, #e9e6df 0 10px, #dcd8cf 10px 20px)',
+      color: '#6b6458',
+      fontFamily: 'JetBrains Mono, ui-monospace, monospace',
+      fontSize: 13,
+      letterSpacing: '0.04em',
+      textTransform: 'uppercase',
+    }}>
+      {placeholder.label || 'image'}
+    </div>
+  ) : (
+    <img src={src} alt="" style={{ width: '100%', height: '100%', objectFit: fit, display: 'block' }} />
+  );
+
+  return (
+    <div style={{
+      position: 'absolute',
+      left: x, top: y,
+      width, height,
+      opacity,
+      transform: `scale(${scale})`,
+      transformOrigin: 'center',
+      borderRadius: radius,
+      overflow: 'hidden',
+      willChange: 'transform, opacity',
+    }}>
+      {content}
+    </div>
+  );
+}
+
+// RectSprite: simple rectangle that animates position/size/color via props.
+// Useful demo primitive — takes a `render` fn for per-frame customization.
+function RectSprite({
+  x = 0, y = 0,
+  width = 100, height = 100,
+  color = '#111',
+  radius = 8,
+  entryDur = 0.4,
+  exitDur = 0.3,
+  render, // optional: (ctx) => style overrides
+}) {
+  const spriteCtx = useSprite();
+  const { localTime, duration } = spriteCtx;
+  const exitStart = Math.max(0, duration - exitDur);
+
+  let opacity = 1;
+  let scale = 1;
+
+  if (localTime < entryDur) {
+    const t = Easing.easeOutBack(clamp(localTime / entryDur, 0, 1));
+    opacity = clamp(localTime / entryDur, 0, 1);
+    scale = 0.4 + 0.6 * t;
+  } else if (localTime > exitStart) {
+    const t = Easing.easeInQuad(clamp((localTime - exitStart) / exitDur, 0, 1));
+    opacity = 1 - t;
+    scale = 1 - 0.15 * t;
+  }
+
+  const overrides = render ? render(spriteCtx) : {};
+
+  return (
+    <div style={{
+      position: 'absolute',
+      left: x, top: y,
+      width, height,
+      background: color,
+      borderRadius: radius,
+      opacity,
+      transform: `scale(${scale})`,
+      transformOrigin: 'center',
+      willChange: 'transform, opacity',
+      ...overrides,
+    }} />
+  );
+}
+
+
+function Stage({
+  width = 1280,
+  height = 720,
+  duration = 10,
+  background = '#f6f4ef',
+  fps = 60,
+  loop = true,
+  autoplay = true,
+  persistKey = 'animstage',
+  children,
+}) {
+  const [time, setTime] = React.useState(() => {
+    try {
+      const v = parseFloat(localStorage.getItem(persistKey + ':t') || '0');
+      return isFinite(v) ? clamp(v, 0, duration) : 0;
+    } catch { return 0; }
+  });
+  const [playing, setPlaying] = React.useState(autoplay);
+  const [hoverTime, setHoverTime] = React.useState(null);
+  const [scale, setScale] = React.useState(1);
+
+  const stageRef = React.useRef(null);
+  const canvasRef = React.useRef(null);
+  const rafRef = React.useRef(null);
+  const lastTsRef = React.useRef(null);
+
+  // Persist playhead
+  React.useEffect(() => {
+    try { localStorage.setItem(persistKey + ':t', String(time)); } catch {}
+  }, [time, persistKey]);
+
+  // Auto-scale to fit viewport
+  React.useEffect(() => {
+    if (!stageRef.current) return;
+    const el = stageRef.current;
+    const measure = () => {
+      const barH = 44; // playback bar height
+      const s = Math.min(
+        el.clientWidth / width,
+        (el.clientHeight - barH) / height
+      );
+      setScale(Math.max(0.05, s));
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    window.addEventListener('resize', measure);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('resize', measure);
+    };
+  }, [width, height]);
+
+  // Animation loop
+  React.useEffect(() => {
+    if (!playing) {
+      lastTsRef.current = null;
+      return;
+    }
+    const step = (ts) => {
+      if (lastTsRef.current == null) lastTsRef.current = ts;
+      const dt = (ts - lastTsRef.current) / 1000;
+      lastTsRef.current = ts;
+      setTime((t) => {
+        let next = t + dt;
+        if (next >= duration) {
+          if (loop) next = next % duration;
+          else { next = duration; setPlaying(false); }
+        }
+        return next;
+      });
+      rafRef.current = requestAnimationFrame(step);
+    };
+    rafRef.current = requestAnimationFrame(step);
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      lastTsRef.current = null;
+    };
+  }, [playing, duration, loop]);
+
+  // Keyboard: space = play/pause, ← → = seek
+  React.useEffect(() => {
+    const onKey = (e) => {
+      if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
+      if (e.code === 'Space') {
+        e.preventDefault();
+        setPlaying(p => !p);
+      } else if (e.code === 'ArrowLeft') {
+        setTime(t => clamp(t - (e.shiftKey ? 1 : 0.1), 0, duration));
+      } else if (e.code === 'ArrowRight') {
+        setTime(t => clamp(t + (e.shiftKey ? 1 : 0.1), 0, duration));
+      } else if (e.key === '0' || e.code === 'Home') {
+        setTime(0);
+      } else if (e.key === 'f' || e.key === 'F') {
+        const el = document.documentElement;
+        if (!document.fullscreenElement) {
+          el.requestFullscreen && el.requestFullscreen();
+        } else {
+          document.exitFullscreen && document.exitFullscreen();
+        }
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [duration]);
+
+  const displayTime = hoverTime != null ? hoverTime : time;
+
+  const ctxValue = React.useMemo(
+    () => ({ time: displayTime, duration, playing, setTime, setPlaying }),
+    [displayTime, duration, playing]
+  );
+
+  return (
+    <div
+      ref={stageRef}
+      style={{
+        position: 'absolute', inset: 0,
+        display: 'flex', flexDirection: 'column',
+        alignItems: 'center',
+        background: '#0a0a0a',
+        fontFamily: 'Inter, system-ui, sans-serif',
+      }}
+    >
+      {/* Canvas area — vertically centered in remaining space */}
+      <div style={{
+        flex: 1,
+        width: '100%',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        overflow: 'hidden',
+        minHeight: 0,
+      }}>
+        <div
+          ref={canvasRef}
+          style={{
+            width, height,
+            background,
+            position: 'relative',
+            transform: `scale(${scale})`,
+            transformOrigin: 'center',
+            flexShrink: 0,
+            boxShadow: '0 20px 60px rgba(0,0,0,0.4)',
+            overflow: 'hidden',
+          }}
+        >
+          <TimelineContext.Provider value={ctxValue}>
+            {children}
+          </TimelineContext.Provider>
+        </div>
+      </div>
+
+      {/* Playback bar — stacked below canvas, never overlapping */}
+      <PlaybackBar
+        time={displayTime}
+        actualTime={time}
+        duration={duration}
+        playing={playing}
+        onPlayPause={() => setPlaying(p => !p)}
+        onReset={() => { setTime(0); }}
+        onSeek={(t) => setTime(t)}
+        onHover={(t) => setHoverTime(t)}
+      />
+    </div>
+  );
+}
+
+// ── Playback bar ────────────────────────────────────────────────────────────
+// Play/pause, return-to-begin, scrub track, time display.
+// Uses fixed-width time fields so layout doesn't thrash.
+
+function PlaybackBar({ time, duration, playing, onPlayPause, onReset, onSeek, onHover }) {
+  const trackRef = React.useRef(null);
+  const [dragging, setDragging] = React.useState(false);
+
+  const timeFromEvent = React.useCallback((e) => {
+    const rect = trackRef.current.getBoundingClientRect();
+    const x = clamp((e.clientX - rect.left) / rect.width, 0, 1);
+    return x * duration;
+  }, [duration]);
+
+  const onTrackMove = (e) => {
+    if (!trackRef.current) return;
+    const t = timeFromEvent(e);
+    if (dragging) {
+      onSeek(t);
+    } else {
+      onHover(t);
+    }
+  };
+
+  const onTrackLeave = () => {
+    if (!dragging) onHover(null);
+  };
+
+  const onTrackDown = (e) => {
+    setDragging(true);
+    const t = timeFromEvent(e);
+    onSeek(t);
+    onHover(null);
+  };
+
+  React.useEffect(() => {
+    if (!dragging) return;
+    const onUp = () => setDragging(false);
+    const onMove = (e) => {
+      if (!trackRef.current) return;
+      const t = timeFromEvent(e);
+      onSeek(t);
+    };
+    window.addEventListener('mouseup', onUp);
+    window.addEventListener('mousemove', onMove);
+    return () => {
+      window.removeEventListener('mouseup', onUp);
+      window.removeEventListener('mousemove', onMove);
+    };
+  }, [dragging, timeFromEvent, onSeek]);
+
+  const pct = duration > 0 ? (time / duration) * 100 : 0;
+  const fmt = (t) => {
+    const total = Math.max(0, t);
+    const m = Math.floor(total / 60);
+    const s = Math.floor(total % 60);
+    const cs = Math.floor((total * 100) % 100);
+    return `${String(m).padStart(1, '0')}:${String(s).padStart(2, '0')}.${String(cs).padStart(2, '0')}`;
+  };
+
+  const mono = 'JetBrains Mono, ui-monospace, SFMono-Regular, monospace';
+
+  return (
+    <div style={{
+      display: 'flex', alignItems: 'center', gap: 12,
+      padding: '8px 16px',
+      background: 'rgba(20,20,20,0.92)',
+      borderTop: '1px solid rgba(255,255,255,0.08)',
+      width: '100%',
+      maxWidth: 680,
+      alignSelf: 'center',
+
+      borderRadius: 8,
+      color: '#f6f4ef',
+      fontFamily: 'Inter, system-ui, sans-serif',
+      userSelect: 'none',
+      flexShrink: 0,
+    }}>
+      <IconButton onClick={onReset} title="Return to start (0)">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M3 2v10M12 2L5 7l7 5V2z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round"/>
+        </svg>
+      </IconButton>
+      <IconButton onClick={onPlayPause} title="Play/pause (space)">
+        {playing ? (
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <rect x="3" y="2" width="3" height="10" fill="currentColor"/>
+            <rect x="8" y="2" width="3" height="10" fill="currentColor"/>
+          </svg>
+        ) : (
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M3 2l9 5-9 5V2z" fill="currentColor"/>
+          </svg>
+        )}
+      </IconButton>
+
+      {/* Current time: fixed width so it doesn't thrash */}
+      <div style={{
+        fontFamily: mono,
+        fontSize: 12,
+        fontVariantNumeric: 'tabular-nums',
+        width: 64, textAlign: 'right',
+        color: '#f6f4ef',
+      }}>
+        {fmt(time)}
+      </div>
+
+      {/* Scrub track */}
+      <div
+        ref={trackRef}
+        onMouseMove={onTrackMove}
+        onMouseLeave={onTrackLeave}
+        onMouseDown={onTrackDown}
+        style={{
+          flex: 1,
+          height: 22,
+          position: 'relative',
+          cursor: 'pointer',
+          display: 'flex', alignItems: 'center',
+        }}
+      >
+        <div style={{
+          position: 'absolute',
+          left: 0, right: 0, height: 4,
+          background: 'rgba(255,255,255,0.12)',
+          borderRadius: 2,
+        }}/>
+        <div style={{
+          position: 'absolute',
+          left: 0, width: `${pct}%`, height: 4,
+          background: 'oklch(72% 0.12 250)',
+          borderRadius: 2,
+        }}/>
+        <div style={{
+          position: 'absolute',
+          left: `${pct}%`, top: '50%',
+          width: 12, height: 12,
+          marginLeft: -6, marginTop: -6,
+          background: '#fff',
+          borderRadius: 6,
+          boxShadow: '0 2px 4px rgba(0,0,0,0.4)',
+        }}/>
+      </div>
+
+      {/* Duration: fixed width */}
+      <div style={{
+        fontFamily: mono,
+        fontSize: 12,
+        fontVariantNumeric: 'tabular-nums',
+        width: 64, textAlign: 'left',
+        color: 'rgba(246,244,239,0.55)',
+      }}>
+        {fmt(duration)}
+      </div>
+
+      {/* Fullscreen button */}
+      <IconButton onClick={() => {
+        const el = document.documentElement;
+        if (!document.fullscreenElement) {
+          el.requestFullscreen && el.requestFullscreen();
+        } else {
+          document.exitFullscreen && document.exitFullscreen();
+        }
+      }} title="Tam ekran (F)">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M2 5V2h3M9 2h3v3M12 9v3H9M5 12H2V9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      </IconButton>
+    </div>
+  );
+}
+
+function IconButton({ children, onClick, title }) {
+  const [hover, setHover] = React.useState(false);
+  return (
+    <button
+      onClick={onClick}
+      title={title}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        width: 28, height: 28,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        background: hover ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.04)',
+        border: '1px solid rgba(255,255,255,0.1)',
+        borderRadius: 6,
+        color: '#f6f4ef',
+        cursor: 'pointer',
+        padding: 0,
+        transition: 'background 120ms',
+      }}
+    >
+      {children}
+    </button>
+  );
+}
+
+
+Object.assign(window, {
+  Easing, interpolate, animate, clamp,
+  TimelineContext, useTime, useTimeline,
+  Sprite, SpriteContext, useSprite,
+  TextSprite, ImageSprite, RectSprite,
+  Stage, PlaybackBar,
+});
+
+
+</script>
+
+<script type="text/babel">
+// Shared brand assets + Subtitle + ScriptPanel components for KurgemX videos.
+// Loaded BEFORE the scene file in both tanitim.html and kilavuz.html.
+
+const KX = {
+  navy:      '#1F3864',
+  navyDeep:  '#15264A',
+  blue:      '#2E75B6',
+  blueSoft:  '#EEF4FB',
+  red:       '#E63329',
+  redSoft:   '#FDECEB',
+  amber:     '#FBBF24',
+  amberSoft: '#FEF3C7',
+  green:     '#16A34A',
+  greenSoft: '#DCFCE7',
+  ink:       '#0E1A33',
+  body:      '#3D4A66',
+  muted:     '#6B7387',
+  faint:     '#9CA3AF',
+  border:    '#E8EAEE',
+  borderSoft:'#F0F1F4',
+  bg:        '#FAFBFC',
+  display:   '"Inter Tight", "Inter", -apple-system, sans-serif',
+  sans:      '"Inter", -apple-system, sans-serif',
+  mono:      '"JetBrains Mono", ui-monospace, monospace',
+  brand:     '"Exo 2", "Inter", sans-serif',
+};
+
+/* ── Logo / brand mark (real KurgemX logo: 4 swooshes + red core) ── */
+
+function KxIconSvg({ size = 60, withGlow = true }) {
+  // Real KurgemX icon — 4 curved swooshes (B/W/T/O) around a red center with highlight
+  return (
+    <svg width={size} height={size} viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="kxB" cx="35%" cy="30%" r="70%">
+          <stop offset="0%" stopColor="#555" />
+          <stop offset="100%" stopColor="#111" />
+        </radialGradient>
+        <radialGradient id="kxW" cx="35%" cy="30%" r="70%">
+          <stop offset="0%" stopColor="#d8d8d8" />
+          <stop offset="100%" stopColor="#909090" />
+        </radialGradient>
+        <radialGradient id="kxT" cx="35%" cy="30%" r="70%">
+          <stop offset="0%" stopColor="#5bbdd6" />
+          <stop offset="100%" stopColor="#2a7a99" />
+        </radialGradient>
+        <radialGradient id="kxO" cx="35%" cy="30%" r="70%">
+          <stop offset="0%" stopColor="#f0a830" />
+          <stop offset="100%" stopColor="#c07010" />
+        </radialGradient>
+        <radialGradient id="kxR" cx="35%" cy="30%" r="70%">
+          <stop offset="0%" stopColor="#ff4040" />
+          <stop offset="40%" stopColor="#cc1515" />
+          <stop offset="100%" stopColor="#7a0000" />
+        </radialGradient>
+        <radialGradient id="kxGlow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#ff3333" stopOpacity="0.3" />
+          <stop offset="100%" stopColor="#ff3333" stopOpacity="0" />
+        </radialGradient>
+        <filter id="kxSh" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="1" dy="2" stdDeviation="2" floodColor="#000" floodOpacity="0.5" />
+        </filter>
+      </defs>
+      {withGlow && <circle cx="60" cy="60" r="28" fill="url(#kxGlow)" />}
+      <path d="M28 22 C20 28, 32 48, 48 52 C40 40, 30 32, 36 24 Z" fill="url(#kxB)" filter="url(#kxSh)" />
+      <path d="M92 22 C100 28, 88 48, 72 52 C80 40, 90 32, 84 24 Z" fill="url(#kxW)" filter="url(#kxSh)" />
+      <path d="M22 88 C28 96, 48 84, 52 68 C40 76, 30 86, 24 80 Z" fill="url(#kxT)" filter="url(#kxSh)" />
+      <path d="M98 88 C92 96, 72 84, 68 68 C80 76, 90 86, 96 80 Z" fill="url(#kxO)" filter="url(#kxSh)" />
+      <circle cx="60" cy="60" r="17" fill="url(#kxR)" filter="url(#kxSh)" />
+      <ellipse cx="54" cy="54" rx="6" ry="4" fill="white" opacity="0.22" />
+    </svg>
+  );
+}
+
+function KxLogo({ size = 60, light = false, iconOnly = false }) {
+  const wordSize = Math.round(size * 0.55);
+  if (iconOnly) return <KxIconSvg size={size} />;
+  return (
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', gap: size * 0.22,
+      fontFamily: KX.brand, fontWeight: 700, fontSize: wordSize,
+      color: light ? '#fff' : KX.ink, letterSpacing: '-0.02em', lineHeight: 1,
+    }}>
+      <KxIconSvg size={size} />
+      <span style={{ paddingLeft: size * 0.1, borderLeft: `1px solid ${light ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.12)'}` }}>
+        Kurgem<span style={{ color: '#E63329' }}>X</span>
+      </span>
+    </span>
+  );
+}
+
+/* ── Subtitle bar (rendered inside <Stage>, anchored bottom) ────── */
+
+function SubtitleBar({ subs, lang }) {
+  // subs: [{ start, end, tr, en }]
+  // Reads time from TimelineContext (already in scope inside Stage)
+  const t = useTime();
+  const cur = subs.find(s => t >= s.start && t < s.end);
+  if (!cur) return null;
+  const text = lang === 'TR' ? cur.tr : cur.en;
+  // entry/exit fade
+  const dt = Math.min(t - cur.start, cur.end - t);
+  const opacity = Math.min(1, dt / 0.25);
+  return (
+    <div style={{
+      position: 'absolute',
+      left: 0, right: 0, bottom: 40,
+      display: 'flex', justifyContent: 'center',
+      pointerEvents: 'none',
+      opacity,
+      transition: 'opacity 0.2s',
+    }}>
+      <div style={{
+        background: 'rgba(14,26,51,0.92)', color: '#fff',
+        fontFamily: KX.sans, fontSize: 26, fontWeight: 500, letterSpacing: '-0.005em',
+        padding: '12px 22px', borderRadius: 8, maxWidth: '80%', textAlign: 'center',
+        lineHeight: 1.35, boxShadow: '0 12px 30px rgba(0,0,0,0.4)',
+      }}>
+        {text}
+      </div>
+    </div>
+  );
+}
+
+/* ── Script panel (rendered BELOW the Stage, follows current scene) */
+
+function ScriptPanel({ scenes, lang = 'EN' }) {
+  // scenes: [{ start, end, label, voiceover, label_en?, voiceover_en? }]
+  const { time, duration } = useTimeline();
+  const cur = scenes.find(s => time >= s.start && time < s.end) || scenes[scenes.length - 1];
+  const idx = scenes.indexOf(cur);
+  const total = scenes.length;
+  const label = lang === 'TR' ? (cur.label_tr || cur.label) : (cur.label_en || cur.label);
+  const voiceover = lang === 'TR' ? (cur.voiceover_tr || cur.voiceover) : (cur.voiceover_en || cur.voiceover);
+  return (
+    <div style={{
+      width: '100%', maxWidth: 1100, margin: '0 auto', padding: '20px 28px 32px',
+      fontFamily: KX.sans, color: '#fff',
+    }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 10 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span style={{ fontFamily: KX.mono, fontSize: 11, color: 'rgba(255,255,255,0.5)', letterSpacing: '0.08em' }}>SCENE {String(idx + 1).padStart(2, '0')} / {String(total).padStart(2, '0')}</span>
+          <span style={{ background: KX.amber, color: KX.ink, fontSize: 10, padding: '2px 7px', borderRadius: 4, fontWeight: 700, letterSpacing: '0.04em' }}>{formatTime(cur.start)} → {formatTime(cur.end)}</span>
+          <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.85)', fontWeight: 600 }}>{label}</span>
+        </div>
+        <div style={{ fontFamily: KX.mono, fontSize: 11, color: 'rgba(255,255,255,0.45)' }}>VOICEOVER ({lang})</div>
+      </div>
+      <p style={{
+        margin: 0, padding: '14px 18px', background: 'rgba(255,255,255,0.06)',
+        border: '1px solid rgba(255,255,255,0.12)', borderRadius: 10,
+        color: '#fff', fontSize: 15.5, lineHeight: 1.55, fontStyle: 'italic',
+      }}>
+        "{voiceover}"
+      </p>
+      {/* Mini scene strip */}
+      <div style={{ display: 'flex', gap: 4, marginTop: 14 }}>
+        {scenes.map((s, i) => {
+          const active = s === cur;
+          const done = time > s.end;
+          return (
+            <div key={i} style={{ flex: s.end - s.start, height: 4, borderRadius: 2,
+              background: active ? KX.amber : done ? KX.blue : 'rgba(255,255,255,0.12)',
+              transition: 'background 0.2s',
+            }} />
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function formatTime(s) {
+  const m = Math.floor(s / 60);
+  const sec = Math.floor(s % 60);
+  return `${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+}
+
+/* ── Top toolbar — language + aspect toggle ─────────────────────── */
+
+function VideoToolbar({ title, lang, setLang, aspect, setAspect }) {
+  return (
+    <div style={{
+      width: '100%', padding: '16px 28px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      background: '#000', color: '#fff', fontFamily: KX.sans, borderBottom: '1px solid rgba(255,255,255,0.08)',
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+        <KxLogo size={28} light />
+        <span style={{ color: 'rgba(255,255,255,0.4)' }}>·</span>
+        <span style={{ fontSize: 14, fontWeight: 600 }}>{title}</span>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        {/* Aspect toggle */}
+        <div style={{ display: 'flex', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 6, padding: 3 }}>
+          {['16:9', '1:1', '9:16'].map(a => (
+            <button key={a} onClick={() => setAspect(a)} style={{
+              padding: '5px 10px', borderRadius: 4, border: 'none', cursor: 'pointer',
+              background: a === aspect ? '#fff' : 'transparent',
+              color: a === aspect ? '#000' : 'rgba(255,255,255,0.65)',
+              fontSize: 11, fontWeight: 600, fontFamily: KX.mono,
+            }}>{a}</button>
+          ))}
+        </div>
+        {/* Lang toggle */}
+        <div style={{ display: 'flex', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 6, padding: 3 }}>
+          {['TR', 'EN'].map(l => (
+            <button key={l} onClick={() => setLang(l)} style={{
+              padding: '5px 12px', borderRadius: 4, border: 'none', cursor: 'pointer',
+              background: l === lang ? '#fff' : 'transparent',
+              color: l === lang ? '#000' : 'rgba(255,255,255,0.65)',
+              fontSize: 11, fontWeight: 700, fontFamily: KX.mono,
+            }}>{l}</button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── Aspect sizes ───────────────────────────────────────────────── */
+
+const ASPECTS = {
+  '16:9': { w: 1920, h: 1080, name: 'YouTube / Web' },
+  '1:1':  { w: 1080, h: 1080, name: 'LinkedIn / IG' },
+  '9:16': { w: 1080, h: 1920, name: 'Reels / TikTok' },
+};
+
+/* ── Language context ──────────────────────────────────────────── */
+
+const LangContext = React.createContext('TR');
+const useLang = () => React.useContext(LangContext);
+// T(tr, en) returns the right string for current locale.
+function useT() {
+  const lang = useLang();
+  return (tr, en) => (lang === 'TR' ? tr : en);
+}
+
+window.KX = KX;
+window.KxLogo = KxLogo;
+window.KxIconSvg = KxIconSvg;
+window.SubtitleBar = SubtitleBar;
+window.ScriptPanel = ScriptPanel;
+window.VideoToolbar = VideoToolbar;
+window.ASPECTS = ASPECTS;
+window.formatTime = formatTime;
+window.LangContext = LangContext;
+window.useLang = useLang;
+window.useT = useT;
+
+</script>
+
+<script type="text/babel">
+// KurgemX — Tanıtım videosu (60 saniye) — TR + EN visual content
+// Hikaye: Hook → Solution → 4 Outputs → Social proof → CTA
+
+const TANITIM_SUBS = [
+  { start: 0,  end: 6,  en: "What if your first business analysis draft was ready in 10 minutes — not 2 weeks?", tr: "Ya iş analizinin ilk taslağı 2 hafta değil, 10 dakikada hazır olsaydı?" },
+  { start: 6,  end: 18, en: "Write a sentence about your project. KurgemX turns it into a complete story map.",   tr: "Bir cümleyle başla. KurgemX hikaye haritasını üretsin." },
+  { start: 18, end: 36, en: "Story map. Requirements analysis. Clickable prototype. Test scenarios.",             tr: "Hikaye haritası. Gereksinim analizi. Prototip. Test senaryoları." },
+  { start: 36, end: 48, en: "Trusted by leading business analysts in banking, telecom, and retail.",             tr: "Bankacılık, telekom ve perakendenin önde gelen iş analisti ekipleri kullanıyor." },
+  { start: 48, end: 60, en: "Start your first project free at kurgemx.com. No card required.",                  tr: "İlk projen ücretsiz. Kart gerekmez. kurgemx.com" },
+];
+
+const TANITIM_SCENES = [
+  { start: 0,  end: 6,  label_tr: 'Açılış',                  label_en: 'Hook',
+    voiceover_tr: "Ya iş analizinin ilk taslağı 2 hafta değil, 10 dakikada hazır olsaydı?",
+    voiceover_en: 'What if your first business analysis draft was ready in 10 minutes — not 2 weeks?' },
+  { start: 6,  end: 18, label_tr: 'Çözüm',                   label_en: 'Solution reveal',
+    voiceover_tr: "Projeni bir cümleyle anlat. KurgemX, destanları, kullanıcı hikayelerini, sürümleri ve sprint'leri senin yerine üretsin.",
+    voiceover_en: 'Write a sentence about your project. KurgemX turns it into a complete story map — epics, user stories, releases, sprints.' },
+  { start: 18, end: 36, label_tr: '4 çıktı',                 label_en: '4 outputs',
+    voiceover_tr: "Hikaye haritası. Gereksinim analizi. Tıklanabilir prototip. Test senaryoları. Hepsi tek akışta, tek sekmede.",
+    voiceover_en: 'Story map. Requirements analysis document. Clickable prototype. Test scenarios. All four — in one flow, in one tab.' },
+  { start: 36, end: 48, label_tr: 'Sosyal kanıt',            label_en: 'Social proof',
+    voiceover_tr: "Bankacılık, telekom, perakende ve e-ticaret sektörlerinin önde gelen iş analisti ekipleri tarafından kullanılıyor.",
+    voiceover_en: 'Trusted by leading business analysts in banking, telecom, retail and e-commerce. Faster drafts, higher satisfaction.' },
+  { start: 48, end: 60, label_tr: 'Eyleme çağrı',            label_en: 'Call to action',
+    voiceover_tr: "İlk projenizi kurgemx.com'da ücretsiz başlatın. Kart gerekmez.",
+    voiceover_en: 'Start your first project free at kurgemx.com. No card required.' },
+];
+
+const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+
+/* ─── Scene 1: Hook ────────────────────────────────────────────── */
+
+function S1_Hook() {
+  const { localTime } = useSprite();
+  const lang = useLang();
+  const t1 = clamp((localTime - 0.4) / 1.5, 0, 1);
+  const t2 = clamp((localTime - 2.4) / 1.5, 0, 1);
+  const t3 = clamp((localTime - 4.2) / 1.0, 0, 1);
+
+  const tr = ['İş analizinin ilk taslağı,', 'ilk', '10 dakikada', 'elinde.'];
+  const en = ['Your first business analysis draft —', 'in', '10 minutes', 'not weeks.'];
+  const w = lang === 'TR' ? tr : en;
+
+  return (
+    <div style={{ position: 'absolute', inset: 0, background: KX.bg, overflow: 'hidden' }}>
+      <div style={{
+        position: 'absolute', inset: 0,
+        backgroundImage: 'linear-gradient(rgba(46,117,182,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(46,117,182,0.06) 1px, transparent 1px)',
+        backgroundSize: '40px 40px',
+        maskImage: 'radial-gradient(ellipse at center, black 30%, transparent 75%)',
+        opacity: 0.5,
+      }} />
+      <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', fontFamily: KX.display }}>
+        <div style={{ fontSize: 86, fontWeight: 700, letterSpacing: '-0.04em', color: KX.ink, lineHeight: 1.05, textAlign: 'center', maxWidth: 1500 }}>
+          <div style={{ opacity: t1, transform: `translateY(${(1 - Easing.easeOutCubic(t1)) * 20}px)` }}>
+            {w[0]}
+          </div>
+          <div style={{ opacity: t2, transform: `translateY(${(1 - Easing.easeOutCubic(t2)) * 20}px)`, marginTop: 10 }}>
+            {w[1]}{' '}
+            <span style={{ position: 'relative', display: 'inline-block' }}>
+              <span style={{
+                position: 'absolute', inset: '12% -4% 6% -4%', background: KX.red,
+                transform: `skew(-3deg) scaleX(${t3})`, transformOrigin: 'left',
+              }} />
+              <span style={{ position: 'relative', color: t3 > 0.3 ? '#fff' : KX.ink, padding: '0 12px', transition: 'color 0.3s' }}>{w[2]}</span>
+            </span>{' '}
+            {w[3]}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Scene 2: Solution — typing + story map appears ──────────── */
+
+function S2_Solution() {
+  const { localTime } = useSprite();
+  const lang = useLang();
+
+  const sentence = lang === 'TR'
+    ? "Mobil bankacılık uygulaması — IBAN, QR ve kart üzerinden hızlı transfer"
+    : "Mobile banking app — fast transfers via IBAN, QR and card";
+  const typedChars = clamp(Math.floor(localTime * 30), 0, sentence.length);
+  const typed = sentence.slice(0, typedChars);
+  const showAi = localTime > 3;
+  const aiProgress = clamp((localTime - 3) / 2, 0, 1);
+  const showMap = localTime > 5;
+
+  const labels = {
+    TR: { describe: 'Projeni anlat', ai: 'YZ ile detaylandır', aiBusy: 'YZ analiz ediyor...', map: 'Hikaye Haritası', live: '● Canlı',
+          counts: ['4 destan', '18 hikaye', '3 sürüm'],
+          epics: ['Kayıt', 'Transfer', 'Yatırım', 'Bildirim'],
+          releases: [
+            { label: 'R1 — MVP', items: [['Email kayıt', 'Telefon'], ['IBAN', 'Geçmiş'], ['Hesap özeti'], ['Push']] },
+            { label: 'R2',       items: [['Yüz tanıma'], ['QR'], ['Fon', 'Alım'], ['SMS']] },
+            { label: 'R3',       items: [['Sosyal giriş'], ['Toplu'], ['Robo'], ['Akıllı']] },
+          ] },
+    EN: { describe: 'Describe your project', ai: 'Enhance with AI', aiBusy: 'AI analyzing...', map: 'Story Map', live: '● Live',
+          counts: ['4 epics', '18 stories', '3 releases'],
+          epics: ['Sign-up', 'Transfer', 'Investment', 'Notifications'],
+          releases: [
+            { label: 'R1 — MVP', items: [['Email signup', 'Phone OTP'], ['IBAN', 'History'], ['Summary'], ['Push']] },
+            { label: 'R2',       items: [['Face ID'], ['QR'], ['Funds', 'Trade'], ['SMS']] },
+            { label: 'R3',       items: [['Social login'], ['Batch'], ['Robo'], ['Smart']] },
+          ] },
+  }[lang];
+
+  const tones = [KX.red, KX.amber, KX.blue];
+
+  return (
+    <div style={{ position: 'absolute', inset: 0, background: KX.bg, padding: 80, fontFamily: KX.sans }}>
+      <div style={{
+        position: 'absolute', top: 200, left: 100, width: 760,
+        background: '#fff', border: `1px solid ${KX.border}`, borderRadius: 16, padding: 32,
+        boxShadow: '0 20px 50px -20px rgba(15,30,80,0.15)',
+        opacity: localTime < 6 ? 1 : 1 - clamp((localTime - 6) / 1.5, 0, 1) * 0.4,
+        transform: localTime < 6 ? 'none' : `translateX(-${clamp((localTime - 6) / 1.5, 0, 1) * 40}px)`,
+      }}>
+        <div style={{ fontSize: 14, color: KX.muted, marginBottom: 12, fontWeight: 600 }}>{labels.describe}</div>
+        <div style={{
+          minHeight: 110, padding: '14px 18px', background: KX.bg, border: `1px solid ${KX.border}`, borderRadius: 10,
+          fontSize: 22, color: KX.ink, lineHeight: 1.55,
+        }}>
+          {typed}{localTime < 3 && typedChars < sentence.length && <span style={{ display: 'inline-block', width: 3, height: 26, background: KX.blue, verticalAlign: 'text-bottom', marginLeft: 2, animation: 'kxBlink 1s steps(2) infinite' }} />}
+        </div>
+        <div style={{ marginTop: 18, display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{
+            display: 'inline-flex', alignItems: 'center', gap: 10,
+            background: showAi ? KX.navy : '#fff', color: showAi ? '#fff' : KX.navy,
+            border: `1px solid ${KX.navy}`, borderRadius: 10, padding: '10px 18px',
+            fontSize: 16, fontWeight: 600,
+          }}>
+            {showAi ? (
+              <>
+                <span style={{ width: 16, height: 16, border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%', display: 'inline-block', animation: 'kxSpin 0.8s linear infinite' }} />
+                {labels.aiBusy}
+              </>
+            ) : (
+              <>✨ {labels.ai}</>
+            )}
+          </div>
+          {showAi && <span style={{ fontSize: 14, color: KX.muted, fontFamily: KX.mono }}>{Math.round(aiProgress * 100)}%</span>}
+        </div>
+      </div>
+
+      {showMap && (
+        <div style={{
+          position: 'absolute', top: 140, right: 100, width: 920,
+          background: '#fff', border: `1px solid ${KX.border}`, borderRadius: 16,
+          boxShadow: '0 30px 60px -20px rgba(15,30,80,0.25)',
+          padding: 28, fontFamily: KX.sans,
+          opacity: clamp((localTime - 5) / 0.6, 0, 1),
+          transform: `translateX(${(1 - clamp((localTime - 5) / 0.8, 0, 1)) * 60}px)`,
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
+            <div style={{ fontSize: 22, fontWeight: 700, color: KX.ink, letterSpacing: '-0.01em' }}>{labels.map}</div>
+            <span style={{ background: KX.greenSoft, color: KX.green, padding: '4px 12px', borderRadius: 999, fontSize: 13, fontWeight: 700 }}>{labels.live}</span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, marginBottom: 10 }}>
+            {labels.epics.map((e, i) => {
+              const epicT = clamp((localTime - 5.4 - i * 0.08) / 0.4, 0, 1);
+              return (
+                <div key={e} style={{
+                  background: KX.navy, color: '#fff', fontSize: 16, fontWeight: 600,
+                  padding: '12px 14px', borderRadius: 6, textAlign: 'center',
+                  opacity: epicT, transform: `translateY(${(1 - epicT) * 10}px)`,
+                }}>{e}</div>
+              );
+            })}
+          </div>
+          {labels.releases.map((row, ri) => {
+            const tone = tones[ri];
+            const t0 = 6.2 + ri * 1.2;
+            const rowT = clamp((localTime - t0) / 0.5, 0, 1);
+            return (
+              <div key={row.label} style={{ marginTop: 8, opacity: rowT }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: tone, fontWeight: 700, marginBottom: 6 }}>
+                  <span style={{ width: 4, height: 14, background: tone, borderRadius: 2 }} />
+                  {row.label}
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
+                  {row.items.map((col, ci) => (
+                    <div key={ci} style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+                      {col.map(c => (
+                        <div key={c} style={{
+                          background: '#fff', border: `1px solid ${KX.borderSoft}`, borderLeft: `3px solid ${tone}`,
+                          padding: '8px 12px', borderRadius: 4, fontSize: 14, color: KX.body,
+                        }}>{c}</div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ─── Scene 3: 4 outputs ────────────────────────────────────────── */
+
+function OutputCard({ idx, kind, localTime, labels }) {
+  const t = clamp((localTime - idx * 0.6) / 0.6, 0, 1);
+  if (t === 0) return null;
+  const c = labels[kind];
+  return (
+    <div style={{
+      flex: 1, minWidth: 0,
+      background: c.bg, color: '#fff', padding: 36, borderRadius: 24,
+      transform: `translateY(${(1 - Easing.easeOutBack(t)) * 40}px) scale(${0.92 + 0.08 * t})`,
+      opacity: t,
+      boxShadow: '0 20px 50px -20px rgba(15,30,80,0.4)',
+      display: 'flex', flexDirection: 'column', gap: 16,
+    }}>
+      <div style={{ fontSize: 56 }}>{c.icon}</div>
+      <div>
+        <div style={{ fontSize: 28, fontWeight: 700, letterSpacing: '-0.02em', lineHeight: 1.15 }}>{c.name}</div>
+        <div style={{ fontSize: 14, opacity: 0.7, marginTop: 6, fontFamily: KX.mono }}>{c.ext}</div>
+      </div>
+    </div>
+  );
+}
+
+function S3_Outputs() {
+  const { localTime } = useSprite();
+  const lang = useLang();
+  const title = lang === 'TR'
+    ? (<>Tek akışta <span style={{ color: KX.red }}>dört çıktı</span>.</>)
+    : (<>Four outputs, <span style={{ color: KX.red }}>one flow</span>.</>);
+  const subtitle = lang === 'TR'
+    ? 'Tek tıkla indir — Word · Excel · HTML.'
+    : 'One-click download — Word · Excel · HTML.';
+
+  const labels = lang === 'TR'
+    ? {
+        map:   { bg: KX.navy,    icon: '🗂', name: 'Hikaye Haritası',           ext: '4 destan · 18 hikaye' },
+        doc:   { bg: '#2A5B9F',  icon: '📄', name: 'İş (Gereksinim) Analizi',   ext: 'analiz-r1-mvp.docx' },
+        proto: { bg: KX.red,     icon: '📱', name: 'Tıklanabilir Prototip',     ext: 'proto-v1.html · 14 ekran' },
+        test:  { bg: '#107C41',  icon: '✓',  name: 'Test Senaryoları',          ext: 'test-cases.xlsx · 32 senaryo' },
+      }
+    : {
+        map:   { bg: KX.navy,    icon: '🗂', name: 'Story Map',                       ext: '4 epics · 18 stories' },
+        doc:   { bg: '#2A5B9F',  icon: '📄', name: 'Business (Requirements) Analysis',ext: 'analysis-r1-mvp.docx' },
+        proto: { bg: KX.red,     icon: '📱', name: 'Clickable Prototype',             ext: 'proto-v1.html · 14 screens' },
+        test:  { bg: '#107C41',  icon: '✓',  name: 'Test Scenarios',                  ext: 'test-cases.xlsx · 32 cases' },
+      };
+
+  return (
+    <div style={{ position: 'absolute', inset: 0, background: KX.bg, padding: '120px 80px', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ fontSize: 52, fontWeight: 700, color: KX.ink, fontFamily: KX.display, letterSpacing: '-0.03em', textAlign: 'center', marginBottom: 60,
+        opacity: clamp(localTime / 0.6, 0, 1),
+      }}>
+        {title}
+      </div>
+      <div style={{ display: 'flex', gap: 20, flex: 1, alignItems: 'stretch' }}>
+        <OutputCard idx={0} kind="map"   localTime={localTime} labels={labels} />
+        <OutputCard idx={1} kind="doc"   localTime={localTime} labels={labels} />
+        <OutputCard idx={2} kind="proto" localTime={localTime} labels={labels} />
+        <OutputCard idx={3} kind="test"  localTime={localTime} labels={labels} />
+      </div>
+      <div style={{
+        marginTop: 60, textAlign: 'center', fontSize: 22, color: KX.muted, fontFamily: KX.sans,
+        opacity: clamp((localTime - 4) / 1, 0, 1),
+      }}>
+        {subtitle}
+      </div>
+    </div>
+  );
+}
+
+/* ─── Scene 4: Social proof ────────────────────────────────────── */
+
+function CountUp({ to, suffix = '', startAt, localTime, format = (v) => v }) {
+  const t = clamp((localTime - startAt) / 1.5, 0, 1);
+  const eased = Easing.easeOutExpo(t);
+  const v = Math.round(to * eased);
+  return <span>{format(v)}{suffix}</span>;
+}
+
+function SectorIcon({ icon, label, idx, localTime }) {
+  const t = clamp((localTime - 4 - idx * 0.12) / 0.5, 0, 1);
+  return (
+    <div style={{
+      display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14,
+      opacity: t, transform: `translateY(${(1 - t) * 14}px)`,
+    }}>
+      <div style={{
+        width: 88, height: 88, borderRadius: 22, background: 'rgba(255,255,255,0.06)',
+        border: '1px solid rgba(255,255,255,0.14)', display: 'grid', placeItems: 'center',
+        fontSize: 42,
+      }}>{icon}</div>
+      <div style={{ fontSize: 15, color: 'rgba(255,255,255,0.78)', fontFamily: KX.sans, fontWeight: 500 }}>{label}</div>
+    </div>
+  );
+}
+
+function S4_SocialProof() {
+  const { localTime } = useSprite();
+  const lang = useLang();
+  const labels = lang === 'TR'
+    ? {
+        kicker: 'Tarafından kullanılıyor',
+        title:  "Türkiye'nin lider iş analisti ekipleri tarafından.",
+        sectors: [['🏦', 'Bankacılık'], ['📡', 'Telekom'], ['🛒', 'Perakende'], ['📦', 'E-ticaret'], ['🚚', 'Lojistik']],
+        stats: ['Üretilmiş proje', 'Hikaye yazıldı', 'Daha hızlı taslak', 'Memnuniyet'],
+      }
+    : {
+        kicker: 'Trusted by',
+        title:  "Leading business analysts across Türkiye.",
+        sectors: [['🏦', 'Banking'], ['📡', 'Telecom'], ['🛒', 'Retail'], ['📦', 'E-commerce'], ['🚚', 'Logistics']],
+        stats: ['Projects shipped', 'Stories written', 'Faster drafts', 'Satisfaction'],
+      };
+  return (
+    <div style={{
+      position: 'absolute', inset: 0,
+      background: `linear-gradient(135deg, ${KX.navy} 0%, ${KX.navyDeep} 100%)`,
+      padding: '90px 80px', color: '#fff', overflow: 'hidden',
+    }}>
+      <div aria-hidden style={{ position: 'absolute', top: -200, right: -200, width: 600, height: 600, borderRadius: '50%', background: `radial-gradient(circle, ${KX.blue}40, transparent 65%)` }} />
+      <div aria-hidden style={{ position: 'absolute', bottom: -200, left: -200, width: 500, height: 500, borderRadius: '50%', background: `radial-gradient(circle, ${KX.red}25, transparent 70%)` }} />
+
+      <div style={{ position: 'relative', textAlign: 'center', maxWidth: 1400, margin: '0 auto' }}>
+        <div style={{
+          fontSize: 18, color: 'rgba(255,255,255,0.6)', fontFamily: KX.sans, fontWeight: 600,
+          letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 24,
+          opacity: clamp(localTime / 0.6, 0, 1),
+        }}>
+          {labels.kicker}
+        </div>
+        <h2 style={{
+          fontSize: 56, fontWeight: 700, fontFamily: KX.display, letterSpacing: '-0.03em', lineHeight: 1.1,
+          margin: '0 0 60px',
+          opacity: clamp((localTime - 0.4) / 0.8, 0, 1),
+          transform: `translateY(${(1 - clamp((localTime - 0.4) / 0.8, 0, 1)) * 20}px)`,
+        }}>
+          {labels.title}
+        </h2>
+
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 60, marginBottom: 80 }}>
+          {labels.sectors.map(([icon, name], i) => (
+            <SectorIcon key={name} icon={icon} label={name} idx={i} localTime={localTime} />
+          ))}
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 40, paddingTop: 50, borderTop: '1px solid rgba(255,255,255,0.15)' }}>
+          {[
+            { n: 1200, suffix: '+',  startAt: 5.6, fmt: (v) => v.toLocaleString('tr-TR') },
+            { n: 23,   suffix: 'K+', startAt: 5.8, fmt: (v) => v },
+            { n: 64,   suffix: '×',  startAt: 6.0, fmt: (v) => (v / 10).toFixed(1) },
+            { n: 94,   suffix: '%',  startAt: 6.2, fmt: (v) => v },
+          ].map((s, i) => (
+            <div key={i} style={{ opacity: clamp((localTime - s.startAt + 0.5) / 0.5, 0, 1) }}>
+              <div style={{ fontSize: 64, fontWeight: 700, color: KX.amber, fontFamily: KX.display, letterSpacing: '-0.03em', lineHeight: 1 }}>
+                <CountUp to={s.n} suffix={s.suffix} startAt={s.startAt} localTime={localTime} format={s.fmt} />
+              </div>
+              <div style={{ fontSize: 16, color: 'rgba(255,255,255,0.65)', marginTop: 10, fontFamily: KX.sans }}>{labels.stats[i]}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Scene 5: CTA ─────────────────────────────────────────────── */
+
+function S5_CTA() {
+  const { localTime } = useSprite();
+  const lang = useLang();
+  const logoT = clamp(localTime / 1, 0, 1);
+  const lineT = clamp((localTime - 1) / 1, 0, 1);
+  const btnT  = clamp((localTime - 2) / 1, 0, 1);
+  const urlT  = clamp((localTime - 3) / 1, 0, 1);
+  const btnPulse = 1 + Math.sin(localTime * 4) * 0.02 * clamp((localTime - 3) / 1, 0, 1);
+
+  const labels = lang === 'TR'
+    ? { title: (<>İlk projeni <span style={{ color: KX.amber }}>30 saniyede</span> başlat.</>),
+        cta: 'Ücretsiz başla', fineprint: 'Kart gerekmez · İlk projen ücretsiz' }
+    : { title: (<>Start your first project <span style={{ color: KX.amber }}>in 30 seconds</span>.</>),
+        cta: 'Start free', fineprint: 'No card required · First project free' };
+
+  return (
+    <div style={{
+      position: 'absolute', inset: 0,
+      background: `linear-gradient(135deg, ${KX.navy} 0%, ${KX.navyDeep} 100%)`,
+      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+      gap: 36, fontFamily: KX.sans, color: '#fff', textAlign: 'center', overflow: 'hidden',
+    }}>
+      <div aria-hidden style={{ position: 'absolute', top: -150, right: -150, width: 500, height: 500, borderRadius: '50%', background: `radial-gradient(circle, ${KX.blue}40, transparent 65%)` }} />
+      <div aria-hidden style={{ position: 'absolute', bottom: -150, left: -150, width: 500, height: 500, borderRadius: '50%', background: `radial-gradient(circle, ${KX.red}30, transparent 70%)` }} />
+
+      <div style={{ position: 'relative', opacity: logoT, transform: `scale(${0.85 + 0.15 * Easing.easeOutBack(logoT)})` }}>
+        <KxLogo size={120} light />
+      </div>
+
+      <div style={{
+        position: 'relative', fontSize: 56, fontWeight: 700, fontFamily: KX.display, letterSpacing: '-0.03em', lineHeight: 1.1,
+        opacity: lineT, transform: `translateY(${(1 - lineT) * 18}px)`,
+      }}>
+        {labels.title}
+      </div>
+
+      <div style={{
+        position: 'relative', display: 'flex', gap: 14,
+        opacity: btnT, transform: `scale(${btnPulse})`,
+      }}>
+        <div style={{
+          background: KX.red, color: '#fff', fontSize: 22, fontWeight: 700,
+          padding: '20px 36px', borderRadius: 14, fontFamily: KX.sans,
+          boxShadow: `0 12px 30px -8px ${KX.red}80`,
+          display: 'inline-flex', alignItems: 'center', gap: 12,
+        }}>
+          {labels.cta} <span>→</span>
+        </div>
+      </div>
+
+      <div style={{
+        position: 'relative', fontFamily: KX.mono, fontSize: 24, color: 'rgba(255,255,255,0.7)', marginTop: 8,
+        opacity: urlT, letterSpacing: '0.04em',
+      }}>
+        kurgemx.com
+      </div>
+
+      <div style={{
+        position: 'relative', fontSize: 14, color: 'rgba(255,255,255,0.45)', marginTop: 8,
+        opacity: urlT,
+      }}>
+        {labels.fineprint}
+      </div>
+    </div>
+  );
+}
+
+/* ─── Compose ──────────────────────────────────────────────────── */
+
+function TanitimScenes() {
+  return (
+    <>
+      <Sprite start={0}  end={6}>  <S1_Hook /></Sprite>
+      <Sprite start={6}  end={18}> <S2_Solution /></Sprite>
+      <Sprite start={18} end={36}> <S3_Outputs /></Sprite>
+      <Sprite start={36} end={48}> <S4_SocialProof /></Sprite>
+      <Sprite start={48} end={60}> <S5_CTA /></Sprite>
+    </>
+  );
+}
+
+window.TANITIM_SUBS = TANITIM_SUBS;
+window.TANITIM_SCENES = TANITIM_SCENES;
+window.TanitimScenes = TanitimScenes;
+
+</script>
+
+<script type="text/babel" data-presets="react">
+  function App() {
+    return (
+      <LangContext.Provider value="EN">
+        <div id="stageHost" style={{ flex: 1, minHeight: 0, position: 'relative' }}>
+          <Stage
+            width={1920}
+            height={1080}
+            duration={60}
+            background={KX.bg}
+            persistKey="tanitim:embed"
+          >
+            <LangContext.Provider value="EN">
+              <TanitimScenes />
+              <SubtitleBar subs={TANITIM_SUBS} lang="TR" />
+            </LangContext.Provider>
+          </Stage>
+        </div>
+      </LangContext.Provider>
+    );
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
