@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 
 type Tab = 'tanitim' | 'kilavuz'
 
@@ -13,6 +13,7 @@ interface VideoModalProps {
 
 export default function VideoModal({ open, onClose, defaultTab = 'tanitim' }: VideoModalProps) {
   const t = useTranslations('landing.videos')
+  const locale = useLocale()
   const [activeTab, setActiveTab] = useState<Tab>(defaultTab)
 
   useEffect(() => {
@@ -41,7 +42,11 @@ export default function VideoModal({ open, onClose, defaultTab = 'tanitim' }: Vi
 
   if (!open) return null
 
-  const src = activeTab === 'tanitim' ? '/videos/tanitim.html' : '/videos/kilavuz.html'
+  const videoSrc = {
+    tanitim: locale === 'tr' ? '/videos/tanitim.html' : '/videos/tanitim-en.html',
+    kilavuz: locale === 'tr' ? '/videos/kilavuz.html' : '/videos/kilavuz-en.html',
+  }
+  const src = videoSrc[activeTab]
 
   const tabs: { key: Tab; label: string }[] = [
     { key: 'tanitim', label: t('tab1') },
