@@ -82,8 +82,8 @@ export default function PricingTable({
 
   return (
     <>
-      <section className="py-10 px-6 bg-kx-bg">
-        <div className="max-w-[860px] mx-auto">
+      <section className="py-10 px-4 bg-kx-bg">
+        <div className="max-w-5xl mx-auto">
           <div className="overflow-x-auto rounded-xl border border-kx-border shadow-kx-card bg-white">
             <table className="w-full" style={{ minWidth: 600, fontSize: 12 }}>
               <colgroup>

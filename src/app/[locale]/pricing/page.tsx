@@ -1,6 +1,5 @@
 import { getTranslations, getLocale } from 'next-intl/server'
 import type { Metadata } from 'next'
-import PageHero from '@/components/ui/PageHero'
 import KxPill from '@/components/ui/KxPill'
 import PricingTable from './PricingTable'
 import { createClient } from '@/lib/supabase/server'
@@ -82,12 +81,17 @@ export default async function PricingPage() {
 
   return (
     <main className="flex-1 bg-white">
-      <PageHero
-        kicker={t('baslik')}
-        title={t('baslik')}
-        subtitle={t('altBaslik')}
-        compact
-      />
+      <section className="kx-hero-gradient text-white px-6 py-8 relative overflow-hidden">
+        <div className="kx-grid-bg absolute inset-0 opacity-25 pointer-events-none" aria-hidden="true" />
+        <div className="max-w-5xl mx-auto text-center relative">
+          <h1 className="text-3xl font-semibold tracking-tight text-white mb-2">
+            {t('baslik')}
+          </h1>
+          <p className="text-[14px] text-white/70 leading-relaxed">
+            {t('altBaslik')}
+          </p>
+        </div>
+      </section>
 
       {/* Karşılaştırma tablosu + modal mantığı */}
       <PricingTable
