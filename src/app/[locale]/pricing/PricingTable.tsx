@@ -128,13 +128,13 @@ export default function PricingTable({
     <>
       <div className="max-w-[900px] mx-auto px-6 py-10">
           <div className="overflow-x-auto rounded-xl border border-kx-border shadow-kx-card bg-white">
-            <table className="w-full" style={{ minWidth: 560, fontSize: 12 }}>
+            <table className="mx-auto" style={{ fontSize: 12, borderCollapse: 'collapse', width: 'auto' }}>
               <colgroup>
-                <col style={{ width: '32%' }} />
-                <col style={{ width: '17%' }} />
-                <col style={{ width: '17%' }} />
-                <col style={{ width: '17%' }} />
-                <col style={{ width: '17%' }} />
+                <col style={{ minWidth: 160 }} />
+                <col style={{ minWidth: 110 }} />
+                <col style={{ minWidth: 110 }} />
+                <col style={{ minWidth: 110 }} />
+                <col style={{ minWidth: 110 }} />
               </colgroup>
 
               <thead>
