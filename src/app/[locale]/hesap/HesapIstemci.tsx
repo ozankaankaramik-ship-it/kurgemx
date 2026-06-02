@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { sifreDegistir, hesapSilTalebi } from '@/lib/auth/actions'
+import { sifreDegistir, hesapSilTalebi, pazarlamaOnayGuncelle } from '@/lib/auth/actions'
 import { Link } from '@/i18n/navigation'
 import type { PlanBilgisi } from '@/lib/abonelik'
 
@@ -27,6 +27,10 @@ type Labels = {
   yeniSifreTekrar: string
   kaydet: string
   kaydedildi: string
+  bildirimTercihleri: string
+  pazarlamaOnay: string
+  pazarlamaKaydedildi: string
+  pazarlamaHata: string
   abonelik: string
   mevcutPlan: string
   aylikKullanim: string
@@ -44,6 +48,7 @@ type Labels = {
 type Props = {
   user: { id: string; email: string; ad: string; soyad: string; displayName: string; initials: string }
   planBilgisi: PlanBilgisi
+  pazarlamaOnay: boolean
   locale: string
   labels: Labels
 }
@@ -76,13 +81,44 @@ function FieldRow({ label, value }: { label: string; value: string }) {
   )
 }
 
+/* ── Toggle switch ───────────────────────────────────────────── */
+function Toggle({ checked, onChange, disabled }: { checked: boolean; onChange: (v: boolean) => void; disabled?: boolean }) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      disabled={disabled}
+      onClick={() => onChange(!checked)}
+      style={{
+        width: 40, height: 22, borderRadius: 11, flexShrink: 0, border: 'none',
+        background: checked ? '#1F3864' : '#D1D5DB',
+        position: 'relative', transition: 'background 0.2s',
+        cursor: disabled ? 'not-allowed' : 'pointer', opacity: disabled ? 0.6 : 1,
+      }}
+    >
+      <span style={{
+        position: 'absolute', top: 3,
+        left: checked ? 19 : 3,
+        width: 16, height: 16, borderRadius: '50%',
+        background: 'white', transition: 'left 0.2s',
+        boxShadow: '0 1px 2px rgba(0,0,0,0.2)',
+        display: 'block',
+      }} />
+    </button>
+  )
+}
+
 /* ── Component ───────────────────────────────────────────────── */
-export default function HesapIstemci({ user, planBilgisi, locale, labels: L }: Props) {
+export default function HesapIstemci({ user, planBilgisi, pazarlamaOnay, locale, labels: L }: Props) {
   const router = useRouter()
-  const [sifreState, setSifreState]     = useState<{ error?: string; success?: string } | null>(null)
-  const [iptalMesaj, setIptalMesaj]     = useState<string | null>(null)
-  const [iptalPending, setIptalPending] = useState(false)
-  const [pending, startTrans]           = useTransition()
+  const [sifreState, setSifreState]         = useState<{ error?: string; success?: string } | null>(null)
+  const [iptalMesaj, setIptalMesaj]         = useState<string | null>(null)
+  const [iptalPending, setIptalPending]     = useState(false)
+  const [pending, startTrans]               = useTransition()
+  const [pazarlamaChecked, setPazarlama]    = useState(pazarlamaOnay)
+  const [pazarlamaMsg, setPazarlamaMsg]     = useState<{ text: string; ok: boolean } | null>(null)
+  const [pazarlama_pending, setPazPending]  = useState(false)
 
   const { plan, abonelik } = planBilgisi
   const badge    = PLAN_BADGE[plan.kod] ?? PLAN_BADGE.freemium
@@ -93,6 +129,20 @@ export default function HesapIstemci({ user, planBilgisi, locale, labels: L }: P
   const isTR          = locale === 'tr'
   const isPaidPlan    = PAID_PLANS.has(plan.kod)
   const sonrakiOdeme  = abonelik?.sonraki_odeme_tarihi ?? null
+
+  async function handlePazarlamaToggle(yeniDeger: boolean) {
+    setPazarlama(yeniDeger)
+    setPazarlamaMsg(null)
+    setPazPending(true)
+    const result = await pazarlamaOnayGuncelle(yeniDeger)
+    setPazPending(false)
+    if (result.error) {
+      setPazarlama(!yeniDeger)
+      setPazarlamaMsg({ text: L.pazarlamaHata, ok: false })
+    } else {
+      setPazarlamaMsg({ text: L.pazarlamaKaydedildi, ok: true })
+    }
+  }
 
   function handleSifreSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -168,6 +218,24 @@ export default function HesapIstemci({ user, planBilgisi, locale, labels: L }: P
             <FieldRow label={L.ad}    value={user.ad} />
             <FieldRow label={L.soyad} value={user.soyad} />
             <FieldRow label={L.email} value={user.email} />
+          </Section>
+
+          <Section label={L.bildirimTercihleri}>
+            <div className="flex items-start justify-between gap-4 py-1">
+              <span className="text-[13px] leading-snug" style={{ color: '#374151' }}>
+                {L.pazarlamaOnay}
+              </span>
+              <Toggle
+                checked={pazarlamaChecked}
+                onChange={handlePazarlamaToggle}
+                disabled={pazarlama_pending}
+              />
+            </div>
+            {pazarlamaMsg && (
+              <p className="text-[12px] mt-2" style={{ color: pazarlamaMsg.ok ? '#27500A' : '#DC2626' }}>
+                {pazarlamaMsg.text}
+              </p>
+            )}
           </Section>
 
           <Section label={L.sifreDegistir}>

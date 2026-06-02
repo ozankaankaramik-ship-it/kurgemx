@@ -222,6 +222,24 @@ export async function hesapSilTalebi(
   redirect(`/${locale}`)
 }
 
+// Pazarlama onayını güncelle
+export async function pazarlamaOnayGuncelle(onay: boolean): Promise<{ error?: string }> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'auth' }
+
+  const { error } = await supabase
+    .from('kullanicilar')
+    .update({
+      pazarlama_onay:       onay,
+      pazarlama_onay_tarih: onay ? new Date().toISOString() : null,
+    })
+    .eq('id', user.id)
+
+  if (error) return { error: 'db' }
+  return {}
+}
+
 // Yasal onayları kaydet (OAuth sonrası modal)
 export async function onaylariKaydet(): Promise<{ error?: string }> {
   const supabase = await createClient()
