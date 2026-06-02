@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState, useState } from 'react'
+import { useActionState, useRef, useState } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
 import { Link } from '@/i18n/navigation'
 import { kayitOl, googleIleGiris } from '@/lib/auth/actions'
@@ -53,9 +53,11 @@ function getStrength(pw: string): { score: 0 | 1 | 2 | 3 | 4; label: string; col
 export default function KayitFormu() {
   const t = useTranslations('auth.kayit')
   const locale = useLocale()
-  const [kvkk,  setKvkk]  = useState(false)
-  const [terms, setTerms] = useState(false)
+  const [kvkk,              setKvkk]              = useState(false)
+  const [terms,             setTerms]             = useState(false)
+  const [showGoogleWarning, setShowGoogleWarning] = useState(false)
   const [pw, setPw] = useState('')
+  const checkboxGroupRef = useRef<HTMLDivElement>(null)
 
   const [state, action, isPending] = useActionState(kayitOl, null)
 
@@ -76,19 +78,34 @@ export default function KayitFormu() {
       <p className="text-[14px] text-kx-muted mb-6">{t('altBaslik')}</p>
 
       {/* Google OAuth */}
-      <form action={googleIleGiris}>
+      <form
+        action={googleIleGiris}
+        onSubmit={(e) => {
+          if (!kvkk || !terms) {
+            e.preventDefault()
+            setShowGoogleWarning(true)
+            checkboxGroupRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+          }
+        }}
+      >
         <input type="hidden" name="locale" value={locale} />
         <input type="hidden" name="kvkk"  value={kvkk  ? 'on' : ''} />
         <input type="hidden" name="terms" value={terms ? 'on' : ''} />
         <button
           type="submit"
-          disabled={!kvkk || !terms}
-          className="w-full flex items-center justify-center gap-2.5 bg-white border border-kx-border rounded-xl px-4 py-3 text-[14px] font-medium text-kx-ink hover:border-kx-blue disabled:opacity-40 disabled:cursor-not-allowed transition-colors mb-4"
+          className="w-full flex items-center justify-center gap-2.5 bg-white border border-kx-border rounded-xl px-4 py-3 text-[14px] font-medium text-kx-ink hover:border-kx-blue transition-colors mb-2"
         >
           <GoogleIcon />
           {t('googleBtn')}
         </button>
       </form>
+
+      {/* Google uyarısı — her ikisi işaretliyse kaybolur */}
+      {showGoogleWarning && (!kvkk || !terms) && (
+        <p className="text-[12px] text-amber-600 mb-2">
+          {t('googleOnayUyarisi')}
+        </p>
+      )}
 
       {/* Divider */}
       <div className="flex items-center gap-3 my-4 text-[11px] font-medium tracking-[0.08em] text-kx-faint">
@@ -162,7 +179,7 @@ export default function KayitFormu() {
         </div>
 
         {/* Yasal onaylar grubu */}
-        <div className="space-y-2 pt-1">
+        <div ref={checkboxGroupRef} className="space-y-2 pt-1">
           {/* KVKK */}
           <label className="flex items-start gap-2.5 text-[12px] text-kx-body cursor-pointer leading-[1.5]">
             <input
