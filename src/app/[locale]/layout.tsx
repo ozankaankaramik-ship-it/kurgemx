@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import ConsentGate from "@/components/ConsentGate";
 import "../globals.css";
 
 const geistSans = Geist({
@@ -55,6 +56,7 @@ export default async function LocaleLayout({
           <Navbar />
           {children}
           <Footer />
+          <ConsentGate locale={locale} />
         </NextIntlClientProvider>
       </body>
     </html>

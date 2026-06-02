@@ -55,14 +55,15 @@ export async function kayitOl(
   const ad = formData.get('ad') as string
   const soyad = formData.get('soyad') as string
   const kvkk = formData.get('kvkk')
+  const terms = formData.get('terms')
   const locale = (formData.get('locale') as string) || 'tr'
 
-  if (!kvkk) {
-    return { error: 'kvkk_required' }
-  }
+  if (!kvkk) return { error: 'kvkk_required' }
+  if (!terms) return { error: 'terms_required' }
 
   const supabase = await createClient()
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
+  const now = new Date().toISOString()
 
   const { data, error } = await supabase.auth.signUp({
     email,
@@ -72,7 +73,9 @@ export async function kayitOl(
         ad,
         soyad,
         kvkk_onay: true,
-        kvkk_tarih: new Date().toISOString(),
+        kvkk_tarih: now,
+        terms_onay: true,
+        terms_onay_tarih: now,
       },
       emailRedirectTo: `${siteUrl}/api/auth/callback?next=/${locale}`,
     },
@@ -93,7 +96,9 @@ export async function kayitOl(
       ad,
       soyad,
       kvkk_onay: true,
-      kvkk_tarih: new Date().toISOString(),
+      kvkk_tarih: now,
+      terms_onay: true,
+      terms_onay_tarih: now,
     })
     redirect(`/${locale}`)
   }
@@ -104,7 +109,8 @@ export async function kayitOl(
 // Google ile giriş / kayıt
 export async function googleIleGiris(formData: FormData): Promise<void> {
   const locale = (formData.get('locale') as string) || 'tr'
-  const kvkk = formData.get('kvkk') === 'on' ? 'true' : 'false'
+  const kvkk  = formData.get('kvkk')  === 'on' ? 'true' : 'false'
+  const terms = formData.get('terms') === 'on' ? 'true' : 'false'
 
   const supabase = await createClient()
   const headersList = await headers()
@@ -115,7 +121,7 @@ export async function googleIleGiris(formData: FormData): Promise<void> {
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
-      redirectTo: `${origin}/api/auth/callback?next=/${locale}&kvkk=${kvkk}`,
+      redirectTo: `${origin}/api/auth/callback?next=/${locale}&kvkk=${kvkk}&terms=${terms}`,
     },
   })
 
@@ -214,6 +220,27 @@ export async function hesapSilTalebi(
 
   await supabase.auth.signOut()
   redirect(`/${locale}`)
+}
+
+// Yasal onayları kaydet (OAuth sonrası modal)
+export async function onaylariKaydet(): Promise<{ error?: string }> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'auth' }
+
+  const now = new Date().toISOString()
+  const { error } = await supabase
+    .from('kullanicilar')
+    .update({
+      kvkk_onay:        true,
+      kvkk_tarih:       now,
+      terms_onay:       true,
+      terms_onay_tarih: now,
+    })
+    .eq('id', user.id)
+
+  if (error) return { error: 'db' }
+  return {}
 }
 
 // Şifre değiştirme (oturum açıkken)

@@ -3,9 +3,10 @@ import { createServerClient } from '@supabase/ssr'
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
-  const code = searchParams.get('code')
-  const next = searchParams.get('next') ?? '/en'
-  const kvkk = searchParams.get('kvkk') === 'true'
+  const code  = searchParams.get('code')
+  const next  = searchParams.get('next') ?? '/en'
+  const kvkk  = searchParams.get('kvkk')  === 'true'
+  const terms = searchParams.get('terms') === 'true'
 
   if (!code) {
     return NextResponse.redirect(new URL('/en/login', request.url))
@@ -54,13 +55,17 @@ export async function GET(request: NextRequest) {
       meta.soyad || meta.family_name || fullName.split(' ').slice(1).join(' ') || 'Soyad'
     const kvkk_onay: boolean = kvkk || meta.kvkk_onay === true
 
+    const now = new Date().toISOString()
+    const terms_onay: boolean = terms || meta.terms_onay === true
     await supabase.from('kullanicilar').insert({
       id: user.id,
       email: user.email!,
       ad,
       soyad,
       kvkk_onay,
-      kvkk_tarih: kvkk_onay ? new Date().toISOString() : null,
+      kvkk_tarih:       kvkk_onay  ? now : null,
+      terms_onay,
+      terms_onay_tarih: terms_onay ? now : null,
     })
   }
 

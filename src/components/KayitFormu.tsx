@@ -53,7 +53,8 @@ function getStrength(pw: string): { score: 0 | 1 | 2 | 3 | 4; label: string; col
 export default function KayitFormu() {
   const t = useTranslations('auth.kayit')
   const locale = useLocale()
-  const [kvkk, setKvkk] = useState(false)
+  const [kvkk,  setKvkk]  = useState(false)
+  const [terms, setTerms] = useState(false)
   const [pw, setPw] = useState('')
 
   const [state, action, isPending] = useActionState(kayitOl, null)
@@ -77,10 +78,11 @@ export default function KayitFormu() {
       {/* Google OAuth */}
       <form action={googleIleGiris}>
         <input type="hidden" name="locale" value={locale} />
-        <input type="hidden" name="kvkk" value={kvkk ? 'on' : ''} />
+        <input type="hidden" name="kvkk"  value={kvkk  ? 'on' : ''} />
+        <input type="hidden" name="terms" value={terms ? 'on' : ''} />
         <button
           type="submit"
-          disabled={!kvkk}
+          disabled={!kvkk || !terms}
           className="w-full flex items-center justify-center gap-2.5 bg-white border border-kx-border rounded-xl px-4 py-3 text-[14px] font-medium text-kx-ink hover:border-kx-blue disabled:opacity-40 disabled:cursor-not-allowed transition-colors mb-4"
         >
           <GoogleIcon />
@@ -159,21 +161,46 @@ export default function KayitFormu() {
           </div>
         </div>
 
-        {/* KVKK */}
-        <label className="flex items-start gap-2.5 text-[12px] text-kx-body cursor-pointer leading-[1.5] pt-1">
-          <input
-            id="kvkk"
-            name="kvkk"
-            type="checkbox"
-            checked={kvkk}
-            onChange={(e) => setKvkk(e.target.checked)}
-            className="mt-0.5 w-4 h-4 shrink-0 accent-kx-navy"
-          />
-          <span>{t('kvkk')}</span>
-        </label>
+        {/* Yasal onaylar grubu */}
+        <div className="space-y-2 pt-1">
+          {/* KVKK */}
+          <label className="flex items-start gap-2.5 text-[12px] text-kx-body cursor-pointer leading-[1.5]">
+            <input
+              id="kvkk"
+              name="kvkk"
+              type="checkbox"
+              checked={kvkk}
+              onChange={(e) => setKvkk(e.target.checked)}
+              className="mt-0.5 w-4 h-4 shrink-0 accent-kx-navy"
+            />
+            <span>{t('kvkk')}</span>
+          </label>
+
+          {/* Terms */}
+          <label className="flex items-start gap-2.5 text-[12px] text-kx-body cursor-pointer leading-[1.5]">
+            <input
+              id="terms"
+              name="terms"
+              type="checkbox"
+              checked={terms}
+              onChange={(e) => setTerms(e.target.checked)}
+              className="mt-0.5 w-4 h-4 shrink-0 accent-kx-navy"
+            />
+            <span>
+              {t('termsPrefix')}
+              <Link href="/terms" target="_blank" className="underline text-kx-navy hover:opacity-80">
+                {t('termsLinkText')}
+              </Link>
+              {t('termsSuffix')}
+            </span>
+          </label>
+        </div>
 
         {errorKey === 'kvkk_required' && (
           <p className="text-[12px] text-red-600">{t('hatalar.kvkk_required')}</p>
+        )}
+        {errorKey === 'terms_required' && (
+          <p className="text-[12px] text-red-600">{t('hatalar.terms_required')}</p>
         )}
 
         {errorMsg && errorKey !== 'kvkk_required' && (
@@ -186,7 +213,7 @@ export default function KayitFormu() {
 
         <button
           type="submit"
-          disabled={isPending}
+          disabled={isPending || !kvkk || !terms}
           className="w-full bg-kx-red text-white rounded-xl px-5 py-3 text-[14px] font-semibold disabled:opacity-50 transition shadow-kx-red mt-1"
         >
           {isPending ? '...' : `${t('kayitBtn')} →`}

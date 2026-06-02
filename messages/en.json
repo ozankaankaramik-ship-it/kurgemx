@@ -88,6 +88,10 @@
             "sifrePlaceholder": "At least 8 characters",
             "kvkk": "I have read the KVKK (Personal Data Protection) disclosure text and consent to the processing of my personal data.",
             "kvkkZorunlu": "You must accept the KVKK terms to register.",
+            "termsPrefix": "I have read and accept the ",
+            "termsLinkText": "Terms of Service",
+            "termsSuffix": ".",
+            "termsZorunlu": "You must accept the Terms of Service to register.",
             "kayitBtn": "Sign Up",
             "googleBtn": "Sign up with Google",
             "ayirici": "or",
@@ -96,10 +100,22 @@
             "emailGonderildi": "Verification email sent! Please check your inbox and activate your account.",
             "hatalar": {
                 "kvkk_required": "You must accept the KVKK terms to register.",
+                "terms_required": "You must accept the Terms of Service to register.",
                 "user_exists": "This email is already registered. Try signing in.",
                 "genel": "An error occurred while signing up. Please try again."
             }
         }
+    },
+    "onayModal": {
+        "baslik": "Legal Consents",
+        "aciklama": "You must accept the following terms to continue using the platform.",
+        "kvkk": "I have read the KVKK (Personal Data Protection) disclosure text and consent to the processing of my personal data.",
+        "kvkkLinkText": "KVKK disclosure",
+        "termsPrefix": "I have read and accept the ",
+        "termsLinkText": "Terms of Service",
+        "termsSuffix": ".",
+        "kabul": "Accept and Continue",
+        "kaydediliyor": "Saving..."
     },
     "yeniProje": {
         "baslik": "New Project",

@@ -88,6 +88,10 @@
             "sifrePlaceholder": "En az 8 karakter",
             "kvkk": "KVKK Aydınlatma Metnini okudum ve kişisel verilerimin işlenmesini kabul ediyorum.",
             "kvkkZorunlu": "Kayıt olabilmek için KVKK metnini kabul etmelisiniz.",
+            "termsPrefix": "",
+            "termsLinkText": "Kullanım Koşulları",
+            "termsSuffix": "'nı okudum ve kabul ediyorum.",
+            "termsZorunlu": "Kayıt olabilmek için Kullanım Koşulları'nı kabul etmelisiniz.",
             "kayitBtn": "Kayıt Ol",
             "googleBtn": "Google ile Kayıt Ol",
             "ayirici": "veya",
@@ -96,10 +100,22 @@
             "emailGonderildi": "Doğrulama e-postası gönderildi! Lütfen gelen kutunuzu kontrol edin ve hesabınızı etkinleştirin.",
             "hatalar": {
                 "kvkk_required": "Kayıt olabilmek için KVKK metnini kabul etmelisiniz.",
+                "terms_required": "Kayıt olabilmek için Kullanım Koşulları'nı kabul etmelisiniz.",
                 "user_exists": "Bu e-posta adresi zaten kayıtlı. Giriş yapmayı deneyin.",
                 "genel": "Kayıt olurken bir hata oluştu. Lütfen tekrar deneyin."
             }
         }
+    },
+    "onayModal": {
+        "baslik": "Yasal Onaylar",
+        "aciklama": "Platformu kullanmaya devam etmek için aşağıdaki koşulları kabul etmeniz gerekmektedir.",
+        "kvkk": "KVKK Aydınlatma Metnini okudum ve kişisel verilerimin işlenmesini kabul ediyorum.",
+        "kvkkLinkText": "KVKK Aydınlatma Metni",
+        "termsPrefix": "",
+        "termsLinkText": "Kullanım Koşulları",
+        "termsSuffix": "'nı okudum ve kabul ediyorum.",
+        "kabul": "Kabul Et ve Devam",
+        "kaydediliyor": "Kaydediliyor..."
     },
     "yeniProje": {
         "baslik": "Yeni Proje",
