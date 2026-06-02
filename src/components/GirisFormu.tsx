@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState, useEffect } from 'react'
+import { useActionState } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
 import { Link } from '@/i18n/navigation'
 import { girisYap, googleIleGiris } from '@/lib/auth/actions'
@@ -44,11 +44,6 @@ export default function GirisFormu() {
   const locale = useLocale()
 
   const [state, action, isPending] = useActionState(girisYap, null)
-
-  // Soft navigation yerine hard navigation: singleton Supabase client yeni cookie'yi okusun
-  useEffect(() => {
-    if (state?.location) window.location.replace(state.location)
-  }, [state?.location])
 
   const errorKey = state?.error as string | undefined
   const errorMsg = errorKey

@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation'
 import { headers } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 
-export type AuthState = { error?: string; success?: string; location?: string } | null
+export type AuthState = { error?: string; success?: string } | null
 
 // E-posta / şifre ile giriş
 export async function girisYap(
@@ -42,9 +42,7 @@ export async function girisYap(
     }
   }
 
-  // Hard navigation: soft navigation yerine window.location.replace kullanılır,
-  // böylece browser Supabase singleton'ı sıfırdan başlayıp yeni session cookie'yi okur.
-  return { success: 'ok', location: `/${locale}` }
+  redirect(`/${locale}`)
 }
 
 // E-posta / şifre ile kayıt
@@ -102,7 +100,7 @@ export async function kayitOl(
       terms_onay: true,
       terms_onay_tarih: now,
     })
-    return { success: 'ok', location: `/${locale}` }
+    redirect(`/${locale}`)
   }
 
   return { success: 'emailGonderildi' }

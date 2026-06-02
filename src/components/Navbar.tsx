@@ -25,16 +25,14 @@ export default function Navbar() {
 
   useEffect(() => {
     const supabase = createClient()
-
-    const { data: listener } = supabase.auth.onAuthStateChange((event, session) => {
-      setUser(session?.user ?? null)
+    supabase.auth.getUser().then(({ data }) => {
+      setUser(data.user)
       setLoadingUser(false)
-
-      if (session?.user && (event === 'INITIAL_SESSION' || event === 'SIGNED_IN')) {
+      if (data.user) {
         supabase
           .from('abonelikler')
           .select('plan:planlar!plan_id(kod, ad)')
-          .eq('kullanici_id', session.user.id)
+          .eq('kullanici_id', data.user.id)
           .eq('durum', 'aktif')
           .order('baslangic', { ascending: false })
           .limit(1)
@@ -43,11 +41,12 @@ export default function Navbar() {
             const p = (abo as { plan?: { kod: string; ad: string } } | null)?.plan
             setPlanInfo(p ?? { kod: 'freemium', ad: 'Freemium' })
           })
-      } else if (!session?.user) {
-        setPlanInfo(null)
       }
     })
-
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null)
+      if (!session?.user) setPlanInfo(null)
+    })
     return () => listener.subscription.unsubscribe()
   }, [])
 
