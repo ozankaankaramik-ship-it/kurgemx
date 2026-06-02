@@ -61,6 +61,11 @@ export default function KayitFormu() {
 
   const [state, action, isPending] = useActionState(kayitOl, null)
 
+  // Soft navigation yerine hard navigation: singleton Supabase client yeni cookie'yi okusun
+  useEffect(() => {
+    if (state?.location) window.location.replace(state.location)
+  }, [state?.location])
+
   const errorKey = state?.error as string | undefined
   const errorMsg = errorKey
     ? t.has(`hatalar.${errorKey}` as Parameters<typeof t>[0])
