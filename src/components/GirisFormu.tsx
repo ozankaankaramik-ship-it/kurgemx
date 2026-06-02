@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState, useEffect, useRef } from 'react'
+import { useActionState } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
 import { Link } from '@/i18n/navigation'
 import { girisYap, googleIleGiris } from '@/lib/auth/actions'
@@ -44,14 +44,6 @@ export default function GirisFormu() {
   const locale = useLocale()
 
   const [state, action, isPending] = useActionState(girisYap, null)
-
-  const wasPendingRef = useRef(false)
-  useEffect(() => {
-    if (wasPendingRef.current && !isPending && !state?.error) {
-      window.location.reload()
-    }
-    wasPendingRef.current = isPending
-  })
 
   const errorKey = state?.error as string | undefined
   const errorMsg = errorKey
