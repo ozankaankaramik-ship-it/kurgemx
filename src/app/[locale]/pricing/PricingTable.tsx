@@ -23,7 +23,7 @@ function btnType(planKod: string, mevcutKod: string | null): BtnType {
 }
 
 /* ── Tipleri ─────────────────────────────────────────────────── */
-type PlanRef = { id: string; fiyat: number; ad: string; kod: string } | null
+type PlanRef = { id: string; fiyat: number; fiyat_tl: number; ad: string; kod: string } | null
 
 type Props = {
   analystPlan:   PlanRef
@@ -200,7 +200,16 @@ export default function PricingTable({
                 </span>
               }
               name={t('planlar.analyst.ad')}
-              price={<span style={{ fontSize: 36, fontWeight: 500, color: '#0E1A33' }}>$9</span>}
+              price={
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+                  <span style={{ fontSize: 36, fontWeight: 500, color: '#0E1A33' }}>
+                    ₺{analystPlan?.fiyat_tl ?? 399}
+                  </span>
+                  <span style={{ fontSize: 13, color: '#9CA3AF' }}>
+                    ${analystPlan?.fiyat ?? 9}
+                  </span>
+                </div>
+              }
               period={t('planlar.analyst.aylik')}
               btn={analystBtn}
               onSubscribe={analystPlan ? () => setModalPlan(analystPlan) : undefined}
@@ -211,7 +220,16 @@ export default function PricingTable({
           <div style={{ padding: '0 6px' }}>
             <PlanCard
               name={t('planlar.advanced.ad')}
-              price={<span style={{ fontSize: 36, fontWeight: 500, color: '#0E1A33' }}>$29</span>}
+              price={
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+                  <span style={{ fontSize: 36, fontWeight: 500, color: '#0E1A33' }}>
+                    ₺{advancedPlan?.fiyat_tl ?? 999}
+                  </span>
+                  <span style={{ fontSize: 13, color: '#9CA3AF' }}>
+                    ${advancedPlan?.fiyat ?? 29}
+                  </span>
+                </div>
+              }
               period={t('planlar.advanced.aylik')}
               btn={advancedBtn}
               onSubscribe={advancedPlan ? () => setModalPlan(advancedPlan) : undefined}
@@ -302,6 +320,7 @@ export default function PricingTable({
           planId={modalPlan.id}
           planAd={modalPlan.ad}
           fiyat={modalPlan.fiyat}
+          fiyat_tl={modalPlan.fiyat_tl}
           locale={locale}
           onClose={() => setModalPlan(null)}
         />

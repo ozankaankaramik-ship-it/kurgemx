@@ -19,12 +19,18 @@ export default async function PricingPage() {
   // Ücretli plan id'leri (buton için UUID gerekli)
   const { data: planlarRaw } = await supabase
     .from('planlar')
-    .select('id, ad, kod, fiyat_usd')
+    .select('id, ad, kod, fiyat_usd, fiyat_tl')
     .in('kod', ['analyst', 'advanced'])
     .eq('aktif', true)
 
   const planMap = Object.fromEntries(
-    (planlarRaw ?? []).map(p => [p.kod, { id: p.id, fiyat: p.fiyat_usd as number, ad: p.ad as string, kod: p.kod as string }])
+    (planlarRaw ?? []).map(p => [p.kod, {
+      id:       p.id,
+      fiyat:    p.fiyat_usd as number,
+      fiyat_tl: p.fiyat_tl as number,
+      ad:       p.ad as string,
+      kod:      p.kod as string,
+    }])
   )
 
   // Oturum açmış kullanıcının aktif plan id'si ve kodu

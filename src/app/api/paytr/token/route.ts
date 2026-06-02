@@ -67,16 +67,16 @@ export async function POST(request: NextRequest) {
     // ── Plan bilgisi ──────────────────────────────────────────────
     const { data: plan, error: planErr } = await service
       .from('planlar')
-      .select('id, ad, fiyat_usd')
+      .select('id, ad, fiyat_usd, fiyat_tl')
       .eq('id', plan_id)
       .single()
 
-    if (planErr || !plan || plan.fiyat_usd == null) {
+    if (planErr || !plan || plan.fiyat_tl == null) {
       console.error('[paytr/token] Plan bulunamadı:', planErr?.message)
       return NextResponse.json({ error: 'Plan bulunamadı' }, { status: 404 })
     }
 
-    console.log(`[paytr/token] Plan: ${plan.ad} (${plan.fiyat_usd} TRY)`)
+    console.log(`[paytr/token] Plan: ${plan.ad} (${plan.fiyat_tl} TRY)`)
 
     // ── Kullanıcı bilgisi ─────────────────────────────────────────
     const { data: kullanici, error: kullaniciErr } = await service
@@ -112,13 +112,13 @@ export async function POST(request: NextRequest) {
 
     // ── PayTR parametreleri ───────────────────────────────────────
     const merchant_oid    = `KX${user.id.replace(/-/g, '').slice(0, 8)}${Date.now()}`
-    const payment_amount  = Math.round(plan.fiyat_usd * 100)
+    const payment_amount  = Math.round(plan.fiyat_tl * 100)
     const currency        = 'TL'
     const no_installment  = '1'
     const max_installment = '0'
 
     const user_basket = Buffer.from(
-      JSON.stringify([[plan.ad, String(plan.fiyat_usd), 1]])
+      JSON.stringify([[plan.ad, String(plan.fiyat_tl), 1]])
     ).toString('base64')
 
     const user_ip =
@@ -199,7 +199,7 @@ export async function POST(request: NextRequest) {
       kullanici_id:       user.id,
       abonelik_id:        abonelik.id,
       hedef_plan_id:      plan.id,
-      tutar:              plan.fiyat_usd,
+      tutar:              plan.fiyat_tl,
       para_birimi:        'TRY',
       paytr_merchant_oid: merchant_oid,
       paytr_odeme_turu:   'card',
