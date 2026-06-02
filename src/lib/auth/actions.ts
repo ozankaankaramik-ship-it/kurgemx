@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation'
 import { headers } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 
-export type AuthState = { error?: string; success?: string } | null
+export type AuthState = { error?: string; success?: string; locale?: string } | null
 
 // E-posta / şifre ile giriş
 export async function girisYap(
@@ -42,7 +42,7 @@ export async function girisYap(
     }
   }
 
-  redirect(`/${locale}`)
+  return { success: 'ok', locale }
 }
 
 // E-posta / şifre ile kayıt
