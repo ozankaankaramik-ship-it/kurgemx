@@ -20,12 +20,6 @@ export default async function HesapPage() {
   const planBilgisi = await getKullaniciPlan(supabase, user!.id)
   const t = await getTranslations('hesap')
 
-  const { data: kullanici } = await supabase
-    .from('kullanicilar')
-    .select('pazarlama_onay')
-    .eq('id', user!.id)
-    .single()
-
   const ad    = (user!.user_metadata?.ad    as string | undefined) ?? ''
   const soyad = (user!.user_metadata?.soyad as string | undefined) ?? ''
   const email = user!.email ?? ''
@@ -39,7 +33,6 @@ export default async function HesapPage() {
         <HesapIstemci
           user={{ id: user!.id, email, ad, soyad, displayName, initials }}
           planBilgisi={planBilgisi}
-          pazarlamaOnay={kullanici?.pazarlama_onay ?? false}
           locale={locale}
           labels={{
             temelBilgiler:   t('temelBilgiler'),
@@ -55,10 +48,6 @@ export default async function HesapPage() {
             mevcutPlan:      t('mevcutPlan'),
             aylikKullanim:   t('aylikKullanim'),
             planiYukselt:    t('planiYukselt'),
-            bildirimTercihleri:  t('bildirimTercihleri'),
-            pazarlamaOnay:       t('pazarlamaOnay'),
-            pazarlamaKaydedildi: t('pazarlamaKaydedildi'),
-            pazarlamaHata:       t('pazarlamaHata'),
             sonrakiOdemeTarihi:  t('sonrakiOdemeTarihi'),
             aboneligiIptalEt: t('aboneligiIptalEt'),
             iptalOnay:       t('iptalOnay'),
