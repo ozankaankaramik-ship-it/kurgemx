@@ -227,6 +227,12 @@ export default function Navbar() {
               <div className="flex items-center gap-2">
                 <Link
                   href="/giris"
+                  onClick={(e) => {
+                    if (user) {
+                      e.preventDefault()
+                      window.location.reload()
+                    }
+                  }}
                   className="text-[13.5px] text-white px-3 py-1.5 hover:text-white/80 transition-colors font-medium"
                 >
                   {tNav('signIn')}
@@ -352,7 +358,14 @@ export default function Navbar() {
               <div className="flex gap-2 pt-3 pb-1">
                 <Link
                   href="/giris"
-                  onClick={() => setMobileOpen(false)}
+                  onClick={(e) => {
+                    if (user) {
+                      e.preventDefault()
+                      window.location.reload()
+                    } else {
+                      setMobileOpen(false)
+                    }
+                  }}
                   className="flex-1 text-center text-[13px] text-white py-2 rounded-lg border border-white/30 hover:bg-white/10 transition-colors"
                 >
                   {tNav('signIn')}
