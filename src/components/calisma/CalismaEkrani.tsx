@@ -1843,9 +1843,9 @@ function EkranIci({
               <div className="w-9 shrink-0" />
               <div className="flex-1 pb-6 min-w-0">
                 <p
-                  className="text-xs text-gray-500"
+                  className="text-xs text-gray-600"
                   style={{
-                    opacity: 0.4,
+                    opacity: 0.6,
                     borderLeft: '2px solid var(--color-border-tertiary)',
                     paddingLeft: 10,
                   }}
