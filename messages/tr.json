@@ -296,10 +296,7 @@
             "yeniSekme": "Yeni Sekmede Aç",
             "prototipOlusturuldu": "✓ Prototip oluşturuldu",
             "isAnaliziGerekli": "Önce Gereksinim Analizi Dokümanı oluşturulmalıdır",
-            "yenidenUret": "Yeniden Üret",
-            "linkKopyala": "Paylaşılabilir Linki Kopyala",
-            "linkKopyalandi": "✓ Kopyalandı!",
-            "linkNotu": "Giriş gerektirmez"
+            "yenidenUret": "Yeniden Üret"
         },
         "adim5": {
             "baslik": "Test Senaryosu",

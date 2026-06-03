@@ -13,12 +13,8 @@ function getPreferredLocale(request: NextRequest): "tr" | "en" {
 export default async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Auth callback, reset-password ve share: intl middleware'den muaf
-  if (
-    pathname.includes("/auth/callback") ||
-    pathname.endsWith("/reset-password") ||
-    pathname.startsWith("/share/")
-  ) {
+  // Auth callback ve reset-password: intl middleware'den muaf
+  if (pathname.includes("/auth/callback") || pathname.endsWith("/reset-password")) {
     return NextResponse.next();
   }
 
