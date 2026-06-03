@@ -584,7 +584,7 @@ async function exportTestExcel(testCases: TestCaseItem[], projeAdi: string, proj
 }
 
 
-type DokumanRow = { tip_id: string; icerik: unknown; created_at: string; uretim_suresi?: number | null; token_tahmini?: number | null }
+type DokumanRow = { tip_id: string; icerik: unknown; created_at: string; uretim_suresi?: number | null; token_tahmini?: number | null; paylasim_id?: string | null; paylasim_aktif?: boolean | null }
 type BatchDetay = { toplamSure: number; toplamToken: number; batches: Array<{ ekranlar: string[]; sure: number; token: number }> }
 
 // Dış bileşen: ProjeProvider sağlar
@@ -658,6 +658,7 @@ export default function CalismaEkrani({
         initialAdim4Metrigi={prototipMetrik}
         initialAdim4BatchDetay={initialAdim4BatchDetay}
         initialAdim5Metrigi={testSenaryosuMetrik}
+        initialPaylasimId={prototipRow?.paylasim_id ?? null}
       />
     </ProjeProvider>
   )
@@ -672,6 +673,7 @@ function EkranIci({
   initialAdim4Metrigi = null,
   initialAdim4BatchDetay = null,
   initialAdim5Metrigi = null,
+  initialPaylasimId = null,
 }: {
   backHref?: string
   backLabel?: string
@@ -680,6 +682,7 @@ function EkranIci({
   initialAdim4Metrigi?: { sure: number; token: number } | null
   initialAdim4BatchDetay?: BatchDetay | null
   initialAdim5Metrigi?: { sure: number; token: number } | null
+  initialPaylasimId?: string | null
 }) {
   const t = useTranslations('calismaEkrani')
   const locale = useLocale()
@@ -730,6 +733,8 @@ function EkranIci({
   const [adim4ProgressList, setAdim4ProgressList] = useState<string[]>([])
   const [adim4FailedScreens, setAdim4FailedScreens] = useState<string[]>([])
   const [adim4Tarih, setAdim4Tarih] = useState<string | null>(ctx.dokuman.prototipTarih ?? null)
+  const [paylasimId, setPaylasimId] = useState<string | null>(initialPaylasimId)
+  const [linkKopyalandi, setLinkKopyalandi] = useState(false)
   const [adim2Metrigi, setAdim2Metrigi] = useState<{sure: number; token: number} | null>(initialAdim2Metrigi)
   const [adim3Metrigi, setAdim3Metrigi] = useState<{sure: number; token: number} | null>(initialAdim3Metrigi)
   const [adim4Metrigi, setAdim4Metrigi] = useState<{sure: number; token: number} | null>(initialAdim4Metrigi)
@@ -1035,6 +1040,25 @@ function EkranIci({
     } finally {
       setAdim3Yukleniyor(false)
     }
+  }
+
+  async function handleLinkKopyala() {
+    if (!projeId) return
+    let shareId = paylasimId
+    if (!shareId) {
+      shareId = crypto.randomUUID()
+      const supabase = createClient()
+      await supabase
+        .from('dokumanlar')
+        .update({ paylasim_id: shareId })
+        .eq('proje_id', projeId)
+        .eq('tip_id', DOKUMAN_TIPLERI.prototip)
+      setPaylasimId(shareId)
+    }
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://kurgemx.com'
+    await navigator.clipboard.writeText(`${baseUrl}/share/${shareId}`)
+    setLinkKopyalandi(true)
+    setTimeout(() => setLinkKopyalandi(false), 2500)
   }
 
   async function generatePrototype() {
@@ -2093,7 +2117,21 @@ function EkranIci({
                           </svg>
                           {t('adim4.yenidenUret')}
                         </button>
+                        {prototipIzni && (
+                          <button
+                            onClick={handleLinkKopyala}
+                            className="inline-flex items-center gap-1.5 rounded-md h-[34px] px-3.5 text-xs font-medium border-[0.5px] border-[#2E75B6]/50 text-[#1F3864] hover:bg-[#EEF4FB] transition"
+                          >
+                            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                              <path d="M6 10l-2 2a3 3 0 000 4.243A3 3 0 008.243 14L10 12M10 6l2-2a3 3 0 000-4.243A3 3 0 005.757 2L4 4M6 10l4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                            {linkKopyalandi ? t('adim4.linkKopyalandi') : t('adim4.linkKopyala')}
+                          </button>
+                        )}
                       </>
+                    )}
+                    {prototipIzni && ctx.dokuman.prototype && !adim4Yukleniyor && (
+                      <p className="text-[11px] text-kx-muted mt-1 w-full">{t('adim4.linkNotu')}</p>
                     )}
                   </div>
                   {adim4Yukleniyor && <ProgressBar />}

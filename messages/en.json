@@ -296,7 +296,10 @@
             "yeniSekme": "Open in New Tab",
             "prototipOlusturuldu": "✓ Prototype generated",
             "isAnaliziGerekli": "Requirements Analysis Document must be generated first",
-            "yenidenUret": "Regenerate"
+            "yenidenUret": "Regenerate",
+            "linkKopyala": "Copy Link",
+            "linkKopyalandi": "✓ Copied!",
+            "linkNotu": "No login required — anyone with the link can view the prototype."
         },
         "adim5": {
             "baslik": "Test Scenarios",
