@@ -1850,7 +1850,7 @@ function EkranIci({
                     paddingLeft: 10,
                   }}
                 >
-                  ST Story · SP Sprint · R Release · AC Acceptance Criteria · BR Business Rule · TC Test Case
+                  ST:Story · SP:Sprint · R:Release · AC:Acceptance Criteria · BR:Business Rule · TC:Test Case
                 </p>
               </div>
             </div>
