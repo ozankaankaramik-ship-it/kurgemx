@@ -1,8 +1,8 @@
 'use client'
 
-import { useActionState } from 'react'
+import { useState, useTransition } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
-import { Link } from '@/i18n/navigation'
+import { Link, useRouter } from '@/i18n/navigation'
 import { girisYap, googleIleGiris } from '@/lib/auth/actions'
 
 /* ── Reusable bits ───────────────────────────────────────────────── */
@@ -35,17 +35,30 @@ function LockIcon() {
   )
 }
 
-/**
- * Login form — refreshed.
- * Used inside <AuthLayout variant="giris"> at the page level.
- */
 export default function GirisFormu() {
   const t = useTranslations('auth.giris')
   const locale = useLocale()
+  const router = useRouter()
 
-  const [state, action, isPending] = useActionState(girisYap, null)
+  const [errorKey, setErrorKey] = useState<string | null>(null)
+  const [isPending, startTransition] = useTransition()
 
-  const errorKey = state?.error as string | undefined
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    setErrorKey(null)
+    const formData = new FormData(e.currentTarget)
+
+    startTransition(async () => {
+      const result = await girisYap(null, formData)
+      if (result?.error) {
+        setErrorKey(result.error)
+      } else if (result?.success) {
+        router.refresh()
+        router.push('/')
+      }
+    })
+  }
+
   const errorMsg = errorKey
     ? t.has(`hatalar.${errorKey}` as Parameters<typeof t>[0])
       ? t(`hatalar.${errorKey}` as Parameters<typeof t>[0])
@@ -79,7 +92,7 @@ export default function GirisFormu() {
       </div>
 
       {/* Email / password form */}
-      <form action={action} className="space-y-3.5">
+      <form onSubmit={handleSubmit} className="space-y-3.5">
         <input type="hidden" name="locale" value={locale} />
 
         <div>
