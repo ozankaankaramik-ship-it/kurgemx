@@ -2120,20 +2120,22 @@ function EkranIci({
                         {prototipIzni && (
                           <button
                             onClick={handleLinkKopyala}
-                            className="inline-flex items-center gap-1.5 rounded-md h-[34px] px-3.5 text-xs font-medium border-[0.5px] border-[#2E75B6]/50 text-[#1F3864] hover:bg-[#EEF4FB] transition"
+                            className="inline-flex flex-col items-start gap-0.5 rounded-md px-3.5 py-2 text-xs font-medium border-[0.5px] border-[#2E75B6]/50 text-[#1F3864] hover:bg-[#EEF4FB] transition"
                           >
-                            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                              <path d="M6 10l-2 2a3 3 0 000 4.243A3 3 0 008.243 14L10 12M10 6l2-2a3 3 0 000-4.243A3 3 0 005.757 2L4 4M6 10l4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                            </svg>
-                            {linkKopyalandi ? t('adim4.linkKopyalandi') : t('adim4.linkKopyala')}
+                            <span className="inline-flex items-center gap-1.5">
+                              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                                <path d="M6 10l-2 2a3 3 0 000 4.243A3 3 0 008.243 14L10 12M10 6l2-2a3 3 0 000-4.243A3 3 0 005.757 2L4 4M6 10l4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                              </svg>
+                              {linkKopyalandi ? t('adim4.linkKopyalandi') : t('adim4.linkKopyala')}
+                            </span>
+                            <span className="text-[10px] font-normal text-kx-muted pl-[22px]">
+                              {t('adim4.linkNotu')}
+                            </span>
                           </button>
                         )}
                       </>
                     )}
                   </div>
-                  {prototipIzni && ctx.dokuman.prototype && !adim4Yukleniyor && (
-                    <p className="text-[11px] text-kx-muted">{t('adim4.linkNotu')}</p>
-                  )}
                   {adim4Yukleniyor && <ProgressBar />}
                   {adim4Yukleniyor && adim4ProgressList.length > 0 && (
                     <div style={{ fontSize: 11, display: 'flex', flexDirection: 'column', gap: 3, marginTop: 4 }}>
