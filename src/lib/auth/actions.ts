@@ -42,7 +42,6 @@ export async function girisYap(
     }
   }
 
-  console.log('[girisYap] return { success: ok } döndürülüyor')
   return { success: 'ok' }
 }
 
