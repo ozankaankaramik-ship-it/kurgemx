@@ -46,9 +46,13 @@ export default async function Footer() {
           ))}
         </div>
 
-        {/* Copyright */}
-        <div className="pt-5">
-          <p className="text-[12px] text-white/50">{t('copyright')}</p>
+        {/* Copyright + AI attribution */}
+        <div className="pt-5 flex flex-col gap-1.5">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+            <p className="text-[12px] text-white/50">{t('copyright')}</p>
+            <p className="text-[12px] text-white/35">{t('poweredBy')}</p>
+          </div>
+          <p className="text-[11px] text-white/30">{t('aiDisclaimer')}</p>
         </div>
       </div>
     </footer>

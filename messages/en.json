@@ -493,7 +493,9 @@
         "privacy": "Privacy Policy",
         "refund": "Refund Policy",
         "salesAgreement": "Distance Sales Agreement",
-        "payment": "Secure Payment"
+        "payment": "Secure Payment",
+        "poweredBy": "Powered by Claude AI",
+        "aiDisclaimer": "AI can make mistakes. Review outputs before use."
     },
     "hesap": {
         "baslik": "My Account",

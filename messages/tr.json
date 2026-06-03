@@ -493,7 +493,9 @@
         "privacy": "Gizlilik Politikası",
         "refund": "İade Politikası",
         "salesAgreement": "Mesafeli Satış Sözleşmesi",
-        "payment": "Güvenli Ödeme"
+        "payment": "Güvenli Ödeme",
+        "poweredBy": "Powered by Claude AI",
+        "aiDisclaimer": "YZ hatalar yapabilir. Çıktıları kullanmadan önce kontrol edin."
     },
     "hesap": {
         "baslik": "Hesabım",
