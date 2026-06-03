@@ -2130,10 +2130,10 @@ function EkranIci({
                         )}
                       </>
                     )}
-                    {prototipIzni && ctx.dokuman.prototype && !adim4Yukleniyor && (
-                      <p className="text-[11px] text-kx-muted mt-1 w-full">{t('adim4.linkNotu')}</p>
-                    )}
                   </div>
+                  {prototipIzni && ctx.dokuman.prototype && !adim4Yukleniyor && (
+                    <p className="text-[11px] text-kx-muted">{t('adim4.linkNotu')}</p>
+                  )}
                   {adim4Yukleniyor && <ProgressBar />}
                   {adim4Yukleniyor && adim4ProgressList.length > 0 && (
                     <div style={{ fontSize: 11, display: 'flex', flexDirection: 'column', gap: 3, marginTop: 4 }}>
