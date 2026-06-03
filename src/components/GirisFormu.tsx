@@ -47,11 +47,17 @@ export default function GirisFormu() {
   const [state, action, isPending] = useActionState(girisYap, null)
 
   useEffect(() => {
+    console.log('[GirisFormu] state değişti:', state, '| isPending:', isPending)
     if (state?.success) {
+      console.log('[GirisFormu] success algılandı, refresh + push yapılıyor')
       router.refresh()
       router.push('/')
     }
   }, [state])
+
+  useEffect(() => {
+    console.log('[GirisFormu] isPending değişti:', isPending, '| state:', state)
+  }, [isPending])
 
   const errorKey = state?.error as string | undefined
   const errorMsg = errorKey
