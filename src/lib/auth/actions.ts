@@ -42,7 +42,7 @@ export async function girisYap(
     }
   }
 
-  redirect(`/${locale}`)
+  return { success: 'ok' }
 }
 
 // E-posta / şifre ile kayıt

@@ -1,8 +1,8 @@
 'use client'
 
-import { useActionState } from 'react'
+import { useActionState, useEffect } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
-import { Link } from '@/i18n/navigation'
+import { Link, useRouter } from '@/i18n/navigation'
 import { girisYap, googleIleGiris } from '@/lib/auth/actions'
 
 /* ── Reusable bits ───────────────────────────────────────────────── */
@@ -43,7 +43,15 @@ export default function GirisFormu() {
   const t = useTranslations('auth.giris')
   const locale = useLocale()
 
+  const router = useRouter()
   const [state, action, isPending] = useActionState(girisYap, null)
+
+  useEffect(() => {
+    if (state?.success) {
+      router.refresh()
+      router.push('/')
+    }
+  }, [state])
 
   const errorKey = state?.error as string | undefined
   const errorMsg = errorKey
