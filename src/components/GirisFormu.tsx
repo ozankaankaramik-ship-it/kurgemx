@@ -53,8 +53,7 @@ export default function GirisFormu() {
       if (result?.error) {
         setErrorKey(result.error)
       } else if (result?.success) {
-        router.refresh()
-        router.push('/')
+        window.location.href = `/${locale}/projeler`
       }
     })
   }
