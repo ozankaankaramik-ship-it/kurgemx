@@ -313,6 +313,25 @@ export default function PricingTable({
         <p className="text-center text-kx-muted mt-4" style={{ fontSize: 12 }}>
           {t('footerNot')}
         </p>
+
+        {/* ── Ödeme yöntemleri ── */}
+        <div className="mt-6 flex flex-col items-center gap-3">
+          <p style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.07em', color: '#9CA3AF' }}>
+            Güvenli Ödeme
+          </p>
+          <div className="flex items-center gap-4 flex-wrap justify-center">
+            <img
+              src="/logolar/iyzico-logo-band.svg"
+              alt="iyzico · Visa · Mastercard · Troy"
+              style={{ height: 32 }}
+            />
+            <img
+              src="/logolar/paytr.png"
+              alt="PayTR"
+              style={{ height: 28 }}
+            />
+          </div>
+        </div>
       </div>
 
       {modalPlan && (

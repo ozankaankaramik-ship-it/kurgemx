@@ -7,6 +7,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 const EMAIL = 'support@kurgemx.com'
+const TEL = '+90 530 767 01 25'
 const ADRES = 'Alemdağ Mah. Reşadiye Cad. Dekon Silva B1-46\n34794 Çekmeköy / İstanbul'
 
 export default async function ContactPage() {
@@ -38,6 +39,21 @@ export default async function ContactPage() {
               className="text-[15px] font-semibold text-kx-blue no-underline hover:underline"
             >
               {EMAIL}
+            </a>
+          </div>
+
+          <div className="border-t border-kx-border-soft" />
+
+          {/* Telefon */}
+          <div>
+            <div className="text-[11px] font-semibold text-kx-muted uppercase tracking-[0.07em] mb-1.5">
+              {isTR ? 'Telefon' : 'Phone'}
+            </div>
+            <a
+              href={`tel:${TEL.replace(/\s/g, '')}`}
+              className="text-[15px] font-semibold text-kx-blue no-underline hover:underline"
+            >
+              {TEL}
             </a>
           </div>
 
