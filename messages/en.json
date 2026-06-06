@@ -362,7 +362,17 @@
             "subtitle": "Generate story maps, business analysis documents and prototypes with AI in minutes.",
             "getStarted": "Get Started Free",
             "signIn": "Sign In",
-            "watchTour": "▶ Watch a quick tour"
+            "watchTour": "▶ Watch a quick tour",
+            "announcementBadge": "NEW",
+            "announcementText": "Prototype 2.0 — now with real UI components",
+            "titlePre": "Your first business analysis draft,",
+            "titleHighlight": "in 10 minutes",
+            "titlePost": ".",
+            "subtitleFull": "KurgemX takes your idea from story map → requirements analysis → clickable prototype → test scenarios. You review, refine, share.",
+            "footnote": "✓ No card required · ✓ First project free · ✓ Turkish and English",
+            "floatingNote1line1": "2 weeks → 12 minutes.",
+            "floatingNote1line2": "A business analysis team",
+            "floatingNote2": "18 stories, 3 releases, 27 acceptance criteria — all generated in one click."
         },
         "howItWorks": {
             "title": "How It Works",
@@ -401,10 +411,14 @@
         "useCases": {
             "kicker": "— Who's it for",
             "title": "Four different roles, the same time savings.",
+            "seeAll": "See all cases →",
+            "before": "BEFORE",
+            "after": "AFTER",
             "personas": {
                 "analyst": {
                     "role": "Business Analyst",
                     "who": "Bank, fintech, enterprise",
+                    "pain": "After the workshop I spend 3 days buried in Word.",
                     "win": "First draft ready the moment the workshop ends.",
                     "before": "3 days",
                     "after": "15 minutes"
@@ -412,6 +426,7 @@
                 "pm": {
                     "role": "Product Manager",
                     "who": "B2B SaaS, startup",
+                    "pain": "I don't have a meaningful document for sprint planning.",
                     "win": "R1/R2/R3 release map and sprint breakdown ready.",
                     "before": "—",
                     "after": "Release plan"
@@ -419,6 +434,7 @@
                 "developer": {
                     "role": "Developer / Consultant",
                     "who": "Freelance, boutique consulting",
+                    "pain": "Translating a client brief into code takes days.",
                     "win": "I show a working draft in the first meeting.",
                     "before": "5 days",
                     "after": "1 meeting"
@@ -426,6 +442,7 @@
                 "entrepreneur": {
                     "role": "Entrepreneur",
                     "who": "Building software with AI",
+                    "pain": "I don't know what to tell Claude Code or Cursor.",
                     "win": "Have a detailed analysis ready before you start coding with AI.",
                     "before": "Uncertainty",
                     "after": "Clear draft"
@@ -472,7 +489,111 @@
             "tab2": "User Guide (60 sec)",
             "card1Title": "Product Intro",
             "card2Title": "User Guide",
-            "openNewTab": "Open in new tab"
+            "openNewTab": "Open in new tab",
+            "platformLabel": "business analysis platform",
+            "duration": "60 sec"
+        },
+        "beforeAfter": {
+            "pill": "— Old way vs. KurgemX",
+            "heading": "Two-week Word marathon, or a draft done before lunch?",
+            "oldTag": "Old way",
+            "oldLabel": "Word + Excel + Miro",
+            "newTag": "With KurgemX",
+            "newLabel": "One flow, one tab",
+            "totalLabel": "Total time",
+            "oldTotal": "~2 weeks",
+            "newTotal": "~12 minutes",
+            "oldR1l": "Workshop marathon", "oldR1d": "2 days, 6 people",
+            "oldR2l": "Story map by hand", "oldR2d": "4–6 hours",
+            "oldR3l": "Business analysis in Word", "oldR3d": "3–5 days",
+            "oldR4l": "Separate tool for prototype", "oldR4d": "+2 days",
+            "oldR5l": "Manual test scenarios", "oldR5d": "+1 day",
+            "newR1l": "Describe project in 1 sentence", "newR1d": "30 seconds",
+            "newR2l": "AI generates story map", "newR2d": "2 minutes",
+            "newR3l": "Business analysis doc .docx", "newR3d": "4 minutes",
+            "newR4l": "Clickable prototype .html", "newR4d": "3 minutes",
+            "newR5l": "Test scenarios .xlsx", "newR5d": "2 minutes"
+        },
+        "pricingTeaser": {
+            "headline": "Your first project is free. The rest is up to you.",
+            "seeAll": "See comparison table and FAQs →",
+            "signUpCta": "Sign up",
+            "plans": {
+                "freemium": {
+                    "desc": "Story map + analysis document — free, start now",
+                    "f1": "1 project / month",
+                    "f2": "Small projects (1–5 stories)",
+                    "f3": "Story map",
+                    "f4": "Business analysis document"
+                },
+                "analyst": {
+                    "desc": "All outputs from story map to test scenarios",
+                    "f1": "3 projects / month",
+                    "f2": "Medium projects (6–15 stories)",
+                    "f3": "Prototype generation",
+                    "f4": "Word / Excel / HTML export"
+                },
+                "advanced": {
+                    "desc": "Full power for large projects — all outputs",
+                    "f1": "10 projects / month",
+                    "f2": "Large projects (16–40 stories)",
+                    "f3": "Test scenario generation",
+                    "f4": "All Analyst features"
+                }
+            }
+        },
+        "featureSection": {
+            "pill": "— What it does",
+            "heading": "Five clicks, five outputs.",
+            "desc": "Review and edit the output at each step, approve, and move on. Each stage feeds the next — no context switching.",
+            "doc": {
+                "badge": "Ready",
+                "filename": "analysis-r1-mvp.docx",
+                "docTitle": "R1 — MVP Business Analysis",
+                "toc": "1. Overview · 2. Scope · 3. User Stories · 4. Business Rules · 5. Impact Analysis",
+                "s1h": "3.1 User Story — ST-014",
+                "s1t": "As a user, I want to send money via IBAN so that I can handle my daily banking needs within the app.",
+                "s2h": "Acceptance Criteria",
+                "s2t": "AC-1: An alert is shown when an invalid IBAN is entered.\nAC-2: SMS verification is required for transfers over $5,000.\nAC-3: Transaction history updates instantly.",
+                "s3h": "Business Rules",
+                "s3t": "BR-1: Single transaction limit $50,000.\nBR-2: Daily limit $100,000.",
+                "download": "Download (.docx) ↓",
+                "preview": "Preview"
+            },
+            "proto": {
+                "filename": "prototype / login",
+                "screenCount": "3 / 14 screens",
+                "nav1": "Login", "nav2": "Dashboard", "nav3": "Transfer", "nav4": "Invest", "nav5": "Profile",
+                "welcome": "Welcome",
+                "subtitle": "Sign in to your account",
+                "emailPlaceholder": "example@email.com",
+                "signIn": "Sign In",
+                "editBadge": "Edit"
+            },
+            "test": {
+                "filename": "test-scenarios.xlsx",
+                "rowCount": "32 rows",
+                "colId": "ID", "colScenario": "Scenario", "colType": "Type", "colStep": "Steps", "colStatus": "Status",
+                "pass": "Passed",
+                "pending": "Pending",
+                "tc001": "Successful IBAN transfer", "tc001type": "Positive",
+                "tc002": "Invalid IBAN warning", "tc002type": "Negative",
+                "tc003": "SMS verify above 5K", "tc003type": "Boundary",
+                "tc004": "Daily limit exceeded", "tc004type": "Negative",
+                "tc005": "2 concurrent transfers", "tc005type": "Concurrent"
+            },
+            "b1tag": "1 · Story Map",
+            "b1title": "From epics to acceptance criteria — a complete map.",
+            "b1desc": "Describe your project and let AI generate epics, user stories, R1/R2/R3 release plans and sprint breakdowns. You review, drag cards, and move stories.",
+            "b2tag": "2 · Business Analysis Document",
+            "b2title": "A Word document ready to send to clients.",
+            "b2desc": "For every release from R1 to R3 — complete, client-ready .docx with acceptance criteria, business rules and impact analysis. In minutes.",
+            "b3tag": "3 · Clickable Prototype",
+            "b3title": "A working draft before presenting to stakeholders.",
+            "b3desc": "Real UI flow from stories: screen-by-screen navigation, realistic mockups. Download as a single HTML, email it — anyone can open it.",
+            "b4tag": "4 · Test Scenarios",
+            "b4title": "Excel ready to hand off to QA.",
+            "b4desc": "Positive, negative and boundary scenarios for each story; step-by-step test flows and expected results. Import directly into your QA tool."
         }
     },
     "dashboard": {
@@ -533,6 +654,8 @@
     "iletisim": {
         "baslik": "Contact",
         "altBaslik": "Reach out to us with your questions.",
+        "bizeUlasin": "Contact us",
+        "telefon": "Phone",
         "email": "Email",
         "adres": "Address",
         "form": {
@@ -551,6 +674,14 @@
     "about": {
         "baslik": "About Us",
         "altBaslik": "The right address for AI-powered business analysis",
+        "heroTitle": "25 years of experience, now with AI.",
+        "stat1n": "25+", "stat1l": "years of industry experience",
+        "stat2n": "1,200+", "stat2l": "projects generated",
+        "stat3n": "23,000+", "stat3l": "stories written",
+        "stat4n": "7/24", "stat4l": "support window",
+        "ctaKicker": "Let's work together",
+        "ctaTitle": "Got questions? Write to us.",
+        "ctaDesc": "Response guaranteed within 24 hours, Monday–Friday 9:00–18:00.",
         "s1Baslik": "What is KurgemX?",
         "s1Icerik": "KurgemX is an AI-powered business analysis platform for business analysts and software teams. Developed by experts with over 25 years of industry experience in business analysis, project management, and software development.",
         "s2Baslik": "What We Do",
@@ -630,6 +761,8 @@
             "sla": "Enterprise SLA & support"
         },
         "sinirsiz": "Unlimited",
+        "featureHeader": "Features",
+        "odemeGuvenli": "Secure Payment",
         "footerNot": "USD · VAT included · Exchange rate at time of payment · Monthly billing, cancel anytime",
         "sssBolum": "Frequently asked questions",
         "sssBaslik": "Got questions?",

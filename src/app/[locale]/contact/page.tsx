@@ -1,4 +1,4 @@
-import { getTranslations, getLocale } from 'next-intl/server'
+import { getTranslations } from 'next-intl/server'
 import type { Metadata } from 'next'
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -12,8 +12,6 @@ const ADRES = 'Alemdağ Mah. Reşadiye Cad. Dekon Silva B1-46\n34794 Çekmeköy 
 
 export default async function ContactPage() {
   const t = await getTranslations('iletisim')
-  const locale = await getLocale()
-  const isTR = locale === 'tr'
 
   return (
     <main className="flex-1 bg-kx-bg">
@@ -32,7 +30,7 @@ export default async function ContactPage() {
           {/* E-posta */}
           <div>
             <div className="text-[11px] font-semibold text-kx-muted uppercase tracking-[0.07em] mb-1.5">
-              {isTR ? 'Bize ulaşın' : 'Contact us'}
+              {t('bizeUlasin')}
             </div>
             <a
               href={`mailto:${EMAIL}`}
@@ -47,7 +45,7 @@ export default async function ContactPage() {
           {/* Telefon */}
           <div>
             <div className="text-[11px] font-semibold text-kx-muted uppercase tracking-[0.07em] mb-1.5">
-              {isTR ? 'Telefon' : 'Phone'}
+              {t('telefon')}
             </div>
             <a
               href={`tel:${TEL.replace(/\s/g, '')}`}
@@ -62,7 +60,7 @@ export default async function ContactPage() {
           {/* Adres */}
           <div>
             <div className="text-[11px] font-semibold text-kx-muted uppercase tracking-[0.07em] mb-1.5">
-              {isTR ? 'Adres' : 'Address'}
+              {t('adres')}
             </div>
             <address className="not-italic text-[14px] text-kx-body leading-[1.7] whitespace-pre-line">
               {ADRES}

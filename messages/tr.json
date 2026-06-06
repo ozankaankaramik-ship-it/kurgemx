@@ -362,7 +362,17 @@
             "subtitle": "Dakikalar içinde yapay zeka ile hikaye haritaları, iş analizi dokümanları ve prototipler oluşturun.",
             "getStarted": "Ücretsiz Başla",
             "signIn": "Giriş Yap",
-            "watchTour": "▶ Kısa tur izle"
+            "watchTour": "▶ Kısa tur izle",
+            "announcementBadge": "YENİ",
+            "announcementText": "Prototip 2.0 — gerçek arayüz parçalarıyla geldi",
+            "titlePre": "İş analizinin ilk taslağı,",
+            "titleHighlight": "10 dakikada",
+            "titlePost": " elinde.",
+            "subtitleFull": "KurgemX, fikirden hikaye haritası → iş analizi → tıklanabilir prototip → test senaryolarına kadar tüm zinciri sana yazar.",
+            "footnote": "✓ Kart gerekmez · ✓ İlk projen tamamen ücretsiz · ✓ Türkçe ve İngilizce",
+            "floatingNote1line1": "2 hafta → 12 dakika.",
+            "floatingNote1line2": "Bir iş analisti ekibi",
+            "floatingNote2": "18 hikaye, 3 sürüm, 27 kabul kriteri — hepsi tek tıkla üretildi."
         },
         "howItWorks": {
             "title": "Nasıl Çalışır",
@@ -401,10 +411,14 @@
         "useCases": {
             "kicker": "— Kimler için",
             "title": "Dört farklı rol, aynı zaman kazancı.",
+            "seeAll": "Tüm vakaları gör →",
+            "before": "ÖNCE",
+            "after": "SONRA",
             "personas": {
                 "analyst": {
                     "role": "İş Analisti",
                     "who": "Banka, fintech, kurumsal",
+                    "pain": "Workshop sonrası 3 gün Word'de boğuluyorum.",
                     "win": "Workshop biter bitmez ilk taslak hazır.",
                     "before": "3 gün",
                     "after": "15 dakika"
@@ -412,6 +426,7 @@
                 "pm": {
                     "role": "Ürün Yöneticisi",
                     "who": "B2B SaaS, startup",
+                    "pain": "Sprint planlaması için elimde anlamlı bir döküman yok.",
                     "win": "R1/R2/R3 sürüm haritası ve sprint dağılımı hazır.",
                     "before": "—",
                     "after": "Sürüm planı"
@@ -419,6 +434,7 @@
                 "developer": {
                     "role": "Developer / Danışman",
                     "who": "Freelance, butik danışmanlık",
+                    "pain": "Müşteri brief'ini koda çevirmek günler alıyor.",
                     "win": "İlk görüşmede çalışan bir taslak gösteriyorum.",
                     "before": "5 gün",
                     "after": "1 görüşme"
@@ -426,6 +442,7 @@
                 "entrepreneur": {
                     "role": "Girişimci",
                     "who": "YZ ile yazılım geliştiren girişimci",
+                    "pain": "Claude Code'a, Cursor'a ne yazacağımı bilmiyorum.",
                     "win": "YZ ile kod yazmaya başlamadan önce detaylı analiz elinde olsun.",
                     "before": "Belirsizlik",
                     "after": "Net taslak"
@@ -472,7 +489,111 @@
             "tab2": "Kullanım Kılavuzu (60 sn)",
             "card1Title": "Tanıtım Videosu",
             "card2Title": "Kullanım Kılavuzu",
-            "openNewTab": "Yeni sekmede aç"
+            "openNewTab": "Yeni sekmede aç",
+            "platformLabel": "iş analizi platformu",
+            "duration": "60 sn"
+        },
+        "beforeAfter": {
+            "pill": "— Eski yöntemle vs. Kurgemx ile",
+            "heading": "2 haftalık Word maratonu mu, yoksa öğleden önce biten bir taslak mı?",
+            "oldTag": "Eski yöntem",
+            "oldLabel": "Word + Excel + Miro",
+            "newTag": "Kurgemx ile",
+            "newLabel": "Tek akış, tek sekme",
+            "totalLabel": "Toplam süre",
+            "oldTotal": "~2 hafta",
+            "newTotal": "~12 dakika",
+            "oldR1l": "Workshop maratonu", "oldR1d": "2 gün, 6 kişi",
+            "oldR2l": "Hikaye haritası elle", "oldR2d": "4–6 saat",
+            "oldR3l": "Word'de iş analizi", "oldR3d": "3–5 gün",
+            "oldR4l": "Prototip için ayrı tool", "oldR4d": "+2 gün",
+            "oldR5l": "Test senaryoları manuel", "oldR5d": "+1 gün",
+            "newR1l": "Projeni 1 cümleyle anlat", "newR1d": "30 saniye",
+            "newR2l": "Hikaye haritası AI üretir", "newR2d": "2 dakika",
+            "newR3l": "İş analizi dokümanı .docx", "newR3d": "4 dakika",
+            "newR4l": "Tıklanabilir prototip .html", "newR4d": "3 dakika",
+            "newR5l": "Test senaryoları .xlsx", "newR5d": "2 dakika"
+        },
+        "pricingTeaser": {
+            "headline": "İlk projen ücretsiz. Sonrası sana kalmış.",
+            "seeAll": "Karşılaştırma tablosunu ve SSS'leri gör →",
+            "signUpCta": "Hesap aç",
+            "plans": {
+                "freemium": {
+                    "desc": "Hikaye haritası + analiz dokümanı — ücretsiz, hemen başla",
+                    "f1": "1 proje / ay",
+                    "f2": "Küçük projeler (1–5 hikaye)",
+                    "f3": "Hikaye haritası",
+                    "f4": "İş analizi dokümanı"
+                },
+                "analyst": {
+                    "desc": "Hikaye haritasından test senaryosuna tüm çıktılar",
+                    "f1": "3 proje / ay",
+                    "f2": "Orta projeler (6–15 hikaye)",
+                    "f3": "Prototip üretimi",
+                    "f4": "Word / Excel / HTML dışa aktarım"
+                },
+                "advanced": {
+                    "desc": "Büyük projeler için tam güç — tüm çıktılar",
+                    "f1": "10 proje / ay",
+                    "f2": "Büyük projeler (16–40 hikaye)",
+                    "f3": "Test senaryosu üretimi",
+                    "f4": "Tüm Analyst özellikleri"
+                }
+            }
+        },
+        "featureSection": {
+            "pill": "— Ne yapıyor",
+            "heading": "Beş tıklamada, beş çıktı.",
+            "desc": "Her adımda çıktıyı düzenle, kabul et, sonraki adıma geç. Her aşama bir sonrakini besler — kopuk araç yok.",
+            "doc": {
+                "badge": "Hazır",
+                "filename": "analiz-r1-mvp.docx",
+                "docTitle": "R1 — MVP İş Analizi",
+                "toc": "1. Genel Bilgiler · 2. Kapsam · 3. Kullanıcı Hikayeleri · 4. İş Kuralları · 5. Etki Analizi",
+                "s1h": "3.1 Kullanıcı Hikayesi — ST-014",
+                "s1t": "Bir kullanıcı olarak, IBAN ile para göndermek istiyorum ki günlük bankacılık ihtiyacımı uygulamadan halledebileyim.",
+                "s2h": "Kabul Kriterleri",
+                "s2t": "AC-1: Geçersiz IBAN girildiğinde uyarı gösterilir.\nAC-2: 5.000 TL üzeri transferlerde SMS doğrulama istenir.\nAC-3: İşlem geçmişi anında güncellenir.",
+                "s3h": "İş Kuralları",
+                "s3t": "BR-1: Tek seferlik limit 50.000 TL.\nBR-2: Günlük limit 100.000 TL.",
+                "download": "İndir (.docx) ↓",
+                "preview": "Önizle"
+            },
+            "proto": {
+                "filename": "prototip / login",
+                "screenCount": "3 / 14 ekran",
+                "nav1": "Login", "nav2": "Dashboard", "nav3": "Transfer", "nav4": "Yatırım", "nav5": "Profil",
+                "welcome": "Hoş geldin",
+                "subtitle": "Hesabına giriş yap",
+                "emailPlaceholder": "ornek@email.com",
+                "signIn": "Giriş Yap",
+                "editBadge": "Düzenle"
+            },
+            "test": {
+                "filename": "test-senaryolari.xlsx",
+                "rowCount": "32 satır",
+                "colId": "ID", "colScenario": "Senaryo", "colType": "Tip", "colStep": "Adım", "colStatus": "Durum",
+                "pass": "Geçti",
+                "pending": "Bekliyor",
+                "tc001": "Başarılı IBAN transferi", "tc001type": "Pozitif",
+                "tc002": "Geçersiz IBAN uyarısı", "tc002type": "Negatif",
+                "tc003": "5K üstü SMS doğrulama", "tc003type": "Sınır",
+                "tc004": "Günlük limit aşımı", "tc004type": "Negatif",
+                "tc005": "Eş zamanlı 2 transfer", "tc005type": "Eş zamanlı"
+            },
+            "b1tag": "1 · Hikaye Haritası",
+            "b1title": "Destanlardan kabul kriterlerine, eksiksiz harita.",
+            "b1desc": "Projeni anlat, AI senin için destanları, kullanıcı hikayelerini, R1/R2/R3 sürüm planını ve sprint dağılımını üretsin. Sen yorumla, kart sürükle, hikayeleri taşı.",
+            "b2tag": "2 · İş Analizi Dokümanı",
+            "b2title": "Müşteriye gönderilebilir Word dokümanı.",
+            "b2desc": "R1'den R3'e her sürüm için — kabul kriterleri, iş kuralları ve etki analiziyle eksiksiz, müşteriye gönderilebilir .docx. Dakikalar içinde.",
+            "b3tag": "3 · Tıklanabilir Prototip",
+            "b3title": "Paydaşa sunum öncesi, çalışan bir taslak.",
+            "b3desc": "Hikayelerden gerçek arayüz akışı: ekran ekran navigasyon, gerçekçi mockup'lar. Tek HTML olarak indir, mail gönder, açan görsün.",
+            "b4tag": "4 · Test Senaryoları",
+            "b4title": "QA ekibine teslim edilebilir Excel.",
+            "b4desc": "Her hikaye için pozitif, negatif ve sınır senaryoları; adım adım test akışları ve beklenen sonuçlar. Doğrudan QA tool'una import et."
         }
     },
     "dashboard": {
@@ -533,6 +654,8 @@
     "iletisim": {
         "baslik": "İletişim",
         "altBaslik": "Sorularınız için bize ulaşın.",
+        "bizeUlasin": "Bize ulaşın",
+        "telefon": "Telefon",
         "email": "E-posta",
         "adres": "Adres",
         "form": {
@@ -551,6 +674,14 @@
     "about": {
         "baslik": "Hakkımızda",
         "altBaslik": "Yapay zeka destekli iş analizi için doğru adres",
+        "heroTitle": "25 yıllık tecrübe, AI ile bir araya geldi.",
+        "stat1n": "25+", "stat1l": "yıl sektör tecrübesi",
+        "stat2n": "1.200+", "stat2l": "üretilen proje",
+        "stat3n": "23.000+", "stat3l": "hikaye yazıldı",
+        "stat4n": "7/24", "stat4l": "destek penceresi",
+        "ctaKicker": "Birlikte çalışalım",
+        "ctaTitle": "Sorularınız mı var? Bize yazın.",
+        "ctaDesc": "Hafta içi 9:00–18:00 arası 24 saat içinde dönüş garantisi.",
         "s1Baslik": "KurgemX Nedir?",
         "s1Icerik": "KurgemX, iş analistleri ve yazılım ekipleri için geliştirilmiş yapay zeka destekli bir iş analizi platformudur. 25 yılı aşkın sektör deneyimine sahip uzmanlardan oluşan ekibimiz, iş analizi süreçlerini hızlandırmak ve kaliteyi artırmak için bu platformu geliştirdi.",
         "s2Baslik": "Ne Yapıyoruz?",
@@ -630,6 +761,8 @@
             "sla": "Kurumsal SLA ve destek"
         },
         "sinirsiz": "Sınırsız",
+        "featureHeader": "Özellikler",
+        "odemeGuvenli": "Güvenli Ödeme",
         "footerNot": "USD · KDV dahil · Ödeme anındaki kur esas alınır · Aylık fatura, dilediğin zaman iptal",
         "sssBolum": "Sıkça sorulanlar",
         "sssBaslik": "Aklındaki sorular",

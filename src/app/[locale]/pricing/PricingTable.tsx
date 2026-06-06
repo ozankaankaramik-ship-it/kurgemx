@@ -42,17 +42,20 @@ type Props = {
 
 /* ── Plan kartı ──────────────────────────────────────────────── */
 type CardProps = {
-  featured?:   boolean
-  badge?:      React.ReactNode
-  name:        string
-  price:       React.ReactNode
-  period?:     string
-  description?: string
-  btn:         BtnType
-  onSubscribe?: () => void
+  featured?:        boolean
+  badge?:           React.ReactNode
+  name:             string
+  price:            React.ReactNode
+  period?:          string
+  description?:     string
+  btn:              BtnType
+  onSubscribe?:     () => void
+  subscribeLabel:   string
+  currentPlanLabel: string
+  quoteLabel:       string
 }
 
-function PlanCard({ featured, badge, name, price, period, description, btn, onSubscribe }: CardProps) {
+function PlanCard({ featured, badge, name, price, period, description, btn, onSubscribe, subscribeLabel, currentPlanLabel, quoteLabel }: CardProps) {
   return (
     <div
       style={{
@@ -104,7 +107,7 @@ function PlanCard({ featured, badge, name, price, period, description, btn, onSu
             className="w-full rounded-lg text-white transition-opacity hover:opacity-85"
             style={{ height: 38, fontSize: 14, fontWeight: 500, background: '#1F3864' }}
           >
-            Subscribe
+            {subscribeLabel}
           </button>
         )}
         {btn === 'current' && (
@@ -113,7 +116,7 @@ function PlanCard({ featured, badge, name, price, period, description, btn, onSu
             className="w-full rounded-lg"
             style={{ height: 38, fontSize: 14, fontWeight: 500, background: '#F3F4F6', color: '#9CA3AF', cursor: 'default' }}
           >
-            Current plan
+            {currentPlanLabel}
           </button>
         )}
         {btn === 'quote' && (
@@ -122,7 +125,7 @@ function PlanCard({ featured, badge, name, price, period, description, btn, onSu
             className="w-full rounded-lg flex items-center justify-center no-underline transition-colors hover:bg-kx-bg"
             style={{ height: 38, fontSize: 14, fontWeight: 500, color: '#9CA3AF', border: '1px solid #E5E7EB' }}
           >
-            Get a quote
+            {quoteLabel}
           </a>
         )}
         {btn === 'none' && (
@@ -205,6 +208,9 @@ export default function PricingTable({
               period={t('planlar.freemium.aylik')}
               description={t('freemiumNot')}
               btn="none"
+              subscribeLabel={t('aboneOl')}
+              currentPlanLabel={t('mevcutPlan')}
+              quoteLabel={t('teklifAl')}
             />
           </div>
 
@@ -234,6 +240,9 @@ export default function PricingTable({
               period={t('planlar.analyst.aylik')}
               btn={analystBtn}
               onSubscribe={analystPlan ? () => handleSubscribe(analystPlan) : undefined}
+              subscribeLabel={t('aboneOl')}
+              currentPlanLabel={t('mevcutPlan')}
+              quoteLabel={t('teklifAl')}
             />
           </div>
 
@@ -254,6 +263,9 @@ export default function PricingTable({
               period={t('planlar.advanced.aylik')}
               btn={advancedBtn}
               onSubscribe={advancedPlan ? () => handleSubscribe(advancedPlan) : undefined}
+              subscribeLabel={t('aboneOl')}
+              currentPlanLabel={t('mevcutPlan')}
+              quoteLabel={t('teklifAl')}
             />
           </div>
 
@@ -263,6 +275,9 @@ export default function PricingTable({
               name={t('planlar.enterprise.ad')}
               price={<span style={{ fontSize: 20, fontWeight: 500, color: '#9CA3AF' }}>Custom</span>}
               btn="quote"
+              subscribeLabel={t('aboneOl')}
+              currentPlanLabel={t('mevcutPlan')}
+              quoteLabel={t('teklifAl')}
             />
           </div>
         </div>
@@ -281,7 +296,7 @@ export default function PricingTable({
             <thead>
               <tr>
                 <th style={{ padding: '12px', textAlign: 'left', fontSize: 12, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', background: '#1F3864', color: 'white' }}>
-                  Features
+                  {t('featureHeader')}
                 </th>
                 {(['planlar.freemium.ad', 'planlar.analyst.ad', 'planlar.advanced.ad', 'planlar.enterprise.ad'] as const).map(key => (
                   <th key={key} style={{ padding: '12px', textAlign: 'center', fontSize: 12, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', background: '#1F3864', color: 'white' }}>
@@ -338,7 +353,7 @@ export default function PricingTable({
         {/* ── Ödeme yöntemleri ── */}
         <div className="mt-6 flex flex-col items-center gap-3">
           <p style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.07em', color: '#9CA3AF' }}>
-            Güvenli Ödeme
+            {t('odemeGuvenli')}
           </p>
           <div className="flex items-center gap-4 flex-wrap justify-center">
             <img

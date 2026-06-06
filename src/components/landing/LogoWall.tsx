@@ -1,9 +1,13 @@
-export default function LogoWall() {
+import { getTranslations } from 'next-intl/server'
+
+export default async function LogoWall() {
+  const t = await getTranslations('landing.logoStrip')
+
   return (
     <section className="bg-white py-10 px-8 border-y border-kx-border">
       <div className="max-w-[1280px] mx-auto">
         <div className="text-center text-[12px] font-semibold text-kx-muted tracking-[0.1em] uppercase">
-          1.200+ proje · 23.000+ hikaye · Türkiye'nin lider iş analisti ekipleri kullanıyor
+          {t('kicker')}
         </div>
       </div>
     </section>

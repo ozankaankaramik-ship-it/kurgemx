@@ -7,14 +7,6 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t('baslik') }
 }
 
-/**
- * About page — refreshed.
- * - Lacivert hero with KURGEM badge
- * - 4-stat strip (years, projects, stories, support window)
- * - 3 numbered sections (numbered red kicker + serif title + body)
- * - "Bize yazın" highlight card on navy
- * - Contact card with address + email + web
- */
 export default async function AboutPage() {
   const t = await getTranslations('about')
 
@@ -24,12 +16,19 @@ export default async function AboutPage() {
     { kicker: '03', baslik: t('s3Baslik'), icerik: t('s3Icerik') },
   ]
 
+  const stats = [
+    [t('stat1n'), t('stat1l')],
+    [t('stat2n'), t('stat2l')],
+    [t('stat3n'), t('stat3l')],
+    [t('stat4n'), t('stat4l')],
+  ]
+
   return (
     <>
       <main className="flex-1 bg-white">
         <PageHero
           kicker={t('baslik')}
-          title="25 yıllık tecrübe, AI ile bir araya geldi."
+          title={t('heroTitle')}
           subtitle={t('altBaslik')}
           badge="KURGEM"
         />
@@ -38,12 +37,7 @@ export default async function AboutPage() {
         <section className="py-14 px-8 bg-white">
           <div className="max-w-[1120px] mx-auto">
             <div className="grid grid-cols-2 md:grid-cols-4 border border-kx-border rounded-2xl overflow-hidden">
-              {[
-                ['25+',    'yıl sektör tecrübesi'],
-                ['1.200+', 'üretilen proje'],
-                ['23.000+','hikaye yazıldı'],
-                ['7/24',   'destek penceresi'],
-              ].map(([n, l], i) => (
+              {stats.map(([n, l], i) => (
                 <div
                   key={l}
                   className={`p-7 ${i < 3 ? 'md:border-r border-kx-border' : ''} ${i === 1 ? 'bg-kx-bg' : 'bg-white'}`}
@@ -83,13 +77,13 @@ export default async function AboutPage() {
               <div className="relative grid grid-cols-1 md:grid-cols-[1fr_auto] gap-8 items-center">
                 <div>
                   <div className="text-[11px] font-bold text-white/60 tracking-[0.08em] uppercase mb-2.5">
-                    Birlikte çalışalım
+                    {t('ctaKicker')}
                   </div>
                   <h3 className="font-display text-[28px] font-bold mb-1.5 tracking-tight">
-                    Sorularınız mı var? Bize yazın.
+                    {t('ctaTitle')}
                   </h3>
                   <p className="text-[14px] text-white/75 m-0">
-                    Hafta içi 9:00–18:00 arası 24 saat içinde dönüş garantisi.
+                    {t('ctaDesc')}
                   </p>
                 </div>
                 <a

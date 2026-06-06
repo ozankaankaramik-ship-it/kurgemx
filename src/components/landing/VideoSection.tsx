@@ -10,10 +10,14 @@ type Tab = 'tanitim' | 'kilavuz'
 function VideoCard({
   variant,
   title,
+  duration,
+  platformLabel,
   onClick,
 }: {
   variant: Tab
   title: string
+  duration: string
+  platformLabel: string
   onClick: () => void
 }) {
   const isTanitim = variant === 'tanitim'
@@ -34,7 +38,7 @@ function VideoCard({
             <div className="text-white font-bold text-[32px] tracking-tight">
               Kurge<span className="text-[#7EB3E8]">m</span>X
             </div>
-            <div className="text-white/40 text-[12px] mt-1 font-medium">iş analizi platformu</div>
+            <div className="text-white/40 text-[12px] mt-1 font-medium">{platformLabel}</div>
           </div>
         ) : (
           <div className="flex items-center gap-3 select-none">
@@ -65,7 +69,7 @@ function VideoCard({
       {/* Card footer */}
       <div className="bg-white px-4 py-3 flex items-center justify-between">
         <span className="font-semibold text-[14px] text-kx-ink">{title}</span>
-        <span className="text-[12px] text-kx-muted">60 sn</span>
+        <span className="text-[12px] text-kx-muted">{duration}</span>
       </div>
     </button>
   )
@@ -97,11 +101,15 @@ export default function VideoSection() {
             <VideoCard
               variant="tanitim"
               title={t('card1Title')}
+              duration={t('duration')}
+              platformLabel={t('platformLabel')}
               onClick={() => openModal('tanitim')}
             />
             <VideoCard
               variant="kilavuz"
               title={t('card2Title')}
+              duration={t('duration')}
+              platformLabel={t('platformLabel')}
               onClick={() => openModal('kilavuz')}
             />
           </div>

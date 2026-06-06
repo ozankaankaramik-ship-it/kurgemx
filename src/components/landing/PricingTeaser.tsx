@@ -1,6 +1,6 @@
+import { getTranslations } from 'next-intl/server'
 import { Link } from '@/i18n/navigation'
 import KxPill from '@/components/ui/KxPill'
-import { getLocale } from 'next-intl/server'
 
 type Plan = {
   key: string
@@ -11,115 +11,47 @@ type Plan = {
   popular: boolean
 }
 
-const PLANS_TR: Plan[] = [
-  {
-    key: 'freemium',
-    name: 'Freemium',
-    price: '$0',
-    desc: 'Hikaye haritası + analiz dokümanı — ücretsiz, hemen başla',
-    features: [
-      '1 proje / ay',
-      'Küçük projeler (1–5 hikaye)',
-      'Hikaye haritası',
-      'İş analizi dokümanı',
-    ],
-    popular: false,
-  },
-  {
-    key: 'analyst',
-    name: 'Analyst',
-    price: '$9',
-    desc: 'Hikaye haritasından test senaryosuna tüm çıktılar',
-    features: [
-      '3 proje / ay',
-      'Orta projeler (6–15 hikaye)',
-      'Prototip üretimi',
-      'Word / Excel / HTML dışa aktarım',
-    ],
-    popular: true,
-  },
-  {
-    key: 'advanced',
-    name: 'Advanced',
-    price: '$29',
-    desc: 'Büyük projeler için tam güç — tüm çıktılar',
-    features: [
-      '10 proje / ay',
-      'Büyük projeler (16–40 hikaye)',
-      'Test senaryosu üretimi',
-      'Tüm Analyst özellikleri',
-    ],
-    popular: false,
-  },
-]
-
-const PLANS_EN: Plan[] = [
-  {
-    key: 'freemium',
-    name: 'Freemium',
-    price: '$0',
-    desc: 'Story map + analysis document — free, start now',
-    features: [
-      '1 project / month',
-      'Small projects (1–5 stories)',
-      'Story map',
-      'Business analysis document',
-    ],
-    popular: false,
-  },
-  {
-    key: 'analyst',
-    name: 'Analyst',
-    price: '$9',
-    desc: 'All outputs from story map to test scenarios',
-    features: [
-      '3 projects / month',
-      'Medium projects (6–15 stories)',
-      'Prototype generation',
-      'Word / Excel / HTML export',
-    ],
-    popular: true,
-  },
-  {
-    key: 'advanced',
-    name: 'Advanced',
-    price: '$29',
-    desc: 'Full power for large projects — all outputs',
-    features: [
-      '10 projects / month',
-      'Large projects (16–40 stories)',
-      'Test scenario generation',
-      'All Analyst features',
-    ],
-    popular: false,
-  },
-]
-
 export default async function PricingTeaser() {
-  const locale = await getLocale()
-  const plans = locale === 'tr' ? PLANS_TR : PLANS_EN
-  const headline = locale === 'tr'
-    ? 'İlk projen ücretsiz. Sonrası sana kalmış.'
-    : 'Your first project is free. The rest is up to you.'
-  const seeAll = locale === 'tr'
-    ? 'Karşılaştırma tablosunu ve SSS\'leri gör →'
-    : 'See comparison table and FAQs →'
-  const subtitle = locale === 'tr'
-    ? 'Projenize uygun planı seçin.'
-    : 'Choose the plan that fits your project.'
-  const sectionLabel = locale === 'tr' ? 'Fiyatlandırma' : 'Pricing'
-  const mostPopular = locale === 'tr' ? 'EN POPÜLER' : 'MOST POPULAR'
-  const signUpCta = locale === 'tr' ? 'Hesap aç' : 'Sign up'
+  const t  = await getTranslations('landing.pricingTeaser')
+  const tp = await getTranslations('pricing')
+  const tn = await getTranslations('nav')
+
+  const plans: Plan[] = [
+    {
+      key: 'freemium',
+      name: tp('planlar.freemium.ad'),
+      price: '$0',
+      desc: t('plans.freemium.desc'),
+      features: [t('plans.freemium.f1'), t('plans.freemium.f2'), t('plans.freemium.f3'), t('plans.freemium.f4')],
+      popular: false,
+    },
+    {
+      key: 'analyst',
+      name: tp('planlar.analyst.ad'),
+      price: '$9',
+      desc: t('plans.analyst.desc'),
+      features: [t('plans.analyst.f1'), t('plans.analyst.f2'), t('plans.analyst.f3'), t('plans.analyst.f4')],
+      popular: true,
+    },
+    {
+      key: 'advanced',
+      name: tp('planlar.advanced.ad'),
+      price: '$29',
+      desc: t('plans.advanced.desc'),
+      features: [t('plans.advanced.f1'), t('plans.advanced.f2'), t('plans.advanced.f3'), t('plans.advanced.f4')],
+      popular: false,
+    },
+  ]
 
   return (
     <section className="bg-white py-22 px-8 border-t border-kx-border">
       <div className="max-w-[1180px] mx-auto">
         <div className="text-center mb-12">
-          <KxPill tone="blue">— {sectionLabel}</KxPill>
+          <KxPill tone="blue">— {tn('pricing')}</KxPill>
           <h2 className="font-display text-[48px] tracking-[-0.03em] font-bold text-kx-ink mt-4 mb-3 leading-[1.1]">
-            {headline}
+            {t('headline')}
           </h2>
-          <p className="text-[16px] text-kx-body">{subtitle}</p>
+          <p className="text-[16px] text-kx-body">{tp('altBaslik')}</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -136,7 +68,7 @@ export default async function PricingTeaser() {
               >
                 {isHl && (
                   <div className="absolute -top-2.5 right-5 bg-kx-red text-white text-[11px] font-bold px-2.5 py-1 rounded-full tracking-wider">
-                    {mostPopular}
+                    {tp('enPopuler').toUpperCase()}
                   </div>
                 )}
                 <div className={`text-[13px] font-semibold tracking-[0.06em] uppercase mb-3 ${isHl ? 'text-white/60' : 'text-kx-muted'}`}>
@@ -144,7 +76,7 @@ export default async function PricingTeaser() {
                 </div>
                 <div className="flex items-baseline gap-1.5 mb-1.5">
                   <span className="font-display text-[44px] font-bold tracking-[-0.03em]">{p.price}</span>
-                  <span className={`text-[14px] ${isHl ? 'text-white/55' : 'text-kx-muted'}`}>/ {locale === 'tr' ? 'ay' : 'mo'}</span>
+                  <span className={`text-[14px] ${isHl ? 'text-white/55' : 'text-kx-muted'}`}>{tp('planlar.freemium.aylik')}</span>
                 </div>
                 <div className={`text-[13px] mb-6 ${isHl ? 'text-white/70' : 'text-kx-muted'}`}>{p.desc}</div>
 
@@ -156,7 +88,7 @@ export default async function PricingTeaser() {
                       : 'bg-white text-kx-ink border border-kx-ink'
                   }`}
                 >
-                  {signUpCta}
+                  {t('signUpCta')}
                 </Link>
 
                 <ul className="list-none p-0 m-0 flex flex-col gap-2.5">
@@ -178,7 +110,7 @@ export default async function PricingTeaser() {
             href={'/pricing' as any}
             className="text-[14px] text-kx-blue no-underline font-semibold hover:underline"
           >
-            {seeAll}
+            {t('seeAll')}
           </Link>
         </div>
       </div>
