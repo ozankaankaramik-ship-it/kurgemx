@@ -13,16 +13,18 @@ import Testimonial from '@/components/landing/Testimonial'
 import PricingTeaser from '@/components/landing/PricingTeaser'
 import FinalCTA from '@/components/landing/FinalCTA'
 
-export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations('landing.meta')
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: 'landing.meta' })
   const title = t('title')
   const description = t('description')
+  const ogTitle = `KurgemX — ${title}`
   return {
     title,
     description,
     keywords: t('keywords'),
     openGraph: {
-      title,
+      title: ogTitle,
       description,
       type: 'website',
       url: 'https://kurgemx.com',
