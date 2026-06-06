@@ -32,7 +32,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: 'KurgemX — AI-Powered Business Analysis',
-    description: 'Generate story maps, business analysis documents and prototypes with AI. Built for business analysts and project managers.',
+    description: 'KurgemX — AI-Powered Business Analysis',
     url: 'https://kurgemx.com',
     siteName: 'KurgemX',
     images: [
