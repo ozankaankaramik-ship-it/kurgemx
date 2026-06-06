@@ -11,7 +11,11 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t('baslik') }
 }
 
-export default async function KayitPage() {
+export default async function KayitPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ redirect?: string; plan?: string }>
+}) {
   const supabase = await createClient()
   const {
     data: { user },
@@ -22,19 +26,22 @@ export default async function KayitPage() {
     redirect({ href: '/projeler', locale })
   }
 
+  const { redirect: redirectTo, plan } = await searchParams
+  const girisHref = (redirectTo && plan ? `/giris?redirect=${redirectTo}&plan=${plan}` : '/giris') as '/giris'
+
   return (
     <AuthLayout
       variant="kayit"
       topRight={
         <>
           <span>{locale === 'tr' ? 'Hesabın var mı?' : 'Already have an account?'}</span>
-          <Link href="/giris" className="text-kx-ink font-semibold no-underline hover:text-kx-blue transition-colors">
+          <Link href={girisHref} className="text-kx-ink font-semibold no-underline hover:text-kx-blue transition-colors">
             {locale === 'tr' ? 'Giriş yap' : 'Sign in'}
           </Link>
         </>
       }
     >
-      <KayitFormu />
+      <KayitFormu redirectTo={redirectTo} plan={plan} />
     </AuthLayout>
   )
 }

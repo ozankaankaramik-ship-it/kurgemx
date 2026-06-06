@@ -11,7 +11,11 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t('baslik') }
 }
 
-export default async function GirisPage() {
+export default async function GirisPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ redirect?: string; plan?: string }>
+}) {
   const supabase = await createClient()
   const {
     data: { user },
@@ -22,19 +26,22 @@ export default async function GirisPage() {
     redirect({ href: '/projeler', locale })
   }
 
+  const { redirect: redirectTo, plan } = await searchParams
+  const kayitHref = (redirectTo && plan ? `/kayit?redirect=${redirectTo}&plan=${plan}` : '/kayit') as '/kayit'
+
   return (
     <AuthLayout
       variant="giris"
       topRight={
         <>
           <span>{locale === 'tr' ? 'Hesabın yok mu?' : "Don't have an account?"}</span>
-          <Link href="/kayit" className="text-kx-ink font-semibold no-underline hover:text-kx-blue transition-colors">
+          <Link href={kayitHref} className="text-kx-ink font-semibold no-underline hover:text-kx-blue transition-colors">
             {locale === 'tr' ? 'Hesap aç' : 'Sign up'}
           </Link>
         </>
       }
     >
-      <GirisFormu />
+      <GirisFormu redirectTo={redirectTo} plan={plan} />
     </AuthLayout>
   )
 }

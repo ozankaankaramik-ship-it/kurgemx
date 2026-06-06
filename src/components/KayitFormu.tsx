@@ -46,11 +46,9 @@ function getStrength(pw: string): { score: 0 | 1 | 2 | 3 | 4; label: string; col
   return        { score: 4, label: 'Güçlü',           color: '#16A34A' }
 }
 
-/**
- * Signup form — refreshed.
- * Used inside <AuthLayout variant="kayit"> at the page level.
- */
-export default function KayitFormu() {
+type KayitFormuProps = { redirectTo?: string; plan?: string }
+
+export default function KayitFormu({ redirectTo, plan }: KayitFormuProps) {
   const t = useTranslations('auth.kayit')
   const locale = useLocale()
   const [kvkk,              setKvkk]              = useState(false)
@@ -88,9 +86,11 @@ export default function KayitFormu() {
           }
         }}
       >
-        <input type="hidden" name="locale" value={locale} />
-        <input type="hidden" name="kvkk"  value={kvkk  ? 'on' : ''} />
-        <input type="hidden" name="terms" value={terms ? 'on' : ''} />
+        <input type="hidden" name="locale"     value={locale} />
+        <input type="hidden" name="kvkk"       value={kvkk  ? 'on' : ''} />
+        <input type="hidden" name="terms"      value={terms ? 'on' : ''} />
+        {redirectTo && <input type="hidden" name="redirectTo" value={redirectTo} />}
+        {plan       && <input type="hidden" name="plan"       value={plan} />}
         <button
           type="submit"
           className="w-full flex items-center justify-center gap-2.5 bg-white border border-kx-border rounded-xl px-4 py-3 text-[14px] font-medium text-kx-ink hover:border-kx-blue transition-colors mb-2"
@@ -115,7 +115,9 @@ export default function KayitFormu() {
       </div>
 
       <form action={action} className="space-y-3.5">
-        <input type="hidden" name="locale" value={locale} />
+        <input type="hidden" name="locale"     value={locale} />
+        {redirectTo && <input type="hidden" name="redirectTo" value={redirectTo} />}
+        {plan       && <input type="hidden" name="plan"       value={plan} />}
 
         {/* Ad / Soyad */}
         <div className="grid grid-cols-2 gap-2.5">
@@ -239,7 +241,10 @@ export default function KayitFormu() {
 
       <p className="mt-5 text-center text-[13px] text-kx-muted">
         {t('hesapVar')}{' '}
-        <Link href="/giris" className="font-semibold text-kx-navy no-underline hover:underline">
+        <Link
+          href={(redirectTo && plan ? `/giris?redirect=${redirectTo}&plan=${plan}` : '/giris') as '/giris'}
+          className="font-semibold text-kx-navy no-underline hover:underline"
+        >
           {t('girisLink')}
         </Link>
       </p>

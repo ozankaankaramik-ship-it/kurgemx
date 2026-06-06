@@ -35,7 +35,9 @@ function LockIcon() {
   )
 }
 
-export default function GirisFormu() {
+type GirisFormuProps = { redirectTo?: string; plan?: string }
+
+export default function GirisFormu({ redirectTo, plan }: GirisFormuProps) {
   const t = useTranslations('auth.giris')
   const locale = useLocale()
   const router = useRouter()
@@ -53,7 +55,11 @@ export default function GirisFormu() {
       if (result?.error) {
         setErrorKey(result.error)
       } else if (result?.success) {
-        window.location.href = `/${locale}/projeler`
+        if (redirectTo && plan) {
+          window.location.href = `/${locale}/${redirectTo}?plan=${plan}`
+        } else {
+          window.location.href = `/${locale}/projeler`
+        }
       }
     })
   }
@@ -73,7 +79,9 @@ export default function GirisFormu() {
 
       {/* Google OAuth */}
       <form action={googleIleGiris}>
-        <input type="hidden" name="locale" value={locale} />
+        <input type="hidden" name="locale"     value={locale} />
+        {redirectTo && <input type="hidden" name="redirectTo" value={redirectTo} />}
+        {plan       && <input type="hidden" name="plan"       value={plan} />}
         <button
           type="submit"
           className="w-full flex items-center justify-center gap-2.5 bg-white border border-kx-border rounded-xl px-4 py-3 text-[14px] font-medium text-kx-ink hover:border-kx-blue transition-colors"
@@ -161,7 +169,7 @@ export default function GirisFormu() {
       <p className="mt-6 text-center text-[13px] text-kx-muted">
         {t('hesapYok')}{' '}
         <Link
-          href="/kayit"
+          href={(redirectTo && plan ? `/kayit?redirect=${redirectTo}&plan=${plan}` : '/kayit') as '/kayit'}
           className="font-semibold text-kx-navy no-underline hover:underline"
         >
           {t('kayitLink')} →

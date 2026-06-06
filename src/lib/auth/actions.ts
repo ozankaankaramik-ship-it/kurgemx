@@ -57,6 +57,8 @@ export async function kayitOl(
   const kvkk = formData.get('kvkk')
   const terms = formData.get('terms')
   const locale = (formData.get('locale') as string) || 'tr'
+  const redirectTo = (formData.get('redirectTo') as string) || ''
+  const plan = (formData.get('plan') as string) || ''
 
   if (!kvkk) return { error: 'kvkk_required' }
   if (!terms) return { error: 'terms_required' }
@@ -64,6 +66,8 @@ export async function kayitOl(
   const supabase = await createClient()
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
   const now = new Date().toISOString()
+
+  const nextPath = redirectTo && plan ? `/${locale}/${redirectTo}?plan=${plan}` : `/${locale}`
 
   const { data, error } = await supabase.auth.signUp({
     email,
@@ -77,7 +81,7 @@ export async function kayitOl(
         terms_onay: true,
         terms_onay_tarih: now,
       },
-      emailRedirectTo: `${siteUrl}/api/auth/callback?next=/${locale}`,
+      emailRedirectTo: `${siteUrl}/api/auth/callback?next=${encodeURIComponent(nextPath)}`,
     },
   })
 
@@ -100,7 +104,7 @@ export async function kayitOl(
       terms_onay: true,
       terms_onay_tarih: now,
     })
-    redirect(`/${locale}`)
+    redirect(nextPath)
   }
 
   return { success: 'emailGonderildi' }
@@ -108,9 +112,13 @@ export async function kayitOl(
 
 // Google ile giriş / kayıt
 export async function googleIleGiris(formData: FormData): Promise<void> {
-  const locale = (formData.get('locale') as string) || 'tr'
-  const kvkk  = formData.get('kvkk')  === 'on' ? 'true' : 'false'
-  const terms = formData.get('terms') === 'on' ? 'true' : 'false'
+  const locale     = (formData.get('locale')     as string) || 'tr'
+  const kvkk       = formData.get('kvkk')  === 'on' ? 'true' : 'false'
+  const terms      = formData.get('terms') === 'on' ? 'true' : 'false'
+  const redirectTo = (formData.get('redirectTo') as string) || ''
+  const plan       = (formData.get('plan')       as string) || ''
+
+  const nextPath = redirectTo && plan ? `/${locale}/${redirectTo}?plan=${plan}` : `/${locale}`
 
   const supabase = await createClient()
   const headersList = await headers()
@@ -121,7 +129,7 @@ export async function googleIleGiris(formData: FormData): Promise<void> {
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
-      redirectTo: `${origin}/api/auth/callback?next=/${locale}&kvkk=${kvkk}&terms=${terms}`,
+      redirectTo: `${origin}/api/auth/callback?next=${encodeURIComponent(nextPath)}&kvkk=${kvkk}&terms=${terms}`,
     },
   })
 

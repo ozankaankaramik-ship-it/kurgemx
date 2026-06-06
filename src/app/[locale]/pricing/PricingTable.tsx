@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
+import { useRouter } from '@/i18n/navigation'
 import PaymentModal from '@/components/PaymentModal'
 
 /* ── Plan sıra indeksi (buton mantığı için) ──────────────────── */
@@ -31,6 +32,8 @@ type Props = {
   mevcutPlanId:  string | null
   mevcutPlanKod: string | null
   locale:        string
+  isLoggedIn:    boolean
+  initialPlan:   string | null
   sections: Array<{
     label: string
     rows:  Array<{ label: string; vals: (boolean | string)[] }>
@@ -155,10 +158,28 @@ export default function PricingTable({
   mevcutPlanId,
   mevcutPlanKod,
   locale,
+  isLoggedIn,
+  initialPlan,
   sections,
 }: Props) {
   const t = useTranslations('pricing')
+  const router = useRouter()
   const [modalPlan, setModalPlan] = useState<PlanRef>(null)
+
+  // Redirect sonrası gelen plan param'ı varsa modalı otomatik aç
+  useEffect(() => {
+    if (!isLoggedIn || !initialPlan) return
+    if (initialPlan === 'analyst' && analystPlan)  setModalPlan(analystPlan)
+    if (initialPlan === 'advanced' && advancedPlan) setModalPlan(advancedPlan)
+  }, [initialPlan, isLoggedIn, analystPlan, advancedPlan])
+
+  function handleSubscribe(plan: NonNullable<PlanRef>) {
+    if (!isLoggedIn) {
+      router.push(`/kayit?redirect=pricing&plan=${plan.kod}` as '/kayit')
+      return
+    }
+    setModalPlan(plan)
+  }
 
   const analystBtn  = btnType('analyst',  mevcutPlanKod)
   const advancedBtn = btnType('advanced', mevcutPlanKod)
@@ -212,7 +233,7 @@ export default function PricingTable({
               }
               period={t('planlar.analyst.aylik')}
               btn={analystBtn}
-              onSubscribe={analystPlan ? () => setModalPlan(analystPlan) : undefined}
+              onSubscribe={analystPlan ? () => handleSubscribe(analystPlan) : undefined}
             />
           </div>
 
@@ -232,7 +253,7 @@ export default function PricingTable({
               }
               period={t('planlar.advanced.aylik')}
               btn={advancedBtn}
-              onSubscribe={advancedPlan ? () => setModalPlan(advancedPlan) : undefined}
+              onSubscribe={advancedPlan ? () => handleSubscribe(advancedPlan) : undefined}
             />
           </div>
 

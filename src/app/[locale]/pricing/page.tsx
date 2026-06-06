@@ -10,9 +10,14 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t('baslik') }
 }
 
-export default async function PricingPage() {
+export default async function PricingPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ plan?: string }>
+}) {
   const t      = await getTranslations('pricing')
   const locale = await getLocale()
+  const { plan: initialPlan } = await searchParams
 
   const supabase = await createClient()
 
@@ -108,6 +113,8 @@ export default async function PricingPage() {
         mevcutPlanId={mevcutPlanId}
         mevcutPlanKod={mevcutPlanKod}
         locale={locale}
+        isLoggedIn={!!user}
+        initialPlan={initialPlan ?? null}
         sections={sections}
       />
 
