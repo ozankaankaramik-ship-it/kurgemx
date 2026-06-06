@@ -21,7 +21,13 @@ export async function generateMetadata(): Promise<Metadata> {
     title,
     description,
     keywords: t('keywords'),
-    openGraph: { title, description, type: 'website' },
+    openGraph: {
+      title,
+      description,
+      type: 'website',
+      url: 'https://kurgemx.com',
+      images: [{ url: 'https://kurgemx.com/og-image.png', width: 1200, height: 630 }],
+    },
   }
 }
 
