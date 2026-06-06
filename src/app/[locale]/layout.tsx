@@ -30,6 +30,25 @@ export const metadata: Metadata = {
     icon: '/kurgemx-icon.svg',
     apple: '/kurgemx-icon.svg',
   },
+  openGraph: {
+    title: 'KurgemX — AI-Powered Business Analysis',
+    description: 'Generate story maps, business analysis documents and prototypes with AI.',
+    url: 'https://kurgemx.com',
+    siteName: 'KurgemX',
+    images: [
+      {
+        url: 'https://kurgemx.com/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'KurgemX',
+      },
+    ],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    images: ['https://kurgemx.com/og-image.png'],
+  },
 };
 
 export default async function LocaleLayout({
