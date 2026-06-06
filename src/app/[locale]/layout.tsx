@@ -4,6 +4,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
+import Script from "next/script";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ConsentGate from "@/components/ConsentGate";
@@ -78,6 +79,18 @@ export default async function LocaleLayout({
           <Footer />
           <ConsentGate locale={locale} />
         </NextIntlClientProvider>
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=AW-17855392608"
+          strategy="afterInteractive"
+        />
+        <Script id="google-ads-tag" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'AW-17855392608');
+          `}
+        </Script>
       </body>
     </html>
   );
