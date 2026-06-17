@@ -353,8 +353,8 @@
     },
     "landing": {
         "meta": {
-            "title": "Yapay Zeka Destekli İş Analizi",
-            "description": "Yapay zeka ile hikaye haritaları, iş analizi dokümanları ve prototipler oluşturun. İş analistleri ve proje yöneticileri için.",
+            "title": "KurgemX | Yapay Zeka Destekli İş Analizi Platformu",
+            "description": "Fikrinizi dakikalar içinde hikaye haritasına, gereksinim analizine, tıklanabilir prototipe ve test senaryolarına dönüştürün. Türkçe dil desteğiyle iş analizi süreçlerinizi hızlandırın.",
             "keywords": "yapay zeka iş analizi, hikaye haritası oluşturucu, kullanıcı hikayesi haritalama, iş analisti aracı"
         },
         "hero": {

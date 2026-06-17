@@ -18,16 +18,23 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const t = await getTranslations({ locale, namespace: 'landing.meta' })
   const title = t('title')
   const description = t('description')
-  const ogTitle = `KurgemX — ${title}`
   return {
-    title,
+    title: { absolute: title },
     description,
     keywords: t('keywords'),
+    alternates: {
+      canonical: `https://kurgemx.com/${locale}`,
+      languages: {
+        tr: 'https://kurgemx.com/tr',
+        en: 'https://kurgemx.com/en',
+        'x-default': 'https://kurgemx.com',
+      },
+    },
     openGraph: {
-      title: ogTitle,
+      title,
       description,
       type: 'website',
-      url: 'https://kurgemx.com',
+      url: `https://kurgemx.com/${locale}`,
       images: [{ url: 'https://kurgemx.com/og-image.png', width: 1200, height: 630 }],
     },
   }
