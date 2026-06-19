@@ -189,13 +189,15 @@ export default function PricingTable({
 
   return (
     <>
-      <div style={{ width: '830px', margin: '0 auto', padding: '1.5rem 1rem' }}>
+      <div style={{ maxWidth: '830px', width: '100%', margin: '0 auto', padding: '1.5rem 1rem', overflowX: 'auto' }}>
 
         {/* ── Plan kartları ──
              Sütun genişlikleri tablo colgroup ile tam eşleşiyor: 22% + 4×19.5%
              gap yerine wrapper padding kullanılıyor ki sütun başlangıç noktaları
-             kaymadan tablo başlıklarıyla hizalanabilsin.                        */}
-        <div className="mb-8" style={{ display: 'grid', gridTemplateColumns: '210px 155px 155px 155px 155px', gap: 0 }}>
+             kaymadan tablo başlıklarıyla hizalanabilsin. Mobilde küçülmesin diye
+             min-width: 830px + dış sarmalayıcıda overflowX: auto ile yatay scroll. */}
+        <div className="mb-8" style={{ overflowX: 'auto' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '210px 155px 155px 155px 155px', gap: 0, minWidth: '830px' }}>
 
           {/* Features sütunu placeholder */}
           <div />
@@ -281,9 +283,10 @@ export default function PricingTable({
             />
           </div>
         </div>
+        </div>
 
         {/* ── Karşılaştırma tablosu ── */}
-        <div className="rounded-xl overflow-hidden" style={{ border: '1px solid #E5E7EB', background: '#F8F9FA' }}>
+        <div className="rounded-xl overflow-x-auto" style={{ border: '1px solid #E5E7EB', background: '#F8F9FA' }}>
           <table style={{ tableLayout: 'fixed', width: '830px', margin: '0 auto', fontSize: 14, borderCollapse: 'collapse' }}>
             <colgroup>
               <col style={{ width: '210px' }} />

@@ -81,7 +81,9 @@
       "Bash(mkdir \"C:\\\\Users\\\\ozank\\\\Documents\\\\İşAnaliziAjan\\\\kurgemx\\\\src\\\\app\\\\[locale]\\\\hesap\")",
       "Bash(mkdir \"C:\\\\Users\\\\ozank\\\\Documents\\\\İşAnaliziAjan\\\\kurgemx\\\\src\\\\app\\\\[locale]\\\\contact\")",
       "Bash(Get-ChildItem -Recurse \"C:\\\\Users\\\\ozank\\\\Documents\\\\İşAnaliziAjan\\\\kurgemx\\\\src\\\\components\" -Name)",
-      "Bash(Get-ChildItem *)"
+      "Bash(Get-ChildItem *)",
+      "Bash(pkill -f \"next dev\")",
+      "Bash(pkill -f \"node.*next\")"
     ]
   },
   "hooks": {
