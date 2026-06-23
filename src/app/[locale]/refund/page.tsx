@@ -6,7 +6,7 @@ export default function RefundPage() {
   return (
     <LegalLayout
       tNamespace="refund"
-      sectionCount={4}
+      sectionCount={5}
       footerNote="İade taleplerin için support@kurgemx.com adresinden bize ulaşabilirsin. 24 saat içinde dönüş yapıyoruz."
     />
   )
