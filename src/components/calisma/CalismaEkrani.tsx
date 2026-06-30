@@ -271,6 +271,7 @@ async function exportToExcel(data: StoryMapData, projeAdi: string) {
   function enc(r: number, c: number) { return XLSX.utils.encode_cell({ r, c }) }
 
   // ── SHEET 1: Story Map ─────────────────────────────────────
+  const kullanicilar = data.kullanicilar ?? []
   const destanlar = data.hikayeHaritasi?.destanlar ?? []
   const hikayeler = data.hikayeHaritasi?.hikayeler ?? []
   const surumler = (['R1', 'R2', 'R3'] as const).filter(s => hikayeler.some(h => h.surum === s))
@@ -283,7 +284,14 @@ async function exportToExcel(data: StoryMapData, projeAdi: string) {
   const m1: unknown[] = []
   const rows1: { hpx: number }[] = []
 
-  // Satır 1: proje adı
+  const ABBREV_BORDER = {
+    top:    { style: 'thin', color: { rgb: 'E5E5E5' } },
+    bottom: { style: 'thin', color: { rgb: 'E5E5E5' } },
+    left:   { style: 'thin', color: { rgb: 'E5E5E5' } },
+    right:  { style: 'thin', color: { rgb: 'E5E5E5' } },
+  }
+
+  // Satır 0: proje adı
   ws1[enc(0, 0)] = c(projeAdi, {
     font: { bold: true, sz: 14, color: { rgb: WHITE } },
     fill: { patternType: 'solid', fgColor: { rgb: DARK_BLUE } },
@@ -293,7 +301,7 @@ async function exportToExcel(data: StoryMapData, projeAdi: string) {
   m1.push({ s: { r: 0, c: 0 }, e: { r: 0, c: numCols - 1 } })
   rows1.push({ hpx: 40 })
 
-  // Satır 2: özet
+  // Satır 1: özet
   ws1[enc(1, 0)] = c(summaryText, {
     font: { italic: true, sz: 10, color: { rgb: DARK_BLUE } },
     fill: { patternType: 'solid', fgColor: { rgb: LIGHT_BLUE } },
@@ -303,14 +311,50 @@ async function exportToExcel(data: StoryMapData, projeAdi: string) {
   m1.push({ s: { r: 1, c: 0 }, e: { r: 1, c: numCols - 1 } })
   rows1.push({ hpx: 24 })
 
-  // Satır 3: başlıklar
-  ws1[enc(2, 0)] = hdr('Version')
-  destanlar.forEach((d, i) => { ws1[enc(2, i + 1)] = hdr(d) })
+  // ── Kullanıcılar bölümü (satır 2+) ───────────────────────
+  let smRow = 2  // story map başlık satırı
+  if (kullanicilar.length > 0) {
+    rows1.push({ hpx: 8 })  // boş ayırıcı
+    const uTitleRow = 3
+    ws1[enc(uTitleRow, 0)] = c('Kullanıcılar / Users', {
+      border: ABBREV_BORDER,
+      font: { bold: true, sz: 10, color: { rgb: DARK_BLUE } },
+      fill: { patternType: 'solid', fgColor: { rgb: 'EEF4FB' } },
+      alignment: { horizontal: 'left', vertical: 'center' },
+    })
+    for (let i = 1; i < numCols; i++) ws1[enc(uTitleRow, i)] = { v: '', t: 's', s: { fill: { patternType: 'solid', fgColor: { rgb: 'EEF4FB' } } } }
+    m1.push({ s: { r: uTitleRow, c: 0 }, e: { r: uTitleRow, c: numCols - 1 } })
+    rows1.push({ hpx: 24 })
+
+    const uHdrStyle = { border: ABBREV_BORDER, font: { bold: true, sz: 9, color: { rgb: '666663' } }, fill: { patternType: 'solid', fgColor: { rgb: 'F9F9F9' } }, alignment: { horizontal: 'left', vertical: 'center' } }
+    ws1[enc(4, 0)] = c('Kod', uHdrStyle)
+    ws1[enc(4, 1)] = c('Kullanıcı Tipi / User Type', uHdrStyle)
+    ws1[enc(4, 2)] = c('Açıklama / Description', uHdrStyle)
+    for (let i = 3; i < numCols; i++) ws1[enc(4, i)] = { v: '', t: 's', s: {} }
+    rows1.push({ hpx: 20 })
+
+    const uCellStyle = { border: ABBREV_BORDER, font: { sz: 9, color: { rgb: '374151' } }, fill: { patternType: 'solid', fgColor: { rgb: WHITE } } }
+    kullanicilar.forEach((u, ui) => {
+      const r = 5 + ui
+      ws1[enc(r, 0)] = c(u.kod, { ...uCellStyle, font: { sz: 9, bold: true, color: { rgb: '1F3864' } } })
+      ws1[enc(r, 1)] = c(u.tip, uCellStyle)
+      ws1[enc(r, 2)] = c(u.aciklama ?? '', uCellStyle)
+      for (let i = 3; i < numCols; i++) ws1[enc(r, i)] = { v: '', t: 's', s: {} }
+      rows1.push({ hpx: 20 })
+    })
+    rows1.push({ hpx: 8 })  // boş ayırıcı
+    // userTableRows = 1(boş) + 1(title) + 1(headers) + N(users) + 1(boş) = N + 4
+    smRow = 2 + kullanicilar.length + 4
+  }
+
+  // ── Hikaye haritası başlık satırı ─────────────────────────
+  ws1[enc(smRow, 0)] = hdr('Version')
+  destanlar.forEach((d, i) => { ws1[enc(smRow, i + 1)] = hdr(d) })
   rows1.push({ hpx: 36 })
 
   // Veri satırları
   surumler.forEach((surum, si) => {
-    const row = 3 + si
+    const row = smRow + 1 + si
     const maxCount = Math.max(1, ...destanlar.map(d =>
       hikayeler.filter(h => h.surum === surum && h.destan === d).length
     ))
@@ -322,10 +366,9 @@ async function exportToExcel(data: StoryMapData, projeAdi: string) {
     destanlar.forEach((destan, di) => {
       const stories = hikayeler.filter(h => h.surum === surum && h.destan === destan)
       const text = stories.map(h => `${h.no} · ${h.ad} [${(h.kullanici_kodlari ?? []).join(',')}]`).join('\n')
-      const bg = WHITE
       ws1[enc(row, di + 1)] = c(text, {
         font: { sz: 9, color: { rgb: '374151' } },
-        fill: { patternType: 'solid', fgColor: { rgb: bg } },
+        fill: { patternType: 'solid', fgColor: { rgb: WHITE } },
         alignment: { vertical: 'top', wrapText: true },
       })
     })
@@ -333,13 +376,7 @@ async function exportToExcel(data: StoryMapData, projeAdi: string) {
   })
 
   // ── Abbreviations table ───────────────────────────────────
-  const abbrevOffset = 3 + surumler.length
-  const ABBREV_BORDER = {
-    top:    { style: 'thin', color: { rgb: 'E5E5E5' } },
-    bottom: { style: 'thin', color: { rgb: 'E5E5E5' } },
-    left:   { style: 'thin', color: { rgb: 'E5E5E5' } },
-    right:  { style: 'thin', color: { rgb: 'E5E5E5' } },
-  }
+  const abbrevOffset = smRow + 1 + surumler.length
   rows1.push({ hpx: 16 }) // empty separator
 
   ws1[enc(abbrevOffset + 1, 0)] = c('Abbreviations', {
@@ -363,6 +400,7 @@ async function exportToExcel(data: StoryMapData, projeAdi: string) {
     ['ST', 'Story', 'ST1, ST2'],
     ['SP', 'Sprint', 'SP1, SP2'],
     ['R', 'Release', 'R1, R2, R3'],
+    ['U', 'User (Kullanıcı)', 'U1, U2, U3'],
   ] as const
   const abbrevCellStyle = { border: ABBREV_BORDER, font: { italic: true, sz: 9, color: { rgb: '9CA3AF' } }, fill: { patternType: 'solid', fgColor: { rgb: WHITE } } }
   abbrevData.forEach(([code, name, example], ai) => {
@@ -383,7 +421,7 @@ async function exportToExcel(data: StoryMapData, projeAdi: string) {
   ws1['!merges'] = m1
   ws1['!cols']   = [{ wch: 12 }, ...destanlar.map(() => ({ wch: 28 }))]
   ws1['!rows']   = rows1
-  ws1['!views']  = [{ state: 'frozen', ySplit: 3 }]
+  ws1['!views']  = [{ state: 'frozen', ySplit: smRow + 1 }]
   XLSX.utils.book_append_sheet(wb, ws1, 'Story Map')
 
   // ── SHEET 2: Sprint Plan ───────────────────────────────────

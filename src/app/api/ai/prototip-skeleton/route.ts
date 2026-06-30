@@ -71,6 +71,7 @@ KRİTİK KURALLAR:
 - Ekran div'lerinde SADECE <!-- SCREEN_CONTENT_SCREEN_ID --> olsun
 - Maks 10 nav item, hikayeleri mantıksal gruplara böl
 - sidebar-footer'da sol=bugünün tarihi (GG.AA.YYYY), sağ="KurgemX"
+- Nav item'lara YALNIZCA ekran adı yaz — R veya U badge'i EKLEME (badge'ler içerik alanında gösterilecek)
 
 Yalnızca HTML döndür.`
     : `Project: ${projeAdi}
@@ -117,6 +118,7 @@ CRITICAL RULES:
 - Screen divs must contain ONLY <!-- SCREEN_CONTENT_SCREEN_ID -->
 - Max 10 nav items, group screens logically
 - sidebar-footer: left=today's date (DD.MM.YYYY), right="KurgemX"
+- Nav items must contain ONLY the screen name — do NOT add R or U badges (badges go in the content area header)
 
 Return only HTML.`
 
