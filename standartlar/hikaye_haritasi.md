@@ -36,6 +36,7 @@ Tüm dillerde aynı kısaltmalar kullanılır:
 | AC | Acceptance Criteria (Kabul Kriteri) | AC-001, AC-002 |
 | BR | Business Rule (İş Kuralı) | BR-001, BR-002 |
 | TC | Test Case | TC-ST1-01 |
+| U | User (Kullanıcı) | U1, U2, U3 |
 
 ---
 
@@ -66,6 +67,29 @@ Aşağıdaki hikayeler hikaye haritasına **dahil edilmez** — bu konular mimar
 
 ---
 
+## Kullanıcı Tanımlama Kuralı
+
+Hikaye haritası oluşturulmadan önce, projeyi kullanacak **kullanıcı tipleri (U1, U2, U3...)** belirlenir. YZ proje açıklamasından bu kullanıcı tiplerini otomatik çıkarır; kullanıcı düzenleyebilir.
+
+**Kullanıcı tipi yalnızca geliştirilecek çözümü fiilen kullanacak kişileri kapsar** — son kullanıcı, yönetici, onaylayıcı, sistem yöneticisi gibi roller dahildir.
+
+Aşağıdaki roller kullanıcı tipi olarak **tanımlanmaz** — bunlar projeyi üreten/yöneten taraftır, çözümü kullanan değil:
+- Ürün Sahibi, İş Analisti, Proje Yöneticisi (KurgemX'i kullanan roller)
+- Geliştirici, Test Mühendisi (üretim sürecindeki roller)
+
+### Kullanıcılar Tablosu Formatı
+
+| Kod | Kullanıcı Tipi | Açıklama |
+|-----|----------------|---------|
+| U1 | [Rol adı] | [Bu kullanıcının sistemle ne yaptığı, birincil hedefi] |
+| U2 | [Rol adı] | [...] |
+
+- Kod numaralandırması projeye özgüdür, U1'den başlar
+- Her kullanıcı tipi açıklaması tek cümle, somut ve net olmalı
+- Sistem/altyapı hikayeleri (bkz. Hikaye Kapsam Kuralı) herhangi bir kullanıcı tipine bağlanmaz
+
+---
+
 ## Tablo Yapısı
 
 - **Sütunlar:** Destanlar (Epic'ler)
@@ -82,7 +106,10 @@ Aşağıdaki hikayeler hikaye haritasına **dahil edilmez** — bu konular mimar
 - Hikaye haritasında özet format: `...yapabilme`
   - Örn: "Giriş yapabilme", "Proje oluşturabilme"
 - Hikaye numaraları: ST1, ST2, ST3 ... (metin, integer değil)
-- Tabloda kısa format: `ST6 · Yeni proje oluşturabilme (SP2)`
+- Tabloda kısa format: `ST6 · Yeni proje oluşturabilme [U1]`
+- Her hikaye, ilgili kullanıcı tipinin kodu ile etiketlenir — `[U1]`
+- Birden fazla kullanıcı tipini ilgilendiren hikayelerde kodlar virgülle yazılır — `[U1,U2]`
+- **Sprint bilgisi hikaye haritası tablosundaki kartlarda gösterilmez** — sprint planlaması ayrıca "Sprint Planı Özeti" tablosunda yer alır
 - Durum bilgisi: Başlamadı / Çalışılıyor / Tamamlandı / Bloke
 
 ---
@@ -132,14 +159,25 @@ Sprint planlaması geliştirici bakış açısıyla yapılır: **altyapı önce,
 
 ## Çıktı Yapısı
 
+### 0. Kullanıcılar Tablosu
+
+Hikaye haritasının en üstünde, destan-sürüm tablosundan önce yer alır:
+
+```
+| Kod | Kullanıcı Tipi | Açıklama |
+|-----|----------------|---------|
+| U1 | [Rol adı] | [Açıklama] |
+| U2 | [Rol adı] | [Açıklama] |
+```
+
 ### 1. Hikaye Haritası Tablosu
 
 ```
 | Release | [Destan 1] | [Destan 2] | ... |
 |---------|------------|------------|-----|
-| R1 — MVP | ST1 · ... (SP1) | ST6 · ... (SP2) | |
-| R2 — İyileştirme | ST_x · ... (SP6) | | |
-| R3 — Gelişmiş | ST_x · ... (SP9) | | |
+| R1 — MVP | ST1 · ... [U1] | ST6 · ... [U2] | |
+| R2 — İyileştirme | ST_x · ... [U1] | | |
+| R3 — Gelişmiş | ST_x · ... [U1,U2] | | |
 ```
 
 ### 2. Sprint Planı Özeti
@@ -170,10 +208,11 @@ Sprint planlaması geliştirici bakış açısıyla yapılır: **altyapı önce,
   - Tüm metin, başlık, tablo ve açıklamalar seçilen dilde yazılır
   - Kullanıcı Türkçe seçtiyse terminoloji: Destan (Epic), Hikaye (Story), Sürüm (Release), Sprint
   - Diğer dillerde standart uluslararası terimler kullanılır: Epic, Story, Release, Sprint
-  - Kısaltmalar dil seçiminden bağımsız her zaman evrensel formatta kullanılır: ST, SP, R, AC, BR, TC
+  - Kısaltmalar dil seçiminden bağımsız her zaman evrensel formatta kullanılır: ST, SP, R, AC, BR, TC, U
 - Geliştirici bakışı: Sprint sıralaması teknik önceliğe göre yapılmalı, altyapı her zaman önce gelir
 - KVKK / Güvenlik: Her zaman R1 — MVP'de, tercihen ilk sprint'te ele alınmalı
 - INVEST: Her hikaye bağımsız, değerli, tahmin edilebilir ve test edilebilir olmalı
+- Kullanıcı tipleri: Her hikaye en az bir kullanıcı koduyla (U1, U2...) etiketlenmeli; sadece çözümü kullanan kişiler kullanıcı tipi olarak tanımlanır
 
 ---
 
@@ -187,3 +226,4 @@ Sprint planlaması geliştirici bakış açısıyla yapılır: **altyapı önce,
 | AC | Acceptance Criteria (Kabul Kriteri) | AC-001 |
 | BR | Business Rule (İş Kuralı) | BR-001 |
 | TC | Test Case | TC-ST1-01 |
+| U | User (Kullanıcı) | U1, U2, U3 |

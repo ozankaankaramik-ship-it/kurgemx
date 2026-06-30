@@ -74,7 +74,8 @@ AC No:          AC-[SıraNo]  örn: AC-001
 AC Metni:       [AC'nin olduğu gibi tam metni]
 AC Tip:         positive / negative / security / boundary / performance
 Release:        R1 / R2 / R3
-Test Ön Koşul:  [Başlangıç durumu]
+Kullanıcı:      [İlgili hikayenin U kodu — örn. U2]
+Test Ön Koşul:  [Başlangıç durumu; ilgili U kodu rol bilgisiyle birlikte yazılır — örn. "U2 — Yönetici/Onaylayıcı rolüyle giriş yapılmış olmalı"]
 Test Adımlar:
   1. [Adım]
   2. [Adım]
@@ -82,6 +83,8 @@ Test Adımlar:
 Beklenen Sonuç: [Ne olması gerektiği]
 Durum:          pending
 ```
+
+**Kural:** Security tipi TC'lerde Test Ön Koşul alanında ilgili U kodu ve rol adı mutlaka belirtilir — yetkilendirme testlerinin doğru kullanıcı bağlamında kurgulandığını garanti eder.
 
 ---
 
@@ -116,14 +119,14 @@ Excel'in en üstüne şu bilgiler eklenir, sonra boş satır, sonra tablo başla
 ```
 [Proje Adı] — Test Senaryoları                   Hazırlayan: KurgemX
 Tarih: [YYYY-MM-DD]  |  Toplam TC: [N]
-Kısaltmalar: TC — Test Senaryosu  |  AC — Kabul Kriteri  |  ST — Hikaye  |  R — Sürüm
+Kısaltmalar: TC — Test Senaryosu  |  AC — Kabul Kriteri  |  ST — Hikaye  |  R — Sürüm  |  U — Kullanıcı
 ```
 
 **İngilizce projede:**
 ```
 [Proje Adı] — Test Scenarios                     Prepared by: KurgemX
 Date: [YYYY-MM-DD]  |  Total TC: [N]
-Abbreviations: TC — Test Case  |  AC — Acceptance Criteria  |  ST — Story  |  R — Release
+Abbreviations: TC — Test Case  |  AC — Acceptance Criteria  |  ST — Story  |  R — Release  |  U — User
 ```
 
 - Proje adı ve "Hazırlayan/Prepared by: KurgemX" aynı satırda, sağa hizalanmış
@@ -134,11 +137,11 @@ Abbreviations: TC — Test Case  |  AC — Acceptance Criteria  |  ST — Story 
 
 ### Sütun Sırası
 
-| TC No | Release | AC No | AC Metni | AC Tip | Test Ön Koşul | Test Adımlar | Beklenen Sonuç | Durum |
-|-------|---------|-------|----------|--------|---------------|--------------|----------------|-------|
+| TC No | Release | Kullanıcı | AC No | AC Metni | AC Tip | Test Ön Koşul | Test Adımlar | Beklenen Sonuç | Durum |
+|-------|---------|-----------|-------|----------|--------|---------------|--------------|----------------|-------|
 
 - Durum sütunu: pending / passed / failed / blocked
-- Release ve AC Tip sütunları Excel filtresiyle ayrılabilir
+- Release, Kullanıcı ve AC Tip sütunları Excel filtresiyle ayrılabilir
 
 ---
 
@@ -156,6 +159,7 @@ Test case'leri dokümanın `icerik` alanında JSON formatında tutulur.
       "ac_metni": "...",
       "ac_tip": "positive",
       "release": "R1",
+      "kullanici": "U1",
       "test_on_kosul": "...",
       "test_adimlar": ["...", "..."],
       "beklenen_sonuc": "...",
@@ -177,3 +181,4 @@ Test case'leri dokümanın `icerik` alanında JSON formatında tutulur.
 | AC | Acceptance Criteria (Kabul Kriteri) | AC-001 |
 | BR | Business Rule (İş Kuralı) | BR-001 |
 | TC | Test Case | TC-ST1-01 |
+| U | User (Kullanıcı) | U1, U2, U3 |

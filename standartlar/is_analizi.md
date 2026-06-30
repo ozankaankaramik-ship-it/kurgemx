@@ -34,6 +34,7 @@ Her hikaye için kapsam tablosu oluşturulmaz.
 ### Bölüm 1: Doküman Genel Bilgileri
 - Proje adı
 - Kapsanan hikayeler listesi (tüm hikayeler, release bazında gruplandırılmış)
+- Kullanıcı tipleri (hikaye haritasındaki U-listesinden miras alınır — kod, kullanıcı tipi, açıklama)
 - Tahmini süre (toplam)
 - Öncelik
 - Hazırlayan
@@ -112,14 +113,15 @@ Proje genelinde geçerli olan gereksinimler bu bölümde ele alınır.
 ## Kullanıcı Hikayesi Formatı
 
 ```
-AKTÖR:    [Rol] olarak
+AKTÖR:    [Kullanıcı Tipi] (U[X]) olarak
 İHTİYAÇ: [Eylem] yapabilmeliyim
 FAYDA:   Böylece [sonuç/değer] gerçekleştirebilirim
 ```
 
 **Kurallar:**
 - İHTİYAÇ her zaman `-meli` / `-malı` ile biter (Türkçe seçiliyse)
-- AKTÖR rol bazlıdır (isim değil): "İş analisti olarak", "Yönetici olarak"
+- AKTÖR, hikaye haritasındaki Kullanıcılar (U) listesinden gelir — serbest yazılmaz
+- Hikaye birden fazla kullanıcı tipini ilgilendiriyorsa (örn. ST1 · giriş yapma), en temsil edici kullanıcı tipi AKTÖR olarak seçilir; ilgili diğer U kodları gerekirse AC içinde belirtilir
 - FAYDA somut bir iş değeri ifade eder
 
 ---
@@ -224,7 +226,7 @@ Bölüm 5 özet düzeyde tutulur — detaylı teknik bilgi mimari dokümana aitt
   - Tüm metin, başlık, tablo ve açıklamalar seçilen dilde yazılır
   - Kullanıcı Türkçe seçtiyse terminoloji: Destan (Epic), Hikaye (Story), Sürüm (Release), Kabul Kriteri (Acceptance Criteria), İş Kuralı (Business Rule)
   - Diğer dillerde standart uluslararası terimler kullanılır
-  - Kısaltmalar dil seçiminden bağımsız her zaman evrensel formatta kullanılır: ST, SP, R, AC, BR, TC
+  - Kısaltmalar dil seçiminden bağımsız her zaman evrensel formatta kullanılır: ST, SP, R, AC, BR, TC, U
 - Ton: Profesyonel, net, açık. Teknik olmayan paydaşların anlayabileceği dil
 - KVKK/Güvenlik: İlgili hikayelerde güvenlik kriterleri ve iş kuralları mutlaka yer alır
 - Teknik terim açıklaması: OTP, JWT, RLS gibi terimler ilk geçtiklerinde parantez içinde açıklanır
@@ -254,3 +256,4 @@ Bölüm 5 özet düzeyde tutulur — detaylı teknik bilgi mimari dokümana aitt
 | AC | Acceptance Criteria (Kabul Kriteri) | AC-001 |
 | BR | Business Rule (İş Kuralı) | BR-001 |
 | TC | Test Case | TC-ST1-01 |
+| U | User (Kullanıcı) | U1, U2, U3 |

@@ -38,6 +38,7 @@ Dil seçiminden bağımsız, tüm dillerde aynı kısaltmalar kullanılır:
 | AC | Acceptance Criteria (Kabul Kriteri) | AC-001, AC-002 |
 | BR | Business Rule (İş Kuralı) | BR-001, BR-002 |
 | TC | Test Case | TC-ST1-01 |
+| U | User (Kullanıcı) | U1, U2, U3 |
 
 ---
 
@@ -51,6 +52,7 @@ Dil seçiminden bağımsız, tüm dillerde aynı kısaltmalar kullanılır:
 | Hikaye Haritası | Story Map |
 | Kabul Kriteri | Acceptance Criteria |
 | İş Kuralı | Business Rule |
+| Kullanıcı | User |
 
 ---
 
@@ -105,6 +107,7 @@ Her Word dokümanının son sayfasına aşağıdaki kısaltma tablosu eklenir.
 | AC | Acceptance Criteria (Kabul Kriteri) | AC-001 |
 | BR | Business Rule (İş Kuralı) | BR-001 |
 | TC | Test Case | TC-ST1-01 |
+| U | User (Kullanıcı) | U1, U2, U3 |
 
 ---
 

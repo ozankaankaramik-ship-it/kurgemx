@@ -18,7 +18,8 @@ Bu dosyayı okumadan önce `genel.md` dosyasını oku ve oradaki kuralları da u
 
 Prototip üretilirken şu bilgiler kullanılır:
 - Proje adı ve detaylı açıklama
-- Tüm hikayeler (R1 + R2 + R3) — hikaye no, adı, destanı, sprinti
+- Kullanıcı tipleri (hikaye haritasındaki U-listesi — kod, kullanıcı tipi, açıklama)
+- Tüm hikayeler (R1 + R2 + R3) — hikaye no, adı, destanı, sprinti, ilgili kullanıcı tipi (U kodu)
 - Her hikayenin **Positive [P]** kabul kriterleri
 
 Negative, Boundary ve Security AC'ler prototipin kapsamı dışındadır — bunlar test senaryosunda ele alınır.
@@ -86,6 +87,7 @@ Negative, Boundary ve Security AC'ler prototipin kapsamı dışındadır — bun
   - Her grubun altında ilgili ekranlar ikinci seviyede listelenir
   - Aktif ekran vurgulanır
   - Release bilgisi (R1/R2/R3) küçük badge olarak gösterilir
+  - İlgili kullanıcı tipi (U kodu) küçük badge olarak gösterilir
 - **İçerik alanı** (kalan alan):
   - Aktif ekran gösterilir
   - Üstte ekran başlığı ve ilgili hikaye no'ları
@@ -111,7 +113,8 @@ Negative, Boundary ve Security AC'ler prototipin kapsamı dışındadır — bun
 - Eşleme YZ tarafından projeye özgü belirlenir
 
 ### Her Ekran İçin
-1. **Başlık satırı:** Ekran adı + ilgili hikaye no'ları + sprint badge'i
+1. **Başlık satırı:** Ekran adı + ilgili hikaye no'ları + sprint badge'i + kullanıcı tipi badge'i (U kodu)
+   - Birden fazla kullanıcı tipi ilgili ekrana erişebiliyorsa tüm U kodları gösterilir (örn. [U1] [U2])
 2. **Ekran içeriği:** Hikayenin işlevine göre uygun UI:
    - Liste/tablo hikayeleri → veri tablosu
    - Form hikayeleri → doldurulabilir form
