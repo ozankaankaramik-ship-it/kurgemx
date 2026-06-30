@@ -22,13 +22,14 @@ const GECERLI_BOLUM: readonly Bolum[] = ['bolum1', 'R1', 'R2', 'R3', 'bolum345']
 const RELEASES = new Set<Bolum>(['R1', 'R2', 'R3'])
 
 interface HikayeItem {
-  no: string; ad: string; destan: string; surum: string; sprint: string
+  no: string; ad: string; destan: string; surum: string; kullanici_kodlari: string[]
 }
 
 interface HikayeHaritasiInput {
   destanlar: string[]
   hikayeler: HikayeItem[]
   sprintPlani?: Array<Record<string, string | number>>
+  kullanicilar?: Array<{ kod: string; tip: string; aciklama?: string }>
 }
 
 function releaseLabel(bolum: 'R1' | 'R2' | 'R3', projeDili: string): string {
@@ -41,6 +42,13 @@ function releaseLabel(bolum: 'R1' | 'R2' | 'R3', projeDili: string): string {
 function formatTumHikayeler(hh: HikayeHaritasiInput, projeDili: string): string {
   const isTR = projeDili === 'TR'
   const lines: string[] = []
+  if (hh.kullanicilar?.length) {
+    lines.push(isTR ? 'Kullanıcı Tipleri (U-listesi):' : 'User Types (U-list):')
+    for (const u of hh.kullanicilar) {
+      lines.push(`  ${u.kod}: ${u.tip}${u.aciklama ? ` — ${u.aciklama}` : ''}`)
+    }
+    lines.push('')
+  }
   lines.push(isTR ? `Destanlar: ${hh.destanlar.join(', ')}` : `Epics: ${hh.destanlar.join(', ')}`)
   lines.push('')
   for (const r of ['R1', 'R2', 'R3'] as const) {
@@ -49,7 +57,8 @@ function formatTumHikayeler(hh: HikayeHaritasiInput, projeDili: string): string 
     const label = releaseLabel(r, projeDili)
     lines.push(`${r} — ${label} (${hikayeler.length} ${isTR ? 'hikaye' : 'stories'}):`)
     for (const h of hikayeler) {
-      lines.push(`  ${h.no}: ${h.ad}  |  Destan/Epic: ${h.destan}  |  Sprint: ${h.sprint}`)
+      const uKodlari = (h.kullanici_kodlari ?? []).join(', ')
+      lines.push(`  ${h.no}: ${h.ad}  |  Destan/Epic: ${h.destan}  |  Kullanıcı/User: ${uKodlari}`)
     }
     lines.push('')
   }
@@ -70,12 +79,20 @@ function formatReleaseHikayeleri(
   const isTR = projeDili === 'TR'
   const hikayeler = hh.hikayeler.filter(h => h.surum === release)
   const lines: string[] = []
+  if (hh.kullanicilar?.length) {
+    lines.push(isTR ? 'Kullanıcı Tipleri (U-listesi):' : 'User Types (U-list):')
+    for (const u of hh.kullanicilar) {
+      lines.push(`  ${u.kod}: ${u.tip}${u.aciklama ? ` — ${u.aciklama}` : ''}`)
+    }
+    lines.push('')
+  }
   lines.push(isTR ? `Destanlar: ${hh.destanlar.join(', ')}` : `Epics: ${hh.destanlar.join(', ')}`)
   lines.push('')
   const label = releaseLabel(release, projeDili)
   lines.push(`${release} — ${label} (${hikayeler.length} ${isTR ? 'hikaye' : 'stories'}):`)
   for (const h of hikayeler) {
-    lines.push(`  ${h.no}: ${h.ad}  |  Destan/Epic: ${h.destan}  |  Sprint: ${h.sprint}`)
+    const uKodlari = (h.kullanici_kodlari ?? []).join(', ')
+    lines.push(`  ${h.no}: ${h.ad}  |  Destan/Epic: ${h.destan}  |  Kullanıcı/User: ${uKodlari}`)
   }
   return lines.join('\n')
 }
@@ -198,6 +215,7 @@ ${bolum2Acilis}
 
 Her ${release} hikayesi için standarda göre şunları üret:
 1. Kullanıcı hikayesi (AKTÖR / İHTİYAÇ / FAYDA formatında)
+   - AKTÖR formatı: "[Kullanıcı Tipi] (UX) olarak" — hikaye haritasındaki U-listesinden seç
 2. Kabul kriterleri (her hikaye için min 2, max 6; başlık yazma; max 15 kelime; en az 1 P ve 1 N)
 3. İş kuralları (gerekliyse, ilgili AC'nin hemen altında)${numerasyon}${kapsamUyarisi}
 
@@ -217,6 +235,7 @@ ${bolum2Acilis}
 
 For each ${release} story produce (per the standard):
 1. User story (ACTOR / NEED / BENEFIT format)
+   - ACTOR format: "[User Type] (UX) as" — select from the U-list in the story map
 2. Acceptance criteria (min 2, max 6 per story; no headings; max 15 words; at least 1 P and 1 N)
 3. Business rules (when necessary, immediately below the related AC)${numerasyon}${kapsamUyarisi}
 

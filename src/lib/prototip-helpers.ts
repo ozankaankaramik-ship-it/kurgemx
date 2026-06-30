@@ -1,7 +1,7 @@
 import { genel, prototip as prototipStandart } from '@/lib/standartlar'
 
 export interface HikayeItem {
-  no: string; ad: string; destan: string; surum: string; sprint: string
+  no: string; ad: string; destan: string; surum: string; kullanici_kodlari: string[]
 }
 
 const SISTEM_EK = `
@@ -69,7 +69,8 @@ export function buildHikayelerMetni(
     .map(h => {
       const aclar = positiveAcler[h.no]
       const acMetni = aclar?.length ? `\n  Positive ACs: ${aclar.join(' | ')}` : ''
-      return `- ${h.no} | ${h.ad} | ${isTR ? 'Destan' : 'Epic'}: ${h.destan} | ${h.surum} | ${h.sprint}${acMetni}`
+      const uKodlari = (h.kullanici_kodlari ?? []).join(', ')
+      return `- ${h.no} | ${h.ad} | ${isTR ? 'Destan' : 'Epic'}: ${h.destan} | ${h.surum} | ${isTR ? 'Kullanıcı' : 'User'}: ${uKodlari}${acMetni}`
     })
     .join('\n')
 }

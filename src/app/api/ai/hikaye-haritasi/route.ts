@@ -11,7 +11,7 @@ const DIL_ETIKET: Record<string, string> = {
 }
 
 function dilKurali(projeDili: string, dilAdi: string): string {
-  const fixedKeys = 'hikayeHaritasi, destanlar, hikayeler, no, ad, destan, surum, sprint'
+  const fixedKeys = 'kullanicilar, kod, tip, aciklama, hikayeHaritasi, destanlar, hikayeler, no, ad, destan, surum, kullanici_kodlari'
   const firstOzetKey = projeDili === 'TR' ? '"Sürüm"' : '"Release"'
   const totalValue = projeDili === 'TR' ? '"Toplam"' : '"Total"'
 
@@ -71,10 +71,13 @@ Detaylı Açıklama: ${detayliAciklama}
 
 Yalnızca aşağıdaki JSON yapısını döndür. Markdown kod bloğu, ön yazı veya ek açıklama ekleme — sadece JSON:
 {
+  "kullanicilar": [
+    { "kod": "U1", "tip": "${isTR ? 'Son Kullanıcı' : 'End User'}", "aciklama": "${isTR ? 'Açıklama' : 'Description'}" }
+  ],
   "hikayeHaritasi": {
     "destanlar": ["Destan 1", "Destan 2"],
     "hikayeler": [
-      { "no": "ST1", "ad": "hikaye adı", "destan": "Destan 1", "surum": "R1", "sprint": "SP1" }
+      { "no": "ST1", "ad": "hikaye adı", "destan": "Destan 1", "surum": "R1", "kullanici_kodlari": ["U1"] }
     ]
   },
   "sprintPlani": [
@@ -123,6 +126,21 @@ export async function POST(req: Request) {
     input_schema: {
       type: 'object' as const,
       properties: {
+        kullanicilar: {
+          type: 'array',
+          description: projeDili === 'TR'
+            ? 'Projeyi kullanan kullanıcı tipleri (U1, U2...). Ürün Sahibi/İş Analisti/Geliştirici dahil edilmez.'
+            : 'User types that use the solution (U1, U2...). Product Owner/Business Analyst/Developer excluded.',
+          items: {
+            type: 'object',
+            properties: {
+              kod:      { type: 'string', description: 'U1, U2, U3 ...' },
+              tip:      { type: 'string', description: projeDili === 'TR' ? 'Rol adı' : 'Role name' },
+              aciklama: { type: 'string', description: projeDili === 'TR' ? 'Bu kullanıcının sistemle ne yaptığı' : 'What this user does with the system' },
+            },
+            required: ['kod', 'tip', 'aciklama'],
+          },
+        },
         hikayeHaritasi: {
           type: 'object',
           properties: {
@@ -136,9 +154,9 @@ export async function POST(req: Request) {
                   ad: { type: 'string' },
                   destan: { type: 'string' },
                   surum: { type: 'string', enum: ['R1', 'R2', 'R3'] },
-                  sprint: { type: 'string', description: 'SP1, SP2 ...' },
+                  kullanici_kodlari: { type: 'array', items: { type: 'string' }, description: 'e.g. ["U1"] or ["U1","U2"]' },
                 },
-                required: ['no', 'ad', 'destan', 'surum', 'sprint'],
+                required: ['no', 'ad', 'destan', 'surum', 'kullanici_kodlari'],
               },
             },
           },
@@ -174,7 +192,7 @@ export async function POST(req: Request) {
           },
         },
       },
-      required: ['hikayeHaritasi', 'sprintPlani', 'genelOzet'],
+      required: ['kullanicilar', 'hikayeHaritasi', 'sprintPlani', 'genelOzet'],
     },
   }
 
@@ -223,9 +241,10 @@ export async function POST(req: Request) {
     }
 
     const data = toolBlock.input as {
+      kullanicilar: Array<{ kod: string; tip: string; aciklama: string }>
       hikayeHaritasi: {
         destanlar: string[]
-        hikayeler: Array<{ no: string; ad: string; destan: string; surum: string; sprint: string }>
+        hikayeler: Array<{ no: string; ad: string; destan: string; surum: string; kullanici_kodlari: string[] }>
       }
       sprintPlani: Array<Record<string, string | number>>
       genelOzet: Array<Record<string, string | number>>

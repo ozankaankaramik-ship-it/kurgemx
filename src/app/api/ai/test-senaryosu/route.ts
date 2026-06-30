@@ -8,8 +8,9 @@ export const maxDuration = 300
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY, maxRetries: 0, timeout: 300_000 })
 const SISTEM = `${genel}\n\n---\n\n${testStandart}`
 
-interface HikayeInput { no: string; ad: string; destan: string; sprint: string }
+interface HikayeInput { no: string; ad: string; destan: string; kullanici_kodlari?: string[] }
 interface AcInput { hikayeNo: string; no: string; tip: string; metin: string }
+interface KullaniciItem { kod: string; tip: string; aciklama?: string }
 
 const RELEASES = new Set(['R1', 'R2', 'R3'])
 const MAX_TOKENS: Record<string, number> = { Küçük: 18000, Orta: 24000, Büyük: 32000 }
@@ -27,10 +28,14 @@ function buildPrompt(
   hikayeler: HikayeInput[],
   acler: AcInput[],
   isTR: boolean,
+  kullanicilar: KullaniciItem[],
 ): string {
   const label = releaseLabel(release, isTR)
   const hikayeListesi = hikayeler
-    .map(h => `- ${h.no}: ${h.ad} | ${isTR ? 'Destan' : 'Epic'}: ${h.destan} | Sprint: ${h.sprint}`)
+    .map(h => {
+      const uKodlari = (h.kullanici_kodlari ?? []).join(', ')
+      return `- ${h.no}: ${h.ad} | ${isTR ? 'Destan' : 'Epic'}: ${h.destan} | ${isTR ? 'Kullanıcı' : 'User'}: ${uKodlari}`
+    })
     .join('\n')
 
   const acByStory: Record<string, AcInput[]> = {}
@@ -47,6 +52,10 @@ function buildPrompt(
     })
     .join('\n\n')
 
+  const kullaniciListesi = kullanicilar.length
+    ? kullanicilar.map(u => `  ${u.kod}: ${u.tip}${u.aciklama ? ` — ${u.aciklama}` : ''}`).join('\n')
+    : (isTR ? '  (U-listesi mevcut değil)' : '  (U-list not available)')
+
   const jsonSchema = `{
   "testCases": [
     {
@@ -55,7 +64,8 @@ function buildPrompt(
       "ac_metni": "[AC-001'in tam metni buraya]",
       "ac_tip": "positive",
       "release": "${release}",
-      "test_on_kosul": "...",
+      "kullanici": "U1",
+      "test_on_kosul": "${isTR ? 'U1 — [Kullanıcı Tipi] rolüyle sisteme giriş yapılmış olmalı' : 'U1 — [User Type] must be logged into the system'}",
       "test_adimlar": ["1. ...", "2. ...", "3. ..."],
       "beklenen_sonuc": "...",
       "durum": "pending"
@@ -68,6 +78,9 @@ function buildPrompt(
 Açıklama: ${detayliAciklama}
 Release: ${release} — ${label}
 Çıktı Dili: Türkçe
+
+KULLANICI TİPLERİ (U-listesi):
+${kullaniciListesi}
 
 ${release} HİKAYELERİ:
 ${hikayeListesi}
@@ -84,6 +97,8 @@ KURALLAR:
 - Her TC mutlaka yukarıdaki KABUL KRİTERLERİ listesindeki bir AC'den türetilmeli
 - ac_no: o TC'nin türetildiği AC'nin numarasını birebir kopyala (örn: "AC-001") — yeni numara üretme, format değiştirme
 - ac_metni: o TC'nin türetildiği AC'nin tam metnini birebir kopyala — özetleme veya değiştirme
+- kullanici: hikayenin Kullanıcı alanındaki U kodunu yaz (örn: "U1"); birden fazla kullanıcısı varsa birincilini yaz
+- test_on_kosul: "[UX] — [Kullanıcı Tipi] rolüyle sisteme giriş yapılmış olmalı" formatını kullan; U-listesinden ilgili rol adını al
 - test_adimlar dizisi: her adım "1. ...", "2. ..." formatında
 - durum her zaman "pending"
 - Tüm metin alanları Türkçe
@@ -95,6 +110,9 @@ ${jsonSchema}`
 Description: ${detayliAciklama}
 Release: ${release} — ${label}
 Output Language: English
+
+USER TYPES (U-list):
+${kullaniciListesi}
 
 ${release} STORIES:
 ${hikayeListesi}
@@ -111,6 +129,8 @@ RULES:
 - Every TC must be derived from one of the ACs in the ACCEPTANCE CRITERIA list above
 - ac_no: copy the AC number of that AC exactly as listed (e.g. "AC-001") — do not generate a new number or change the format
 - ac_metni: copy the exact full text of that AC — do not summarize or modify it
+- kullanici: write the U code from the story's User field (e.g. "U1"); if multiple users, write the primary one
+- test_on_kosul: use format "[UX] — [User Type] must be logged into the system"; get the role name from the U-list
 - test_adimlar array: each step in "1. ...", "2. ..." format
 - durum always "pending"
 - All text fields in English
@@ -129,6 +149,7 @@ export async function POST(req: Request) {
     projeBuyuklugu?: string
     hikayeler?: HikayeInput[]
     acler?: AcInput[]
+    kullanicilar?: KullaniciItem[]
   }
 
   const supabase = await createClient()
@@ -152,6 +173,7 @@ export async function POST(req: Request) {
   const projeBuyuklugu = (body.projeBuyuklugu ?? 'Orta').trim()
   const hikayeler = body.hikayeler ?? []
   const acler = body.acler ?? []
+  const kullanicilar = body.kullanicilar ?? []
   const isTR = projeDili === 'TR'
 
   if (!projeAdi || !detayliAciklama || !RELEASES.has(release)) {
@@ -166,7 +188,7 @@ export async function POST(req: Request) {
 
   const maxTokens = MAX_TOKENS[projeBuyuklugu] ?? 12000
 
-  const prompt = buildPrompt(projeAdi, detayliAciklama, release, hikayeler, acler, isTR)
+  const prompt = buildPrompt(projeAdi, detayliAciklama, release, hikayeler, acler, isTR, kullanicilar)
 
   try {
     const response = await client.messages.create({

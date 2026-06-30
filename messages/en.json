@@ -266,7 +266,10 @@
             "exportExcel": "Export to Excel",
             "olusturuluyor": "Generating story map...",
             "scrollIpucu": "← Scroll to see all epics",
-            "hikayeHaritasiTarih": "Story map generated on"
+            "hikayeHaritasiTarih": "Story map generated on",
+            "kullanicilarBaslik": "Users",
+            "kullaniciKodu": "Code",
+            "kullaniciTipi": "User Type"
         },
         "adim3": {
             "baslik": "Requirements Analysis Document",

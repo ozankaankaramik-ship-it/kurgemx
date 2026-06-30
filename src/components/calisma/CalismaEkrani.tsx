@@ -17,7 +17,7 @@ interface HikayeItem {
   ad: string
   destan: string
   surum: string
-  sprint: string
+  kullanici_kodlari: string[]
 }
 
 type SprintPlaniRow = Record<string, string | number>
@@ -151,10 +151,11 @@ interface IsAnaliziData {
 
 interface TestCaseItem {
   no: string; ac_no: string; ac_metni: string; ac_tip: string; release: string
-  test_on_kosul: string; test_adimlar: string[]; beklenen_sonuc: string; durum: string
+  kullanici: string; test_on_kosul: string; test_adimlar: string[]; beklenen_sonuc: string; durum: string
 }
 
 interface StoryMapData {
+  kullanicilar?: Array<{ kod: string; tip: string; aciklama?: string }>
   hikayeHaritasi: { destanlar: string[]; hikayeler: HikayeItem[] }
   sprintPlani: SprintPlaniRow[]
   genelOzet: GenelOzetRow[]
@@ -320,8 +321,8 @@ async function exportToExcel(data: StoryMapData, projeAdi: string) {
     })
     destanlar.forEach((destan, di) => {
       const stories = hikayeler.filter(h => h.surum === surum && h.destan === destan)
-      const text = stories.map(h => `${h.no} · ${h.ad} (${h.sprint})`).join('\n')
-      const bg = stories.length > 0 ? (sprintColorMap.get(stories[0].sprint) ?? WHITE) : WHITE
+      const text = stories.map(h => `${h.no} · ${h.ad} [${(h.kullanici_kodlari ?? []).join(',')}]`).join('\n')
+      const bg = WHITE
       ws1[enc(row, di + 1)] = c(text, {
         font: { sz: 9, color: { rgb: '374151' } },
         fill: { patternType: 'solid', fgColor: { rgb: bg } },
@@ -506,7 +507,7 @@ async function exportTestExcel(testCases: TestCaseItem[], projeAdi: string, proj
   }
 
   const today = new Date().toISOString().split('T')[0]
-  const NUM_COLS = 9
+  const NUM_COLS = 10
   const ws: Record<string, unknown> = {}
   const merges: unknown[] = []
   const rows: { hpx: number }[] = []
@@ -524,8 +525,8 @@ async function exportTestExcel(testCases: TestCaseItem[], projeAdi: string, proj
 
   // Row 2: abbreviations
   const abbrev = isTR
-    ? 'Kısaltmalar: TC — Test Case  |  AC — Kabul Kriteri  |  ST — Hikaye  |  R — Sürüm'
-    : 'Abbreviations: TC — Test Case  |  AC — Acceptance Criteria  |  ST — Story  |  R — Release'
+    ? 'Kısaltmalar: TC — Test Case  |  AC — Kabul Kriteri  |  ST — Hikaye  |  R — Sürüm  |  U — Kullanıcı'
+    : 'Abbreviations: TC — Test Case  |  AC — Acceptance Criteria  |  ST — Story  |  R — Release  |  U — User'
   ws[enc(2, 0)] = cell(abbrev, { font: { italic: true, sz: 9, color: { rgb: '6B7280' } }, fill: { patternType: 'solid', fgColor: { rgb: 'F9FAFB' } }, alignment: { horizontal: 'left', vertical: 'center' } })
   for (let i = 1; i < NUM_COLS; i++) ws[enc(2, i)] = cell('', { fill: { patternType: 'solid', fgColor: { rgb: 'F9FAFB' } } })
   merges.push({ s: { r: 2, c: 0 }, e: { r: 2, c: NUM_COLS - 1 } })
@@ -536,8 +537,8 @@ async function exportTestExcel(testCases: TestCaseItem[], projeAdi: string, proj
 
   // Row 4: headers
   const colKeys = isTR
-    ? ['TC No', 'Sürüm', 'AC No', 'AC Metni', 'AC Tip', 'Test Ön Koşul', 'Test Adımları', 'Beklenen Sonuç', 'Durum']
-    : ['TC No', 'Release', 'AC No', 'AC Description', 'AC Type', 'Precondition', 'Test Steps', 'Expected Result', 'Status']
+    ? ['TC No', 'Sürüm', 'Kullanıcı', 'AC No', 'AC Metni', 'AC Tip', 'Test Ön Koşul', 'Test Adımları', 'Beklened Sonuç', 'Durum']
+    : ['TC No', 'Release', 'User', 'AC No', 'AC Description', 'AC Type', 'Precondition', 'Test Steps', 'Expected Result', 'Status']
   colKeys.forEach((k, i) => { ws[enc(4, i)] = hdr(k) })
   rows.push({ hpx: 32 })
 
@@ -546,7 +547,7 @@ async function exportTestExcel(testCases: TestCaseItem[], projeAdi: string, proj
   testCases.forEach((tc, ri) => {
     const r = 5 + ri
     const adimlarText = Array.isArray(tc.test_adimlar) ? tc.test_adimlar.join('\n') : String(tc.test_adimlar ?? '')
-    const vals = [tc.no, tc.release, tc.ac_no, tc.ac_metni, tc.ac_tip, tc.test_on_kosul, adimlarText, tc.beklenen_sonuc, tc.durum]
+    const vals = [tc.no, tc.release, tc.kullanici ?? '', tc.ac_no, tc.ac_metni, tc.ac_tip, tc.test_on_kosul, adimlarText, tc.beklenen_sonuc ?? '', tc.durum]
     vals.forEach((v, ci) => {
       ws[enc(r, ci)] = cell(String(v ?? ''), { font: { sz: 9, color: { rgb: '374151' } }, alignment: { vertical: 'top', wrapText: true } })
     })
@@ -567,7 +568,7 @@ async function exportTestExcel(testCases: TestCaseItem[], projeAdi: string, proj
   ws['!ref'] = XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: footerRow, c: NUM_COLS - 1 } }) // footerRow = 5 + writtenCount
   ws['!merges'] = merges
   ws['!rows'] = rows
-  ws['!cols'] = [{ wch: 12 }, { wch: 8 }, { wch: 10 }, { wch: 35 }, { wch: 10 }, { wch: 25 }, { wch: 40 }, { wch: 30 }, { wch: 40 }]
+  ws['!cols'] = [{ wch: 12 }, { wch: 8 }, { wch: 8 }, { wch: 10 }, { wch: 35 }, { wch: 10 }, { wch: 30 }, { wch: 40 }, { wch: 30 }, { wch: 10 }]
   ws['!views'] = [{ state: 'frozen', ySplit: 5 }]
   XLSX.utils.book_append_sheet(wb, ws, isTR ? 'Test Senaryoları' : 'Test Scenarios')
 
@@ -816,12 +817,13 @@ function EkranIci({
         console.error('[generateStoryMap] API hata yanıtı:', raw)
         throw new Error(`HTTP ${res.status}`)
       }
-      const { hikayeHaritasi, sprintPlani, genelOzet } = raw
+      const { hikayeHaritasi, sprintPlani, genelOzet, kullanicilar } = raw
       if (!hikayeHaritasi) {
         console.error('[generateStoryMap] hikayeHaritasi alanı eksik:', raw)
         throw new Error('hikayeHaritasi missing')
       }
       const veri: StoryMapData = {
+        kullanicilar: kullanicilar ?? [],
         hikayeHaritasi: {
           destanlar: hikayeHaritasi.destanlar ?? [],
           hikayeler: hikayeHaritasi.hikayeler ?? [],
@@ -1272,7 +1274,8 @@ function EkranIci({
             projeDili: projektDili,
             release,
             projeBuyuklugu: ctx.projeBuyuklugu ?? 'Orta',
-            hikayeler: releaseHikayeler.map(h => ({ no: h.no, ad: h.ad, destan: h.destan, sprint: h.sprint })),
+            hikayeler: releaseHikayeler.map(h => ({ no: h.no, ad: h.ad, destan: h.destan, kullanici_kodlari: h.kullanici_kodlari })),
+            kullanicilar: storyMapData.kullanicilar ?? [],
             acler: releaseAcler,
           }),
         })
@@ -1594,6 +1597,33 @@ function EkranIci({
                   )}
                 </div>
 
+                {/* ── Kullanıcılar Tablosu ── */}
+                {storyMapData && (storyMapData.kullanicilar ?? []).length > 0 && (
+                  <div>
+                    <h4 className="text-xs font-semibold text-[#1F3864] mb-1.5">{t('adim2.kullanicilarBaslik')}</h4>
+                    <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white">
+                      <table className="text-xs text-left w-full">
+                        <thead className="bg-[#EEF4FB]">
+                          <tr>
+                            <th className="px-3 py-1.5 font-semibold text-[#1F3864] w-16 border-r border-gray-100">{t('adim2.kullaniciKodu')}</th>
+                            <th className="px-3 py-1.5 font-semibold text-[#1F3864] w-32 border-r border-gray-100">{t('adim2.kullaniciTipi')}</th>
+                            <th className="px-3 py-1.5 font-semibold text-[#1F3864]">{projektDili === 'TR' ? 'Açıklama' : 'Description'}</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                          {(storyMapData.kullanicilar ?? []).map(u => (
+                            <tr key={u.kod}>
+                              <td className="px-3 py-1.5 font-semibold text-[#2E75B6] border-r border-gray-100">{u.kod}</td>
+                              <td className="px-3 py-1.5 text-gray-700 border-r border-gray-100">{u.tip}</td>
+                              <td className="px-3 py-1.5 text-gray-500">{u.aciklama ?? ''}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+
                 {/* ── Tablo 1: Hikaye Haritası ── */}
                 {storyMapData && (
                   <div className="flex items-center justify-between gap-1 mb-1.5">
@@ -1674,7 +1704,9 @@ function EkranIci({
                                       <div key={h.no} className="mb-1 text-xs text-gray-700 leading-relaxed">
                                         <span className="font-semibold text-[#2E75B6]">{h.no}</span>
                                         {' · '}{h.ad}{' '}
-                                        <span className="text-gray-400">({h.sprint})</span>
+                                        {(h.kullanici_kodlari ?? []).map(kod => (
+                                          <span key={kod} className="inline-block ml-0.5 rounded px-1 py-px text-[9px] font-medium bg-blue-50 text-blue-600 border border-blue-100">{kod}</span>
+                                        ))}
                                       </div>
                                     ))}
                                   </td>
@@ -1850,7 +1882,7 @@ function EkranIci({
                     paddingLeft: 10,
                   }}
                 >
-                  ST:Story · SP:Sprint · R:Release · AC:Acceptance Criteria · BR:Business Rule · TC:Test Case
+                  ST:Story · SP:Sprint · R:Release · U:User · AC:Acceptance Criteria · BR:Business Rule · TC:Test Case
                 </p>
               </div>
             </div>
@@ -2409,7 +2441,9 @@ function EkranIci({
                                   <div key={h.no} className="mb-1 text-xs text-gray-700 leading-relaxed">
                                     <span className="font-semibold text-[#2E75B6]">{h.no}</span>
                                     {' · '}{h.ad}{' '}
-                                    <span className="text-gray-400">({h.sprint})</span>
+                                    {(h.kullanici_kodlari ?? []).map(kod => (
+                                      <span key={kod} className="inline-block ml-0.5 rounded px-1 py-px text-[9px] font-medium bg-blue-50 text-blue-600 border border-blue-100">{kod}</span>
+                                    ))}
                                   </div>
                                 ))}
                               </td>
