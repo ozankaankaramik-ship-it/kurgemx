@@ -113,14 +113,20 @@ Negative, Boundary ve Security AC'ler prototipin kapsamı dışındadır — bun
 - Eşleme YZ tarafından projeye özgü belirlenir
 
 ### Her Ekran İçin
-1. **Başlık satırı:** Ekran adı + ilgili hikaye no'ları + sprint badge'i + kullanıcı tipi badge'i (U kodu)
-   - Birden fazla kullanıcı tipi ilgili ekrana erişebiliyorsa tüm U kodları gösterilir (örn. [U1] [U2])
-2. **Ekran içeriği:** Hikayenin işlevine göre uygun UI:
+1. **Başlık satırı (zorunlu):** Ekran adı + ilgili hikaye no'ları + kullanıcı tipi badge'i (U kodu)
+   - Hikaye no'ları her zaman gösterilir — örn. "ST1, ST2"
+   - Birden fazla kullanıcı tipi ilgili ekrana erişebiliyorsa tüm U kodları gösterilir — örn. [U1] [U2]
+   - Bu satır hiçbir ekranda atlanamaz
+2. **Kullanıcı Bilgi Paneli (yalnızca ilk/giriş ekranı):** Prototipte ilk açılan ekranda (giriş ekranı veya dashboard) projedeki tüm kullanıcı tipleri açıkça listelenir:
+   - Her kullanıcı için: U kodu, rol adı, kısa açıklama (hikaye haritasındaki U-listesinden alınır)
+   - Görsel format: kart veya tablo, ekranın alt bölümünde veya yan panelde
+   - Amaç: Prototipi inceleyen herkesin hangi kullanıcı tiplerinin var olduğunu ilk bakışta görmesi
+3. **Ekran içeriği:** Hikayenin işlevine göre uygun UI:
    - Liste/tablo hikayeleri → veri tablosu
    - Form hikayeleri → doldurulabilir form
    - Detay hikayeleri → detay kartı
    - Dashboard hikayeleri → özet kartlar + grafik placeholder
-3. **Positive AC'ler:** Her AC için ekranda karşılık gelen UI elemanı bulunur
+4. **Positive AC'ler:** Her AC için ekranda karşılık gelen UI elemanı bulunur
 
 ### Zorunlu Alanlar
 - Zorunlu form alanları `*` ile işaretlenir
@@ -151,11 +157,13 @@ Negative, Boundary ve Security AC'ler prototipin kapsamı dışındadır — bun
 
 - Sol menüdeki her hikayeye tıklanınca ilgili ekran gösterilir
 - Formlar doldurulabilir (gerçek veri gönderilmez)
-- Butonlara tıklanınca başarı durumu simüle edilir:
-  - "Kaydet" → başarı toast mesajı gösterilir
-  - "Sil" → onay dialogu çıkar
-  - "İptal" → önceki duruma döner
+- Buton davranışları:
+  - **Ekran geçişi gerektiren butonlar** (Giriş Yap, İleri, Onayla, Gönder vb.) → ilgili sonraki ekrana geçiş simüle edilir; boş veya hata ekranı asla açılmaz
+  - **Kaydet / Oluştur** → başarı toast mesajı gösterilir, gerekirse liste ekranına yönlendirilir
+  - **Sil** → onay dialogu çıkar
+  - **İptal** → önceki duruma döner
 - Tablolarda sıralama simüle edilir (gerçek veri sıralanmaz)
+- **Her butonun tıklanınca ne yapacağı HTML üretiminde önceden tanımlanır** — işlevsiz/boş bırakılan buton olamaz
 
 ---
 

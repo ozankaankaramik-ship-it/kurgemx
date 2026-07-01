@@ -1193,6 +1193,8 @@ function EkranIci({
                 detayliAciklama: detailedDesc,
                 hikayelerMetni,
                 projeDili: projektDili,
+                kullanicilar: storyMapData?.kullanicilar ?? [],
+                entryScreenId: screenIds[0] ?? '',
               }),
             })
             if (!batchRes.ok) continue

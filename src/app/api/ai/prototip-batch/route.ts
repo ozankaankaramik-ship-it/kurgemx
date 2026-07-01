@@ -8,6 +8,7 @@ export const maxDuration = 300
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY, maxRetries: 0, timeout: 300_000 })
 
 interface BatchScreen { id: string; name: string }
+interface KullaniciTipi { kod: string; tip: string; aciklama?: string }
 
 export async function POST(req: Request) {
   let body: {
@@ -17,6 +18,8 @@ export async function POST(req: Request) {
     detayliAciklama?: string
     hikayelerMetni?: string
     projeDili?: string
+    kullanicilar?: KullaniciTipi[]
+    entryScreenId?: string
   }
 
   const supabase = await createClient()
@@ -40,6 +43,22 @@ export async function POST(req: Request) {
   const hikayelerMetni = (body.hikayelerMetni ?? '').trim()
   const projeDili = (body.projeDili ?? 'TR').trim().toUpperCase()
   const isTR = projeDili === 'TR'
+  const kullanicilar = body.kullanicilar ?? []
+  const entryScreenId = (body.entryScreenId ?? '').trim()
+
+  const kullaniciPanelTR = kullanicilar.length > 0 && entryScreenId
+    ? `\nKULLANICI BİLGİ PANELİ (SADECE "${entryScreenId}" id'li ekranın giriş alanının altına ekle):
+Aşağıdaki kullanıcı tiplerini ekranın alt bölümünde veya login formu altında kart veya tablo olarak göster:
+${kullanicilar.map(u => `${u.kod} | ${u.tip}${u.aciklama ? ` — ${u.aciklama}` : ''}`).join('\n')}
+Her kullanıcı için bir kart: U kodu (badge), rol adı (kalın), açıklama (ince). Arka plan: #EEF4FB. Başlık: "Kullanıcı Tipleri"`
+    : ''
+
+  const kullaniciPanelEN = kullanicilar.length > 0 && entryScreenId
+    ? `\nUSER INFO PANEL (ONLY for the screen with id "${entryScreenId}", below the login area):
+Show the following user types as cards or a table in the lower section of the screen:
+${kullanicilar.map(u => `${u.kod} | ${u.tip}${u.aciklama ? ` — ${u.aciklama}` : ''}`).join('\n')}
+Each user as a card: U code (badge), role name (bold), description (light). Background: #EEF4FB. Title: "User Types"`
+    : ''
 
   if (!projeAdi || !detayliAciklama || ekranlar.length === 0) {
     return Response.json({ error: 'empty_input' }, { status: 400 })
@@ -80,13 +99,16 @@ Kurallar:
 - Her ekran bağımsız çalışmalı
 - Tablolarda maksimum 3 satır, liste ve bildirim ekranlarında maksimum 3 item üret
 
-İÇERİK BAŞLIĞI KURALI (her ekran için zorunlu):
+İÇERİK BAŞLIĞI KURALI (her ekran için zorunlu — hiçbir ekranda atlanamaz):
 Her ekranın en üstüne şu formatı ekle:
 <div class="content-header">
-  <h1 class="page-title">Ekran Adı <span class="badge badge-release">R1</span> <span class="badge badge-user">U1</span></h1>
+  <h1 class="page-title">Ekran Adı <span class="badge badge-story">ST1</span> <span class="badge badge-release">R1</span> <span class="badge badge-user">U1</span></h1>
 </div>
-Badge'leri Hikayeler listesindeki surum (Rx) ve kullanici kodlarından (Ux) al. Birden fazla kullanıcı varsa tüm U badge'lerini sırayla göster.
-
+- badge-story: Hikayeler listesinden bu ekrana ait hikaye no'larını al (örn. ST1, ST3). Birden fazla hikayeye bağlıysa tüm ST badge'lerini göster.
+- badge-release: Hikayeler listesindeki surum alanından al (R1/R2/R3).
+- badge-user: Hikayeler listesindeki kullanici kodlarından al (U1, U2...). Birden fazla kullanıcı varsa tüm U badge'lerini göster.
+- Bu satır hiçbir ekranda atlanamaz.
+${kullaniciPanelTR}
 NAVİGASYON VE BUTON KURALLARI (zorunlu):
 - window.showScreen fonksiyonu globaldir — DOM yüklendiğinde otomatik hazır olur, tekrar tanımlama.
 - Giriş/login butonu → onclick="window.showScreen('dashboard-screen-id')" — id'yi skeleton'daki gerçek ekran id'siyle değiştir
@@ -125,13 +147,16 @@ Rules:
 - Each screen must work independently
 - Use maximum 3 rows in tables, maximum 3 items in lists and notification screens
 
-CONTENT HEADER RULE (required for every screen):
+CONTENT HEADER RULE (required for every screen — must not be skipped on any screen):
 Add this at the top of every screen:
 <div class="content-header">
-  <h1 class="page-title">Screen Name <span class="badge badge-release">R1</span> <span class="badge badge-user">U1</span></h1>
+  <h1 class="page-title">Screen Name <span class="badge badge-story">ST1</span> <span class="badge badge-release">R1</span> <span class="badge badge-user">U1</span></h1>
 </div>
-Get badges from the Stories list: surum field (Rx) and user codes (Ux). If multiple users, show all U badges in order.
-
+- badge-story: Get story numbers linked to this screen from the Stories list (e.g. ST1, ST3). Show all ST badges if multiple stories.
+- badge-release: Get from the surum field in the Stories list (R1/R2/R3).
+- badge-user: Get user codes (Ux) from the Stories list. Show all U badges if multiple users.
+- This header row must appear on every screen without exception.
+${kullaniciPanelEN}
 NAVIGATION AND BUTTON RULES (required):
 - window.showScreen is a global function — automatically available after DOM load, do not redefine it.
 - Login/submit button → onclick="window.showScreen('dashboard-screen-id')" — replace id with the actual screen id from the skeleton
