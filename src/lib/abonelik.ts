@@ -50,9 +50,9 @@ export const FREEMIUM_PLAN: PlanDetay = {
   orta_proje: false,
   buyuk_proje: false,
   max_buyuk_proje: null,
-  prototip: false,
-  test_senaryosu: false,
-  export: false,
+  prototip: true,
+  test_senaryosu: true,
+  export: true,
   kullanici_yonetimi: false,
   sso: false,
 }
