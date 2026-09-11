@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation'
 import { getLocale } from 'next-intl/server'
 import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@/lib/supabase/server'
-import { getKullaniciPlan, limiteDoldu } from '@/lib/abonelik'
+import { getKullaniciPlan, limiteDoldu, planIzinVeriyor, type PlanOzellik } from '@/lib/abonelik'
 
 export type ProjeOlusturState = {
   error?: string
@@ -133,6 +133,12 @@ export async function projeOlusturVeDon(
 
   const planBilgisi = await getKullaniciPlan(supabase, user.id)
   if (limiteDoldu(planBilgisi)) return { error: 'limit_asildi' }
+
+  const buyuklukOzellik: PlanOzellik | null =
+    projeBuyuklugu === 'Orta' ? 'orta_proje' : projeBuyuklugu === 'Büyük' ? 'buyuk_proje' : null
+  if (buyuklukOzellik && !planIzinVeriyor(planBilgisi.plan, buyuklukOzellik)) {
+    return { error: 'buyukluk_izinsiz' }
+  }
 
   const projeId = crypto.randomUUID()
 

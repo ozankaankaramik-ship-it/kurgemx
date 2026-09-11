@@ -17,6 +17,9 @@ import {
   Footer,
   LevelFormat,
 } from 'docx'
+import { createClient } from '@/lib/supabase/server'
+import { getKullaniciPlan, planIzinVeriyor } from '@/lib/abonelik'
+import { WATERMARK_TEXT, shouldApplyWatermark } from '@/lib/watermark'
 
 export const maxDuration = 60
 
@@ -418,34 +421,43 @@ function buildHeader(projeAdi: string, dokumanAdi: string): Header {
   })
 }
 
-function buildFooter(versiyon: string, tarih: string): Footer {
-  return new Footer({
-    children: [
+function buildFooter(versiyon: string, tarih: string, watermark: boolean): Footer {
+  const children: Paragraph[] = [
+    new Paragraph({
+      tabStops: [{ position: 9000, type: 'right' }],
+      spacing: { before: 0 },
+      children: [
+        textRun(`Gizli — Dahili Kullanım  |  Sürüm ${versiyon}  |  ${tarih}`, {
+          italic: true,
+          color: COLOR.muted,
+          size: SIZE.caption,
+        }),
+        new TextRun({
+          text: '\t',
+          font: FONT,
+          size: SIZE.caption,
+        }),
+        textRun('Sayfa ', { color: COLOR.muted, size: SIZE.caption }),
+        new TextRun({
+          children: [PageNumber.CURRENT],
+          font: FONT,
+          size: SIZE.caption,
+          color: COLOR.muted,
+        }),
+      ],
+    }),
+  ]
+
+  if (watermark) {
+    children.push(
       new Paragraph({
-        tabStops: [{ position: 9000, type: 'right' }],
         spacing: { before: 0 },
-        children: [
-          textRun(`Gizli — Dahili Kullanım  |  Sürüm ${versiyon}  |  ${tarih}`, {
-            italic: true,
-            color: COLOR.muted,
-            size: SIZE.caption,
-          }),
-          new TextRun({
-            text: '\t',
-            font: FONT,
-            size: SIZE.caption,
-          }),
-          textRun('Sayfa ', { color: COLOR.muted, size: SIZE.caption }),
-          new TextRun({
-            children: [PageNumber.CURRENT],
-            font: FONT,
-            size: SIZE.caption,
-            color: COLOR.muted,
-          }),
-        ],
+        children: [textRun(WATERMARK_TEXT, { italic: true, color: COLOR.muted, size: SIZE.caption })],
       }),
-    ],
-  })
+    )
+  }
+
+  return new Footer({ children })
 }
 
 // ──────────────────────────────────────────────────────────────
@@ -453,6 +465,14 @@ function buildFooter(versiyon: string, tarih: string): Footer {
 // ──────────────────────────────────────────────────────────────
 
 export async function POST(req: Request) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return NextResponse.json({ error: 'UNAUTHORIZED' }, { status: 401 })
+  const pb = await getKullaniciPlan(supabase, user.id)
+  if (!planIzinVeriyor(pb.plan, 'export')) {
+    return NextResponse.json({ error: 'PLAN_REQUIRED', requiredPlan: 'analyst' }, { status: 403 })
+  }
+
   let body: { icerik?: string; projeAdi?: string; versiyon?: string; tarih?: string }
   try {
     body = await req.json()
@@ -520,7 +540,7 @@ export async function POST(req: Request) {
           },
         },
         headers: { default: buildHeader(projeAdi, dokumanAdi) },
-        footers: { default: buildFooter(versiyon, tarih) },
+        footers: { default: buildFooter(versiyon, tarih, shouldApplyWatermark(pb.plan)) },
         children: blocks,
       },
     ],

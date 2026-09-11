@@ -10,6 +10,7 @@ import { createClient } from '@/lib/supabase/client'
 import { DOKUMAN_TIPLERI } from '@/lib/dokuman-tipleri'
 import type { PlanBilgisi } from '@/lib/abonelik'
 import { planIzinVeriyor } from '@/lib/abonelik'
+import { WATERMARK_TEXT, shouldApplyWatermark } from '@/lib/watermark'
 import StepRail, { StepCard, BackgroundBanner, type StepState } from './StepRail'
 
 interface HikayeItem {
@@ -214,7 +215,7 @@ function deduplicateNavScript(html: string): string {
   return stripped + '\n' + CANONICAL
 }
 
-async function exportToExcel(data: StoryMapData, projeAdi: string) {
+async function exportToExcel(data: StoryMapData, projeAdi: string, watermark: boolean) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const XLSX = (await import('xlsx-js-style')) as any
   const wb = XLSX.utils.book_new()
@@ -413,7 +414,7 @@ async function exportToExcel(data: StoryMapData, projeAdi: string) {
   })
 
   const footerRow1 = abbrevOffset + 3 + abbrevData.length + 1
-  ws1[enc(footerRow1, 0)] = { v: 'Created with KurgemX • kurgemx.com', t: 's', s: { font: { italic: true, sz: 8, color: { rgb: '9CA3AF' } }, alignment: { horizontal: 'left', vertical: 'center' } } }
+  ws1[enc(footerRow1, 0)] = { v: watermark ? WATERMARK_TEXT : '', t: 's', s: { font: { italic: true, sz: 8, color: { rgb: '9CA3AF' } }, alignment: { horizontal: 'left', vertical: 'center' } } }
   m1.push({ s: { r: footerRow1, c: 0 }, e: { r: footerRow1, c: numCols - 1 } })
   rows1.push({ hpx: 12 })
   rows1.push({ hpx: 14 })
@@ -462,7 +463,7 @@ async function exportToExcel(data: StoryMapData, projeAdi: string) {
     })
 
     const footerRow2 = 3 + sp.length
-    ws2[enc(footerRow2, 0)] = { v: 'Created with KurgemX • kurgemx.com', t: 's', s: { font: { italic: true, sz: 8, color: { rgb: '9CA3AF' } }, alignment: { horizontal: 'left', vertical: 'center' } } }
+    ws2[enc(footerRow2, 0)] = { v: watermark ? WATERMARK_TEXT : '', t: 's', s: { font: { italic: true, sz: 8, color: { rgb: '9CA3AF' } }, alignment: { horizontal: 'left', vertical: 'center' } } }
     m2.push({ s: { r: footerRow2, c: 0 }, e: { r: footerRow2, c: nSp - 1 } })
     rows2.push({ hpx: 16 })
     rows2.push({ hpx: 14 })
@@ -510,7 +511,7 @@ async function exportToExcel(data: StoryMapData, projeAdi: string) {
     })
 
     const footerRow3 = 3 + go.length
-    ws3[enc(footerRow3, 0)] = { v: 'Created with KurgemX • kurgemx.com', t: 's', s: { font: { italic: true, sz: 8, color: { rgb: '9CA3AF' } }, alignment: { horizontal: 'left', vertical: 'center' } } }
+    ws3[enc(footerRow3, 0)] = { v: watermark ? WATERMARK_TEXT : '', t: 's', s: { font: { italic: true, sz: 8, color: { rgb: '9CA3AF' } }, alignment: { horizontal: 'left', vertical: 'center' } } }
     m3.push({ s: { r: footerRow3, c: 0 }, e: { r: footerRow3, c: nGo - 1 } })
     rows3.push({ hpx: 16 })
     rows3.push({ hpx: 14 })
@@ -525,7 +526,7 @@ async function exportToExcel(data: StoryMapData, projeAdi: string) {
   XLSX.writeFile(wb, `story-map-${projeAdi.toLowerCase().replace(/\s+/g, '-')}.xlsx`)
 }
 
-async function exportTestExcel(testCases: TestCaseItem[], projeAdi: string, projektDili: string | null) {
+async function exportTestExcel(testCases: TestCaseItem[], projeAdi: string, projektDili: string | null, watermark: boolean) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const XLSX = (await import('xlsx-js-style')) as any
   const wb = XLSX.utils.book_new()
@@ -599,7 +600,7 @@ async function exportTestExcel(testCases: TestCaseItem[], projeAdi: string, proj
   for (let i = 1; i < NUM_COLS; i++) ws[enc(1, i)] = cell('', { fill: { patternType: 'solid', fgColor: { rgb: LIGHT_BLUE } } })
 
   const footerRow = 5 + writtenCount
-  ws[enc(footerRow, 0)] = { v: 'Created with KurgemX • kurgemx.com', t: 's', s: { font: { italic: true, sz: 8, color: { rgb: '9CA3AF' } } } }
+  ws[enc(footerRow, 0)] = { v: watermark ? WATERMARK_TEXT : '', t: 's', s: { font: { italic: true, sz: 8, color: { rgb: '9CA3AF' } } } }
   merges.push({ s: { r: footerRow, c: 0 }, e: { r: footerRow, c: NUM_COLS - 1 } })
   rows.push({ hpx: 14 })
 
@@ -728,6 +729,7 @@ function EkranIci({
   const exportIzni   = planBilgisi ? planIzinVeriyor(planBilgisi.plan, 'export')        : false
   const prototipIzni = planBilgisi ? planIzinVeriyor(planBilgisi.plan, 'prototip')      : false
   const testIzni     = planBilgisi ? planIzinVeriyor(planBilgisi.plan, 'test_senaryosu'): false
+  const watermarkli  = planBilgisi ? shouldApplyWatermark(planBilgisi.plan) : true
   const gosterPlanWidget = planBilgisi
     ? (planBilgisi.plan.kod === 'freemium' || planBilgisi.plan.kod === 'analyst')
     : false
@@ -1609,7 +1611,7 @@ function EkranIci({
                     )}
                   {storyMapData && (
                     <button
-                      onClick={exportIzni ? () => exportToExcel(storyMapData, ad) : () => { window.location.href = `/${locale}/pricing` }}
+                      onClick={exportIzni ? () => exportToExcel(storyMapData, ad, watermarkli) : () => { window.location.href = `/${locale}/pricing` }}
                       title={!exportIzni ? (locale === 'tr' ? 'Analyst planında mevcut → Planı Yükselt' : 'Available on Analyst plan → Upgrade') : undefined}
                       className={`inline-flex items-center gap-1.5 rounded-md h-[34px] px-3.5 text-xs font-medium border-[0.5px] transition ${exportIzni ? 'border-[#2E75B6]/50 text-[#1F3864] hover:bg-[#EEF4FB]' : 'border-gray-200 text-gray-400 opacity-60'}`}
                     >
@@ -2311,7 +2313,7 @@ function EkranIci({
                             <button
                               onClick={!exportIzni
                                 ? () => { window.location.href = `/${locale}/pricing` }
-                                : () => exportTestExcel(testCases, ad, projektDili)}
+                                : () => exportTestExcel(testCases, ad, projektDili, watermarkli)}
                               title={!exportIzni ? (locale === 'tr' ? 'Analyst planında mevcut → Planı Yükselt' : 'Available on Analyst plan → Upgrade') : undefined}
                               className={`inline-flex items-center gap-1.5 rounded-md h-[34px] px-3.5 text-xs font-medium border-[0.5px] transition ${exportIzni ? 'border-[#2E75B6]/50 text-[#1F3864] hover:bg-[#EEF4FB]' : 'border-gray-200 text-gray-400 opacity-60'}`}
                             >
