@@ -67,9 +67,13 @@ export default async function PricingPage({
       rows: [
         { label: t('satirlar.hikayeHaritasi'), vals: [true,  true,  true,  true] },
         { label: t('satirlar.analizDokumani'), vals: [true,  true,  true,  true] },
-        { label: t('satirlar.prototip'),       vals: [false, true,  true,  true] },
-        { label: t('satirlar.testSenaryosu'),  vals: [false, true,  true,  true] },
-        { label: t('satirlar.export'),         vals: [false, true,  true,  true] },
+        { label: t('satirlar.prototip'),       vals: [true,  true,  true,  true] },
+        { label: t('satirlar.testSenaryosu'),  vals: [true,  true,  true,  true] },
+        { label: t('satirlar.export'),         vals: [true,  true,  true,  true] },
+        {
+          label: t('satirlar.filigran'),
+          vals: [t('satirlar.filigranVar'), t('satirlar.filigranYok'), t('satirlar.filigranYok'), t('satirlar.filigranYok')],
+        },
         { label: t('satirlar.dil'),            vals: [true,  true,  true,  true] },
       ],
     },
@@ -90,6 +94,7 @@ export default async function PricingPage({
     { q: t('sss.kart.q'),    a: t('sss.kart.a')    },
     { q: t('sss.kdv.q'),     a: t('sss.kdv.a')     },
     { q: t('sss.kurumsal.q'), a: t('sss.kurumsal.a') },
+    { q: t('sss.filigran.q'), a: t('sss.filigran.a') },
   ]
 
   return (

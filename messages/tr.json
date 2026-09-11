@@ -523,25 +523,25 @@
             "signUpCta": "Hesap aç",
             "plans": {
                 "freemium": {
-                    "desc": "Hikaye haritası + analiz dokümanı — ücretsiz, hemen başla",
+                    "desc": "Tüm çıktılar — ücretsiz, hemen başla",
                     "f1": "1 proje / ay",
                     "f2": "Küçük projeler (1–5 hikaye)",
-                    "f3": "Hikaye haritası",
-                    "f4": "İş analizi dokümanı"
+                    "f3": "Tüm çıktılar (hikaye haritası, analiz, prototip, test senaryosu)",
+                    "f4": "Word / Excel / HTML dışa aktarım (KurgemX imzalı)"
                 },
                 "analyst": {
                     "desc": "Hikaye haritasından test senaryosuna tüm çıktılar",
                     "f1": "3 proje / ay",
                     "f2": "Orta projeler (6–15 hikaye)",
                     "f3": "Prototip üretimi",
-                    "f4": "Word / Excel / HTML dışa aktarım"
+                    "f4": "Filigransız dışa aktarım"
                 },
                 "advanced": {
                     "desc": "Büyük projeler için tam güç — tüm çıktılar",
                     "f1": "10 proje / ay",
                     "f2": "Büyük projeler (16–40 hikaye)",
-                    "f3": "Test senaryosu üretimi",
-                    "f4": "Tüm Analyst özellikleri"
+                    "f3": "Ekip paylaşımı",
+                    "f4": "Öncelikli destek"
                 }
             }
         },
@@ -757,6 +757,9 @@
             "prototip": "Prototip üretimi",
             "testSenaryosu": "Test senaryosu",
             "export": "Dışa aktarım (Word / Excel / HTML)",
+            "filigran": "Filigran",
+            "filigranVar": "Var",
+            "filigranYok": "Yok",
             "dil": "Türkçe / İngilizce çıktı",
             "kullaniciYonetimi": "Kullanıcı yönetimi",
             "faturalandirma": "Merkezi faturalandırma",
@@ -789,6 +792,10 @@
             "kurumsal": {
                 "q": "Kurumsal plan için nasıl iletişime geçebilirim?",
                 "a": "support@kurgemx.com adresine yazın; 24 saat içinde dönüş yapıyoruz."
+            },
+            "filigran": {
+                "q": "Filigran nedir, nasıl kaldırılır?",
+                "a": "Freemium planda ürettiğiniz Word, Excel ve HTML çıktılarının altında küçük bir \"Bu doküman KurgemX ile üretildi → kurgemx.com\" notu bulunur. Analyst veya üzeri bir plana geçtiğinizde tüm çıktılarınız filigransız indirilir."
             }
         }
     },

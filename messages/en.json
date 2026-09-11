@@ -523,25 +523,25 @@
             "signUpCta": "Sign up",
             "plans": {
                 "freemium": {
-                    "desc": "Story map + analysis document — free, start now",
+                    "desc": "All outputs — free, start now",
                     "f1": "1 project / month",
                     "f2": "Small projects (1–5 stories)",
-                    "f3": "Story map",
-                    "f4": "Business analysis document"
+                    "f3": "All outputs (story map, analysis, prototype, test scenarios)",
+                    "f4": "Word / Excel / HTML export (KurgemX-signed)"
                 },
                 "analyst": {
                     "desc": "All outputs from story map to test scenarios",
                     "f1": "3 projects / month",
                     "f2": "Medium projects (6–15 stories)",
                     "f3": "Prototype generation",
-                    "f4": "Word / Excel / HTML export"
+                    "f4": "Watermark-free export"
                 },
                 "advanced": {
                     "desc": "Full power for large projects — all outputs",
                     "f1": "10 projects / month",
                     "f2": "Large projects (16–40 stories)",
-                    "f3": "Test scenario generation",
-                    "f4": "All Analyst features"
+                    "f3": "Team sharing",
+                    "f4": "Priority support"
                 }
             }
         },
@@ -757,6 +757,9 @@
             "prototip": "Prototype generation",
             "testSenaryosu": "Test scenarios",
             "export": "Export (Word / Excel / HTML)",
+            "filigran": "Watermark",
+            "filigranVar": "Yes",
+            "filigranYok": "No",
             "dil": "Turkish / English output",
             "kullaniciYonetimi": "User management",
             "faturalandirma": "Centralized billing",
@@ -789,6 +792,10 @@
             "kurumsal": {
                 "q": "How can I contact you about the Enterprise plan?",
                 "a": "Write to support@kurgemx.com and we'll get back to you within 24 hours."
+            },
+            "filigran": {
+                "q": "What is the watermark, and how do I remove it?",
+                "a": "Word, Excel, and HTML outputs you generate on the Freemium plan carry a small \"Generated with KurgemX → kurgemx.com\" note. Upgrade to Analyst or above and all your outputs download watermark-free."
             }
         }
     },
