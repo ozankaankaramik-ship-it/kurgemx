@@ -171,7 +171,7 @@ NAVIGATION AND BUTTON RULES (required):
   try {
     const response = await client.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 20000,
+      max_tokens: 32000,
       system: [{ type: 'text', text: SISTEM, cache_control: { type: 'ephemeral' } }],
       messages: [{ role: 'user', content: prompt }],
     })
@@ -181,6 +181,14 @@ NAVIGATION AND BUTTON RULES (required):
       'output_tokens:', response.usage?.output_tokens,
       'screens:', ekranlar.map(e => e.id).join(','),
     )
+
+    const truncated = response.stop_reason === 'max_tokens'
+    if (truncated) {
+      console.error(
+        '[prototip-batch] UYARI: yanıt max_tokens sınırında kesildi — bazı ekranlar eksik/parse edilemeyen içerik üretmiş olabilir. output_tokens:',
+        response.usage?.output_tokens, 'ekranlar:', ekranlar.map(e => e.id).join(','),
+      )
+    }
 
     const raw = response.content[0].type === 'text' ? response.content[0].text : ''
     const screens: Record<string, string> = {}
@@ -193,10 +201,13 @@ NAVIGATION AND BUTTON RULES (required):
 
     const failedScreens = ekranlar.map(e => e.id).filter(id => !(id in screens))
     if (failedScreens.length > 0) {
-      console.warn('[prototip-batch] parse edilemeyen ekranlar:', failedScreens.join(','))
+      console.warn(
+        '[prototip-batch] parse edilemeyen ekranlar:', failedScreens.join(','),
+        truncated ? '(sebep: max_tokens kesintisi)' : '(sebep: beklenmeyen format)',
+      )
     }
 
-    return Response.json({ screens, failedScreens })
+    return Response.json({ screens, failedScreens, truncated })
   } catch (err) {
     console.error('[prototip-batch] HATA:', err instanceof Error ? err.message : String(err))
     return Response.json({ error: 'generation_failed' }, { status: 500 })

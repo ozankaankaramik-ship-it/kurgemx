@@ -634,7 +634,7 @@ async function exportTestExcel(testCases: TestCaseItem[], projeAdi: string, proj
 
 
 type DokumanRow = { tip_id: string; icerik: unknown; created_at: string; uretim_suresi?: number | null; token_tahmini?: number | null }
-type BatchDetay = { toplamSure: number; toplamToken: number; batches: Array<{ ekranlar: string[]; sure: number; token: number }> }
+type BatchDetay = { toplamSure: number; toplamToken: number; batches: Array<{ ekranlar: string[]; sure: number; token: number }>; failedScreens?: string[] }
 
 // Dış bileşen: ProjeProvider sağlar
 export default function CalismaEkrani({
@@ -778,7 +778,7 @@ function EkranIci({
   const adim4IntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const [adim4StreamMsg, setAdim4StreamMsg] = useState<string | null>(null)
   const [adim4ProgressList, setAdim4ProgressList] = useState<string[]>([])
-  const [adim4FailedScreens, setAdim4FailedScreens] = useState<string[]>([])
+  const [adim4FailedScreens, setAdim4FailedScreens] = useState<string[]>(initialAdim4BatchDetay?.failedScreens ?? [])
   const [adim4Tarih, setAdim4Tarih] = useState<string | null>(ctx.dokuman.prototipTarih ?? null)
   const [adim2Metrigi, setAdim2Metrigi] = useState<{sure: number; token: number} | null>(initialAdim2Metrigi)
   const [adim3Metrigi, setAdim3Metrigi] = useState<{sure: number; token: number} | null>(initialAdim3Metrigi)
@@ -1209,7 +1209,10 @@ function EkranIci({
               }),
             })
             if (!batchRes.ok) continue
-            const data = await batchRes.json() as { screens: Record<string, string>; failedScreens: string[] }
+            const data = await batchRes.json() as { screens: Record<string, string>; failedScreens: string[]; truncated?: boolean }
+            if (data.truncated) {
+              console.warn('[generatePrototype] max_tokens kesintisi — ekranlar:', remaining.join(','))
+            }
             Object.assign(contentMap, data.screens)
             remaining = data.failedScreens ?? []
           } catch {
@@ -1260,18 +1263,25 @@ function EkranIci({
       for (const [id, content] of Object.entries(contentMap)) {
         htmlIcerik = fillPlaceholder(htmlIcerik, id, content)
       }
+      const geriDonUrl = projeId ? `/${locale}/projeler/${projeId}` : null
+      const failedScreenMesaji = locale === 'tr'
+        ? `<div style="padding:40px;text-align:center;color:#991B1B;background:#FEE2E2;border-radius:8px;">
+            Bu ekran üretilemedi.${geriDonUrl ? ` <a href="${geriDonUrl}" style="color:#991B1B;text-decoration:underline;">Projeye dönüp yeniden dene</a>.` : ''}
+            Sorun devam ederse: support@kurgemx.com
+          </div>`
+        : `<div style="padding:40px;text-align:center;color:#991B1B;background:#FEE2E2;border-radius:8px;">
+            This screen could not be generated.${geriDonUrl ? ` <a href="${geriDonUrl}" style="color:#991B1B;text-decoration:underline;">Return to the project and retry</a>.` : ''}
+            If the problem persists: support@kurgemx.com
+          </div>`
       for (const id of allFailed) {
-        htmlIcerik = fillPlaceholder(
-          htmlIcerik,
-          id,
-          '<div style="padding:40px;text-align:center;color:#991B1B;background:#FEE2E2;border-radius:8px;">Bu ekran üretilemedi. Sistem yöneticisine başvurun: destek@kurgemx.com</div>',
-        )
+        htmlIcerik = fillPlaceholder(htmlIcerik, id, failedScreenMesaji)
       }
       htmlIcerik = deduplicateNavScript(htmlIcerik)
       const batchDetay: BatchDetay = {
         toplamSure: Math.round((Date.now() - startTime4) / 1000),
         toplamToken: Math.round(htmlIcerik.length / 4),
         batches: batchMetrikler,
+        failedScreens: allFailed,
       }
       htmlIcerik += `\n<!-- kurgemx-metrics:${JSON.stringify(batchDetay)} -->`
       setAdim4BatchDetay(batchDetay)
