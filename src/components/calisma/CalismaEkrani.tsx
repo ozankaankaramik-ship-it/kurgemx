@@ -10,7 +10,7 @@ import { createClient } from '@/lib/supabase/client'
 import { DOKUMAN_TIPLERI } from '@/lib/dokuman-tipleri'
 import type { PlanBilgisi } from '@/lib/abonelik'
 import { planIzinVeriyor } from '@/lib/abonelik'
-import { WATERMARK_TEXT, shouldApplyWatermark } from '@/lib/watermark'
+import { WATERMARK_TEXT, shouldApplyWatermark, watermarkBannerHtml } from '@/lib/watermark'
 import StepRail, { StepCard, BackgroundBanner, type StepState } from './StepRail'
 
 interface HikayeItem {
@@ -213,6 +213,15 @@ function deduplicateNavScript(html: string): string {
   const stripped = html.replace(/<script\b[^>]*>(?:(?!<\/script>)[\s\S])*?showScreen(?:(?!<\/script>)[\s\S])*<\/script>/gi, '')
   if (stripped.includes('</body>')) return stripped.replace('</body>', CANONICAL + '\n</body>')
   return stripped + '\n' + CANONICAL
+}
+
+// Filigranı <body>'nin doğrudan çocuğu olarak enjekte eder — .screen div'lerinin
+// dışında olduğu için showScreen geçişlerinden etkilenmez, her ekranda sabit kalır.
+function injectWatermarkBanner(html: string): string {
+  const stripped = html.replace(/<div id="kurgemx-watermark"[\s\S]*?<\/div>/i, '')
+  const banner = watermarkBannerHtml()
+  if (stripped.includes('</body>')) return stripped.replace('</body>', banner + '\n</body>')
+  return stripped + '\n' + banner
 }
 
 async function exportToExcel(data: StoryMapData, projeAdi: string, watermark: boolean) {
@@ -2120,7 +2129,8 @@ function EkranIci({
                           onClick={!exportIzni
                             ? () => { window.location.href = `/${locale}/pricing` }
                             : () => {
-                                const blob = new Blob([ctx.dokuman.prototype!], { type: 'text/html;charset=utf-8' })
+                                const htmlIcin = watermarkli ? injectWatermarkBanner(ctx.dokuman.prototype!) : ctx.dokuman.prototype!
+                                const blob = new Blob([htmlIcin], { type: 'text/html;charset=utf-8' })
                                 const url = URL.createObjectURL(blob)
                                 const a = document.createElement('a')
                                 a.href = url
